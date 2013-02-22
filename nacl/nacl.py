@@ -11,6 +11,8 @@ __all__ = ["ffi", "lib"]
 
 ffi = FFI()
 ffi.cdef(
+    # pylint: disable=C0301
+
     # Low Level Hashing functions
     """
         static const int crypto_hash_BYTES;

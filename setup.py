@@ -32,6 +32,16 @@ setup(
     install_requires=[
         "cffi",
     ],
+    extras_require={
+        "tests": [
+            "pep8",
+            "pylint",
+            "pytest",
+        ],
+    },
+    tests_require=[
+        "pytest",
+    ],
 
     packages=[
         "nacl",
