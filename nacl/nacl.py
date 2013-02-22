@@ -6,6 +6,9 @@ import functools
 from cffi import FFI
 
 
+__all__ = ["ffi", "lib"]
+
+
 ffi = FFI()
 
 
