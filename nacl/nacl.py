@@ -10,8 +10,6 @@ __all__ = ["ffi", "lib"]
 
 
 ffi = FFI()
-
-
 ffi.cdef(
     # Low Level Hashing functions
     """
