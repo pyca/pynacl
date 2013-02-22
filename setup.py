@@ -4,7 +4,7 @@ from setuptools import setup
 __about__ = {}
 
 with open("nacl/__about__.py") as fp:
-    exec(fp, None, __about__)
+    exec(fp.read(), None, __about__)
 
 
 try:
