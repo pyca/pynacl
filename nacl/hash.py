@@ -12,7 +12,7 @@ def sha256(message, binary=False):
 
     if binary:
         return digest
-    return binascii.hexlify(digest).decode("ascii")
+    return binascii.hexlify(digest)
 
 
 def sha512(message, binary=False):
@@ -23,4 +23,4 @@ def sha512(message, binary=False):
 
     if binary:
         return digest
-    return binascii.hexlify(digest).decode("ascii")
+    return binascii.hexlify(digest)
