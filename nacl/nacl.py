@@ -1,9 +1,9 @@
 """
-CFFI interface to libsodium the library
+CFFI interface to NaCl and libsodium library
 """
 import functools
 
-from cffi import FFI
+from cffi import FFI, VerificationError
 
 
 __all__ = ["ffi", "lib"]
@@ -26,7 +26,23 @@ ffi.cdef(
 )
 
 
-lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
+# Check to make sure that we have a compiled interface to one of our library
+#   backends. We prefer NaCl here because it has compiled speed ups.
+# TODO: Include some way to specify which backend you want and hard fail if
+#   that one doesn't exist?
+try:
+    # Try to compile the ffi interface with NaCl
+    lib = ffi.verify(
+        """
+            #include "crypto_hash.h"
+            #include "crypto_hash_sha256.h"
+            #include "crypto_hash_sha512.h"
+        """,
+        libraries=["nacl"],
+    )
+except VerificationError:
+    # Try to compile the ffi interface with libsodium if NaCl wasn't available
+    lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
 
 
 # A lot of the functions in nacl return 0 for success and a negative integer
