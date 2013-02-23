@@ -8,8 +8,8 @@ python:
 install:
   - sudo apt-get install python-pip
   - sudo /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
-  - 'if [ -n "${VAR+x}" ]; then invoke install-nacl --library=$NACL; fi'
-  - 'if [ -n "${VAR+x}" ]; then invoke install --dev; fi'
+  - 'if [ -n "${NACL+x}" ]; then invoke install-nacl --library=$NACL; fi'
+  - 'if [ -n "${NACL+x}" ]; then invoke install --dev; fi'
 script:
   - invoke tests --suite=$SUITE
 env:
