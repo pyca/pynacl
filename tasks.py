@@ -57,12 +57,13 @@ def install_nacl(library):
 
 @task
 def install(dev=False):
-    cmd = "pip install -e file://$PWD#egg=pynacl"
-
     if dev:
-        cmd += "[tests]"
-
-    run(cmd)
+        # Install once to get the tests extra
+        run("pip install file://$PWD#egg=pynacl[tests]")
+        # Install again to get an editable install
+        run("pip install -e .")
+    else:
+        run("pip install .")
 
 
 @task
