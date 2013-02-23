@@ -1,3 +1,0 @@
-[pep8]
-ignore = E123,E124,E126,E127,E128
-exclude = nacl.py

@@ -66,17 +66,5 @@ def install(dev=False):
 
 
 @task
-def tests(suite=None):
-    if suite is None:
-        suite = set(["pep8", "lint", "unit"])
-    else:
-        suite = set(suite.split(","))
-
-    if "pep8" in suite:
-        run("pep8 nacl")
-
-    if "lint" in suite:
-        run("pylint --rcfile .pylintrc -r y nacl")
-
-    if "unit" in suite:
-        run("py.test")
+def tests():
+    run("py.test")
