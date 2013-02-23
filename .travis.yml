@@ -7,7 +7,7 @@ python:
   - "pypy"
 install:
   - sudo apt-get install python-pip
-  - /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
+  - sudo /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
   - 'if [ -n "${VAR+x}" ]; then: invoke install-nacl --library=$NACL; fi'
   - 'if [ -n "${VAR+x}" ]; then: invoke install --dev; fi'
 script:
