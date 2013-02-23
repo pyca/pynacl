@@ -23,21 +23,21 @@ matrix:
   exclude:
     - python: "2.6"
       env:
-        - "SUITE=pep8,lint"
+        - "NACL=libsodium SUITE=pep8,lint"
         - LD_LIBRARY_PATH=/usr/local/lib
         - LD_RUN_PATH=/usr/local/lib
     - python: "3.2"
       env:
-        - "SUITE=pep8,lint"
+        - "NACL=libsodium SUITE=pep8,lint"
         - LD_LIBRARY_PATH=/usr/local/lib
         - LD_RUN_PATH=/usr/local/lib
     - python: "3.3"
       env:
-        - "SUITE=pep8,lint"
+        - "NACL=libsodium SUITE=pep8,lint"
         - LD_LIBRARY_PATH=/usr/local/lib
         - LD_RUN_PATH=/usr/local/lib
     - python: "pypy"
       env:
-        - "SUITE=pep8,lint"
+        - "NACL=libsodium SUITE=pep8,lint"
         - LD_LIBRARY_PATH=/usr/local/lib
         - LD_RUN_PATH=/usr/local/lib
