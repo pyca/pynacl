@@ -1,8 +1,9 @@
 from . import __about__
 from . import hash  # pylint: disable=W0622
+from .random import random
 
 
-__all__ = ["hash"] + __about__.__all__
+__all__ = ["hash", "random"] + __about__.__all__
 
 
 # - Meta Information -
