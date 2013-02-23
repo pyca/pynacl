@@ -9,7 +9,8 @@ install:
   - sudo apt-get install python-pip
   - sudo /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
   - 'if [ -n "${NACL+x}" ]; then invoke install-nacl --library=$NACL; fi'
-  - invoke install --dev
+  - 'if [ -n "${NACL+x}" ]; then invoke install --dev; fi'
+  - 'if [ -n "${NACL-x}" ]; then pip install pep8 pylint; fi'
 script:
   - invoke tests --suite=$SUITE
 env:
