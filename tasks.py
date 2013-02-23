@@ -1,6 +1,5 @@
 import hashlib
 import os
-import platform
 import urllib2
 
 from invoke import task, run
@@ -37,9 +36,9 @@ def install_nacl(library):
 
             # Configure and install the library
             os.chdir(os.path.expanduser("~/libsodium-0.2/"))
-            run("./configure --disable-debug --disable-dependency-tracking")
-            run("make")
-            run("sudo make install")
+            run("./configure --disable-debug --disable-dependency-tracking", hide="out")
+            run("make", hide="out")
+            run("sudo make install", hide="out")
         finally:
             os.chdir(curdir)
 
@@ -58,11 +57,11 @@ def install_nacl(library):
             os.chdir(os.path.expanduser("~/"))
 
             # Unpack the tarball
-            run("tar xf nacl-20110221.tar.bz2")
+            run("tar xf nacl-20110221.tar.bz2", hide="out")
 
             # Configure and install the library
             os.chdir(os.path.expanduser("~/nacl-20110221/"))
-            run("sudo ./do")
+            run("sudo ./do", hide="out")
         finally:
             os.chdir(curdir)
 
@@ -79,11 +78,11 @@ def install_nacl(library):
 def install(dev=False):
     if dev:
         # Install once to get the tests extra
-        run("pip install file://$PWD#egg=pynacl[tests]")
+        run("pip install file://$PWD#egg=pynacl[tests]", hide="out")
         # Install again to get an editable install
-        run("pip install -e .")
+        run("pip install -e .", hide="out")
     else:
-        run("pip install .")
+        run("pip install .", hide="out")
 
 
 @task
