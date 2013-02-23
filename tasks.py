@@ -44,11 +44,27 @@ def install_nacl(library):
             os.chdir(curdir)
 
     def _install_nacl():
-        # Determine if we are running under Ubuntu
-        if platform.linux_distribution()[0] == "Ubuntu":
-            run("sudo apt-get install libnacl-dev")
+        tarball_path = os.path.expanduser("~/nacl-20110221.tar.bz2")
 
-        raise NotImplementedError
+        # Download libnacl and verify it's hash
+        download(
+            "http://hyperelliptic.org/nacl/nacl-20110221.tar.bz2",
+            "4f277f89735c8b0b8a6bbd043b3efb3fa1cc68a9a5da6a076507d067fc3b3bf8",
+            tarball_path,
+        )
+
+        curdir = os.getcwd()
+        try:
+            os.chdir(os.path.expanduser("~/"))
+
+            # Unpack the tarball
+            run("tar xf nacl-20110221.tar.bz2")
+
+            # Configure and install the library
+            os.chdir(os.path.expanduser("~/nacl-20110221/"))
+            run("sudo ./do")
+        finally:
+            os.chdir(curdir)
 
     libraries = {
         "libsodium": _install_libsodium,
