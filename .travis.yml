@@ -6,11 +6,11 @@ python:
   - "3.3"
   - "pypy"
 install:
-  - sudo tests/install_sodium.sh
-  - pip install -q "file://$PWD#egg=pynacl[tests]"
+  - /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
+  - 'if [ -n "${VAR+x}" ]; then: invoke install-nacl --library=$NACL; fi'
+  - 'if [ -n "${VAR+x}" ]; then: invoke install --dev; fi'
 script:
-  - pep8 nacl
-  - pylint --rcfile .pylintrc -r y nacl
-  - py.test
+  - invoke tests --suite=$SUITE --libpath=/usr/local/lib
 env:
-  - LD_LIBRARY_PATH=/usr/local/lib LD_RUN_PATH=/usr/local/lib
+  - NACL=libsodium SUITE=unit
+  - "SUITE=pep8,lint"
