@@ -1,5 +1,6 @@
 import hashlib
 import os
+import platform
 import urllib2
 
 from invoke import task, run
@@ -43,6 +44,10 @@ def install_nacl(library):
             os.chdir(curdir)
 
     def _install_nacl():
+        # Determine if we are running under Ubuntu
+        if platform.linux_distribution()[0] == "Ubuntu":
+            run("sudo apt-get install libnacl-dev")
+
         raise NotImplementedError
 
     libraries = {

@@ -18,3 +18,4 @@ env:
     - LD_RUN_PATH=/usr/local/lib
   matrix:
     - NACL=libsodium
+    - NACL=nacl
