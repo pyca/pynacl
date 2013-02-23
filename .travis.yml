@@ -6,7 +6,7 @@ python:
   - "3.3"
   - "pypy"
 install:
-  - tests/install_sodium.sh
+  - sudo tests/install_sodium.sh
   - pip install -q "file://$PWD#egg=pynacl[tests]"
 script:
   - pep8 nacl
