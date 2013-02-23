@@ -66,11 +66,7 @@ def install(dev=False):
 
 
 @task
-def tests(libpath=None, suite=None):
-    if libpath is not None:
-        os.environ["LD_LIBRARY_PATH"] = libpath
-        os.environ["LD_RUN_PATH"] = libpath
-
+def tests(suite=None):
     if suite is None:
         suite = set(["pep8", "lint", "unit"])
     else:

@@ -10,7 +10,21 @@ install:
   - 'if [ -n "${VAR+x}" ]; then: invoke install-nacl --library=$NACL; fi'
   - 'if [ -n "${VAR+x}" ]; then: invoke install --dev; fi'
 script:
-  - invoke tests --suite=$SUITE --libpath=/usr/local/lib
+  - invoke tests --suite=$SUITE
 env:
-  - NACL=libsodium SUITE=unit
-  - "SUITE=pep8,lint"
+  global:
+    - LD_LIBRARY_PATH=/usr/local/lib
+    - LD_RUN_PATH=/usr/local/lib
+  matrix:
+    - NACL=libsodium SUITE=unit
+    - "SUITE=pep8,lint"
+matrix:
+  exclude:
+    - python: "2.6"
+      env: "SUITE=pep8,lint"
+    - python: "2.7"
+      env: "SUITE=pep8,lint"
+    - python: "3.2"
+      env: "SUITE=pep8,lint"
+    - python: "pypy"
+      env: "SUITE=pep8,lint"
