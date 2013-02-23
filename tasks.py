@@ -38,7 +38,7 @@ def install_nacl(library):
             os.chdir(os.path.expanduser("~/libsodium-0.2/"))
             run("./configure --disable-debug --disable-dependency-tracking")
             run("make")
-            run("make install")
+            run("sudo make install")
         finally:
             os.chdir(curdir)
 
