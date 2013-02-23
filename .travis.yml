@@ -12,3 +12,5 @@ script:
   - pep8 nacl
   - pylint --rcfile .pylintrc -r y nacl
   - py.test
+env:
+  - LD_LIBRARY_PATH=/usr/local/lib LD_RUN_PATH=/usr/local/lib
