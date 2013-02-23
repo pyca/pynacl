@@ -6,8 +6,8 @@ python:
   - "3.3"
   # - "pypy"  # Travis only has PyPy 1.9, cffi requires 2.0 (Unreleased)
 install:
-  - sudo apt-get install python-pip
-  - sudo /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
+  - sudo apt-get -q install python-pip
+  - sudo /usr/bin/pip -q install git+git://github.com/pyinvoke/invoke.git
   - invoke install-nacl --library=$NACL
   - invoke install --dev
 script:
