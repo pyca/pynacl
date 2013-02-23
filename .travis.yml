@@ -8,9 +8,8 @@ python:
 install:
   - sudo apt-get install python-pip
   - sudo /usr/bin/pip install git+git://github.com/pyinvoke/invoke.git
-  - 'if [ -n "${NACL+x}" ]; then invoke install-nacl --library=$NACL; fi'
-  - 'if [ -n "${NACL+x}" ]; then invoke install --dev; fi'
-  - 'if [ -n "${NACL-x}" ]; then pip install pep8 pylint; fi'
+  - invoke install-nacl --library=$NACL
+  - invoke install --dev
 script:
   - invoke tests --suite=$SUITE
 env:
@@ -19,7 +18,7 @@ env:
     - LD_RUN_PATH=/usr/local/lib
   matrix:
     - NACL=libsodium SUITE=unit
-    - "SUITE=pep8,lint"
+    - "NACL=libsodium SUITE=pep8,lint"
 matrix:
   exclude:
     - python: "2.6"
