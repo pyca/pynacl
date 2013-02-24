@@ -51,11 +51,11 @@ def install_sodium():
 def install_requirements(dev=False):
     if dev:
         # Install once to get the tests extra
-        run("pip install file://$PWD#egg=pynacl[tests]", hide="out")
+        run("pip install file://$PWD#egg=pynacl[tests]")
         # Install again to get an editable install
-        run("pip install -e .", hide="out")
+        run("pip install -e .")
     else:
-        run("pip install .", hide="out")
+        run("pip install .")
 
 
 @task
