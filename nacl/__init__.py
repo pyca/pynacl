@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from . import __about__
 from . import hash  # pylint: disable=W0622
 from .random import random

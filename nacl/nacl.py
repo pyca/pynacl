@@ -1,6 +1,10 @@
 """
 CFFI interface to NaCl and libsodium library
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 import functools
 
 from cffi import FFI
