@@ -50,3 +50,33 @@ class TestSigningKey:
         assert binascii.hexlify(signed) == expected
         assert binascii.hexlify(signed.message) == message
         assert binascii.hexlify(signed.signature) == signature
+
+
+class TestVerifyKey:
+
+    @pytest.mark.parametrize(("public_key", "signed", "message", "signature"),
+        [(x["public_key"], x["signed"], x["message"], x["signature"]) for x in ed25519_known_answers()]
+    )
+    def test_valid_signed_message(self, public_key, signed, message, signature):
+        key = nacl.signing.VerifyKey(binascii.unhexlify(public_key))
+        signedb = binascii.unhexlify(signed)
+        messageb = binascii.unhexlify(message)
+        signatureb = binascii.unhexlify(signature)
+
+        assert binascii.hexlify(key.verify(signedb)) == message
+        assert binascii.hexlify(key.verify(messageb, signatureb)) == message
+
+    def test_invalid_signed_message(self):
+        skey = nacl.signing.SigningKey.generate()
+        smessage = skey.sign("A Test Message!")
+        signature, message = smessage.signature, "A Forged Test Message!"
+
+        # Small sanity check
+        assert skey.verify_key.verify(smessage)
+
+        with pytest.raises(nacl.signing.BadSignatureError):
+            skey.verify_key.verify(message, signature)
+
+        with pytest.raises(nacl.signing.BadSignatureError):
+            forged = nacl.signing.SignedMessage(signature + message)
+            skey.verify_key.verify(forged)

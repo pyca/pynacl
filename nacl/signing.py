@@ -7,6 +7,12 @@ from .exceptions import CryptoError
 from .random import random
 
 
+class BadSignatureError(CryptoError):
+    """
+    Raised when the signature was forged or otherwise corrupt.
+    """
+
+
 class SignedMessage(six.binary_type):
 
     @property
@@ -16,6 +22,30 @@ class SignedMessage(six.binary_type):
     @property
     def message(self):
         return self[nacl.lib.crypto_sign_BYTES:]
+
+
+class VerifyKey(object):
+
+    def __init__(self, key):
+        if len(key) != nacl.lib.crypto_sign_PUBLICKEYBYTES:
+            raise ValueError("The key must be exactly %s bytes long" %
+                                nacl.lib.crypto_sign_PUBLICKEYBYTES)
+
+        self._key = key
+
+    def verify(self, smessage, signature=None):
+        if signature is not None:
+            # If we were given the message and signature separately, combine
+            #   them.
+            smessage = signature + smessage
+
+        message = nacl.ffi.new("unsigned char[]", len(smessage))
+        message_len = nacl.ffi.new("unsigned long long *")
+
+        if not nacl.lib.crypto_sign_open(message, message_len, smessage, len(smessage), self._key):
+            raise BadSignatureError("Signature was forged or corrupt")
+
+        return nacl.ffi.buffer(message, message_len[0])[:]
 
 
 class SigningKey(object):
@@ -36,6 +66,9 @@ class SigningKey(object):
         # Secret values
         self._seed = seed
         self._signing_key = nacl.ffi.buffer(sk, nacl.lib.crypto_sign_SECRETKEYBYTES)[:]
+
+        # Public values
+        self.verify_key = VerifyKey(nacl.ffi.buffer(pk, nacl.lib.crypto_sign_PUBLICKEYBYTES)[:])
 
     @classmethod
     def generate(cls):
