@@ -8,13 +8,11 @@ python:
 install:
   - sudo apt-get -q install python-pip
   - sudo /usr/bin/pip -q install git+git://github.com/pyinvoke/invoke.git
-  - invoke install-nacl --library=$NACL
-  - invoke install --dev
+  - invoke install.sodium
+  - invoke install.requirements --dev
 script:
   - invoke tests
 env:
   global:
     - LD_LIBRARY_PATH=/usr/local/lib
     - LD_RUN_PATH=/usr/local/lib
-  matrix:
-    - NACL=libsodium
