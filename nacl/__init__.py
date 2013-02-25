@@ -3,6 +3,7 @@ from __future__ import division
 
 from . import __about__
 from . import hash  # pylint: disable=W0622
+from . import signing
 from .random import random
 
 
