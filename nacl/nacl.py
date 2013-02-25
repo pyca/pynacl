@@ -16,7 +16,18 @@ ffi = FFI()
 ffi.cdef(
     # pylint: disable=C0301
 
-    # Low Level Hashing functions
+    # Public Key Encryption - Signatures
+    """
+        static const int crypto_sign_PUBLICKEYBYTES;
+        static const int crypto_sign_SECRETKEYBYTES;
+        static const int crypto_sign_BYTES;
+
+        int crypto_sign_seed_keypair(unsigned char *pk, unsigned char *sk, unsigned char *seed);
+        int crypto_sign(unsigned char *sm, unsigned long long *smlen, const unsigned char *m, unsigned long long mlen, const unsigned char *sk);
+        int crypto_sign_open(unsigned char *m, unsigned long long *mlen, const unsigned char *sm, unsigned long long smlen, const unsigned char *pk);
+    """
+
+    # Hashing
     """
         static const int crypto_hash_BYTES;
         static const int crypto_hash_sha256_BYTES;
@@ -47,6 +58,11 @@ def wrap_nacl_function(func):
         ret = func(*args, **kwargs)
         return ret == 0
     return wrapper
+
+
+lib.crypto_sign_seed_keypair = wrap_nacl_function(lib.crypto_sign_seed_keypair)
+lib.crypto_sign = wrap_nacl_function(lib.crypto_sign)
+lib.crypto_sign_open = wrap_nacl_function(lib.crypto_sign_open)
 
 lib.crypto_hash = wrap_nacl_function(lib.crypto_hash)
 lib.crypto_hash_sha256 = wrap_nacl_function(lib.crypto_hash_sha256)
