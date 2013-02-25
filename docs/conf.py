@@ -86,6 +86,10 @@ pygments_style = 'sphinx'
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3/', None)
+}
+
 
 # -- Options for HTML output ---------------------------------------------------
 
