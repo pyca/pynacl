@@ -16,3 +16,6 @@ env:
   global:
     - LD_LIBRARY_PATH=/usr/local/lib
     - LD_RUN_PATH=/usr/local/lib
+branches:
+  only:
+    - master
