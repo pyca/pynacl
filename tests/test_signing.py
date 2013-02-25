@@ -1,6 +1,7 @@
 from __future__ import division
 
 import binascii
+import codecs
 import os
 
 import pytest
@@ -14,15 +15,15 @@ def ed25519_known_answers():
     answers = []
 
     path = os.path.join(os.path.dirname(__file__), "data", "ed25519")
-    with open(path, "r") as fp:
+    with codecs.open(path, "r", encoding="utf-8") as fp:
         for line in fp:
             x = line.split(":")
             answers.append({
-                "seed": x[0][0:64],
-                "public_key": x[1],
-                "message": x[2],
-                "signed": x[3],
-                "signature": binascii.hexlify(binascii.unhexlify(x[3])[:64]),
+                "seed": x[0][0:64].encode("ascii"),
+                "public_key": x[1].encode("ascii"),
+                "message": x[2].encode("ascii"),
+                "signed": x[3].encode("ascii"),
+                "signature": binascii.hexlify(binascii.unhexlify(x[3].encode("ascii"))[:64]),
             })
 
     return answers
@@ -68,8 +69,8 @@ class TestVerifyKey:
 
     def test_invalid_signed_message(self):
         skey = nacl.signing.SigningKey.generate()
-        smessage = skey.sign("A Test Message!")
-        signature, message = smessage.signature, "A Forged Test Message!"
+        smessage = skey.sign(b"A Test Message!")
+        signature, message = smessage.signature, b"A Forged Test Message!"
 
         # Small sanity check
         assert skey.verify_key.verify(smessage)
