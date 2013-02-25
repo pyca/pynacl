@@ -5,9 +5,10 @@ import urllib2
 from invoke import task, run
 
 
-LIBSODIUM_VERSION = "0.2"
-LIBSODIUM_URL = "http://download.dnscrypt.org/libsodium/releases/libsodium-0.2.tar.gz"
-LIBSODIUM_HASH = b"e99a6b69adc080a5acf6b8a49fdc74b61d6f3579b590e85c93446a8325dde100"
+LIBSODIUM_VERSION = "c6fa04725f394891576c9b9b7e912d45c39843db"
+LIBSODIUM_URL = "https://github.com/jedisct1/libsodium/archive/c6fa04725f394891576c9b9b7e912d45c39843db.tar.gz"
+LIBSODIUM_HASH = b"8a7d61c4cb1cf9c89570b2981a5f5cbdd5f13cb913c8342638f56f59d1aeedd6"
+LIBSODIUM_AUTOGEN = True
 
 
 @task(aliases=["install.sodium"])
@@ -38,6 +39,10 @@ def install_sodium():
         os.chdir(os.path.expanduser(
                     "~/libsodium-{}/".format(LIBSODIUM_VERSION),
                 ))
+
+        if LIBSODIUM_AUTOGEN:
+            run("./autogen.sh", hide="out")
+
         run("./configure --disable-debug --disable-dependency-tracking",
             hide="out",
         )
