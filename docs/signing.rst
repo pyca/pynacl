@@ -15,7 +15,7 @@ use it to validate that your messages are actually authentic.
 Example
 -------
 
-Signers Perspective (:class:`~nacl.signing.SigningKey`)
+Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
 .. code:: python
 
