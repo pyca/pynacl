@@ -27,7 +27,7 @@ def test_sha256_hex(inp, expected):
     )
 ])
 def test_sha256_binary(inp, expected):
-    assert nacl.hash.sha256(inp, binary=True) == expected
+    assert nacl.hash.sha256(inp, encoding="raw") == expected
 
 
 @pytest.mark.parametrize(("inp", "expected"), [
@@ -55,4 +55,4 @@ def test_sha512_hex(inp, expected):
     )
 ])
 def test_sha512_binary(inp, expected):
-    assert nacl.hash.sha512(inp, binary=True) == expected
+    assert nacl.hash.sha512(inp, encoding="raw") == expected

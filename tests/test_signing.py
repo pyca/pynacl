@@ -45,12 +45,12 @@ class TestSigningKey:
                 for x in ed25519_known_answers()]
         )
     def test_message_signing(self, seed, message, signature, expected):
-        signing_key = nacl.signing.SigningKey(binascii.unhexlify(seed))
-        signed = signing_key.sign(binascii.unhexlify(message))
+        signing_key = nacl.signing.SigningKey(seed, encoding="hex")
+        signed = signing_key.sign(binascii.unhexlify(message), encoding="hex")
 
-        assert binascii.hexlify(signed) == expected
-        assert binascii.hexlify(signed.message) == message
-        assert binascii.hexlify(signed.signature) == signature
+        assert signed == expected
+        assert signed.message == message
+        assert signed.signature == signature
 
 
 class TestVerifyKey:
@@ -59,13 +59,10 @@ class TestVerifyKey:
         [(x["public_key"], x["signed"], x["message"], x["signature"]) for x in ed25519_known_answers()]
     )
     def test_valid_signed_message(self, public_key, signed, message, signature):
-        key = nacl.signing.VerifyKey(binascii.unhexlify(public_key))
-        signedb = binascii.unhexlify(signed)
-        messageb = binascii.unhexlify(message)
-        signatureb = binascii.unhexlify(signature)
+        key = nacl.signing.VerifyKey(public_key, encoding="hex")
 
-        assert binascii.hexlify(key.verify(signedb)) == message
-        assert binascii.hexlify(key.verify(messageb, signatureb)) == message
+        assert binascii.hexlify(key.verify(signed, encoding="hex")) == message
+        assert binascii.hexlify(key.verify(message, signature, encoding="hex")) == message
 
     def test_invalid_signed_message(self):
         skey = nacl.signing.SigningKey.generate()
