@@ -5,10 +5,10 @@ import urllib2
 from invoke import task, run
 
 
-LIBSODIUM_VERSION = "c6fa04725f394891576c9b9b7e912d45c39843db"
-LIBSODIUM_URL = "https://github.com/jedisct1/libsodium/archive/c6fa04725f394891576c9b9b7e912d45c39843db.tar.gz"
-LIBSODIUM_HASH = b"8a7d61c4cb1cf9c89570b2981a5f5cbdd5f13cb913c8342638f56f59d1aeedd6"
-LIBSODIUM_AUTOGEN = True
+LIBSODIUM_VERSION = "0.3"
+LIBSODIUM_URL = "http://download.dnscrypt.org/libsodium/releases/libsodium-0.3.tar.gz"
+LIBSODIUM_HASH = b"908a26f84bedb432305c81ec6773aa95b8e724ba2ece6234840685a74e033750"
+LIBSODIUM_AUTOGEN = False
 
 
 @task(aliases=["install.sodium"])
