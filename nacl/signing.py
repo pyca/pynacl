@@ -3,7 +3,7 @@ from __future__ import division
 
 from . import six
 
-from . import nacl
+from . import nacl, encoding
 from .exceptions import CryptoError
 from .random import random
 
@@ -19,37 +19,51 @@ class SignedMessage(six.binary_type):
     A bytes subclass that holds a messaged that has been signed by a :class:`SigningKey`.
     """
 
+    @classmethod
+    def _from_parts(cls, signature, message, combined):
+        obj = cls(combined)
+        obj._signature = signature
+        obj._message = message
+        return obj
+
     @property
     def signature(self):
         """
         The signature contained within the :class:`SignedMessage`.
         """
-        return self[:nacl.lib.crypto_sign_BYTES]
+        return self._signature
 
     @property
     def message(self):
         """
         The message contained within the :class:`SignedMessage`.
         """
-        return self[nacl.lib.crypto_sign_BYTES:]
+        return self._message
 
 
-class VerifyKey(object):
+class VerifyKey(encoding.Encodable, six.StringFixer, object):
     """
     The public key counterpart to an Ed25519 SigningKey for producing digital
     signatures.
 
     :param key: [:class:`bytes`] Serialized Ed25519 public key
+    :param encoder: A class that is able to decode the `key`
     """
 
-    def __init__(self, key):
+    def __init__(self, key, encoder=encoding.RawEncoder):
+        # Decode the key
+        key = encoder.decode(key)
+
         if len(key) != nacl.lib.crypto_sign_PUBLICKEYBYTES:
             raise ValueError("The key must be exactly %s bytes long" %
                                 nacl.lib.crypto_sign_PUBLICKEYBYTES)
 
         self._key = key
 
-    def verify(self, smessage, signature=None):
+    def __bytes__(self):
+        return self._key
+
+    def verify(self, smessage, signature=None, encoder=encoding.RawEncoder):
         """
         Verifies the signature of a signed message, returning the message
         if it has not been tampered with else raising
@@ -59,12 +73,17 @@ class VerifyKey(object):
             signature and message concated together.
         :param signature: [:class:`bytes`] If an unsigned message is given for
             smessage then the detached signature must be provded.
+        :param encoder: A class that is able to decode the secret message and
+            signature.
         :rtype: :class:`bytes`
         """
         if signature is not None:
             # If we were given the message and signature separately, combine
             #   them.
             smessage = signature + smessage
+
+        # Decode the signed message
+        smessage = encoder.decode(smessage)
 
         message = nacl.ffi.new("unsigned char[]", len(smessage))
         message_len = nacl.ffi.new("unsigned long long *")
@@ -75,7 +94,7 @@ class VerifyKey(object):
         return nacl.ffi.buffer(message, message_len[0])[:]
 
 
-class SigningKey(object):
+class SigningKey(encoding.Encodable, six.StringFixer, object):
     """
     Private key for producing digital signatures using the Ed25519 algorithm.
 
@@ -88,12 +107,16 @@ class SigningKey(object):
         masquerade as you.
 
     :param seed: [:class:`bytes`] Random 32-byte value (i.e. private key)
+    :param encoder: A class that is able to decode the seed
 
     :ivar: verify_key: [:class:`~nacl.signing.VerifyKey`] The verify
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed):
+    def __init__(self, seed, encoder=encoding.RawEncoder):
+        # Decode the seed
+        seed = encoder.decode(seed)
+
         # Verify that our seed is the proper size
         seed_size = nacl.lib.crypto_sign_SECRETKEYBYTES // 2
         if len(seed) != seed_size:
@@ -113,6 +136,9 @@ class SigningKey(object):
         # Public values
         self.verify_key = VerifyKey(nacl.ffi.buffer(pk, nacl.lib.crypto_sign_PUBLICKEYBYTES)[:])
 
+    def __bytes__(self):
+        return self._seed
+
     @classmethod
     def generate(cls):
         """
@@ -120,13 +146,16 @@ class SigningKey(object):
 
         :rtype: :class:`~nacl.signing.SigningKey`
         """
-        return cls(random(nacl.lib.crypto_sign_SECRETKEYBYTES // 2))
+        return cls(random(nacl.lib.crypto_sign_SECRETKEYBYTES // 2),
+                    encoder=encoding.RawEncoder,
+                )
 
-    def sign(self, message):
+    def sign(self, message, encoder=encoding.RawEncoder):
         """
         Sign a message using this key.
 
         :param message: [:class:`bytes`] The data to be signed.
+        :param encoder: A class that is used to encode the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
         sm = nacl.ffi.new("unsigned char[]", len(message) + nacl.lib.crypto_sign_BYTES)
@@ -135,4 +164,10 @@ class SigningKey(object):
         if not nacl.lib.crypto_sign(sm, smlen, message, len(message), self._signing_key):
             raise CryptoError("Failed to sign the message")
 
-        return SignedMessage(nacl.ffi.buffer(sm, smlen[0])[:])
+        raw_signed = nacl.ffi.buffer(sm, smlen[0])[:]
+
+        signature = encoder.encode(raw_signed[:nacl.lib.crypto_sign_BYTES])
+        message = encoder.encode(raw_signed[nacl.lib.crypto_sign_BYTES:])
+        signed = encoder.encode(raw_signed)
+
+        return SignedMessage._from_parts(signature, message, signed)

@@ -9,6 +9,15 @@ Contents:
    signing
 
 
+Support Features
+----------------
+
+.. toctree::
+    :maxdepth: 2
+
+    encoding
+
+
 Api Documentation
 -----------------
 
