@@ -4,7 +4,7 @@ from __future__ import division
 from . import six
 
 from . import nacl
-from .encoding import encoder
+from .encoding import encoder, Encodable
 from .exceptions import CryptoError
 from .random import random
 
@@ -42,7 +42,7 @@ class SignedMessage(six.binary_type):
         return self._message
 
 
-class VerifyKey(object):
+class VerifyKey(Encodable, six.StringFixer, object):
     """
     The public key counterpart to an Ed25519 SigningKey for producing digital
     signatures.
@@ -59,6 +59,9 @@ class VerifyKey(object):
                                 nacl.lib.crypto_sign_PUBLICKEYBYTES)
 
         self._key = key
+
+    def __bytes__(self):
+        return self._key
 
     def verify(self, smessage, signature=None, encoding="raw"):
         """
@@ -89,7 +92,7 @@ class VerifyKey(object):
         return nacl.ffi.buffer(message, message_len[0])[:]
 
 
-class SigningKey(object):
+class SigningKey(Encodable, six.StringFixer, object):
     """
     Private key for producing digital signatures using the Ed25519 algorithm.
 
@@ -129,6 +132,9 @@ class SigningKey(object):
 
         # Public values
         self.verify_key = VerifyKey(nacl.ffi.buffer(pk, nacl.lib.crypto_sign_PUBLICKEYBYTES)[:])
+
+    def __bytes__(self):
+        return self._seed
 
     @classmethod
     def generate(cls):

@@ -28,6 +28,13 @@ class Encoder(object):
 encoder = Encoder()
 
 
+class Encodable(object):
+
+    def encode(self, encoding="raw"):
+        data = bytes(self)
+        return encoder[encoding].encode(data)
+
+
 @encoder.register("raw")
 class RawEncoder(object):
 
