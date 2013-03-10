@@ -14,7 +14,16 @@ __all__ = ["ffi", "lib"]
 
 ffi = FFI()
 ffi.cdef(
-    # pylint: disable=C0301
+    # Secret Key Encryption
+    """
+        static const int crypto_secretbox_KEYBYTES;
+        static const int crypto_secretbox_NONCEBYTES;
+        static const int crypto_secretbox_ZEROBYTES;
+        static const int crypto_secretbox_BOXZEROBYTES;
+
+        int crypto_secretbox(unsigned char *c, const unsigned char *m, unsigned long long mlen, const unsigned char *n, const unsigned char *k);
+        int crypto_secretbox_open(unsigned char *m, const unsigned char *c, unsigned long long clen, const unsigned char *n, const unsigned char *k);
+    """
 
     # Public Key Encryption - Signatures
     """
@@ -59,6 +68,8 @@ def wrap_nacl_function(func):
         return ret == 0
     return wrapper
 
+lib.crypto_secretbox = wrap_nacl_function(lib.crypto_secretbox)
+lib.crypto_secretbox_open = wrap_nacl_function(lib.crypto_secretbox_open)
 
 lib.crypto_sign_seed_keypair = wrap_nacl_function(lib.crypto_sign_seed_keypair)
 lib.crypto_sign = wrap_nacl_function(lib.crypto_sign)
