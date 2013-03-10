@@ -390,3 +390,13 @@ _add_doc(reraise, """Reraise an exception.""")
 def with_metaclass(meta, base=object):
     """Create a base class with a metaclass."""
     return meta("NewBase", (base,), {})
+
+
+# PyNaCl additions
+class StringFixer(object):
+
+    def __str__(self):
+        if PY3:
+            return self.__unicode__()
+        else:
+            return self.__bytes__()
