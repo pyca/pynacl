@@ -19,7 +19,7 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
 .. code:: python
 
-    import binascii
+    import nacl.encoding
     import nacl.signing
 
     # Generate a new random signing key
@@ -32,17 +32,16 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     verify_key = signing_key.verify_key
 
     # Serialize the verify key to send it to a third party
-    binascii.hexlify(bytes(verify_key))
+    verify_key_hex = verify_key.encode(encoder=nacl.encoding.HexEncoder)
 
 Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 
 .. code:: python
 
-    import binascii
     import nacl.signing
 
     # Create a VerifyKey object from a hex serialized public key
-    verify_key = nacl.signing.VerifyKey(binascii.unhexlify(verify_key_hex))
+    verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
 
     # Check the validity of a message's signature
     # Will raise nacl.signing.BadSignatureError if the signature check fails

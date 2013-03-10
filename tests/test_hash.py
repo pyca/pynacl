@@ -1,5 +1,7 @@
-import nacl
 import pytest
+
+import nacl
+import nacl.encoding
 
 
 @pytest.mark.parametrize(("inp", "expected"), [
@@ -27,7 +29,7 @@ def test_sha256_hex(inp, expected):
     )
 ])
 def test_sha256_binary(inp, expected):
-    assert nacl.hash.sha256(inp, binary=True) == expected
+    assert nacl.hash.sha256(inp, encoder=nacl.encoding.RawEncoder) == expected
 
 
 @pytest.mark.parametrize(("inp", "expected"), [
@@ -55,4 +57,4 @@ def test_sha512_hex(inp, expected):
     )
 ])
 def test_sha512_binary(inp, expected):
-    assert nacl.hash.sha512(inp, binary=True) == expected
+    assert nacl.hash.sha512(inp, encoder=nacl.encoding.RawEncoder) == expected

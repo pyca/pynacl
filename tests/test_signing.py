@@ -7,6 +7,7 @@ import os
 import pytest
 
 import nacl
+import nacl.encoding
 import nacl.nacl
 
 
@@ -38,19 +39,19 @@ class TestSigningKey:
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
     ])
     def test_initialization_with_seed(self, seed):
-        nacl.signing.SigningKey(binascii.unhexlify(seed))
+        nacl.signing.SigningKey(seed, encoder=nacl.encoding.HexEncoder)
 
     @pytest.mark.parametrize(("seed", "message", "signature", "expected"),
             [(x["seed"], x["message"], x["signature"], x["signed"])
                 for x in ed25519_known_answers()]
         )
     def test_message_signing(self, seed, message, signature, expected):
-        signing_key = nacl.signing.SigningKey(binascii.unhexlify(seed))
-        signed = signing_key.sign(binascii.unhexlify(message))
+        signing_key = nacl.signing.SigningKey(seed, encoder=nacl.encoding.HexEncoder)
+        signed = signing_key.sign(binascii.unhexlify(message), encoder=nacl.encoding.HexEncoder)
 
-        assert binascii.hexlify(signed) == expected
-        assert binascii.hexlify(signed.message) == message
-        assert binascii.hexlify(signed.signature) == signature
+        assert signed == expected
+        assert signed.message == message
+        assert signed.signature == signature
 
 
 class TestVerifyKey:
@@ -59,13 +60,10 @@ class TestVerifyKey:
         [(x["public_key"], x["signed"], x["message"], x["signature"]) for x in ed25519_known_answers()]
     )
     def test_valid_signed_message(self, public_key, signed, message, signature):
-        key = nacl.signing.VerifyKey(binascii.unhexlify(public_key))
-        signedb = binascii.unhexlify(signed)
-        messageb = binascii.unhexlify(message)
-        signatureb = binascii.unhexlify(signature)
+        key = nacl.signing.VerifyKey(public_key, encoder=nacl.encoding.HexEncoder)
 
-        assert binascii.hexlify(key.verify(signedb)) == message
-        assert binascii.hexlify(key.verify(messageb, signatureb)) == message
+        assert binascii.hexlify(key.verify(signed, encoder=nacl.encoding.HexEncoder)) == message
+        assert binascii.hexlify(key.verify(message, signature, encoder=nacl.encoding.HexEncoder)) == message
 
     def test_invalid_signed_message(self):
         skey = nacl.signing.SigningKey.generate()
