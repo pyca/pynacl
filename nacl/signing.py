@@ -47,7 +47,7 @@ class VerifyKey(encoding.Encodable, six.StringFixer, object):
     signatures.
 
     :param key: [:class:`bytes`] Serialized Ed25519 public key
-    :param encoding: [:class:`str`] The encoding that the key is encoded with
+    :param encoder: A class that is able to decode the `key`
     """
 
     def __init__(self, key, encoder=encoding.RawEncoder):
@@ -73,8 +73,8 @@ class VerifyKey(encoding.Encodable, six.StringFixer, object):
             signature and message concated together.
         :param signature: [:class:`bytes`] If an unsigned message is given for
             smessage then the detached signature must be provded.
-        :param encoding: [:class:`str`] The encoding that the secret message
-            and signature is encoded with.
+        :param encoder: A class that is able to decode the secret message and
+            signature.
         :rtype: :class:`bytes`
         """
         if signature is not None:
@@ -107,7 +107,7 @@ class SigningKey(encoding.Encodable, six.StringFixer, object):
         masquerade as you.
 
     :param seed: [:class:`bytes`] Random 32-byte value (i.e. private key)
-    :param encoding: [:class:`str`] The encoding that the seed is encoded with
+    :param encoder: A class that is able to decode the seed
 
     :ivar: verify_key: [:class:`~nacl.signing.VerifyKey`] The verify
         (i.e. public) key that corresponds with this signing key.
@@ -155,8 +155,7 @@ class SigningKey(encoding.Encodable, six.StringFixer, object):
         Sign a message using this key.
 
         :param message: [:class:`bytes`] The data to be signed.
-        :param encoding: [:class:`str`] The encoding to encode the signed
-            message with.
+        :param encoder: A class that is used to encode the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
         sm = nacl.ffi.new("unsigned char[]", len(message) + nacl.lib.crypto_sign_BYTES)
