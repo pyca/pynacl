@@ -8,7 +8,7 @@ __all__ = [
     "__email__", "__license__", "__copyright__",
 ]
 
-__title__ = "pynacl"
+__title__ = "PyNaCl"
 __summary__ = "Python binding to the Networking and Cryptography (NaCl) library"  # nopep8
 __uri__ = "https://github.com/dstufft/pynacl/"
 
