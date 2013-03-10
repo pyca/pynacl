@@ -48,10 +48,10 @@ class SecretBox(encoding.Encodable, six.StringFixer, object):
         ciphertext encoded with the encoder.
 
         .. warning:: It is **VITALLY** important that the nonce is a nonce,
-            i.e. itis a number used only once for any given key. If you fail to
-            do this, you compromise the privacy of the messages encrypted. Give
-            your nonces a different prefix, or have one side use an odd counter
-            and one an even counter. Just make sure they are different.
+            i.e. it is a number used only once for any given key. If you fail
+            to do this, you compromise the privacy of the messages encrypted.
+            Give your nonces a different prefix, or have one side use an odd
+            counter and one an even counter. Just make sure they are different.
 
         :param plaintext: [:class:`bytes`] The plaintext message to encrypt
         :param nonce: [:class:`bytes`] The nonce to use in the encryption
