@@ -136,7 +136,7 @@ Algorithm
 * **Public Keys:** `Curve25519 high-speed elliptic curve cryptography <http://cr.yp.to/ecdh.html>`_
 * **Signatures:** `Ed25519 digital signature system <http://cr.yp.to/ecdh.html>`_
 
-.. image:: images/ed25519.png
+.. image:: _static/ed25519.png
 
 :k: Ed25519 private key (passed into :class:`~nacl.signing.SigningKey`)
 :A: Ed25519 public key derived from k
