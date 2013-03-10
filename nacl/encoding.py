@@ -1,85 +1,63 @@
 import base64
 import binascii
 
-from . import six
+
+class RawEncoder(object):
+
+    @staticmethod
+    def encode(data):
+        return data
+
+    @staticmethod
+    def decode(data):
+        return data
 
 
-class Encoder(object):
+class HexEncoder(object):
 
-    def __init__(self):
-        self._registry = {}
+    @staticmethod
+    def encode(data):
+        return binascii.hexlify(data)
 
-    def __getitem__(self, name):
-        if isinstance(name, six.string_types):
-            return self._registry[name]
-        return name
-
-    def register(self, name, cls=None):
-        if cls is None:
-            def inner(cls):
-                self._registry[name] = cls()
-                return cls
-            return inner
-        else:
-            self._registry[name] = cls()
+    @staticmethod
+    def decode(data):
+        return binascii.unhexlify(data)
 
 
-# Global encoder
-encoder = Encoder()
+class Base16Encoder(object):
+
+    @staticmethod
+    def encode(data):
+        return base64.b16encode(data)
+
+    @staticmethod
+    def decode(data):
+        return base64.b16decode(data)
+
+
+class Base32Encoder(object):
+
+    @staticmethod
+    def encode(data):
+        return base64.b32encode(data)
+
+    @staticmethod
+    def decode(data):
+        return base64.b32decode(data)
+
+
+class Base64Encoder(object):
+
+    @staticmethod
+    def encode(data):
+        return base64.b64encode(data)
+
+    @staticmethod
+    def decode(data):
+        return base64.b64decode(data)
 
 
 class Encodable(object):
 
-    def encode(self, encoding="raw"):
-        data = bytes(self)
-        return encoder[encoding].encode(data)
-
-
-@encoder.register("raw")
-class RawEncoder(object):
-
-    def encode(self, data):
-        return data
-
-    def decode(self, data):
-        return data
-
-
-@encoder.register("hex")
-class HexEncoder(object):
-
-    def encode(self, data):
-        return binascii.hexlify(data)
-
-    def decode(self, data):
-        return binascii.unhexlify(data)
-
-
-@encoder.register("base16")
-class Base16Encoder(object):
-
-    def encode(self, data):
-        return base64.b16encode(data)
-
-    def decode(self, data):
-        return base64.b16decode(data)
-
-
-@encoder.register("base32")
-class Base32Encoder(object):
-
-    def encode(self, data):
-        return base64.b32encode(data)
-
-    def decode(self, data):
-        return base64.b32decode(data)
-
-
-@encoder.register("base64")
-class Base64Encoder(object):
-
-    def encode(self, data):
-        return base64.b64encode(data)
-
-    def decode(self, data):
-        return base64.b64decode(data)
+    def encode(self, encoder=RawEncoder):
+        return encoder.encode(bytes(self))
