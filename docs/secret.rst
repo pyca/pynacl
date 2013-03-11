@@ -56,12 +56,12 @@ decrypt the data, or encrypt new data.
 Nonce
 ~~~~~
 
-The 24 bytes nonce (Number used once) given to :meth:`~nacl.secret.SecretBox.encrypt`
-and :meth:`~nacl.secret.SecretBox.decrypt` must **NEVER** be reused for a
-particular key. Reusing the nonce means an attacker will have enough information
-to recover your secret key and encrypt or decrypt arbitrary messages. A nonce
-is not considered secret and may be freely transmitted or stored in plaintext
-alongside the ciphertext.
+The 24 bytes nonce (`Number used once <https://en.wikipedia.org/wiki/Cryptographic_nonce>`_)
+given to :meth:`~nacl.secret.SecretBox.encrypt` and :meth:`~nacl.secret.SecretBox.decrypt`
+must **NEVER** be reused for a particular key. Reusing the nonce means an
+attacker will have enough information to recover your secret key and encrypt or
+decrypt arbitrary messages. A nonce is not considered secret and may be freely
+transmitted or stored in plaintext alongside the ciphertext.
 
 A nonce does not need to be random, nor does the method of generating them need
 to be secret. A nonce could simply be a counter incremented with each message
