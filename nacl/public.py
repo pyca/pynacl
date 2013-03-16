@@ -110,8 +110,8 @@ class Box(encoding.Encodable, six.StringFixer, object):
     NONCE_SIZE = nacl.lib.crypto_box_NONCEBYTES
 
     def __init__(self, public_key, private_key):
-        self._pk = str(public_key)
-        self._sk = str(private_key)
+        self._pk = public_key._public_key
+        self._sk = private_key._private_key
         self._shared_key = None
 
     def __bytes__(self):
