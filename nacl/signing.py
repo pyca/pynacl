@@ -16,7 +16,8 @@ class BadSignatureError(CryptoError):
 
 class SignedMessage(six.binary_type):
     """
-    A bytes subclass that holds a messaged that has been signed by a :class:`SigningKey`.
+    A bytes subclass that holds a messaged that has been signed by a
+    :class:`SigningKey`.
     """
 
     @classmethod
@@ -99,8 +100,8 @@ class SigningKey(encoding.Encodable, six.StringFixer, object):
     Private key for producing digital signatures using the Ed25519 algorithm.
 
     Signing keys are produced from a 32-byte (256-bit) random seed value. This
-    value can be passed into the :class:`~nacl.signing.SigningKey` as a :func:`bytes`
-    whose length is 32.
+    value can be passed into the :class:`~nacl.signing.SigningKey` as a
+    :func:`bytes` whose length is 32.
 
     .. warning:: This **must** be protected and remain secret. Anyone who knows
         the value of your :class:`~nacl.signing.SigningKey` or it's seed can
