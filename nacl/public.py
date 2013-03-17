@@ -15,16 +15,18 @@ class PublicKey(encoding.Encodable, six.StringFixer, object):
 
     :param public_key: [:class:`bytes`] Encoded Curve25519 public key
     :param encoder: A class that is able to decode the `public_key`
+
+    :cvar SIZE: The size that the public key is required to be
     """
 
-    PUBLICKEY_SIZE = nacl.lib.crypto_box_PUBLICKEYBYTES
+    SIZE = nacl.lib.crypto_box_PUBLICKEYBYTES
 
     def __init__(self, public_key, encoder=encoding.RawEncoder):
         self._public_key = encoder.decode(public_key)
 
-        if len(self._public_key) != self.PUBLICKEY_SIZE:
+        if len(self._public_key) != self.SIZE:
             raise ValueError("The public key must be exactly %s bytes long" %
-                             self.PUBLICKEY_SIZE)
+                             self.SIZE)
 
     def __bytes__(self):
         return self._public_key
@@ -42,22 +44,21 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
     :param private_key: The private key used to decrypt messages
     :param encoder: The encoder class used to decode the given keys
 
-    :cvar PRIVATEKEY_SIZE: The size that the private key is required to be
+    :cvar SIZE: The size that the private key is required to be
     """
 
-    PRIVATEKEY_SIZE = nacl.lib.crypto_box_SECRETKEYBYTES
+    SIZE = nacl.lib.crypto_box_SECRETKEYBYTES
 
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
 
         # Verify that our seed is the proper size
-        skey_size = nacl.lib.crypto_box_SECRETKEYBYTES
-        if len(private_key) != skey_size:
+        if len(private_key) != self.SIZE:
             raise ValueError(
-                "The secret key must be exactly %d bytes long" % (skey_size,))
+                "The secret key must be exactly %d bytes long" % self.SIZE)
 
-        pk = nacl.ffi.new("unsigned char[]", nacl.lib.crypto_box_PUBLICKEYBYTES)
+        pk = nacl.ffi.new("unsigned char[]", PublicKey.SIZE)
 
         if not nacl.lib.crypto_scalarmult_curve25519_base(pk, private_key):
             raise CryptoError("Failed to generate a key pair")
@@ -77,9 +78,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        return cls(random(nacl.lib.crypto_box_SECRETKEYBYTES),
-                    encoder=encoding.RawEncoder,
-                )
+        return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
 
 
 class Box(encoding.Encodable, six.StringFixer, object):
