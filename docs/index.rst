@@ -6,9 +6,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   public
    secret
    signing
-   public
 
 
 Support Features
