@@ -82,7 +82,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
                 )
 
 
-class Box(object):
+class Box(encoding.Encodable, six.StringFixer, object):
     """
     The Box class boxes and unboxes messages between a pair of keys
 
@@ -105,20 +105,33 @@ class Box(object):
     NONCE_SIZE = nacl.lib.crypto_box_NONCEBYTES
 
     def __init__(self, public_key, private_key):
-        self._public_key = public_key
-        self._private_key = private_key
+        if public_key and private_key:
+            _shared_key_size = nacl.lib.crypto_box_BEFORENMBYTES
+            _shared_key = nacl.ffi.new("unsigned char[]", _shared_key_size)
 
-        _shared_key_size = nacl.lib.crypto_box_BEFORENMBYTES
-        _shared_key = nacl.ffi.new("unsigned char[]", _shared_key_size)
+            if not nacl.lib.crypto_box_beforenm(
+                        _shared_key,
+                        public_key.encode(encoder=encoding.RawEncoder),
+                        private_key.encode(encoder=encoding.RawEncoder),
+                    ):
+                raise CryptoError("Failed to derive shared key")
 
-        if not nacl.lib.crypto_box_beforenm(
-                    _shared_key,
-                    self._public_key.encode(encoder=encoding.RawEncoder),
-                    self._private_key.encode(encoder=encoding.RawEncoder),
-                ):
-            raise CryptoError("Failed to derive shared key")
+            self._shared_key = nacl.ffi.buffer(_shared_key, _shared_key_size)[:]
+        else:
+            self._shared_key = None
 
-        self._shared_key = nacl.ffi.buffer(_shared_key, _shared_key_size)[:]
+    def __bytes__(self):
+        return self._shared_key
+
+    @classmethod
+    def decode(cls, encoded, encoder=encoding.RawEncoder):
+        # Create an empty box
+        box = cls(None, None)
+
+        # Assign our decoded value to the shared key of the box
+        box._shared_key = encoder.decode(encoded)
+
+        return box
 
     def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
         """
