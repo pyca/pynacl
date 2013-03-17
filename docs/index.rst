@@ -8,6 +8,7 @@ Contents:
 
    secret
    signing
+   public
 
 
 Support Features

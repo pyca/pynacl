@@ -36,6 +36,21 @@ ffi.cdef(
         int crypto_sign_open(unsigned char *m, unsigned long long *mlen, const unsigned char *sm, unsigned long long smlen, const unsigned char *pk);
     """
 
+    # Public Key Encryption
+    """
+        static const int crypto_box_PUBLICKEYBYTES;
+        static const int crypto_box_SECRETKEYBYTES;
+        static const int crypto_box_BEFORENMBYTES;
+        static const int crypto_box_NONCEBYTES;
+        static const int crypto_box_ZEROBYTES;
+        static const int crypto_box_BOXZEROBYTES;
+
+        int crypto_box_keypair(unsigned char *pk, unsigned char *sk);
+        int crypto_box_afternm(unsigned char *c, const unsigned char *m, unsigned long long mlen, const unsigned char *n, const unsigned char *k);
+        int crypto_box_open_afternm(unsigned char *m, const unsigned char *c, unsigned long long clen, const unsigned char *n, const unsigned char *k);
+        int crypto_box_beforenm(unsigned char *k, const unsigned char *pk, const unsigned char *sk);
+    """
+
     # Hashing
     """
         static const int crypto_hash_BYTES;
@@ -50,6 +65,11 @@ ffi.cdef(
     # Secure Random
     """
         void randombytes(unsigned char * const buf, const unsigned long long buf_len);
+    """
+
+    # Low Level - Scalar Multiplication
+    """
+        int crypto_scalarmult_curve25519_base(unsigned char *q, const unsigned char *n);
     """
 )
 
@@ -75,6 +95,13 @@ lib.crypto_sign_seed_keypair = wrap_nacl_function(lib.crypto_sign_seed_keypair)
 lib.crypto_sign = wrap_nacl_function(lib.crypto_sign)
 lib.crypto_sign_open = wrap_nacl_function(lib.crypto_sign_open)
 
+lib.crypto_box_keypair = wrap_nacl_function(lib.crypto_box_keypair)
+lib.crypto_box_afternm = wrap_nacl_function(lib.crypto_box_afternm)
+lib.crypto_box_open_afternm = wrap_nacl_function(lib.crypto_box_open_afternm)
+lib.crypto_box_beforenm = wrap_nacl_function(lib.crypto_box_beforenm)
+
 lib.crypto_hash = wrap_nacl_function(lib.crypto_hash)
 lib.crypto_hash_sha256 = wrap_nacl_function(lib.crypto_hash_sha256)
 lib.crypto_hash_sha512 = wrap_nacl_function(lib.crypto_hash_sha512)
+
+lib.crypto_scalarmult_curve25519_base = wrap_nacl_function(lib.crypto_scalarmult_curve25519_base)
