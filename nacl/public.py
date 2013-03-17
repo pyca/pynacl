@@ -108,7 +108,17 @@ class Box(object):
         self._public_key = public_key
         self._private_key = private_key
 
-        self._shared_key = None
+        _shared_key_size = nacl.lib.crypto_box_BEFORENMBYTES
+        _shared_key = nacl.ffi.new("unsigned char[]", _shared_key_size)
+
+        if not nacl.lib.crypto_box_beforenm(
+                    _shared_key,
+                    self._public_key.encode(encoder=encoding.RawEncoder),
+                    self._private_key.encode(encoder=encoding.RawEncoder),
+                ):
+            raise CryptoError("Failed to derive shared key")
+
+        self._shared_key = nacl.ffi.buffer(_shared_key, _shared_key_size)[:]
 
     def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
         """
@@ -136,7 +146,7 @@ class Box(object):
                     padded,
                     len(padded),
                     nonce,
-                    self._beforenm()
+                    self._shared_key,
                 ):
             raise CryptoError("Encryption failed")
 
@@ -170,7 +180,7 @@ class Box(object):
                     padded,
                     len(padded),
                     nonce,
-                    self._beforenm()
+                    self._shared_key,
                 ):
             raise CryptoError(
                         "Decryption failed. Ciphertext failed verification")
@@ -179,21 +189,3 @@ class Box(object):
         plaintext = nacl.ffi.buffer(plaintext, len(padded))[box_zeros:]
 
         return plaintext
-
-    def _beforenm(self):
-        if self._shared_key is not None:
-            return self._shared_key
-
-        sharedkey_size = nacl.lib.crypto_box_BEFORENMBYTES
-
-        k = nacl.ffi.new("unsigned char[]", sharedkey_size)
-
-        if not nacl.lib.crypto_box_beforenm(
-                    k,
-                    self._public_key.encode(encoder=encoding.RawEncoder),
-                    self._private_key.encode(encoder=encoding.RawEncoder),
-                ):
-            raise CryptoError("Failed to derive shared key")
-
-        self._shared_key = nacl.ffi.buffer(k, sharedkey_size)[:]
-        return self._shared_key
