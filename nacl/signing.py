@@ -5,7 +5,7 @@ from . import six
 
 from . import nacl, encoding
 from .exceptions import CryptoError
-from .random import random
+from .utils import random
 
 
 class BadSignatureError(CryptoError):

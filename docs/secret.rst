@@ -15,11 +15,11 @@ Example
 
 .. code:: python
 
-    import nacl
     import nacl.secret
+    import nacl.utils
 
     # This must be kept secret, this is the combination to your safe
-    key = nacl.random(nacl.secret.SecretBox.KEY_SIZE)
+    key = nacl.utils.random(nacl.secret.SecretBox.KEY_SIZE)
 
     # This is your safe, you can use it to encrypt or decrypt messages
     box = nacl.secret.SecretBox(key)
@@ -31,7 +31,7 @@ Example
     # This is a nonce, it *MUST* only be used once, but it is not considered
     #   secret and can be transmitted or stored alongside the ciphertext. A
     #   good source of nonce is just 24 random bytes.
-    nonce = nacl.random(nacl.secret.SecretBox.NONCE_SIZE)
+    nonce = nacl.utils.random(nacl.secret.SecretBox.NONCE_SIZE)
 
     # Encrypt our message, it will be exactly 16 bytes longer than the original
     #   message as it stores authentication information alongside it.
@@ -76,11 +76,11 @@ is not enough to simply use a random value and hope that it's not being reused
 
 One good method of generating nonces is for each person to pick a unique prefix,
 for example ``b"p1"`` and ``b"p2"``. When each person generates a nonce they
-prefix it, so instead of ``nacl.random(24)`` you'd do ``b"p1" + nacl.random(22)``.
-This prefix serves as a guarantee that no two messages from different people
-will inadvertently overlap nonces while in transit. They should still record
-every nonce they've personally used and every nonce they've received to prevent
-reuse or replays.
+prefix it, so instead of ``nacl.utils.random(24)`` you'd do
+``b"p1" + nacl.utils.random(22)``. This prefix serves as a guarantee that no
+two messages from different people will inadvertently overlap nonces while in
+transit. They should still record every nonce they've personally used and every
+nonce they've received to prevent reuse or replays.
 
 
 Reference

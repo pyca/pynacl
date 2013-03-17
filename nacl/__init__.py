@@ -1,18 +1,19 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from . import __about__
-from . import hash  # pylint: disable=W0622
-from . import signing
-from .random import random
+__all__ = [
+    "__title__", "__summary__", "__uri__", "__version__", "__author__",
+    "__email__", "__license__", "__copyright__",
+]
 
+__title__ = "PyNaCl"
+__summary__ = "Python binding to the Networking and Cryptography (NaCl) library"
+__uri__ = "https://github.com/dstufft/pynacl/"
 
-__all__ = ["hash", "random"] + __about__.__all__
+__version__ = "0.1dev1"
 
+__author__ = "Donald Stufft"
+__email__ = "donald@stufft.io"
 
-# - Meta Information -
-# This is pretty ugly
-for attr in __about__.__all__:
-    if hasattr(__about__, attr):
-        globals()[attr] = getattr(__about__, attr)
-# - End Meta Information -
+__license__ = "Simplified BSD"
+__copyright__ = "Copyright 2012 Donald Stufft"

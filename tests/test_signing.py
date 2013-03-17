@@ -6,7 +6,7 @@ import os
 
 import pytest
 
-import nacl
+import nacl.signing
 import nacl.encoding
 import nacl.nacl
 
