@@ -32,5 +32,5 @@ Features
 
 * Digital signatures
 * Secret-key encryption
-* Public-key encryption (coming soon)
+* Public-key encryption
 * HMAC (coming soon)
