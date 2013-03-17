@@ -39,7 +39,7 @@ with equal that from (pkbob, skalice).  This is how the system works:
 
 .. code:: python
 
-    import nacl
+    import nacl.utils
     from nacl.public import PrivateKey, Box
 
     # generate the private key which must be kept secret
@@ -65,7 +65,7 @@ with equal that from (pkbob, skalice).  This is how the system works:
     # This is a nonce, it *MUST* only be used once, but it is not considered
     #   secret and can be transmitted or stored alongside the ciphertext. A
     #   good source of nonce is just 24 random bytes.
-    nonce = nacl.random(Box.NONCE_SIZE)
+    nonce = nacl.utils.random(Box.NONCE_SIZE)
 
     # Encrypt our message, it will be exactly 16 bytes longer than the original
     #   message as it stores authentication information alongside it.
