@@ -23,7 +23,7 @@ class PublicKey(encoding.Encodable, six.StringFixer, object):
         self._public_key = encoder.decode(public_key)
 
         if len(self._public_key) != self.PUBLICKEY_SIZE:
-            raise ValueError('The public key must be exactly %s bytes long' %
+            raise ValueError("The public key must be exactly %s bytes long" %
                              self.PUBLICKEY_SIZE)
 
     def __bytes__(self):
@@ -55,7 +55,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
         skey_size = nacl.lib.crypto_box_SECRETKEYBYTES
         if len(private_key) != skey_size:
             raise ValueError(
-                'The secret key must be exactly %d bytes long' % (skey_size,))
+                "The secret key must be exactly %d bytes long" % (skey_size,))
 
         pk = nacl.ffi.new("unsigned char[]", nacl.lib.crypto_box_PUBLICKEYBYTES)
 
@@ -125,7 +125,7 @@ class Box(object):
         :rtype: [:class:`bytes`]
         """
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError('The nonce must be exactly %s bytes long' %
+            raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
         padded = b"\x00" * nacl.lib.crypto_box_ZEROBYTES + plaintext
@@ -157,7 +157,7 @@ class Box(object):
         :rtype: [:class:`bytes`]
         """
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError('The nonce must be exactly %s bytes long' %
+            raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
         ciphertext = encoder.decode(ciphertext)
@@ -173,7 +173,7 @@ class Box(object):
                     self._beforenm()
                 ):
             raise CryptoError(
-                        'Decryption failed. Ciphertext failed verification')
+                        "Decryption failed. Ciphertext failed verification")
 
         box_zeros = nacl.lib.crypto_box_ZEROBYTES
         plaintext = nacl.ffi.buffer(plaintext, len(padded))[box_zeros:]
