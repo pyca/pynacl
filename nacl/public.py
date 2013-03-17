@@ -5,6 +5,7 @@ from . import six
 
 from . import nacl, encoding
 from .exceptions import CryptoError
+from .utils import random
 
 
 class PublicKey(encoding.Encodable, six.StringFixer, object):
@@ -47,12 +48,24 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
     PRIVATEKEY_SIZE = nacl.lib.crypto_box_SECRETKEYBYTES
 
     def __init__(self, private_key, encoder=encoding.RawEncoder):
-        self._private_key = encoder.decode(private_key)
-        self._public_key = None
+        # Decode the secret_key
+        private_key = encoder.decode(private_key)
 
-        if len(self._private_key) != self.PRIVATEKEY_SIZE:
-            raise ValueError('The private key must be exactly %s bytes long' %
-                             self.PRIVATEKEY_SIZE)
+        # Verify that our seed is the proper size
+        skey_size = nacl.lib.crypto_box_SECRETKEYBYTES
+        if len(private_key) != skey_size:
+            raise ValueError(
+                'The secret key must be exactly %d bytes long' % (skey_size,))
+
+        pk = nacl.ffi.new("unsigned char[]", nacl.lib.crypto_box_PUBLICKEYBYTES)
+
+        if not nacl.lib.crypto_scalarmult_curve25519_base(pk, private_key):
+            raise CryptoError("Failed to generate a key pair")
+
+        _pkey = nacl.ffi.buffer(pk, nacl.lib.crypto_box_PUBLICKEYBYTES)[:]
+
+        self._private_key = private_key
+        self.public_key = PublicKey(_pkey)
 
     def __bytes__(self):
         return self._private_key
@@ -64,27 +77,9 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        pk = nacl.ffi.new("unsigned char[]", PublicKey.PUBLICKEY_SIZE)
-        sk = nacl.ffi.new("unsigned char[]", cls.PRIVATEKEY_SIZE)
-
-        public_key = nacl.ffi.buffer(pk, PublicKey.PUBLICKEY_SIZE)[:]
-        private_key = nacl.ffi.buffer(sk, cls.PRIVATEKEY_SIZE)[:]
-
-        if not nacl.lib.crypto_box_keypair(public_key, private_key):
-            raise CryptoError("Failed to generate key pair")
-
-        sk = cls(private_key)
-        sk.public_key = public_key
-
-        return sk
-
-    @property
-    def public_key(self):
-        return self._public_key
-
-    @public_key.setter
-    def public_key(self, value):
-        self._public_key = value
+        return cls(random(nacl.lib.nacl.lib.crypto_box_SECRETKEYBYTES),
+                    encoder=encoding.RawEncoder,
+                )
 
 
 class Box(encoding.Encodable, six.StringFixer, object):

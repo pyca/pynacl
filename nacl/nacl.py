@@ -66,6 +66,11 @@ ffi.cdef(
     """
         void randombytes(unsigned char * const buf, const unsigned long long buf_len);
     """
+
+    # Low Level - Scalar Multiplication
+    """
+        int crypto_scalarmult_curve25519_base(unsigned char *q, const unsigned char *n);
+    """
 )
 
 
@@ -98,3 +103,5 @@ lib.crypto_box_beforenm = wrap_nacl_function(lib.crypto_box_beforenm)
 lib.crypto_hash = wrap_nacl_function(lib.crypto_hash)
 lib.crypto_hash_sha256 = wrap_nacl_function(lib.crypto_hash_sha256)
 lib.crypto_hash_sha512 = wrap_nacl_function(lib.crypto_hash_sha512)
+
+lib.crypto_scalarmult_curve25519_base = wrap_nacl_function(lib.crypto_scalarmult_curve25519_base)
