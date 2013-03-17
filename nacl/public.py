@@ -82,7 +82,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
                 )
 
 
-class Box(encoding.Encodable, six.StringFixer, object):
+class Box(object):
     """
     The Box class boxes and unboxes messages between a pair of keys
 
@@ -105,12 +105,10 @@ class Box(encoding.Encodable, six.StringFixer, object):
     NONCE_SIZE = nacl.lib.crypto_box_NONCEBYTES
 
     def __init__(self, public_key, private_key):
-        self._pk = public_key._public_key
-        self._sk = private_key._private_key
-        self._shared_key = None
+        self._public_key = public_key
+        self._private_key = private_key
 
-    def __bytes__(self):
-        return self._sk
+        self._shared_key = None
 
     def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
         """
@@ -190,7 +188,11 @@ class Box(encoding.Encodable, six.StringFixer, object):
 
         k = nacl.ffi.new("unsigned char[]", sharedkey_size)
 
-        if not nacl.lib.crypto_box_beforenm(k, self._pk, self._sk):
+        if not nacl.lib.crypto_box_beforenm(
+                    k,
+                    self._public_key.encode(encoder=encoding.RawEncoder),
+                    self._private_key.encode(encoder=encoding.RawEncoder),
+                ):
             raise CryptoError("Failed to derive shared key")
 
         self._shared_key = nacl.ffi.buffer(k, sharedkey_size)[:]
