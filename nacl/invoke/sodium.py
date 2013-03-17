@@ -1,3 +1,4 @@
+import binascii
 import hashlib
 import os
 
@@ -20,7 +21,10 @@ def install():
     # Download libsodium and verify it's hash
     resp = urlopen(LIBSODIUM_URL)
     content = resp.read()
-    content_hash = hashlib.sha256(content).hexdigest()
+
+    # Cannot use .hexdigest() here because Python 3 is stupid and returns
+    #   a unciode string when you ask it for a hex encoded digest.
+    content_hash = binascii.hexlify(hashlib.sha256(content).digest())
 
     # Verify our content matches the expected hash
     if content_hash != LIBSODIUM_HASH:
