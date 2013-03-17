@@ -77,7 +77,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        return cls(random(nacl.lib.nacl.lib.crypto_box_SECRETKEYBYTES),
+        return cls(random(nacl.lib.crypto_box_SECRETKEYBYTES),
                     encoder=encoding.RawEncoder,
                 )
 
