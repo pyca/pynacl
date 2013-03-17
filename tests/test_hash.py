@@ -1,6 +1,6 @@
 import pytest
 
-import nacl
+import nacl.hash
 import nacl.encoding
 
 

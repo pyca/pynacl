@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-from setuptools import setup
-from setuptools.command.test import test as TestCommand
 import sys
 
-__about__ = {}
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
-with open("nacl/__about__.py") as fp:
-    exec(fp.read(), None, __about__)
-
+import nacl
 
 try:
     import nacl.nacl
@@ -32,16 +29,16 @@ class PyTest(TestCommand):
 
 
 setup(
-    name=__about__["__title__"],
-    version=__about__["__version__"],
+    name=nacl.__title__,
+    version=nacl.__version__,
 
-    description=__about__["__summary__"],
+    description=nacl.__summary__,
     long_description=open("README.rst").read(),
-    url=__about__["__uri__"],
-    license=__about__["__license__"],
+    url=nacl.__uri__,
+    license=nacl.__license__,
 
-    author=__about__["__author__"],
-    author_email=__about__["__email__"],
+    author=nacl.__author__,
+    author_email=nacl.__email__,
 
     install_requires=[
         "cffi",
@@ -59,5 +56,5 @@ setup(
     ext_modules=ext_modules,
 
     zip_safe=False,
-    cmdclass = {'test': PyTest},
+    cmdclass={"test": PyTest},
 )
