@@ -56,7 +56,7 @@ with equal that from (pkbob, skalice).  This is how the system works:
 
     # Bob wishes to send Alice an encrypted message
     # So Bob must make a Box with his private key and Alice's public key
-    bob_box = Box(pkalice, skbob)
+    bob_box = Box(skbob, pkalice)
 
     # This is our message to send, it must be a bytestring as Box will
     #   treat is as just a binary blob of data.
@@ -72,7 +72,7 @@ with equal that from (pkbob, skalice).  This is how the system works:
     ciphertext = bob_box.encrypt(message, nonce)
 
     # Alice creates a second box with her private key to decrypt the message
-    alice_box = Box(pkbob, skalice)
+    alice_box = Box(skalice, pkbob)
 
     # Decrypt our message, an exception will be raised if the encryption was
     #   tampered with or there was otherwise an error.

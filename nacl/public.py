@@ -93,9 +93,9 @@ class Box(encoding.Encodable, six.StringFixer, object):
     send are repudiable. For non-repudiable messages, sign them after
     encryption.
 
-    :param public_key: :class:`~nacl.public.PublicKey` used to encrypt and
-        decrypt messages
     :param private_key: :class:`~nacl.public.PrivateKey` used to encrypt and
+        decrypt messages
+    :param public_key: :class:`~nacl.public.PublicKey` used to encrypt and
         decrypt messages
 
     :cvar NONCE_SIZE: The size that the nonce is required to be.
@@ -103,8 +103,8 @@ class Box(encoding.Encodable, six.StringFixer, object):
 
     NONCE_SIZE = nacl.lib.crypto_box_NONCEBYTES
 
-    def __init__(self, public_key, private_key):
-        if public_key and private_key:
+    def __init__(self, private_key, public_key):
+        if private_key and public_key:
             _shared_key_size = nacl.lib.crypto_box_BEFORENMBYTES
             _shared_key = nacl.ffi.new("unsigned char[]", _shared_key_size)
 

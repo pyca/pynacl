@@ -37,7 +37,7 @@ def test_box_encryption(skalice, pkalice, skbob, pkbob, nonce, plaintext, cipher
     pkalice = PublicKey(pkalice, encoder=HexEncoder)
     skbob = PrivateKey(skbob, encoder=HexEncoder)
 
-    box = Box(pkalice, skbob)
+    box = Box(skbob, pkalice)
 
     plaintext = binascii.unhexlify(plaintext)
     nonce = binascii.unhexlify(nonce)
@@ -50,7 +50,7 @@ def test_box_decryption(skalice, pkalice, skbob, pkbob, nonce, plaintext, cipher
     pkbob = PublicKey(pkbob, encoder=HexEncoder)
     skalice = PrivateKey(skalice, encoder=HexEncoder)
 
-    box = Box(pkbob, skalice)
+    box = Box(skalice, pkbob)
 
     nonce = binascii.unhexlify(nonce)
     decrypted = binascii.hexlify(
