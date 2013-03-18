@@ -4,8 +4,15 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
-  # - "pypy"  # Travis only has PyPy 1.9, cffi requires 2.0 (Unreleased)
+  - "pypy"  # Travis only has PyPy 1.9, cffi requires 2.0 (Unreleased)
 install:
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then wget -q https://bitbucket.org/pypy/pypy/downloads/pypy-2.0-beta1-linux.tar.bz2; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then tar xf pypy-2.0-beta1-linux.tar.bz2; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then deactivate; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then rm -rf ~/virtualenv/pypy; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then sudo apt-get install python-virtualenv; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then /usr/bin/virtualenv -p pypy-2.0-beta1/bin/pypy ~/virtualenv/pypy; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then source ~/virtualenv/pypy/bin/activate; fi"
   - pip install invoke
   - pip install file://$PWD#egg=pynacl[tests]
   - invoke sodium.install
