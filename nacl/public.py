@@ -9,10 +9,10 @@ from .exceptions import CryptoError
 
 class PublicKey(encoding.Encodable, six.StringFixer, object):
     """
-    The public key counterpart to an Ed25519 :class:`nacl.public.PrivateKey`
-    for encrypting messages.
+    The public key counterpart to a Curve25519
+    :class:`nacl.public.PrivateKey` for encrypting messages.
 
-    :param public_key: [:class:`bytes`] Encoded Ed25519 public key
+    :param public_key: [:class:`bytes`] Encoded Curve25519 public key
     :param encoder: A class that is able to decode the `public_key`
     """
 
@@ -31,7 +31,7 @@ class PublicKey(encoding.Encodable, six.StringFixer, object):
 
 class PrivateKey(encoding.Encodable, six.StringFixer, object):
     """
-    Private key for decrypting messages using the Ed25519 algorithm.
+    Private key for decrypting messages using the Curve25519 algorithm.
 
     .. warning:: This **must** be protected and remain secret. Anyone who
         knows the value of your :class:`~nacl.public.PrivateKey` can decrypt
