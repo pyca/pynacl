@@ -10,7 +10,7 @@ __title__ = "PyNaCl"
 __summary__ = "Python binding to the Networking and Cryptography (NaCl) library"
 __uri__ = "https://github.com/dstufft/pynacl/"
 
-__version__ = "0.1dev1"
+__version__ = "0.1.0"
 
 __author__ = "Donald Stufft"
 __email__ = "donald@stufft.io"
