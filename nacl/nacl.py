@@ -77,12 +77,23 @@ ffi.cdef(
 lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
 
 
+# This works around a bug in PyPy where CFFI exposed functions do not have a
+#   __name__ attribute. See https://bugs.pypy.org/issue1452
+def wraps(wrapped):
+    def inner(func):
+        if hasattr(wrapped, "__name__"):
+            return functools.wraps(wrapped)(func)
+        else:
+            return func
+    return inner
+
+
 # A lot of the functions in nacl return 0 for success and a negative integer
 #   for failure. This is inconvenient in Python as 0 is a falsey value while
 #   negative integers are truthy. This wrapper has them return True/False as
 #   you'd expect in Python
 def wrap_nacl_function(func):
-    @functools.wraps(func)
+    @wraps(func)
     def wrapper(*args, **kwargs):
         ret = func(*args, **kwargs)
         return ret == 0
