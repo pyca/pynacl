@@ -33,13 +33,13 @@ Example
     #   good source of nonce is just 24 random bytes.
     nonce = nacl.utils.random(nacl.secret.SecretBox.NONCE_SIZE)
 
-    # Encrypt our message, it will be exactly 16 bytes longer than the original
-    #   message as it stores authentication information alongside it.
-    ciphertext = box.encrypt(message, nonce)
+    # Encrypt our message, it will be exactly 40 bytes longer than the original
+    #   message as it stores authentication information and nonce alongside it.
+    encrypted = box.encrypt(message, nonce)
 
     # Decrypt our message, an exception will be raised if the encryption was
     #   tampered with or there was otherwise an error.
-    plaintext = box.decrypt(ciphertext, nonce)
+    plaintext = box.decrypt(encrypted)
 
 
 Requirements
@@ -88,6 +88,10 @@ Reference
 
 .. autoclass:: nacl.secret.SecretBox
     :members:
+
+.. autoclass:: nacl.utils.EncryptedMessage
+    :members:
+    :noindex:
 
 
 Algorithm details

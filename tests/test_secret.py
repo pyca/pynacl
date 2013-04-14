@@ -26,11 +26,19 @@ def test_secret_box_creation():
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
+    encrypted = box.encrypt(
+                    binascii.unhexlify(plaintext),
+                    binascii.unhexlify(nonce),
+                    encoder=HexEncoder,
+                )
 
-    plaintext = binascii.unhexlify(plaintext)
-    nonce = binascii.unhexlify(nonce)
+    expected = binascii.hexlify(
+                    binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
+                )
 
-    assert box.encrypt(plaintext, nonce, encoder=HexEncoder) == ciphertext
+    assert encrypted == expected
+    assert encrypted.nonce == nonce
+    assert encrypted.ciphertext == ciphertext
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
@@ -40,5 +48,16 @@ def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     nonce = binascii.unhexlify(nonce)
     decrypted = binascii.hexlify(
                     box.decrypt(ciphertext, nonce, encoder=HexEncoder))
+
+    assert decrypted == plaintext
+
+
+@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
+    box = SecretBox(key, encoder=HexEncoder)
+
+    combined = binascii.hexlify(
+                    binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext))
+    decrypted = binascii.hexlify(box.decrypt(combined, encoder=HexEncoder))
 
     assert decrypted == plaintext
