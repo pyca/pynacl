@@ -5,7 +5,7 @@ from . import six
 
 from . import nacl, encoding
 from .exceptions import CryptoError
-from .utils import random
+from .utils import EncryptedMessage, random
 
 
 class PublicKey(encoding.Encodable, six.StringFixer, object):
@@ -144,7 +144,7 @@ class Box(encoding.Encodable, six.StringFixer, object):
         :param plaintext: [:class:`bytes`] The plaintext message to encrypt
         :param nonce: [:class:`bytes`] The nonce to use in the encryption
         :param encoder: The encoder to use to encode the ciphertext
-        :rtype: [:class:`bytes`]
+        :rtype: [:class:`nacl.utils.EncryptedMessage`]
         """
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError("The nonce must be exactly %s bytes long" %
@@ -165,9 +165,16 @@ class Box(encoding.Encodable, six.StringFixer, object):
         box_zeros = nacl.lib.crypto_box_BOXZEROBYTES
         ciphertext = nacl.ffi.buffer(ciphertext, len(padded))[box_zeros:]
 
-        return encoder.encode(ciphertext)
+        encoded_nonce = encoder.encode(nonce)
+        encoded_ciphertext = encoder.encode(ciphertext)
 
-    def decrypt(self, ciphertext, nonce, encoder=encoding.RawEncoder):
+        return EncryptedMessage._from_parts(
+                    encoded_nonce,
+                    encoded_ciphertext,
+                    encoder.encode(nonce + ciphertext),
+                )
+
+    def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
         """
         Decrypts the ciphertext using the given nonce and returns the
         plaintext message.
@@ -178,11 +185,17 @@ class Box(encoding.Encodable, six.StringFixer, object):
         :param encoder: The encoder used to decode the ciphertext.
         :rtype: [:class:`bytes`]
         """
+        # Decode our ciphertext
+        ciphertext = encoder.decode(ciphertext)
+
+        if nonce is None:
+            # If we were given the nonce and ciphertext combined, split them.
+            nonce = ciphertext[:self.NONCE_SIZE]
+            ciphertext = ciphertext[self.NONCE_SIZE:]
+
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
-
-        ciphertext = encoder.decode(ciphertext)
 
         padded = b"\x00" * nacl.lib.crypto_box_BOXZEROBYTES + ciphertext
         plaintext = nacl.ffi.new("unsigned char[]", len(padded))
