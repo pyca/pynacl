@@ -67,16 +67,16 @@ with equal that from (pkbob, skalice).  This is how the system works:
     #   good source of nonce is just 24 random bytes.
     nonce = nacl.utils.random(Box.NONCE_SIZE)
 
-    # Encrypt our message, it will be exactly 16 bytes longer than the original
-    #   message as it stores authentication information alongside it.
-    ciphertext = bob_box.encrypt(message, nonce)
+    # Encrypt our message, it will be exactly 40 bytes longer than the original
+    #   message as it stores authentication information and nonce alongside it.
+    encrypted = bob_box.encrypt(message, nonce)
 
     # Alice creates a second box with her private key to decrypt the message
     alice_box = Box(skalice, pkbob)
 
     # Decrypt our message, an exception will be raised if the encryption was
     #   tampered with or there was otherwise an error.
-    plaintext = alice_box.decrypt(ciphertext, nonce)
+    plaintext = alice_box.decrypt(encrypted)
 
 
 
@@ -85,7 +85,12 @@ Reference
 
 .. autoclass:: nacl.public.PublicKey
     :members:
+
 .. autoclass:: nacl.public.PrivateKey
     :members:
+
 .. autoclass:: nacl.public.Box
+    :members:
+
+.. autoclass:: nacl.utils.EncryptedMessage
     :members:

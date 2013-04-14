@@ -38,11 +38,19 @@ def test_box_encryption(skalice, pkalice, skbob, pkbob, nonce, plaintext, cipher
     skbob = PrivateKey(skbob, encoder=HexEncoder)
 
     box = Box(skbob, pkalice)
+    encrypted = box.encrypt(
+                    binascii.unhexlify(plaintext),
+                    binascii.unhexlify(nonce),
+                    encoder=HexEncoder,
+                )
 
-    plaintext = binascii.unhexlify(plaintext)
-    nonce = binascii.unhexlify(nonce)
+    expected = binascii.hexlify(
+                    binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
+                )
 
-    assert box.encrypt(plaintext, nonce, encoder=HexEncoder) == ciphertext
+    assert encrypted == expected
+    assert encrypted.nonce == nonce
+    assert encrypted.ciphertext == ciphertext
 
 
 @pytest.mark.parametrize(("skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext", "ciphertext"), VECTORS)
@@ -55,6 +63,20 @@ def test_box_decryption(skalice, pkalice, skbob, pkbob, nonce, plaintext, cipher
     nonce = binascii.unhexlify(nonce)
     decrypted = binascii.hexlify(
                     box.decrypt(ciphertext, nonce, encoder=HexEncoder))
+
+    assert decrypted == plaintext
+
+
+@pytest.mark.parametrize(("skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext", "ciphertext"), VECTORS)
+def test_box_decryption_combined(skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext):
+    pkbob = PublicKey(pkbob, encoder=HexEncoder)
+    skalice = PrivateKey(skalice, encoder=HexEncoder)
+
+    box = Box(skalice, pkbob)
+
+    combined = binascii.hexlify(
+                    binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext))
+    decrypted = binascii.hexlify(box.decrypt(combined, encoder=HexEncoder))
 
     assert decrypted == plaintext
 
