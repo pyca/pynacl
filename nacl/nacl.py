@@ -73,8 +73,17 @@ ffi.cdef(
     """
 )
 
+# we use a locally-compiled copy of libsodium, which we expect to find next
+# to us, here in the source tree
+from os.path import dirname, join, isdir
+prefix = join(dirname(__file__), "libsodium")
+assert isdir(prefix), prefix
 
-lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
+lib = ffi.verify("#include <sodium.h>",
+                 ext_package="nacl",
+                 include_dirs=[join(prefix,"include")],
+                 library_dirs=[join(prefix,"lib")],
+                 libraries=["sodium"])
 
 
 # This works around a bug in PyPy where CFFI exposed functions do not have a
