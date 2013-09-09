@@ -45,10 +45,7 @@ try:
     import nacl.nacl
 except ImportError:
     # installing - there is no cffi yet
-    ext_modules = []
-else:
-    # building bdist - cffi is here!
-    ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
+    pass
 
 
 class PyTest(TestCommand):
@@ -93,9 +90,6 @@ setup(
                  "libsodium/include/*.h",
                  "libsodium/include/sodium/*.h",
                  ]},
-
-    ext_package="nacl",
-    ext_modules=ext_modules,
 
     zip_safe=False,
     cmdclass={"test": PyTest},
