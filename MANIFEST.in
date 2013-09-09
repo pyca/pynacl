@@ -1,0 +1,4 @@
+include libsodium-0.4.2.tar.gz
+include README.rst
+recursive-include tests *.py
+graft tests/data
