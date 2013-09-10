@@ -5,8 +5,15 @@ from __future__ import absolute_import
 from __future__ import division
 
 import functools
+import os.path
 
 from cffi import FFI
+from cffi.verifier import Verifier
+
+try:
+    import sodium
+except ImportError:
+    sodium = None
 
 
 __all__ = ["ffi", "lib"]
@@ -73,8 +80,29 @@ ffi.cdef(
     """
 )
 
+extra_args = {}
+if sodium:
+    extra_args.update(dict(
+        library_dirs=[sodium.LIBRARY_PATH],
+        runtime_library_dirs=[sodium.LIBRARY_PATH],
+        include_dirs=[sodium.INCLUDE_PATH],
+    ))
 
-lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
+ffi.verifier = Verifier(ffi,
+    "#include <sodium.h>",
+
+    # We need to set a tmp directory otherwise when build_ext is run it'll get
+    #   built in nacl/*.so but when ffi.verifier.load_library() is run it'll
+    #   look (and ultimately build again) in nacl/__pycache__/*.so
+    tmpdir=os.path.abspath(os.path.dirname(__file__)),
+
+    # We need to link to the sodium library
+    libraries=["sodium"],
+
+    # Include our extra args, which may include the library paths from the
+    #   sodium distribution
+    **extra_args
+)
 
 
 # This works around a bug in PyPy where CFFI exposed functions do not have a
@@ -99,20 +127,48 @@ def wrap_nacl_function(func):
         return ret == 0
     return wrapper
 
-lib.crypto_secretbox = wrap_nacl_function(lib.crypto_secretbox)
-lib.crypto_secretbox_open = wrap_nacl_function(lib.crypto_secretbox_open)
 
-lib.crypto_sign_seed_keypair = wrap_nacl_function(lib.crypto_sign_seed_keypair)
-lib.crypto_sign = wrap_nacl_function(lib.crypto_sign)
-lib.crypto_sign_open = wrap_nacl_function(lib.crypto_sign_open)
+class Library(object):
 
-lib.crypto_box_keypair = wrap_nacl_function(lib.crypto_box_keypair)
-lib.crypto_box_afternm = wrap_nacl_function(lib.crypto_box_afternm)
-lib.crypto_box_open_afternm = wrap_nacl_function(lib.crypto_box_open_afternm)
-lib.crypto_box_beforenm = wrap_nacl_function(lib.crypto_box_beforenm)
+    wrap = [
+        "crypto_secretbox",
+        "crypto_secretbox_open",
 
-lib.crypto_hash = wrap_nacl_function(lib.crypto_hash)
-lib.crypto_hash_sha256 = wrap_nacl_function(lib.crypto_hash_sha256)
-lib.crypto_hash_sha512 = wrap_nacl_function(lib.crypto_hash_sha512)
+        "crypto_sign_seed_keypair",
+        "crypto_sign",
+        "crypto_sign_open",
 
-lib.crypto_scalarmult_curve25519_base = wrap_nacl_function(lib.crypto_scalarmult_curve25519_base)
+        "crypto_box_keypair",
+        "crypto_box_afternm",
+        "crypto_box_open_afternm",
+        "crypto_box_beforenm",
+
+        "crypto_hash",
+        "crypto_hash_sha256",
+        "crypto_hash_sha512",
+
+        "crypto_scalarmult_curve25519_base",
+    ]
+
+    def __init__(self, ffi):
+        self._ffi = ffi
+        self._initalized = False
+
+    def __getattr__(self, name):
+        if not self._initalized:
+            self._lib = self._ffi.verifier.load_library()
+
+        # redirect attribute access to the underlying lib
+        attr = getattr(self._lib, name)
+
+        # If this is a function that we're wrapping do the actual wrapping
+        if name in self.wrap:
+            attr = wrap_nacl_function(attr)
+
+        # Go ahead and assign the returned value to this class so we don't
+        #   need to do this lookup again
+        setattr(self, name, attr)
+
+        return attr
+
+lib = Library(ffi)
