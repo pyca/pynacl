@@ -45,6 +45,7 @@ setup(
     ],
     extras_require={
         "tests": ["pytest"],
+        "sodium": ["sodium>=0.4.3"],
     },
     tests_require=["pytest"],
 
