@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import sys
 import os.path
+import shlex
+import subprocess
+
+from distutils.command.build_clib import build_clib as _build_clib
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
@@ -21,6 +25,41 @@ else:
     # building bdist - cffi is here!
     ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
     ext_modules[0].include_dirs.append(here("libsodium/src/libsodium/include"))
+
+
+class build_clib(_build_clib):
+
+    def run(self):
+        # Run ./configure
+        subprocess.check_call(
+            "./configure --disable-debug --disable-dependency-tracking",
+            cwd=here("libsodium"),
+            shell=True,
+        )
+
+        # Parse the Makefile to determine what macros to define
+        with open(here("libsodium/Makefile")) as makefile:
+            for line in makefile:
+                if line.startswith("DEFS"):
+                    defines = [
+                        tuple(shlex.split(i)[0][2:].split("=", 1))
+                        for i in shlex.split(line)
+                        if i.startswith("-D")
+                    ]
+
+        # Configure libsodium using the Makefile defines
+        libraries = []
+        for libname, build_info in self.libraries:
+            if libname == "sodium":
+                # Store the define macros inside the build info
+                macros = dict(build_info.get("macros", []))
+                macros.update(dict(defines))
+                build_info["macros"] = list(macros.items())
+            libraries.append((libname, build_info))
+        self.libraries = libraries
+
+        # Call our normal run
+        return _build_clib.run(self)
 
 
 class PyTest(TestCommand):
@@ -198,20 +237,38 @@ setup(
                     "sodium/version.c",
 
                     # THIS STUFF IS UNDEFINED?
-                    "crypto_scalarmult/curve25519/scalarmult_curve25519_api.c",
                     "crypto_scalarmult/curve25519/ref/base_curve25519_ref.c",
                     "crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c",
                     # "crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c",
                     # "crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c",
                     "crypto_stream/salsa20/ref/stream_salsa20_ref.c",
                     "crypto_stream/salsa20/ref/xor_salsa20_ref.c",
+
+                    #
+
+                    # 'crypto_auth/try.c',
+                    #'crypto_box/try.c',
+                    'crypto_generichash/blake2/ref/blake2s-ref.c',
+                    #'crypto_hash/try.c',
+                    #'crypto_hashblocks/try.c',
+                    'crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c',
+                    'crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c',
+                    #'crypto_scalarmult/try.c',
+                    #'crypto_secretbox/try.c',
+                    #'crypto_sign/try.c',
+                    'crypto_stream/salsa20/stream_salsa20_api.c',
+                    #'crypto_stream/try.c',
+                    #'crypto_verify/try.c'
                 ]
             ],
         }),
     ],
 
     zip_safe=False,
-    cmdclass={"test": PyTest},
+    cmdclass={
+        "build_clib": build_clib,
+        "test": PyTest,
+    },
 
     classifiers=[
         "Programming Language :: Python :: Implementation :: CPython",
