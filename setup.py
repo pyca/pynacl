@@ -56,10 +56,24 @@ class build_clib(_build_clib):
                 macros.update(dict(defines))
                 build_info["macros"] = list(macros.items())
 
+                sources = build_info["sources"]
+
+                # Dynamically modify the implementation based on if we have
+                #   TIMODE or not
+                if "HAVE_TI_MODE" in macros:
+                    sources.extend([
+                        "crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c",
+                        "crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c",
+                    ])
+                else:
+                    sources.extend([
+                        "crypto_scalarmult/curve25519/ref/base_curve25519_ref.c",
+                        "crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c",
+                    ])
+
                 # Expand out all of the sources to their full path
                 sources = [
-                    here("libsodium/src/libsodium", s)
-                    for s in build_info["sources"]
+                    here("libsodium/src/libsodium", s) for s in sources
                 ]
 
                 build_info["sources"] = sources
@@ -246,10 +260,6 @@ setup(
                 "sodium/version.c",
 
                 # THIS STUFF IS UNDEFINED?
-                # "crypto_scalarmult/curve25519/ref/base_curve25519_ref.c",
-                # "crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c",
-                # # "crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c",
-                # # "crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c",
                 "crypto_stream/salsa20/ref/stream_salsa20_ref.c",
                 "crypto_stream/salsa20/ref/xor_salsa20_ref.c",
 
