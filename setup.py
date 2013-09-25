@@ -46,7 +46,7 @@ class build_clib(_build_clib):
             sourcefile.extractall(tmpdir)
 
             # Copy our installed directory into the build location
-            shutil.rmtree(here("build/sodium"))
+            shutil.rmtree(here("build/sodium"), ignore_errors=True)
             shutil.copytree(
                 os.path.join(tmpdir, "libsodium-%s" % SODIUM_VERSION),
                 here("build/sodium")
