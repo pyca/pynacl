@@ -2,7 +2,10 @@
 import sys
 import os.path
 import shlex
+import shutil
 import subprocess
+import tarfile
+import tempfile
 
 from distutils.command.build_clib import build_clib as _build_clib
 
@@ -10,6 +13,9 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 import nacl
+
+
+SODIUM_VERSION = "0.4.3"
 
 
 def here(*paths):
@@ -24,21 +30,40 @@ except ImportError:
 else:
     # building bdist - cffi is here!
     ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
-    ext_modules[0].include_dirs.append(here("libsodium/src/libsodium/include"))
+    ext_modules[0].include_dirs.append(here("build/sodium/src/libsodium/include"))
 
 
 class build_clib(_build_clib):
 
     def run(self):
+        # Unpack the Libsodium Tarball
+        sourcefile = tarfile.open(
+            here("libsodium-%s.tar.gz" % SODIUM_VERSION),
+        )
+
+        tmpdir = tempfile.mkdtemp()
+        try:
+            sourcefile.extractall(tmpdir)
+
+            # Copy our installed directory into the build location
+            shutil.rmtree(here("build/sodium"))
+            shutil.copytree(
+                os.path.join(tmpdir, "libsodium-%s" % SODIUM_VERSION),
+                here("build/sodium")
+            )
+        finally:
+            shutil.rmtree(tmpdir, ignore_errors=True)
+            sourcefile.close()
+
         # Run ./configure
         subprocess.check_call(
             "./configure --disable-debug --disable-dependency-tracking",
-            cwd=here("libsodium"),
+            cwd=here("build/sodium"),
             shell=True,
         )
 
         # Parse the Makefile to determine what macros to define
-        with open(here("libsodium/Makefile")) as makefile:
+        with open(here("build/sodium/Makefile")) as makefile:
             for line in makefile:
                 if line.startswith("DEFS"):
                     defines = [
@@ -89,7 +114,7 @@ class build_clib(_build_clib):
 
                 # Expand out all of the sources to their full path
                 sources = [
-                    here("libsodium/src/libsodium", s) for s in sources
+                    here("build/sodium/src/libsodium", s) for s in sources
                 ]
 
                 build_info["sources"] = sources
@@ -153,7 +178,7 @@ setup(
     libraries=[
         ("sodium", {
             "include_dirs": [
-                here("libsodium/src/libsodium/include/sodium"),
+                here("build/sodium/src/libsodium/include/sodium"),
             ],
             "sources": [
                 "crypto_auth/crypto_auth.c",
