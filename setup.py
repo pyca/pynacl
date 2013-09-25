@@ -11,7 +11,6 @@ import tempfile
 from distutils.command.build_clib import build_clib as _build_clib
 
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
 
 import nacl
 
@@ -38,9 +37,6 @@ def which(name, flags=os.X_OK):  # Taken from twisted
             if os.access(pext, flags):
                 result.append(pext)
     return result
-
-
-
 
 try:
     import nacl.nacl
@@ -170,18 +166,6 @@ class build_clib(_build_clib):
                 self.compiler._compile = _compile
 
         return _build_clib.build_libraries(self, libraries)
-
-
-class PyTest(TestCommand):
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
 
 
 setup(
@@ -351,7 +335,6 @@ setup(
     zip_safe=False,
     cmdclass={
         "build_clib": build_clib,
-        "test": PyTest,
     },
 
     classifiers=[
