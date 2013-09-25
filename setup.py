@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 import os.path
 import shlex
 import shutil
@@ -20,6 +21,25 @@ SODIUM_VERSION = "0.4.3"
 
 def here(*paths):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
+
+
+def which(name, flags=os.X_OK):  # Taken from twisted
+    result = []
+    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
+    path = os.environ.get('PATH', None)
+    if path is None:
+        return []
+    for p in os.environ.get('PATH', '').split(os.pathsep):
+        p = os.path.join(p, name)
+        if os.access(p, flags):
+            result.append(p)
+        for e in exts:
+            pext = p + e
+            if os.access(pext, flags):
+                result.append(pext)
+    return result
+
+
 
 
 try:
@@ -131,6 +151,23 @@ class build_clib(_build_clib):
         #   the .S extension
         if self._include_asm and not ".S" in self.compiler.src_extensions:
             self.compiler.src_extensions.append(".S")
+
+        # If we have a unix compiler see if it's gcc so we can enable certain
+        #   flags for it.
+        if self.compiler.compiler_type == "unix":
+            cc = which(self.compiler.executables["compiler"][0])[0]
+            cc = os.path.realpath(cc)
+
+            if "gcc" in os.path.basename(cc):
+                real_compile = self.compiler._compile
+
+                def _compile(obj, src, ext, cc_args, extra_postargs, pp_opts):
+                    if "-std=c99" not in cc_args:
+                        cc_args += ["-std=c99"]
+                    return real_compile(
+                        obj, src, ext, cc_args, extra_postargs, pp_opts)
+
+                self.compiler._compile = _compile
 
         return _build_clib.build_libraries(self, libraries)
 
