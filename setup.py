@@ -190,7 +190,6 @@ setup(
 
     packages=[
         "nacl",
-        "nacl.invoke",
     ],
 
     ext_package="nacl",
