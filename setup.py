@@ -71,6 +71,22 @@ class build_clib(_build_clib):
                         "crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c",
                     ])
 
+                # Dynamically modify the implementation based on if we have
+                #   AMD64 ASM or not.
+                if "HAVE_AMD64_ASM" in macros:
+                    sources.extend([
+                        "crypto_stream/salsa20/amd64_xmm6/stream_salsa20_amd64_xmm6.S",
+                    ])
+
+                    self._include_asm = True
+                else:
+                    sources.extend([
+                        "crypto_stream/salsa20/ref/stream_salsa20_ref.c",
+                        "crypto_stream/salsa20/ref/xor_salsa20_ref.c",
+                    ])
+
+                    self._include_asm = False
+
                 # Expand out all of the sources to their full path
                 sources = [
                     here("libsodium/src/libsodium", s) for s in sources
@@ -84,6 +100,14 @@ class build_clib(_build_clib):
 
         # Call our normal run
         return _build_clib.run(self)
+
+    def build_libraries(self, libraries):
+        # This is a convenient place to modify the compiler so that we can add
+        #   the .S extension
+        if self._include_asm and not ".S" in self.compiler.src_extensions:
+            self.compiler.src_extensions.append(".S")
+
+        return _build_clib.build_libraries(self, libraries)
 
 
 class PyTest(TestCommand):
@@ -258,12 +282,6 @@ setup(
                 "sodium/core.c",
                 "sodium/utils.c",
                 "sodium/version.c",
-
-                # THIS STUFF IS UNDEFINED?
-                "crypto_stream/salsa20/ref/stream_salsa20_ref.c",
-                "crypto_stream/salsa20/ref/xor_salsa20_ref.c",
-
-                #
 
                 # 'crypto_auth/try.c',
                 # #'crypto_box/try.c',
