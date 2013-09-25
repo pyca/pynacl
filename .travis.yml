@@ -1,20 +1,22 @@
 language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  # - "pypy"  # Travis only has PyPy 1.9, cffi requires 2.0 (Unreleased)
-install:
-  - pip install invoke
-  - pip install file://$PWD#egg=pynacl[tests]
-  - invoke sodium.install
-script:
-  - invoke tests
+python: 2.7
 env:
-  global:
-    - LD_LIBRARY_PATH=/usr/local/lib
-    - LD_RUN_PATH=/usr/local/lib
-branches:
-  only:
-    - master
+  - TOX_ENV=py26
+  - TOX_ENV=py27
+  - TOX_ENV=py32
+  - TOX_ENV=py33
+  - TOX_ENV=pypy
+
+install:
+  - "[[ ${TOX_ENV} == pypy ]] && sudo add-apt-repository -y ppa:pypy/ppa || true"
+  - "[[ ${TOX_ENV} == pypy ]] && sudo apt-get -y update && sudo apt-get -y install pypy || true"
+  # This is required because we need to get rid of the Travis installed PyPy
+  # or it'll take precedence over the PPA installed one.
+  - "[[ ${TOX_ENV} == pypy ]] && sudo rm -rf /usr/local/pypy/bin || true"
+  - pip install tox coveralls
+
+script:
+  - tox -e $TOX_ENV
+
+after_success:
+  - coveralls
