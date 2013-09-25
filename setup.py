@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+import glob
 import os
 import os.path
 import shlex
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 
@@ -36,6 +38,11 @@ def which(name, flags=os.X_OK):  # Taken from twisted
             if os.access(pext, flags):
                 result.append(pext)
     return result
+
+
+# This hack exists so that we can import nacl here
+sys.path += glob.glob("*.egg")
+
 
 try:
     import nacl.nacl
@@ -179,6 +186,9 @@ setup(
     author=nacl.__author__,
     author_email=nacl.__email__,
 
+    setup_requires=[
+        "cffi",
+    ],
     install_requires=[
         "cffi",
     ],
