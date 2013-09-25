@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import os
 import os.path
 import shlex
