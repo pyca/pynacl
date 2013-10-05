@@ -76,8 +76,6 @@ ffi.cdef(
 )
 
 
-#lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
-
 ffi.verifier = Verifier(ffi,
     "#include <sodium.h>",
 
