@@ -7,11 +7,22 @@ from __future__ import division
 import functools
 import os.path
 
+from distutils.sysconfig import get_config_vars
+
+import cffi.verifier
+
 from cffi import FFI
-from cffi.verifier import Verifier
 
 
 __all__ = ["ffi", "lib"]
+
+
+# Monkeypatch cffi.verifier._get_so_suffix to return the same as distutils
+# See: https://bitbucket.org/cffi/cffi/issue/110/
+def _get_so_suffix():
+    return get_config_vars().get("EXT_SUFFIX", ".so")
+
+cffi.verifier._get_so_suffix = _get_so_suffix
 
 
 ffi = FFI()
@@ -76,7 +87,7 @@ ffi.cdef(
 )
 
 
-ffi.verifier = Verifier(ffi,
+ffi.verifier = cffi.verifier.Verifier(ffi,
     "#include <sodium.h>",
 
     # We need to link to the sodium library
