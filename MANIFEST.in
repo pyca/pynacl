@@ -1,9 +1,38 @@
-include *.gz
 include tox.ini
 include LICENSE
+
+# libsodium files
+include src/libsodium/AUTHORS
+include src/libsodium/ChangeLog
+include src/libsodium/LICENSE
+include src/libsodium/README
+include src/libsodium/THANKS
+include src/libsodium/compile
+include src/libsodium/configure
+include src/libsodium/depcomp
+include src/libsodium/install-sh
+include src/libsodium/missing
+include src/libsodium/test-driver
+recursive-include src *.S
+recursive-include src *.ac
+recursive-include src *.am
+recursive-include src *.c
+recursive-include src *.exp
+recursive-include src *.guess
+recursive-include src *.h
+recursive-include src *.in
+recursive-include src *.m4
+recursive-include src *.markdown
+recursive-include src *.sh
+recursive-include src *.sub
+
+# test files
 recursive-include docs *.png
 recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
 recursive-include tests *.py
 recursive-include tests/data *
+
+# Remove CFFI files
+recursive-exclude nacl _cffi_*.c

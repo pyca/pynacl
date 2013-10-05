@@ -29,3 +29,10 @@ pip-log.txt
 
 # Generated cffi files
 nacl/_cffi_*.c
+
+# Generate libsodium files
+src/libsodium/**/Makefile
+src/libsodium/config.log
+src/libsodium/config.status
+src/libsodium/libsodium.pc
+src/libsodium/libtool

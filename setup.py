@@ -1,13 +1,11 @@
 #!/usr/bin/env python
+import functools
 import glob
 import os
 import os.path
 import shlex
-import shutil
 import subprocess
 import sys
-import tarfile
-import tempfile
 
 from distutils.command.build_clib import build_clib as _build_clib
 
@@ -21,6 +19,8 @@ SODIUM_VERSION = "0.4.3"
 
 def here(*paths):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
+
+sodium = functools.partial(here, "src/libsodium/src/libsodium")
 
 
 def which(name, flags=os.X_OK):  # Taken from twisted
@@ -52,40 +52,21 @@ except ImportError:
 else:
     # building bdist - cffi is here!
     ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
-    ext_modules[0].include_dirs.append(here("build/sodium/src/libsodium/include"))
+    ext_modules[0].include_dirs.append(sodium("include"))
 
 
 class build_clib(_build_clib):
 
     def run(self):
-        # Unpack the Libsodium Tarball
-        sourcefile = tarfile.open(
-            here("libsodium-%s.tar.gz" % SODIUM_VERSION),
-        )
-
-        tmpdir = tempfile.mkdtemp()
-        try:
-            sourcefile.extractall(tmpdir)
-
-            # Copy our installed directory into the build location
-            shutil.rmtree(here("build/sodium"), ignore_errors=True)
-            shutil.copytree(
-                os.path.join(tmpdir, "libsodium-%s" % SODIUM_VERSION),
-                here("build/sodium")
-            )
-        finally:
-            shutil.rmtree(tmpdir, ignore_errors=True)
-            sourcefile.close()
-
         # Run ./configure
         subprocess.check_call(
             "./configure --disable-debug --disable-dependency-tracking",
-            cwd=here("build/sodium"),
+            cwd=here("src/libsodium"),
             shell=True,
         )
 
         # Parse the Makefile to determine what macros to define
-        with open(here("build/sodium/Makefile")) as makefile:
+        with open(here("src/libsodium/Makefile")) as makefile:
             for line in makefile:
                 if line.startswith("DEFS"):
                     defines = [
@@ -109,35 +90,30 @@ class build_clib(_build_clib):
                 #   TIMODE or not
                 if "HAVE_TI_MODE" in macros:
                     sources.extend([
-                        "crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c",
-                        "crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c",
+                        sodium("crypto_scalarmult/curve25519/donna_c64/base_curve25519_donna_c64.c"),
+                        sodium("crypto_scalarmult/curve25519/donna_c64/smult_curve25519_donna_c64.c"),
                     ])
                 else:
                     sources.extend([
-                        "crypto_scalarmult/curve25519/ref/base_curve25519_ref.c",
-                        "crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c",
+                        sodium("crypto_scalarmult/curve25519/ref/base_curve25519_ref.c"),
+                        sodium("crypto_scalarmult/curve25519/ref/smult_curve25519_ref.c"),
                     ])
 
                 # Dynamically modify the implementation based on if we have
                 #   AMD64 ASM or not.
                 if "HAVE_AMD64_ASM" in macros:
                     sources.extend([
-                        "crypto_stream/salsa20/amd64_xmm6/stream_salsa20_amd64_xmm6.S",
+                        sodium("crypto_stream/salsa20/amd64_xmm6/stream_salsa20_amd64_xmm6.S"),
                     ])
 
                     self._include_asm = True
                 else:
                     sources.extend([
-                        "crypto_stream/salsa20/ref/stream_salsa20_ref.c",
-                        "crypto_stream/salsa20/ref/xor_salsa20_ref.c",
+                        sodium("crypto_stream/salsa20/ref/stream_salsa20_ref.c"),
+                        sodium("crypto_stream/salsa20/ref/xor_salsa20_ref.c"),
                     ])
 
                     self._include_asm = False
-
-                # Expand out all of the sources to their full path
-                sources = [
-                    here("build/sodium/src/libsodium", s) for s in sources
-                ]
 
                 build_info["sources"] = sources
 
@@ -207,9 +183,9 @@ setup(
     libraries=[
         ("sodium", {
             "include_dirs": [
-                here("build/sodium/src/libsodium/include/sodium"),
+                sodium("include/sodium"),
             ],
-            "sources": [
+            "sources": map(sodium, [
                 "crypto_auth/crypto_auth.c",
                 "crypto_auth/hmacsha256/auth_hmacsha256_api.c",
                 "crypto_auth/hmacsha256/ref/hmac_hmacsha256.c",
@@ -336,7 +312,7 @@ setup(
                 "sodium/core.c",
                 "sodium/utils.c",
                 "sodium/version.c",
-            ],
+            ]),
         }),
     ],
 
