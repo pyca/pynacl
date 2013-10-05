@@ -74,7 +74,7 @@ ffi.cdef(
 )
 
 
-lib = ffi.verify("#include <sodium.h>", libraries=["sodium"])
+lib = ffi.verify("#include <sodium.h>", libraries=["sodium"], ext_package='nacl')
 
 
 # This works around a bug in PyPy where CFFI exposed functions do not have a
