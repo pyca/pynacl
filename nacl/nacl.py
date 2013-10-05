@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 import functools
+import platform
 
 from distutils.sysconfig import get_config_vars
 
@@ -21,7 +22,8 @@ __all__ = ["ffi", "lib"]
 def _get_so_suffix():
     return get_config_vars().get("EXT_SUFFIX", ".so")
 
-cffi.verifier._get_so_suffix = _get_so_suffix
+if not platform.python_implementation().lower() == "pypy":
+    cffi.verifier._get_so_suffix = _get_so_suffix
 
 
 ffi = FFI()
