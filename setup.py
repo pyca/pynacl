@@ -11,16 +11,20 @@ from distutils.command.build_clib import build_clib as _build_clib
 
 from setuptools import setup
 
-import nacl
-
-
-SODIUM_VERSION = "0.4.3"
-
 
 def here(*paths):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
 
 sodium = functools.partial(here, "src/libsodium/src/libsodium")
+
+
+sys.path.append(here("src"))
+
+
+import nacl
+
+
+SODIUM_VERSION = "0.4.3"
 
 
 def which(name, flags=os.X_OK):  # Taken from twisted
@@ -173,6 +177,7 @@ setup(
     },
     tests_require=["pytest"],
 
+    package_dir={"": "src"},
     packages=[
         "nacl",
     ],
