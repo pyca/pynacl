@@ -148,12 +148,6 @@ class Library(object):
         self._ffi = ffi
         self._initalized = False
 
-        # This prevents the compile_module() from being called, the module
-        # should have been compiled by setup.py
-        def _compile_module(*args, **kwargs):
-            raise RuntimeError("Cannot compile module during runtime")
-        self._ffi.verifier.compile_module = _compile_module
-
     def __getattr__(self, name):
         if not self._initalized:
             self._lib = self._ffi.verifier.load_library()
