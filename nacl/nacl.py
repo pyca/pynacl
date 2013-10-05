@@ -88,6 +88,9 @@ ffi.verifier = Verifier(ffi,
 
     # We need to link to the sodium library
     libraries=["sodium"],
+
+    # Our ext_package is nacl so look for it
+    ext_package="nacl",
 )
 
 
