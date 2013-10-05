@@ -35,4 +35,4 @@ recursive-include tests *.py
 recursive-include tests/data *
 
 # Remove CFFI files
-recursive-exclude nacl _cffi_*.c
+recursive-exclude nacl *.c

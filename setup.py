@@ -185,7 +185,7 @@ setup(
             "include_dirs": [
                 sodium("include/sodium"),
             ],
-            "sources": map(sodium, [
+            "sources": [sodium(s) for s in [
                 "crypto_auth/crypto_auth.c",
                 "crypto_auth/hmacsha256/auth_hmacsha256_api.c",
                 "crypto_auth/hmacsha256/ref/hmac_hmacsha256.c",
@@ -312,7 +312,7 @@ setup(
                 "sodium/core.c",
                 "sodium/utils.c",
                 "sodium/version.c",
-            ]),
+            ]],
         }),
     ],
 

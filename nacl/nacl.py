@@ -79,11 +79,6 @@ ffi.cdef(
 ffi.verifier = Verifier(ffi,
     "#include <sodium.h>",
 
-    # We need to set a tmp directory otherwise when build_ext is run it'll get
-    # built in nacl/*.so but when ffi.verifier.load_library() is run it'll
-    # look (and ultimately build again) in nacl/__pycache__/*.so
-    tmpdir=os.path.abspath(os.path.dirname(__file__)),
-
     # We need to link to the sodium library
     libraries=["sodium"],
 
@@ -140,6 +135,12 @@ class Library(object):
     def __init__(self, ffi):
         self._ffi = ffi
         self._initalized = False
+
+        # This prevents the compile_module() from being called, the module
+        # should have been compiled by setup.py
+        def _compile_module(*args, **kwargs):
+            raise RuntimeError("Cannot compile module during runtime")
+        self._ffi.verifier.compile_module = _compile_module
 
     def __getattr__(self, name):
         if not self._initalized:
