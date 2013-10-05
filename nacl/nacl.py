@@ -5,7 +5,6 @@ from __future__ import absolute_import
 from __future__ import division
 
 import functools
-import os.path
 
 from distutils.sysconfig import get_config_vars
 
