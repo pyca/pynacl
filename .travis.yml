@@ -1,20 +1,35 @@
 language: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
-  # - "pypy"  # Travis only has PyPy 1.9, cffi requires 2.0 (Unreleased)
-install:
-  - pip install invoke
-  - pip install file://$PWD#egg=pynacl[tests]
-  - invoke sodium.install
-script:
-  - invoke tests
+python: 2.7
 env:
-  global:
-    - LD_LIBRARY_PATH=/usr/local/lib
-    - LD_RUN_PATH=/usr/local/lib
-branches:
-  only:
-    - master
+  - TOXENV=py26
+  - TOXENV=py27
+  - TOXENV=py32
+  - TOXENV=py33
+  - TOXENV=pypy
+
+install:
+  # Add the PyPy repository
+  - "if [[ $TOXENV == 'pypy' ]]; then sudo add-apt-repository -y ppa:pypy/ppa; fi"
+  # Upgrade PyPy
+  - "if [[ $TOXENV == 'pypy' ]]; then sudo apt-get -y install pypy; fi"
+  # This is required because we need to get rid of the Travis installed PyPy
+  # or it'll take precedence over the PPA installed one.
+  - "if [[ $TOXENV == 'pypy' ]]; then sudo rm -rf /usr/local/pypy/bin; fi"
+   - pip install tox coveralls
+
+
+script:
+  - tox
+
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.org#cryptography-dev"
+    use_notice: true
+    skip_join: true
+
+
+matrix:
+  allow_failures:
+    # There is a segfault issue with PyPy
+    - env: TOXENV=pypy
