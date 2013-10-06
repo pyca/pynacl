@@ -10,6 +10,7 @@ env:
 install:
   # Add the PyPy repository
   - "if [[ $TOXENV == 'pypy' ]]; then sudo add-apt-repository -y ppa:pypy/ppa; fi"
+  - "if [[ $TOXENV == 'pypy' ]]; then sudo apt-get update; fi"
   # Upgrade PyPy
   - "if [[ $TOXENV == 'pypy' ]]; then sudo apt-get -y install pypy; fi"
   # This is required because we need to get rid of the Travis installed PyPy
