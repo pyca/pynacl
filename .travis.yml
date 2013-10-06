@@ -20,6 +20,9 @@ install:
 script:
   - tox
 
+after_success:
+  - coveralls
+
 notifications:
   irc:
     channels:
