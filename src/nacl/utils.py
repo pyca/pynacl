@@ -14,8 +14,9 @@
 from __future__ import absolute_import
 from __future__ import division
 
+import six
+
 from . import nacl
-from . import six
 
 
 class EncryptedMessage(six.binary_type):
@@ -44,6 +45,15 @@ class EncryptedMessage(six.binary_type):
         The ciphertext contained within the :class:`EncryptedMessage`.
         """
         return self._ciphertext
+
+
+class StringFixer(object):
+
+    def __str__(self):
+        if six.PY3:
+            return self.__unicode__()
+        else:
+            return self.__bytes__()
 
 
 def random(size=32):

@@ -14,14 +14,12 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from . import six
-
 from . import nacl, encoding
 from .exceptions import CryptoError
-from .utils import EncryptedMessage, random
+from .utils import EncryptedMessage, StringFixer, random
 
 
-class PublicKey(encoding.Encodable, six.StringFixer, object):
+class PublicKey(encoding.Encodable, StringFixer, object):
     """
     The public key counterpart to an Curve25519 :class:`nacl.public.PrivateKey`
     for encrypting messages.
@@ -45,7 +43,7 @@ class PublicKey(encoding.Encodable, six.StringFixer, object):
         return self._public_key
 
 
-class PrivateKey(encoding.Encodable, six.StringFixer, object):
+class PrivateKey(encoding.Encodable, StringFixer, object):
     """
     Private key for decrypting messages using the Curve25519 algorithm.
 
@@ -94,7 +92,7 @@ class PrivateKey(encoding.Encodable, six.StringFixer, object):
         return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
 
 
-class Box(encoding.Encodable, six.StringFixer, object):
+class Box(encoding.Encodable, StringFixer, object):
     """
     The Box class boxes and unboxes messages between a pair of keys
 

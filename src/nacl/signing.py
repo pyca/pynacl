@@ -14,11 +14,11 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from . import six
+import six
 
 from . import nacl, encoding
 from .exceptions import CryptoError
-from .utils import random
+from .utils import StringFixer, random
 
 
 class BadSignatureError(CryptoError):
@@ -55,7 +55,7 @@ class SignedMessage(six.binary_type):
         return self._message
 
 
-class VerifyKey(encoding.Encodable, six.StringFixer, object):
+class VerifyKey(encoding.Encodable, StringFixer, object):
     """
     The public key counterpart to an Ed25519 SigningKey for producing digital
     signatures.
@@ -108,7 +108,7 @@ class VerifyKey(encoding.Encodable, six.StringFixer, object):
         return nacl.ffi.buffer(message, message_len[0])[:]
 
 
-class SigningKey(encoding.Encodable, six.StringFixer, object):
+class SigningKey(encoding.Encodable, StringFixer, object):
     """
     Private key for producing digital signatures using the Ed25519 algorithm.
 

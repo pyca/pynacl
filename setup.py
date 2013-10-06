@@ -184,6 +184,7 @@ setup(
     ],
     install_requires=[
         "cffi",
+        "six",
     ],
     extras_require={
         "tests": ["pytest"],
