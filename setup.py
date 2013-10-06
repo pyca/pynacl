@@ -111,7 +111,7 @@ class build_clib(_build_clib):
             [
                 configure, "--disable-shared", "--enable-static",
                 "--disable-debug", "--disable-dependency-tracking",
-                "--prefix", os.path.abspath(self.build_clib),
+                "--with-pic", "--prefix", os.path.abspath(self.build_clib),
             ],
             cwd=build_temp,
         )
