@@ -110,7 +110,6 @@ class build_clib(_build_clib):
                 configure, "--disable-shared", "--enable-static",
                 "--disable-debug", "--disable-dependency-tracking",
                 "--prefix", os.path.abspath(self.build_clib),
-                "--libdir", os.path.abspath(self.build_clib),
             ],
             cwd=os.path.abspath(self.build_temp),
         )
@@ -129,6 +128,7 @@ class build_ext(_build_ext):
         self.include_dirs.append(
             os.path.join(build_clib.build_clib, "include")
         )
+        self.library_dirs.append(os.path.join(build_clib.build_clib, "lib"))
 
         return _build_ext.run(self)
 
