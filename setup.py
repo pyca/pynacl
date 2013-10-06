@@ -20,6 +20,7 @@ import subprocess
 import sys
 
 from distutils.command.build_clib import build_clib as _build_clib
+from distutils.command.build_ext import build_ext as _build_ext
 
 from setuptools import Distribution, setup
 
@@ -64,7 +65,6 @@ except ImportError:
 else:
     # building bdist - cffi is here!
     ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
-    ext_modules[0].include_dirs.append(sodium("include"))
 
 
 class Distribution(Distribution):
@@ -122,6 +122,17 @@ class build_clib(_build_clib):
         )
 
 
+class build_ext(_build_ext):
+
+    def run(self):
+        build_clib = self.get_finalized_command("build_clib")
+        self.include_dirs.append(
+            os.path.join(build_clib.build_clib, "include")
+        )
+
+        return _build_ext.run(self)
+
+
 setup(
     name=nacl.__title__,
     version=nacl.__version__,
@@ -156,6 +167,7 @@ setup(
 
     cmdclass={
         "build_clib": build_clib,
+        "build_ext": build_ext,
     },
     distclass=Distribution,
     zip_safe=False,
