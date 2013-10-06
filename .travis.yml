@@ -1,11 +1,16 @@
 language: python
 python: 2.7
 env:
-  - TOXENV=py26
-  - TOXENV=py27
-  - TOXENV=py32
-  - TOXENV=py33
-  - TOXENV=pypy
+  - TOXENV=py26 SODIUM_INSTALL=bundled
+  - TOXENV=py27 SODIUM_INSTALL=bundled
+  - TOXENV=py32 SODIUM_INSTALL=bundled
+  - TOXENV=py33 SODIUM_INSTALL=bundled
+  - TOXENV=pypy SODIUM_INSTALL=bundled
+  - TOXENV=py26 SODIUM_INSTALL=system
+  - TOXENV=py27 SODIUM_INSTALL=system
+  - TOXENV=py32 SODIUM_INSTALL=system
+  - TOXENV=py33 SODIUM_INSTALL=system
+  - TOXENV=pypy SODIUM_INSTALL=system
 
 install:
   # Add the PyPy repository
@@ -16,6 +21,18 @@ install:
   # This is required because we need to get rid of the Travis installed PyPy
   # or it'll take precedence over the PPA installed one.
   - "if [[ $TOXENV == 'pypy' ]]; then sudo rm -rf /usr/local/pypy/bin; fi"
+
+  # Install Sodium if we need too
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then tar zxvf LATEST.tar.gz; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then cd libsodium-*; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then ./configure; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then make; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then make check; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo make install; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo ldconfig; fi"
+
+  # Install tox and coveralls so we can run our tests
   - pip install tox coveralls
 
 

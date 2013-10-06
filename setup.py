@@ -25,6 +25,10 @@ from distutils.command.build_ext import build_ext as _build_ext
 from setuptools import Distribution, setup
 
 
+SODIUM_MAJOR = 4
+SODIUM_MINOR = 3
+
+
 def here(*paths):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
 
@@ -67,10 +71,45 @@ else:
     ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
 
 
+def use_system():
+    install_type = os.environ.get("SODIUM_INSTALL")
+
+    if install_type == "system":
+        # If we are forcing system installs, don't compile the bundled one
+        return True
+    elif install_type == "bundled":
+        # If we are forcing bundled installs, compile it
+        return False
+
+    # Detect if we have libsodium available
+    import cffi
+
+    ffi = cffi.FFI()
+    ffi.cdef("""
+        int sodium_library_version_major();
+        int sodium_library_version_minor();
+    """)
+
+    try:
+        system = ffi.dlopen("libsodium")
+    except OSError:
+        # We couldn't locate libsodium so we'll use the bundled one
+        return False
+
+    if system.sodium_library_version_major() != SODIUM_MAJOR:
+        return False
+
+    if system.sodium_library_version_minor() < SODIUM_MINOR:
+        return False
+
+    # If we got this far then the system library should be good enough
+    return True
+
+
 class Distribution(Distribution):
 
     def has_c_libraries(self):
-        return True
+        return not use_system()
 
 
 class build_clib(_build_clib):
@@ -95,6 +134,9 @@ class build_clib(_build_clib):
         return ["sodium"]
 
     def run(self):
+        if use_system():
+            return
+
         build_temp = os.path.abspath(self.build_temp)
 
         # Ensure our temporary build directory exists
@@ -129,11 +171,14 @@ class build_clib(_build_clib):
 class build_ext(_build_ext):
 
     def run(self):
-        build_clib = self.get_finalized_command("build_clib")
-        self.include_dirs.append(
-            os.path.join(build_clib.build_clib, "include")
-        )
-        self.library_dirs.append(os.path.join(build_clib.build_clib, "lib"))
+        if self.distribution.has_c_libraries():
+            build_clib = self.get_finalized_command("build_clib")
+            self.include_dirs.append(
+                os.path.join(build_clib.build_clib, "include"),
+            )
+            self.library_dirs.append(
+                os.path.join(build_clib.build_clib, "lib"),
+            )
 
         return _build_ext.run(self)
 
