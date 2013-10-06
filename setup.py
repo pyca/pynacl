@@ -95,9 +95,11 @@ class build_clib(_build_clib):
         return ["sodium"]
 
     def run(self):
+        build_temp = os.path.abspath(self.build_temp)
+
         # Ensure our temporary build directory exists
         try:
-            os.makedirs(os.path.abspath(self.build_temp))
+            os.makedirs(build_temp)
         except IOError:
             pass
 
@@ -111,14 +113,17 @@ class build_clib(_build_clib):
                 "--disable-debug", "--disable-dependency-tracking",
                 "--prefix", os.path.abspath(self.build_clib),
             ],
-            cwd=os.path.abspath(self.build_temp),
+            cwd=build_temp,
         )
 
         # Build the library
-        subprocess.check_call(
-            ["make", "install"],
-            cwd=os.path.abspath(self.build_temp),
-        )
+        subprocess.check_call(["make"], cwd=build_temp)
+
+        # Check the build library
+        subprocess.check_call(["make", "check"], cwd=build_temp)
+
+        # Install the built library
+        subprocess.check_call(["make", "install"], cwd=build_temp)
 
 
 class build_ext(_build_ext):
