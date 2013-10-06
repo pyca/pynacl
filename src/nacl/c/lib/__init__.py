@@ -18,6 +18,10 @@ import os.path
 
 import six
 
+# We need to import this prior to importing cffi to fix prebuilding the
+#   extension modules
+from nacl import _cffi_fix
+
 from cffi import FFI
 
 
