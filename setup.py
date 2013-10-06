@@ -210,6 +210,7 @@ setup(
     package_dir={"": "src"},
     packages=[
         "nacl",
+        "nacl.c",
     ],
 
     ext_package="nacl",

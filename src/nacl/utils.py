@@ -16,7 +16,7 @@ from __future__ import division
 
 import six
 
-from . import nacl
+from .c import _lib as nacl
 
 
 class EncryptedMessage(six.binary_type):

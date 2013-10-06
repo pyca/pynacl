@@ -16,7 +16,8 @@ from __future__ import division
 
 import six
 
-from . import nacl, encoding
+from . import encoding
+from .c import _lib as nacl
 from .exceptions import CryptoError
 from .utils import StringFixer, random
 
