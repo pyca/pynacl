@@ -18,9 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 
 import functools
-import platform
 
-from distutils.sysconfig import get_config_vars
+# We need to patch cffi before importing it
+from nacl import _cffi_fix
 
 import cffi.verifier
 
@@ -28,15 +28,6 @@ from cffi import FFI
 
 
 __all__ = ["ffi", "lib"]
-
-
-# Monkeypatch cffi.verifier._get_so_suffix to return the same as distutils
-# See: https://bitbucket.org/cffi/cffi/issue/110/
-def _get_so_suffix():
-    return get_config_vars().get("EXT_SUFFIX", ".so")
-
-if not platform.python_implementation().lower() == "pypy":
-    cffi.verifier._get_so_suffix = _get_so_suffix
 
 
 ffi = FFI()
