@@ -14,14 +14,12 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from . import six
-
 from . import nacl, encoding
 from .exceptions import CryptoError
-from .utils import EncryptedMessage
+from .utils import EncryptedMessage, StringFixer
 
 
-class SecretBox(encoding.Encodable, six.StringFixer, object):
+class SecretBox(encoding.Encodable, StringFixer, object):
     """
     The SecretBox class encrypts and decrypts messages using the given secret
     key.
