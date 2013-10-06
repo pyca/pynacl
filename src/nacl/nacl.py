@@ -19,6 +19,9 @@ from __future__ import division
 
 import functools
 
+# We need to patch cffi before importing it
+from nacl import _cffi_fix
+
 import cffi.verifier
 
 from cffi import FFI
