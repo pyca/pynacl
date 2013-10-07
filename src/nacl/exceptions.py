@@ -19,3 +19,9 @@ class CryptoError(Exception):
     """
     Base exception for all nacl related errors
     """
+
+
+class BadSignatureError(CryptoError):
+    """
+    Raised when the signature was forged or otherwise corrupt.
+    """

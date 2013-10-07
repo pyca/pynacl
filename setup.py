@@ -62,13 +62,13 @@ def which(name, flags=os.X_OK):  # Taken from twisted
 sys.path += glob.glob("*.egg")
 
 try:
-    import nacl.nacl
+    import nacl._lib
 except ImportError:
     # installing - there is no cffi yet
     ext_modules = []
 else:
     # building bdist - cffi is here!
-    ext_modules = [nacl.nacl.ffi.verifier.get_extension()]
+    ext_modules = [nacl._lib.ffi.verifier.get_extension()]
 
 
 def use_system():
@@ -210,9 +210,12 @@ setup(
     package_dir={"": "src"},
     packages=[
         "nacl",
+        "nacl._lib",
+        "nacl.c",
     ],
+    package_data={"nacl._lib": ["*.h"]},
 
-    ext_package="nacl",
+    ext_package="nacl._lib",
     ext_modules=ext_modules,
 
     cmdclass={
