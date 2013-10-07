@@ -19,6 +19,10 @@ from nacl.c.crypto_box import (
     crypto_box_BEFORENMBYTES, crypto_box_keypair, crypto_box, crypto_box_open,
     crypto_box_beforenm, crypto_box_afternm, crypto_box_open_afternm,
 )
+from nacl.c.crypto_hash import (
+    crypto_hash_BYTES, crypto_hash_sha256_BYTES, crypto_hash_sha512_BYTES,
+    crypto_hash, crypto_hash_sha256, crypto_hash_sha512,
+)
 from nacl.c.crypto_scalarmult import (
     crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base,
@@ -49,6 +53,13 @@ __all__ = [
     "crypto_box_beforenm",
     "crypto_box_afternm",
     "crypto_box_open_afternm",
+
+    "crypto_hash_BYTES",
+    "crypto_hash_sha256_BYTES",
+    "crypto_hash_sha512_BYTES",
+    "crypto_hash",
+    "crypto_hash_sha256",
+    "crypto_hash_sha512",
 
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
