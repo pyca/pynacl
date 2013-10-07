@@ -213,8 +213,9 @@ setup(
         "nacl._lib",
         "nacl.c",
     ],
+    package_data={"nacl._lib": ["*.h"]},
 
-    ext_package="nacl",
+    ext_package="nacl._lib",
     ext_modules=ext_modules,
 
     cmdclass={
