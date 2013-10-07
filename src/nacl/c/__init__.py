@@ -23,6 +23,11 @@ from nacl.c.crypto_scalarmult import (
     crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base,
 )
+from nacl.c.crypto_secretbox import (
+    crypto_secretbox_KEYBYTES, crypto_secretbox_NONCEBYTES,
+    crypto_secretbox_ZEROBYTES, crypto_secretbox_BOXZEROBYTES,
+    crypto_secretbox, crypto_secretbox_open,
+)
 from nacl.c.randombytes import randombytes
 
 
@@ -43,6 +48,13 @@ __all__ = [
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
     "crypto_scalarmult_base",
+
+    "crypto_secretbox_KEYBYTES",
+    "crypto_secretbox_NONCEBYTES",
+    "crypto_secretbox_ZEROBYTES",
+    "crypto_secretbox_BOXZEROBYTES",
+    "crypto_secretbox",
+    "crypto_secretbox_open",
 
     "randombytes",
 ]

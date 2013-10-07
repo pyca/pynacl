@@ -14,9 +14,9 @@
 from __future__ import absolute_import
 from __future__ import division
 
+import nacl.c
+
 from . import encoding
-from .c import _lib as nacl
-from .exceptions import CryptoError
 from .utils import EncryptedMessage, StringFixer
 
 
@@ -40,8 +40,8 @@ class SecretBox(encoding.Encodable, StringFixer, object):
     :cvar NONCE_SIZE: The size that the nonce is required to be.
     """
 
-    KEY_SIZE = nacl.lib.crypto_secretbox_KEYBYTES
-    NONCE_SIZE = nacl.lib.crypto_secretbox_NONCEBYTES
+    KEY_SIZE = nacl.c.crypto_secretbox_KEYBYTES
+    NONCE_SIZE = nacl.c.crypto_secretbox_NONCEBYTES
 
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
@@ -73,18 +73,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         """
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError("The nonce must be exactly %s bytes long" %
-                                nacl.lib.crypto_secretbox_NONCEBYTES)
+                                self.NONCE_SIZE)
 
-        padded = b"\x00" * nacl.lib.crypto_secretbox_ZEROBYTES + plaintext
-        ciphertext = nacl.ffi.new("unsigned char[]", len(padded))
-
-        if not nacl.lib.crypto_secretbox(
-                    ciphertext, padded, len(padded), nonce, self._key,
-                ):
-            raise CryptoError("Encryption failed")
-
-        box_zeros = nacl.lib.crypto_secretbox_BOXZEROBYTES
-        ciphertext = nacl.ffi.buffer(ciphertext, len(padded))[box_zeros:]
+        ciphertext = nacl.c.crypto_secretbox(self._key, plaintext, nonce)
 
         encoded_nonce = encoder.encode(nonce)
         encoded_ciphertext = encoder.encode(ciphertext)
@@ -116,18 +107,8 @@ class SecretBox(encoding.Encodable, StringFixer, object):
 
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError("The nonce must be exactly %s bytes long" %
-                                nacl.lib.crypto_secretbox_NONCEBYTES)
+                                self.NONCE_SIZE)
 
-        padded = b"\x00" * nacl.lib.crypto_secretbox_BOXZEROBYTES + ciphertext
-        plaintext = nacl.ffi.new("unsigned char[]", len(padded))
-
-        if not nacl.lib.crypto_secretbox_open(
-                    plaintext, padded, len(padded), nonce, self._key,
-                ):
-            raise CryptoError(
-                        "Decryption failed. Ciphertext failed verification")
-
-        box_zeros = nacl.lib.crypto_secretbox_ZEROBYTES
-        plaintext = nacl.ffi.buffer(plaintext, len(padded))[box_zeros:]
+        plaintext = nacl.c.crypto_secretbox_open(self._key, ciphertext, nonce)
 
         return plaintext
