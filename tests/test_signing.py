@@ -21,7 +21,7 @@ import pytest
 
 import nacl.signing
 import nacl.encoding
-import nacl.nacl
+import nacl.exceptions
 
 
 def ed25519_known_answers():
@@ -86,9 +86,9 @@ class TestVerifyKey:
         # Small sanity check
         assert skey.verify_key.verify(smessage)
 
-        with pytest.raises(nacl.signing.BadSignatureError):
+        with pytest.raises(nacl.exceptions.BadSignatureError):
             skey.verify_key.verify(message, signature)
 
-        with pytest.raises(nacl.signing.BadSignatureError):
+        with pytest.raises(nacl.exceptions.BadSignatureError):
             forged = nacl.signing.SignedMessage(signature + message)
             skey.verify_key.verify(forged)

@@ -28,6 +28,11 @@ from nacl.c.crypto_secretbox import (
     crypto_secretbox_ZEROBYTES, crypto_secretbox_BOXZEROBYTES,
     crypto_secretbox, crypto_secretbox_open,
 )
+from nacl.c.crypto_sign import (
+    crypto_sign_BYTES, crypto_sign_SEEDBYTES, crypto_sign_PUBLICKEYBYTES,
+    crypto_sign_SECRETKEYBYTES, crypto_sign_keypair, crypto_sign_seed_keypair,
+    crypto_sign, crypto_sign_open,
+)
 from nacl.c.randombytes import randombytes
 
 
@@ -55,6 +60,15 @@ __all__ = [
     "crypto_secretbox_BOXZEROBYTES",
     "crypto_secretbox",
     "crypto_secretbox_open",
+
+    "crypto_sign_BYTES",
+    "crypto_sign_SEEDBYTES",
+    "crypto_sign_PUBLICKEYBYTES",
+    "crypto_sign_SECRETKEYBYTES",
+    "crypto_sign_keypair",
+    "crypto_sign_seed_keypair",
+    "crypto_sign",
+    "crypto_sign_open",
 
     "randombytes",
 ]
