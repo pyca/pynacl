@@ -26,3 +26,6 @@ recursive-include tests/data *
 
 # Remove CFFI files
 global-exclude __pycache__/*
+
+# Add PyNaCl header files
+recursive-include src/nacl/_lib *.h

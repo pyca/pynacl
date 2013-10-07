@@ -14,9 +14,11 @@
 from __future__ import absolute_import
 from __future__ import division
 
-from . import nacl, encoding
-from .exceptions import CryptoError
-from .utils import EncryptedMessage, StringFixer, random
+import nacl.c
+import nacl.c.crypto_box
+
+from nacl import encoding
+from nacl.utils import EncryptedMessage, StringFixer, random
 
 
 class PublicKey(encoding.Encodable, StringFixer, object):
@@ -30,7 +32,7 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     :cvar SIZE: The size that the public key is required to be
     """
 
-    SIZE = nacl.lib.crypto_box_PUBLICKEYBYTES
+    SIZE = nacl.c.crypto_box_PUBLICKEYBYTES
 
     def __init__(self, public_key, encoder=encoding.RawEncoder):
         self._public_key = encoder.decode(public_key)
@@ -58,7 +60,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
     :cvar SIZE: The size that the private key is required to be
     """
 
-    SIZE = nacl.lib.crypto_box_SECRETKEYBYTES
+    SIZE = nacl.c.crypto_box_SECRETKEYBYTES
 
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
@@ -69,15 +71,10 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
             raise ValueError(
                 "The secret key must be exactly %d bytes long" % self.SIZE)
 
-        pk = nacl.ffi.new("unsigned char[]", PublicKey.SIZE)
-
-        if not nacl.lib.crypto_scalarmult_curve25519_base(pk, private_key):
-            raise CryptoError("Failed to generate a key pair")
-
-        _pkey = nacl.ffi.buffer(pk, nacl.lib.crypto_box_PUBLICKEYBYTES)[:]
+        raw_public_key = nacl.c.crypto_scalarmult_base(private_key)
 
         self._private_key = private_key
-        self.public_key = PublicKey(_pkey)
+        self.public_key = PublicKey(raw_public_key)
 
     def __bytes__(self):
         return self._private_key
@@ -112,21 +109,14 @@ class Box(encoding.Encodable, StringFixer, object):
     :cvar NONCE_SIZE: The size that the nonce is required to be.
     """
 
-    NONCE_SIZE = nacl.lib.crypto_box_NONCEBYTES
+    NONCE_SIZE = nacl.c.crypto_box_NONCEBYTES
 
     def __init__(self, private_key, public_key):
         if private_key and public_key:
-            _shared_key_size = nacl.lib.crypto_box_BEFORENMBYTES
-            _shared_key = nacl.ffi.new("unsigned char[]", _shared_key_size)
-
-            if not nacl.lib.crypto_box_beforenm(
-                        _shared_key,
-                        public_key.encode(encoder=encoding.RawEncoder),
-                        private_key.encode(encoder=encoding.RawEncoder),
-                    ):
-                raise CryptoError("Failed to derive shared key")
-
-            self._shared_key = nacl.ffi.buffer(_shared_key, _shared_key_size)[:]
+            self._shared_key = nacl.c.crypto_box_beforenm(
+                private_key.encode(encoder=encoding.RawEncoder),
+                public_key.encode(encoder=encoding.RawEncoder),
+            )
         else:
             self._shared_key = None
 
@@ -161,20 +151,11 @@ class Box(encoding.Encodable, StringFixer, object):
             raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
-        padded = b"\x00" * nacl.lib.crypto_box_ZEROBYTES + plaintext
-        ciphertext = nacl.ffi.new("unsigned char[]", len(padded))
-
-        if not nacl.lib.crypto_box_afternm(
-                    ciphertext,
-                    padded,
-                    len(padded),
-                    nonce,
-                    self._shared_key,
-                ):
-            raise CryptoError("Encryption failed")
-
-        box_zeros = nacl.lib.crypto_box_BOXZEROBYTES
-        ciphertext = nacl.ffi.buffer(ciphertext, len(padded))[box_zeros:]
+        ciphertext = nacl.c.crypto_box_afternm(
+            self._shared_key,
+            plaintext,
+            nonce,
+        )
 
         encoded_nonce = encoder.encode(nonce)
         encoded_ciphertext = encoder.encode(ciphertext)
@@ -208,20 +189,10 @@ class Box(encoding.Encodable, StringFixer, object):
             raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
-        padded = b"\x00" * nacl.lib.crypto_box_BOXZEROBYTES + ciphertext
-        plaintext = nacl.ffi.new("unsigned char[]", len(padded))
-
-        if not nacl.lib.crypto_box_open_afternm(
-                    plaintext,
-                    padded,
-                    len(padded),
-                    nonce,
-                    self._shared_key,
-                ):
-            raise CryptoError(
-                        "Decryption failed. Ciphertext failed verification")
-
-        box_zeros = nacl.lib.crypto_box_ZEROBYTES
-        plaintext = nacl.ffi.buffer(plaintext, len(padded))[box_zeros:]
+        plaintext = nacl.c.crypto_box_open_afternm(
+            self._shared_key,
+            ciphertext,
+            nonce,
+        )
 
         return plaintext

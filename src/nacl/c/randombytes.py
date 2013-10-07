@@ -11,16 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division, print_function
 
-import nacl.c
-import nacl.encoding
+from nacl._lib import lib
 
 
-def sha256(message, encoder=nacl.encoding.HexEncoder):
-    return encoder.encode(nacl.c.crypto_hash_sha256(message))
+def randombytes(size):
+    """
+    Returns ``size`` number of random bytes from a cryptographically secure
+    random source.
 
-
-def sha512(message, encoder=nacl.encoding.HexEncoder):
-    return encoder.encode(nacl.c.crypto_hash_sha512(message))
+    :param size: int
+    :rtype: bytes
+    """
+    buf = lib.ffi.new("unsigned char[]", size)
+    lib.randombytes(buf, size)
+    return lib.ffi.buffer(buf, size)[:]
