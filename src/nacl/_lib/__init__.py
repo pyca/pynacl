@@ -52,7 +52,7 @@ lib = ffi.verify(
     libraries=["sodium"],
 
     # Our ext_package is nacl so look for it
-    ext_package="nacl.c.lib",
+    ext_package="nacl.c._lib",
 )
 
 
