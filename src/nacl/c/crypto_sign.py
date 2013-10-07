@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
-from nacl import _lib as lib
+from nacl._lib import lib
 from nacl.exceptions import BadSignatureError, CryptoError
 
 

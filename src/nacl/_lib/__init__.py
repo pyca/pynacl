@@ -23,6 +23,7 @@ import six
 from nacl import _cffi_fix
 
 from cffi import FFI
+from cffi.verifier import Verifier
 
 
 __all__ = ["ffi"]
@@ -43,9 +44,8 @@ for header in HEADERS:
         ffi.cdef(hfile.read())
 
 
-# Compile our module
 # TODO: Can we use the ABI of libsodium for this instead?
-lib = ffi.verify(
+ffi.verifier = Verifier(ffi,
     "#include <sodium.h>",
 
     # We need to link to the sodium library
@@ -56,11 +56,29 @@ lib = ffi.verify(
 )
 
 
-# Put all of the exposed functions onto the module
-g = globals()
-for name, function in six.iteritems(lib.__dict__):
-    # Add this function to the __all__ namespace
-    __all__.append(name)
+class Library(object):
 
-    # Add this function to the globals
-    g[name] = function
+    def __init__(self, ffi):
+        self.ffi = ffi
+        self._initalized = False
+
+        # This prevents the compile_module() from being called, the module
+        # should have been compiled by setup.py
+        def _compile_module(*args, **kwargs):
+            raise RuntimeError("Cannot compile module during runtime")
+        self.ffi.verifier.compile_module = _compile_module
+
+    def __getattr__(self, name):
+        if not self._initalized:
+            self._lib = self.ffi.verifier.load_library()
+
+        # redirect attribute access to the underlying lib
+        attr = getattr(self._lib, name)
+
+        # Go ahead and assign the returned value to this class so we don't
+        # need to do this lookup again
+        setattr(self, name, attr)
+
+        return attr
+
+lib = Library(ffi)
