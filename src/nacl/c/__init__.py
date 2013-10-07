@@ -23,6 +23,7 @@ from nacl.c.crypto_scalarmult import (
     crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base,
 )
+from nacl.c.randombytes import randombytes
 
 
 __all__ = [
@@ -42,4 +43,6 @@ __all__ = [
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
     "crypto_scalarmult_base",
+
+    "randombytes",
 ]
