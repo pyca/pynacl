@@ -148,6 +148,9 @@ class build_clib(_build_clib):
         # Locate our configure script
         configure = here("src/libsodium/configure")
 
+        # Ensure the configure script is executable
+        os.chmod(configure, 0o755)
+
         # Run ./configure
         subprocess.check_call(
             [
