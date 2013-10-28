@@ -30,4 +30,4 @@ __author__ = "Donald Stufft"
 __email__ = "donald@stufft.io"
 
 __license__ = "Apache License 2.0"
-__copyright__ = "Copyright 2012 Donald Stufft and individual contributors"
+__copyright__ = "Copyright 2013 Donald Stufft and individual contributors"
