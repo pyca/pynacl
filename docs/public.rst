@@ -37,7 +37,7 @@ generated from both pairing of keys, so given two keypairs belonging to alice
 (pkalice, skalice) and bob(pkbob, skbob), the key derived from (pkalice, skbob)
 with equal that from (pkbob, skalice).  This is how the system works:
 
-.. code:: python
+.. code-block:: python
 
     import nacl.utils
     from nacl.public import PrivateKey, Box

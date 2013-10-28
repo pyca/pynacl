@@ -17,7 +17,7 @@ Example
 
 Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
-.. code:: python
+.. code-block:: python
 
     import nacl.encoding
     import nacl.signing
@@ -36,7 +36,7 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
 Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 
-.. code:: python
+.. code-block:: python
 
     import nacl.signing
 
