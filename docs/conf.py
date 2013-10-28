@@ -194,6 +194,9 @@ class Mock(object):
         else:
             return Mock()
 
+    def __floordiv__(self, other):
+        return Mock()
+
 MOCK_MODULES = [
     "cffi", "cffi.vengine_cpy", "cffi.vengine_gen", "cffi.verifier",
 ]

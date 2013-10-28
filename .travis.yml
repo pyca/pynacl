@@ -21,6 +21,7 @@ env:
   - TOXENV=py32 SODIUM_INSTALL=system CC=clang
   - TOXENV=py33 SODIUM_INSTALL=system CC=clang
   - TOXENV=pypy SODIUM_INSTALL=system CC=clang
+  - docs
 
 install:
   # Add the PyPy repository
