@@ -7,11 +7,13 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
+import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath("../src"))
 
 import nacl
 
@@ -175,3 +177,28 @@ intersphinx_mapping = {"http://docs.python.org/": None}
 
 # Enable the new ReadTheDocs theme
 RTD_NEW_THEME = True
+
+
+# Mock out CFFI
+class Mock(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __call__(self, *args, **kwargs):
+        return Mock()
+
+    @classmethod
+    def __getattr__(cls, name):
+        if name in ('__file__', '__path__'):
+            return '/dev/null'
+        else:
+            return Mock()
+
+    def __floordiv__(self, other):
+        return Mock()
+
+MOCK_MODULES = [
+    "cffi", "cffi.vengine_cpy", "cffi.vengine_gen", "cffi.verifier",
+]
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = Mock()

@@ -60,7 +60,7 @@ Reference
 .. autoclass:: nacl.signing.SignedMessage
     :members:
 
-.. autoclass:: nacl.signing.BadSignatureError
+.. autoclass:: nacl.exceptions.BadSignatureError
     :members:
 
 
