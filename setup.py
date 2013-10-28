@@ -145,11 +145,24 @@ class build_clib(_build_clib):
         except IOError:
             pass
 
+        # Ensure all of our executanle files have their permission set
+        for filename in [
+                    "src/libsodium/autogen.sh",
+                    "src/libsodium/compile",
+                    "src/libsodium/config.guess",
+                    "src/libsodium/config.sub",
+                    "src/libsodium/configure",
+                    "src/libsodium/depcomp",
+                    "src/libsodium/install-sh",
+                    "src/libsodium/missing",
+                    "src/libsodium/msvc-scripts/process.bat",
+                    "src/libsodium/test/default/wintest.bat",
+                    "src/libsodium/test-driver",
+                ]:
+            os.chmod(here(filename), 0o755)
+
         # Locate our configure script
         configure = here("src/libsodium/configure")
-
-        # Ensure the configure script is executable
-        os.chmod(configure, 0o755)
 
         # Run ./configure
         subprocess.check_call(
