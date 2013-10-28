@@ -39,6 +39,7 @@ from nacl.c.crypto_sign import (
     crypto_sign, crypto_sign_open,
 )
 from nacl.c.randombytes import randombytes
+from nacl.c.sodium_core import sodium_init
 
 
 __all__ = [
@@ -84,4 +85,9 @@ __all__ = [
     "crypto_sign_open",
 
     "randombytes",
+
+    "sodium_init",
 ]
+
+# Initialize Sodium
+sodium_init()
