@@ -13,7 +13,7 @@ other than the length.
 Example
 -------
 
-.. code:: python
+.. code-block:: python
 
     import nacl.secret
     import nacl.utils

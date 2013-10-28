@@ -7,13 +7,13 @@ are typically passed as a keyword argument `encoder` to various methods.
 
 For example you can generate a signing key and encode it in hex with:
 
-.. code:: python
+.. code-block:: python
 
     hex_key = nacl.signing.SigningKey.generate().encode(encoder=nacl.encoding.HexEncoder)
 
 Then you can later decode it from hex:
 
-.. code:: python
+.. code-block:: python
 
     signing_key = nacl.signing.SigningKey(hex_key, encoder=nacl.encoding.HexEncoder)
 
@@ -43,7 +43,7 @@ Defining your own Encoder
 Defining your own encoder is easy. Each encoder is simply a class with 2 static
 methods. For example here is the hex encoder:
 
-.. code:: python
+.. code-block:: python
 
     import binascii
 
