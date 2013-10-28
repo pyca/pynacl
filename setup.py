@@ -26,7 +26,7 @@ from setuptools import Distribution, setup
 
 
 SODIUM_MAJOR = 4
-SODIUM_MINOR = 3
+SODIUM_MINOR = 5
 
 
 def here(*paths):
