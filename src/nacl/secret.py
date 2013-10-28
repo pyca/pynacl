@@ -47,8 +47,10 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         key = encoder.decode(key)
 
         if len(key) != self.KEY_SIZE:
-            raise ValueError("The key must be exactly %s bytes long" %
-                                nacl.lib.crypto_secretbox_KEYBYTES)
+            raise ValueError(
+                "The key must be exactly %s bytes long" %
+                nacl.lib.crypto_secretbox_KEYBYTES,
+            )
 
         self._key = key
 
@@ -72,8 +74,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         :rtype: [:class:`nacl.utils.EncryptedMessage`]
         """
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError("The nonce must be exactly %s bytes long" %
-                                self.NONCE_SIZE)
+            raise ValueError(
+                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+            )
 
         ciphertext = nacl.c.crypto_secretbox(self._key, plaintext, nonce)
 
@@ -81,10 +84,10 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         encoded_ciphertext = encoder.encode(ciphertext)
 
         return EncryptedMessage._from_parts(
-                    encoded_nonce,
-                    encoded_ciphertext,
-                    encoder.encode(nonce + ciphertext),
-                )
+            encoded_nonce,
+            encoded_ciphertext,
+            encoder.encode(nonce + ciphertext),
+        )
 
     def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
         """
@@ -106,8 +109,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
             ciphertext = ciphertext[self.NONCE_SIZE:]
 
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError("The nonce must be exactly %s bytes long" %
-                                self.NONCE_SIZE)
+            raise ValueError(
+                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+            )
 
         plaintext = nacl.c.crypto_secretbox_open(self._key, ciphertext, nonce)
 

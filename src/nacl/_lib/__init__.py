@@ -16,11 +16,9 @@ from __future__ import absolute_import, division, print_function
 import glob
 import os.path
 
-import six
-
 # We need to import this prior to importing cffi to fix prebuilding the
 #   extension modules
-from nacl import _cffi_fix
+from nacl import _cffi_fix  # noqa
 
 from cffi import FFI
 from cffi.verifier import Verifier
@@ -45,7 +43,9 @@ for header in HEADERS:
 
 
 # TODO: Can we use the ABI of libsodium for this instead?
-ffi.verifier = Verifier(ffi,
+ffi.verifier = Verifier(
+    ffi,
+
     "#include <sodium.h>",
 
     # We need to link to the sodium library

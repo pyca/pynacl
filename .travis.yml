@@ -22,6 +22,7 @@ env:
   - TOXENV=py33 SODIUM_INSTALL=system CC=clang
   - TOXENV=pypy SODIUM_INSTALL=system CC=clang
   - TOXENV=docs
+  - TOXENV=pep8
 
 install:
   # Add the PyPy repository
