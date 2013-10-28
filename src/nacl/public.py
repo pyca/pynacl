@@ -161,10 +161,10 @@ class Box(encoding.Encodable, StringFixer, object):
         encoded_ciphertext = encoder.encode(ciphertext)
 
         return EncryptedMessage._from_parts(
-                    encoded_nonce,
-                    encoded_ciphertext,
-                    encoder.encode(nonce + ciphertext),
-                )
+            encoded_nonce,
+            encoded_ciphertext,
+            encoder.encode(nonce + ciphertext),
+        )
 
     def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
         """

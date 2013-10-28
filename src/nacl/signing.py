@@ -64,8 +64,10 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         key = encoder.decode(key)
 
         if len(key) != nacl.c.crypto_sign_PUBLICKEYBYTES:
-            raise ValueError("The key must be exactly %s bytes long" %
-                                nacl.c.crypto_sign_PUBLICKEYBYTES)
+            raise ValueError(
+                "The key must be exactly %s bytes long" %
+                nacl.c.crypto_sign_PUBLICKEYBYTES,
+            )
 
         self._key = key
 
@@ -122,8 +124,10 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         # Verify that our seed is the proper size
         if len(seed) != nacl.c.crypto_sign_SEEDBYTES:
-            raise ValueError("The seed must be exactly %d bytes long" %
-                                nacl.c.crypto_sign_SEEDBYTES)
+            raise ValueError(
+                "The seed must be exactly %d bytes long" %
+                nacl.c.crypto_sign_SEEDBYTES
+            )
 
         secret_key, public_key = nacl.c.crypto_sign_seed_keypair(seed)
 
