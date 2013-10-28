@@ -24,7 +24,7 @@ __summary__ = ("Python binding to the Networking and Cryptography (NaCl) "
                "library")
 __uri__ = "https://github.com/pyca/pynacl/"
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 __author__ = "Donald Stufft"
 __email__ = "donald@stufft.io"
