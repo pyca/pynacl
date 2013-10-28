@@ -78,7 +78,7 @@ ECRYPT_keysetup(ECRYPT_ctx* ctx, const u8* key, u32 keysize, u32 ivsize)
 
     for (i = 0; i <= Nr; i++) {
         for (j = 0; j < Nb; j++) {
-            ctx->round_key[i][j] = w[(i<<2)+j];
+            ctx->round_key[i][j] = SWP32(w[(i<<2)+j]);
         }
     }
 }
@@ -104,7 +104,7 @@ partial_precompute_tworounds(ECRYPT_ctx* ctx)
   x1 = ctx->counter[1] ^ ctx->round_key[0][1];
   x2 = ctx->counter[2] ^ ctx->round_key[0][2];
   x3 = ctx->counter[3] ^ ctx->round_key[0][3];
-  x0 &= 0xffffff00;
+  x0 &= SWP32(0xffffff00);
   round(ctx,x0,x1,x2,x3,y0,y1,y2,y3,1);
   ctx->first_round_output_x0 = y0 ^ T0[0];
   y0 = 0;
@@ -151,9 +151,9 @@ ECRYPT_process_bytes(int action, ECRYPT_ctx* ctx, const u8* input, u8* output,
         ((u32*)output)[2] = UNALIGNED_U32_READ(input, 2) ^ ((u32*)keystream)[2] ^ ctx->round_key[Nr][2];
         ((u32*)output)[3] = UNALIGNED_U32_READ(input, 3) ^ ((u32*)keystream)[3] ^ ctx->round_key[Nr][3];
 
-        ctx->counter[0]++;
+        ctx->counter[0] = SWP32(SWP32(ctx->counter[0]) + 1);
 
-        if ((ctx->counter[0] & 0xff)== 0) {
+        if ((ctx->counter[0] & SWP32(0xff))== 0) {
             partial_precompute_tworounds(ctx);
         }
     }

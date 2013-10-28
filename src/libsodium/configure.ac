@@ -1,5 +1,5 @@
 AC_PREREQ([2.65])
-AC_INIT([libsodium],[0.4.3],
+AC_INIT([libsodium],[0.4.5],
   [https://github.com/jedisct1/libsodium/issues],
   [libsodium],
   [https://github.com/jedisct1/libsodium])
@@ -16,9 +16,9 @@ ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 
 SODIUM_LIBRARY_VERSION_MAJOR=4
-SODIUM_LIBRARY_VERSION_MINOR=3
+SODIUM_LIBRARY_VERSION_MINOR=4
 DLL_VERSION=4
-SODIUM_LIBRARY_VERSION=7:0:3
+SODIUM_LIBRARY_VERSION=9:0:5
 #                      | | |
 #               +------+ | +---+
 #               |        |     |
@@ -276,6 +276,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
+AC_C_INLINE
 AC_C_BIGENDIAN(
   AC_DEFINE(NATIVE_BIG_ENDIAN, 1, [machine is bigendian]),
   AC_DEFINE(NATIVE_LITTLE_ENDIAN, 1, [machine is littleendian]),
@@ -325,6 +326,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #if defined(__clang__) && !defined(__x86_64__)
 # error clang doesn't properly compile smult_curve25519_donna_c64.c
 #endif
+#ifndef NATIVE_LITTLE_ENDIAN
+# error donna_c64 currently requires a little endian CPU
+#endif
 #include <stdint.h>
 typedef unsigned uint128_t __attribute__((mode(TI)));
 void fcontract(uint128_t *t) {
@@ -367,7 +371,7 @@ dnl Checks for functions and headers
 AC_CHECK_FUNC(clock_gettime, , [AC_CHECK_LIB(rt, clock_gettime)])
 AC_CHECK_FUNC(fegetenv, , [AC_CHECK_LIB(m, fegetenv)])
 
-AC_CHECK_FUNCS([SecureZeroMemory])
+AC_CHECK_FUNCS([SecureZeroMemory arc4random arc4random_buf])
 
 AC_SUBST([LIBTOOL_EXTRA_FLAGS])
 
@@ -388,6 +392,7 @@ AS_IF([test "x$PKG_CONFIG" != "x"], [
   AC_CONFIG_FILES([libsodium.pc])
 ])
 AC_CONFIG_FILES([Makefile
+                 msvc-scripts/Makefile
                  src/Makefile
                  src/libsodium/Makefile
                  src/libsodium/include/Makefile

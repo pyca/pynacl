@@ -2,7 +2,6 @@
 #include <sys/types.h>
 
 #include <assert.h>
-#include <inttypes.h>
 #include <limits.h>
 #include <stdint.h>
 
@@ -35,7 +34,7 @@ randombytes_random(void)
 void
 randombytes_stir(void)
 {
-    return implementation->stir();
+    implementation->stir();
 }
 
 uint32_t

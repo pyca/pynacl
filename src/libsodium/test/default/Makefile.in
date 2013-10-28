@@ -102,11 +102,12 @@ am__EXEEXT_1 = auth$(EXEEXT) auth2$(EXEEXT) auth3$(EXEEXT) \
 	hash3$(EXEEXT) onetimeauth$(EXEEXT) onetimeauth2$(EXEEXT) \
 	onetimeauth7$(EXEEXT) randombytes$(EXEEXT) scalarmult$(EXEEXT) \
 	scalarmult2$(EXEEXT) scalarmult5$(EXEEXT) scalarmult6$(EXEEXT) \
-	secretbox$(EXEEXT) secretbox2$(EXEEXT) secretbox7$(EXEEXT) \
-	secretbox8$(EXEEXT) shorthash$(EXEEXT) sodium_core$(EXEEXT) \
-	sodium_utils$(EXEEXT) sodium_version$(EXEEXT) stream$(EXEEXT) \
-	stream2$(EXEEXT) stream3$(EXEEXT) stream4$(EXEEXT) \
-	stream5$(EXEEXT) stream6$(EXEEXT)
+	scalarmult7$(EXEEXT) scalarmult8$(EXEEXT) secretbox$(EXEEXT) \
+	secretbox2$(EXEEXT) secretbox7$(EXEEXT) secretbox8$(EXEEXT) \
+	shorthash$(EXEEXT) sodium_core$(EXEEXT) sodium_utils$(EXEEXT) \
+	sodium_version$(EXEEXT) stream$(EXEEXT) stream2$(EXEEXT) \
+	stream3$(EXEEXT) stream4$(EXEEXT) stream5$(EXEEXT) \
+	stream6$(EXEEXT)
 auth_SOURCES = auth.c
 auth_OBJECTS = auth.$(OBJEXT)
 auth_DEPENDENCIES = $(TESTS_LDADD)
@@ -189,6 +190,12 @@ scalarmult5_DEPENDENCIES = $(TESTS_LDADD)
 scalarmult6_SOURCES = scalarmult6.c
 scalarmult6_OBJECTS = scalarmult6.$(OBJEXT)
 scalarmult6_DEPENDENCIES = $(TESTS_LDADD)
+scalarmult7_SOURCES = scalarmult7.c
+scalarmult7_OBJECTS = scalarmult7.$(OBJEXT)
+scalarmult7_DEPENDENCIES = $(TESTS_LDADD)
+scalarmult8_SOURCES = scalarmult8.c
+scalarmult8_OBJECTS = scalarmult8.$(OBJEXT)
+scalarmult8_DEPENDENCIES = $(TESTS_LDADD)
 secretbox_SOURCES = secretbox.c
 secretbox_OBJECTS = secretbox.$(OBJEXT)
 secretbox_DEPENDENCIES = $(TESTS_LDADD)
@@ -269,18 +276,19 @@ SOURCES = auth.c auth2.c auth3.c auth5.c box.c box2.c box7.c box8.c \
 	core1.c core2.c core3.c core4.c core5.c core6.c generichash.c \
 	generichash2.c hash.c hash3.c onetimeauth.c onetimeauth2.c \
 	onetimeauth7.c randombytes.c scalarmult.c scalarmult2.c \
-	scalarmult5.c scalarmult6.c secretbox.c secretbox2.c \
-	secretbox7.c secretbox8.c shorthash.c sodium_core.c \
-	sodium_utils.c sodium_version.c stream.c stream2.c stream3.c \
-	stream4.c stream5.c stream6.c
+	scalarmult5.c scalarmult6.c scalarmult7.c scalarmult8.c \
+	secretbox.c secretbox2.c secretbox7.c secretbox8.c shorthash.c \
+	sodium_core.c sodium_utils.c sodium_version.c stream.c \
+	stream2.c stream3.c stream4.c stream5.c stream6.c
 DIST_SOURCES = auth.c auth2.c auth3.c auth5.c box.c box2.c box7.c \
 	box8.c core1.c core2.c core3.c core4.c core5.c core6.c \
 	generichash.c generichash2.c hash.c hash3.c onetimeauth.c \
 	onetimeauth2.c onetimeauth7.c randombytes.c scalarmult.c \
-	scalarmult2.c scalarmult5.c scalarmult6.c secretbox.c \
-	secretbox2.c secretbox7.c secretbox8.c shorthash.c \
-	sodium_core.c sodium_utils.c sodium_version.c stream.c \
-	stream2.c stream3.c stream4.c stream5.c stream6.c
+	scalarmult2.c scalarmult5.c scalarmult6.c scalarmult7.c \
+	scalarmult8.c secretbox.c secretbox2.c secretbox7.c \
+	secretbox8.c shorthash.c sodium_core.c sodium_utils.c \
+	sodium_version.c stream.c stream2.c stream3.c stream4.c \
+	stream5.c stream6.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -647,6 +655,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	cmptest.h \
+	wintest.bat \
 	auth.exp \
 	auth2.exp \
 	auth3.exp \
@@ -673,6 +682,8 @@ EXTRA_DIST = \
 	scalarmult2.exp \
 	scalarmult5.exp \
 	scalarmult6.exp \
+	scalarmult7.exp \
+	scalarmult8.exp \
 	secretbox.exp \
 	secretbox2.exp \
 	secretbox7.exp \
@@ -715,6 +726,8 @@ DISTCLEANFILES = \
 	scalarmult2.res \
 	scalarmult5.res \
 	scalarmult6.res \
+	scalarmult7.res \
+	scalarmult8.res \
 	secretbox.res \
 	secretbox2.res \
 	secretbox7.res \
@@ -765,6 +778,8 @@ TESTS_TARGETS = \
 	scalarmult2 \
 	scalarmult5 \
 	scalarmult6 \
+	scalarmult7 \
+	scalarmult8 \
 	secretbox \
 	secretbox2 \
 	secretbox7 \
@@ -835,6 +850,10 @@ scalarmult5_SOURCE = cmptest.h scalarmult5.c
 scalarmult5_LDADD = $(TESTS_LDADD)
 scalarmult6_SOURCE = cmptest.h scalarmult6.c
 scalarmult6_LDADD = $(TESTS_LDADD)
+scalarmult7_SOURCE = cmptest.h scalarmult7.c
+scalarmult7_LDADD = $(TESTS_LDADD)
+scalarmult8_SOURCE = cmptest.h scalarmult8.c
+scalarmult8_LDADD = $(TESTS_LDADD)
 secretbox_SOURCE = cmptest.h secretbox.c
 secretbox_LDADD = $(TESTS_LDADD)
 secretbox2_SOURCE = cmptest.h secretbox2.c
@@ -1011,6 +1030,14 @@ scalarmult6$(EXEEXT): $(scalarmult6_OBJECTS) $(scalarmult6_DEPENDENCIES) $(EXTRA
 	@rm -f scalarmult6$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(scalarmult6_OBJECTS) $(scalarmult6_LDADD) $(LIBS)
 
+scalarmult7$(EXEEXT): $(scalarmult7_OBJECTS) $(scalarmult7_DEPENDENCIES) $(EXTRA_scalarmult7_DEPENDENCIES) 
+	@rm -f scalarmult7$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(scalarmult7_OBJECTS) $(scalarmult7_LDADD) $(LIBS)
+
+scalarmult8$(EXEEXT): $(scalarmult8_OBJECTS) $(scalarmult8_DEPENDENCIES) $(EXTRA_scalarmult8_DEPENDENCIES) 
+	@rm -f scalarmult8$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(scalarmult8_OBJECTS) $(scalarmult8_LDADD) $(LIBS)
+
 secretbox$(EXEEXT): $(secretbox_OBJECTS) $(secretbox_DEPENDENCIES) $(EXTRA_secretbox_DEPENDENCIES) 
 	@rm -f secretbox$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(secretbox_OBJECTS) $(secretbox_LDADD) $(LIBS)
@@ -1099,6 +1126,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult6.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult7.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult8.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/secretbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/secretbox2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/secretbox7.Po@am__quote@
@@ -1515,6 +1544,20 @@ scalarmult5.log: scalarmult5$(EXEEXT)
 scalarmult6.log: scalarmult6$(EXEEXT)
 	@p='scalarmult6$(EXEEXT)'; \
 	b='scalarmult6'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+scalarmult7.log: scalarmult7$(EXEEXT)
+	@p='scalarmult7$(EXEEXT)'; \
+	b='scalarmult7'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+scalarmult8.log: scalarmult8$(EXEEXT)
+	@p='scalarmult8$(EXEEXT)'; \
+	b='scalarmult8'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

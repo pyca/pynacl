@@ -7,14 +7,21 @@
 # endif
 #endif
 
-#include "export.h"
+#include <stddef.h>
 
-#define crypto_scalarmult_curve25519_BYTES 32
-#define crypto_scalarmult_curve25519_SCALARBYTES 32
+#include "export.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define crypto_scalarmult_curve25519_BYTES 32
+SODIUM_EXPORT
+size_t crypto_scalarmult_curve25519_bytes(void);
+
+#define crypto_scalarmult_curve25519_SCALARBYTES 32
+SODIUM_EXPORT
+size_t crypto_scalarmult_curve25519_scalarbytes(void);
 
 SODIUM_EXPORT
 int crypto_scalarmult_curve25519(unsigned char *,const unsigned char *,const unsigned char *);

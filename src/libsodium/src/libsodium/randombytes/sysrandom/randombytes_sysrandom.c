@@ -1,19 +1,20 @@
 
 #include <sys/types.h>
-#include <sys/time.h>
+#ifndef _WIN32
+# include <sys/time.h>
+#endif
 
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
-#ifndef _WIN32
-# include <poll.h>
-#endif
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#ifndef _WIN32
+# include <poll.h>
+# include <unistd.h>
+#endif
 
 #include "randombytes.h"
 #include "randombytes_sysrandom.h"
@@ -29,7 +30,7 @@ typedef struct SysRandom_ {
     HCRYPTPROV hcrypt_prov;
 #endif
     int        random_data_source_fd;
-    bool       initialized;
+    int        initialized;
 } SysRandom;
 
 static SysRandom stream = {
@@ -165,7 +166,7 @@ randombytes_sysrandom_buf(void * const buf, const size_t size)
         abort();
     }
 #else
-    if (! CryptGenRandom(stream.hcrypt_prov, size, buf)) {
+    if (! CryptGenRandom(stream.hcrypt_prov, size, (BYTE *) buf)) {
         abort();
     }
 #endif
