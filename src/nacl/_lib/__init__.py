@@ -36,8 +36,10 @@ HEADERS = glob.glob(
 ffi = FFI()
 
 
-# Add all of our header files
-for header in HEADERS:
+# Add all of our header files, but sort first for consistency of the
+# hash that CFFI generates and uses in the .so filename (the order of
+# glob() results cannot be relied on)
+for header in sorted(HEADERS):
     with open(header, "r") as hfile:
         ffi.cdef(hfile.read())
 
