@@ -51,6 +51,11 @@ VECTORS = [
         (b"MTExMTExMTExMTExMTExMTExMTExMTEx/FXin+ZFktcORk09eIOPan0gdtTwGjHAiFV"
          b"rEgIcZPpPSBPcDg7XQQcLLp8Bv+TQc/FQ0w6qnbP3XA8="),
     ),
+    (
+        nacl.encoding.SafeBase64Encoder,
+        (b"MTExMTExMTExMTExMTExMTExMTExMTEx_FXin-ZFktcORk09eIOPan0gdtTwGjHAiFV"
+         b"rEgIcZPpPSBPcDg7XQQcLLp8Bv-TQc_FQ0w6qnbP3XA8="),
+    ),
 ]
 
 
