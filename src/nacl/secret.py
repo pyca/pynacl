@@ -49,7 +49,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         if len(key) != self.KEY_SIZE:
             raise ValueError(
                 "The key must be exactly %s bytes long" %
-                nacl.lib.crypto_secretbox_KEYBYTES,
+                self.KEY_SIZE,
             )
 
         self._key = key
