@@ -22,7 +22,7 @@ __all__ = ["crypto_pwhash_scryptxsalsa208sha256", "crypto_pwhash_scryptxsalsa208
 crypto_pwhash_scryptxsalsa208sha256_SALTBYTES = lib.crypto_pwhash_scryptxsalsa208sha256_saltbytes()
 crypto_pwhash_scryptxsalsa208sha256_STRBYTES = lib.crypto_pwhash_scryptxsalsa208sha256_strbytes()
 
-def crypto_pwhash_scryptxsalsa208sha256( outlen, passwd, salt, opslimit = 10000, memlimit = (2**11)*100 ):
+def crypto_pwhash_scryptxsalsa208sha256( outlen, passwd, salt, opslimit = 20000, memlimit = (2**20)*100 ):
     """
     returns uses the ``passwd`` and ``salt`` to produce derive a key of ``outlen`` bytes
     can be tuned by picking different ``opslimit`` and ``memlimit``
@@ -38,7 +38,7 @@ def crypto_pwhash_scryptxsalsa208sha256( outlen, passwd, salt, opslimit = 10000,
 
     buf = lib.ffi.new("unsigned char[]", outlen)
 
-    ret = lib.crypto_pwhasd_scryptxsalsasha256(buf, outlen, passwd, len(passwd), salt, opslimit, memlimit )
+    ret = lib.crypto_pwhash_scryptxsalsa208sha256(buf, outlen, passwd, len(passwd), salt, opslimit, memlimit )
 
     if ret != 0:
         raise CryptoError( "Key derivation fails!" )
