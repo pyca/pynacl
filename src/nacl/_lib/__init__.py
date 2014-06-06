@@ -62,7 +62,7 @@ class Library(object):
 
     def __init__(self, ffi):
         self.ffi = ffi
-        self._initalized = False
+        self._initialized = False
 
         # This prevents the compile_module() from being called, the module
         # should have been compiled by setup.py
@@ -71,8 +71,9 @@ class Library(object):
         self.ffi.verifier.compile_module = _compile_module
 
     def __getattr__(self, name):
-        if not self._initalized:
+        if not self._initialized:
             self._lib = self.ffi.verifier.load_library()
+            self._initialized = True
 
         # redirect attribute access to the underlying lib
         attr = getattr(self._lib, name)
