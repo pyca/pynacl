@@ -26,51 +26,51 @@ crypto_sign_SECRETKEYBYTES = lib.crypto_sign_secretkeybytes()
 
 def crypto_sign_keypair():
     """
-    Returns a randomly generated secret key and public key.
+    Returns a randomly generated public key and secret key.
 
-    :rtype: (bytes(secret_key), bytes(public_key))
+    :rtype: (bytes(public_key), bytes(secret_key))
     """
-    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
     pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
+    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     if lib.crypto_sign_keypair(pk, sk) != 0:
         raise CryptoError("An error occurred while generating keypairs")
 
     return (
-        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
         lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
+        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
     )
 
 
 def crypto_sign_seed_keypair(seed):
     """
-    Computes and returns the secret key and public key using the seed ``seed``.
+    Computes and returns the public key and secret key using the seed ``seed``.
 
     :param seed: bytes
-    :rtype: (bytes(secret_key), bytes(public_key))
+    :rtype: (bytes(public_key), bytes(secret_key))
     """
     if len(seed) != crypto_sign_SEEDBYTES:
         raise ValueError("Invalid seed")
 
-    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
     pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
+    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     if lib.crypto_sign_seed_keypair(pk, sk, seed) != 0:
         raise CryptoError("An error occured while generating keypairs")
 
     return (
-        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
         lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
+        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
     )
 
 
-def crypto_sign(sk, message):
+def crypto_sign(message, sk):
     """
     Signs the message ``message`` using the secret key ``sk`` and returns the
     signed message.
 
-    :param sk: bytes
     :param message: bytes
+    :param sk: bytes
     :rtype: bytes
     """
     signed = lib.ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
@@ -82,13 +82,13 @@ def crypto_sign(sk, message):
     return lib.ffi.buffer(signed, signed_len[0])[:]
 
 
-def crypto_sign_open(pk, signed):
+def crypto_sign_open(signed, pk):
     """
     Verifies the signature of the signed message ``signed`` using the public
     key ``pkg`` and returns the unsigned message.
 
-    :param pk: bytes
     :param signed: bytes
+    :param pk: bytes
     :rtype: bytes
     """
     message = lib.ffi.new("unsigned char[]", len(signed))

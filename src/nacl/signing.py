@@ -96,7 +96,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         # Decode the signed message
         smessage = encoder.decode(smessage)
 
-        return nacl.c.crypto_sign_open(self._key, smessage)
+        return nacl.c.crypto_sign_open(smessage, self._key)
 
 
 class SigningKey(encoding.Encodable, StringFixer, object):
@@ -129,7 +129,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
                 nacl.c.crypto_sign_SEEDBYTES
             )
 
-        secret_key, public_key = nacl.c.crypto_sign_seed_keypair(seed)
+        public_key, secret_key = nacl.c.crypto_sign_seed_keypair(seed)
 
         self._seed = seed
         self._signing_key = secret_key
@@ -158,7 +158,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         :param encoder: A class that is used to encode the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
-        raw_signed = nacl.c.crypto_sign(self._signing_key, message)
+        raw_signed = nacl.c.crypto_sign(message, self._signing_key)
 
         signature = encoder.encode(raw_signed[:nacl.c.crypto_sign_BYTES])
         message = encoder.encode(raw_signed[nacl.c.crypto_sign_BYTES:])

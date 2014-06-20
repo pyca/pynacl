@@ -70,23 +70,20 @@ def test_box():
 
 
 def test_sign():
-    # TODO: NaCl C++ is pk=keypair(sk), C is keypair(pk,sk)
     seed = "\x00" * c.crypto_sign_SEEDBYTES
-    secretkey, pubkey = c.crypto_sign_seed_keypair(seed)
+    pubkey, secretkey = c.crypto_sign_seed_keypair(seed)
     assert len(pubkey) == c.crypto_sign_PUBLICKEYBYTES
     assert len(secretkey) == c.crypto_sign_SECRETKEYBYTES
 
-    secretkey, pubkey = c.crypto_sign_keypair()
+    pubkey, secretkey = c.crypto_sign_keypair()
     assert len(pubkey) == c.crypto_sign_PUBLICKEYBYTES
     assert len(secretkey) == c.crypto_sign_SECRETKEYBYTES
 
-    # TODO: NaCl is sm=sign(msg, sk)
     msg = "message"
-    sigmsg = c.crypto_sign(secretkey, msg)
+    sigmsg = c.crypto_sign(msg, secretkey)
     assert len(sigmsg) == len(msg) + c.crypto_sign_BYTES
 
-    # TODO: NaCl is msg=open(sm, pk)
-    msg2 = c.crypto_sign_open(pubkey, sigmsg)
+    msg2 = c.crypto_sign_open(sigmsg, pubkey)
     assert msg2 == msg
 
 def secret_scalar():
