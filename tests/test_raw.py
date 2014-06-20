@@ -16,11 +16,15 @@ from binascii import hexlify
 from nacl import c
 import hashlib
 
+
 def test_hash():
     msg = "message"
     h1 = c.crypto_hash(msg)
     assert len(h1) == c.crypto_hash_BYTES
-    assert hexlify(h1) == "f8daf57a3347cc4d6b9d575b31fe6077e2cb487f60a96233c08cb479dbf31538cc915ec6d48bdbaa96ddc1a16db4f4f96f37276cfcb3510b8246241770d5952c"
+    assert hexlify(h1) == ("f8daf57a3347cc4d6b9d575b31fe6077"
+                           "e2cb487f60a96233c08cb479dbf31538"
+                           "cc915ec6d48bdbaa96ddc1a16db4f4f9"
+                           "6f37276cfcb3510b8246241770d5952c")
     assert hexlify(h1) == hashlib.sha512(msg).hexdigest()
 
     h2 = c.crypto_hash_sha512(msg)
@@ -29,7 +33,8 @@ def test_hash():
 
     h3 = c.crypto_hash_sha256(msg)
     assert len(h3) == c.crypto_hash_sha256_BYTES
-    assert hexlify(h3) == "ab530a13e45914982b79f9b7e3fba994cfd1f3fb22f71cea1afbf02b460c6d1d"
+    assert hexlify(h3) == ("ab530a13e45914982b79f9b7e3fba994"
+                           "cfd1f3fb22f71cea1afbf02b460c6d1d")
     assert hexlify(h3) == hashlib.sha256(msg).hexdigest()
 
 
@@ -42,6 +47,7 @@ def test_secretbox():
     assert hexlify(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
     msg2 = c.crypto_secretbox_open(ct, nonce, key)
     assert msg2 == msg
+
 
 def test_box():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
@@ -86,11 +92,13 @@ def test_sign():
     msg2 = c.crypto_sign_open(sigmsg, pubkey)
     assert msg2 == msg
 
+
 def secret_scalar():
     pubkey, secretkey = c.crypto_box_keypair()
     assert len(secretkey) == c.crypto_box_SECRETKEYBYTES
     assert c.crypto_box_SECRETKEYBYTES == c.crypto_scalarmult_BYTES
     return secretkey, pubkey
+
 
 def test_scalarmult():
     x, xpub = secret_scalar()
