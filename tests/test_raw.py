@@ -44,34 +44,28 @@ def test_secretbox():
     assert msg2 == msg
 
 def test_box():
-    # TODO: NaCl C++ is pk=box_keypair(sk), C is box_keypair(pk,sk)
-    A_secretkey, A_pubkey = c.crypto_box_keypair()
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
     assert len(A_secretkey) == c.crypto_box_SECRETKEYBYTES
     assert len(A_pubkey) == c.crypto_box_PUBLICKEYBYTES
-    B_secretkey, B_pubkey = c.crypto_box_keypair()
+    B_pubkey, B_secretkey = c.crypto_box_keypair()
 
-    # TODO: NaCl is beforenm(k,pk,sk)
-    k1 = c.crypto_box_beforenm(A_secretkey, B_pubkey)
+    k1 = c.crypto_box_beforenm(B_pubkey, A_secretkey)
     assert len(k1) == c.crypto_box_BEFORENMBYTES
-    k2 = c.crypto_box_beforenm(B_secretkey, A_pubkey)
+    k2 = c.crypto_box_beforenm(A_pubkey, B_secretkey)
     assert hexlify(k1) == hexlify(k2)
 
     message = "message"
     nonce = "\x01" * c.crypto_box_NONCEBYTES
-    # TODO: NaCl is box_afternm(ct, msg, nonce, k)
-    ct1 = c.crypto_box_afternm(k1, message, nonce)
+    ct1 = c.crypto_box_afternm(message, nonce, k1)
     assert len(ct1) == len(message) + c.crypto_box_BOXZEROBYTES
 
-    # TODO: NaCl is box(ct, msg, nonce, pubkey, secretkey)
-    ct2 = c.crypto_box(A_secretkey, B_pubkey, message, nonce)
+    ct2 = c.crypto_box(message, nonce, B_pubkey, A_secretkey)
     assert hexlify(ct2) == hexlify(ct1)
 
-    # TODO: NaCl is open(msg, ct, nonce, pk, sk)
-    m1 = c.crypto_box_open(B_secretkey, A_pubkey, ct1, nonce)
+    m1 = c.crypto_box_open(ct1, nonce, A_pubkey, B_secretkey)
     assert m1 == message
 
-    # TODO: NaCl is open_afternm(msg, ct, nonce, k)
-    m2 = c.crypto_box_open_afternm(k1, ct1, nonce)
+    m2 = c.crypto_box_open_afternm(ct1, nonce, k1)
     assert m2 == message
 
 
@@ -96,8 +90,7 @@ def test_sign():
     assert msg2 == msg
 
 def secret_scalar():
-    # TODO: NaCl is box_keypair(pk,sk)
-    secretkey, pubkey = c.crypto_box_keypair()
+    pubkey, secretkey = c.crypto_box_keypair()
     assert len(secretkey) == c.crypto_box_SECRETKEYBYTES
     assert c.crypto_box_SECRETKEYBYTES == c.crypto_scalarmult_BYTES
     return secretkey, pubkey
