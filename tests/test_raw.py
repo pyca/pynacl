@@ -37,12 +37,10 @@ def test_secretbox():
     key = "\x00" * c.crypto_secretbox_KEYBYTES
     msg = "message"
     nonce = "\x01" * c.crypto_secretbox_NONCEBYTES
-    # TODO: NaCl is secretbox(msg,nonce,key)
-    ct = c.crypto_secretbox(key, msg, nonce)
+    ct = c.crypto_secretbox(msg, nonce, key)
     assert len(ct) == len(msg) + c.crypto_secretbox_BOXZEROBYTES
     assert hexlify(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
-    # TODO: NaCl is secretbox_open(ct,nonce,key)
-    msg2 = c.crypto_secretbox_open(key, ct, nonce)
+    msg2 = c.crypto_secretbox_open(ct, nonce, key)
     assert msg2 == msg
 
 def test_box():

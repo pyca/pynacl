@@ -78,7 +78,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        ciphertext = nacl.c.crypto_secretbox(self._key, plaintext, nonce)
+        ciphertext = nacl.c.crypto_secretbox(plaintext, nonce, self._key)
 
         encoded_nonce = encoder.encode(nonce)
         encoded_ciphertext = encoder.encode(ciphertext)
@@ -113,6 +113,6 @@ class SecretBox(encoding.Encodable, StringFixer, object):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        plaintext = nacl.c.crypto_secretbox_open(self._key, ciphertext, nonce)
+        plaintext = nacl.c.crypto_secretbox_open(ciphertext, nonce, self._key)
 
         return plaintext
