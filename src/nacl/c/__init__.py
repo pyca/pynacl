@@ -25,7 +25,7 @@ from nacl.c.crypto_hash import (
 )
 from nacl.c.crypto_scalarmult import (
     crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
-    crypto_scalarmult_base,
+    crypto_scalarmult, crypto_scalarmult_base,
 )
 from nacl.c.crypto_secretbox import (
     crypto_secretbox_KEYBYTES, crypto_secretbox_NONCEBYTES,
@@ -63,6 +63,7 @@ __all__ = [
 
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
+    "crypto_scalarmult",
     "crypto_scalarmult_base",
 
     "crypto_secretbox_KEYBYTES",
