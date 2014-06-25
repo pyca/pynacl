@@ -114,8 +114,8 @@ class Box(encoding.Encodable, StringFixer, object):
     def __init__(self, private_key, public_key):
         if private_key and public_key:
             self._shared_key = nacl.c.crypto_box_beforenm(
-                private_key.encode(encoder=encoding.RawEncoder),
                 public_key.encode(encoder=encoding.RawEncoder),
+                private_key.encode(encoder=encoding.RawEncoder),
             )
         else:
             self._shared_key = None
@@ -152,9 +152,9 @@ class Box(encoding.Encodable, StringFixer, object):
                              self.NONCE_SIZE)
 
         ciphertext = nacl.c.crypto_box_afternm(
-            self._shared_key,
             plaintext,
             nonce,
+            self._shared_key,
         )
 
         encoded_nonce = encoder.encode(nonce)
@@ -190,9 +190,9 @@ class Box(encoding.Encodable, StringFixer, object):
                              self.NONCE_SIZE)
 
         plaintext = nacl.c.crypto_box_open_afternm(
-            self._shared_key,
             ciphertext,
             nonce,
+            self._shared_key,
         )
 
         return plaintext

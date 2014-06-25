@@ -23,14 +23,14 @@ crypto_secretbox_ZEROBYTES = lib.crypto_secretbox_zerobytes()
 crypto_secretbox_BOXZEROBYTES = lib.crypto_secretbox_boxzerobytes()
 
 
-def crypto_secretbox(key, message, nonce):
+def crypto_secretbox(message, nonce, key):
     """
     Encrypts and returns the message ``message`` with the secret ``key`` and
     the nonce ``nonce``.
 
-    :param key: bytes
     :param message: bytes
     :param nonce: bytes
+    :param key: bytes
     :rtype: bytes
     """
     if len(key) != crypto_secretbox_KEYBYTES:
@@ -49,14 +49,14 @@ def crypto_secretbox(key, message, nonce):
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
 
 
-def crypto_secretbox_open(key, ciphertext, nonce):
+def crypto_secretbox_open(ciphertext, nonce, key):
     """
     Decrypt and returns the encrypted message ``ciphertext`` with the secret
     ``key`` and the nonce ``nonce``.
 
-    :param key: bytes
     :param ciphertext: bytes
     :param nonce: bytes
+    :param key: bytes
     :rtype: bytes
     """
     if len(key) != crypto_secretbox_KEYBYTES:
