@@ -67,20 +67,8 @@ A nonce does not need to be random, nor does the method of generating them need
 to be secret. A nonce could simply be a counter incremented with each message
 encrypted.
 
-Both the sender and the receiver should record every nonce both that they've
-used and they've received from the other. They should reject any message which
-reuses a nonce and they should make absolutely sure never to reuse a nonce. It
-is not enough to simply use a random value and hope that it's not being reused
-(simply generating random values would open up the system to a
-`Birthday Attack <https://en.wikipedia.org/wiki/Birthday_attack>`_).
-
-One good method of generating nonces is for each person to pick a unique prefix,
-for example ``b"p1"`` and ``b"p2"``. When each person generates a nonce they
-prefix it, so instead of ``nacl.utils.random(24)`` you'd do
-``b"p1" + nacl.utils.random(22)``. This prefix serves as a guarantee that no
-two messages from different people will inadvertently overlap nonces while in
-transit. They should still record every nonce they've personally used and every
-nonce they've received to prevent reuse or replays.
+The nonce is long enough that using random bytes from ``nacl.utils.random(24)``
+suffices. A birthday attack would require octillions of nonces before collision.
 
 
 Reference
