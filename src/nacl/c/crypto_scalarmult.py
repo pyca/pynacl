@@ -14,7 +14,6 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl._lib import lib
-from nacl.exceptions import CryptoError
 
 
 crypto_scalarmult_BYTES = lib.crypto_scalarmult_bytes()
@@ -31,9 +30,8 @@ def crypto_scalarmult_base(n):
     """
     q = lib.ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
-    if lib.crypto_scalarmult_base(q, n) != 0:
-        raise CryptoError(
-            "An error occurred while computing the scalar product")
+    rc = lib.crypto_scalarmult_base(q, n)
+    assert rc == 0
 
     return lib.ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
 
@@ -49,8 +47,7 @@ def crypto_scalarmult(n, p):
     """
     q = lib.ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
-    if lib.crypto_scalarmult(q, n, p) != 0:
-        raise CryptoError(
-            "An error occurred while computing the scalar product")
+    rc = lib.crypto_scalarmult(q, n, p)
+    assert rc == 0
 
     return lib.ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
