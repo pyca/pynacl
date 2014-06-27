@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from binascii import hexlify
+from binascii import hexlify, unhexlify
 from nacl import c
 import hashlib
 
@@ -108,6 +108,21 @@ def test_scalarmult():
     x, xpub = secret_scalar()
     assert len(x) == 32
     y, ypub = secret_scalar()
+    # the Curve25519 base point (generator)
+    base = unhexlify(b"09" + b"00"*31)
 
-    bx = c.crypto_scalarmult_base(x)
-    assert tohex(bx) == tohex(xpub)
+    bx1 = c.crypto_scalarmult_base(x)
+    bx2 = c.crypto_scalarmult(x, base)
+    assert tohex(bx1) == tohex(bx2)
+    assert tohex(bx1) == tohex(xpub)
+
+    xby = c.crypto_scalarmult(x, c.crypto_scalarmult_base(y))
+    ybx = c.crypto_scalarmult(y, c.crypto_scalarmult_base(x))
+    assert tohex(xby) == tohex(ybx)
+
+    z = unhexlify(b"10"*32)
+    bz1 = c.crypto_scalarmult_base(z)
+    assert tohex(bz1) == ("781faab908430150daccdd6f9d6c5086"
+                          "e34f73a93ebbaa271765e5036edfc519")
+    bz2 = c.crypto_scalarmult(z, base)
+    assert tohex(bz1) == tohex(bz2)
