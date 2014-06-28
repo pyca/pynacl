@@ -70,6 +70,17 @@ class Base64Encoder(object):
         return base64.b64decode(data)
 
 
+class URLSafeBase64Encoder(object):
+
+    @staticmethod
+    def encode(data):
+        return base64.urlsafe_b64encode(data)
+
+    @staticmethod
+    def decode(data):
+        return base64.urlsafe_b64decode(data)
+
+
 class Encodable(object):
 
     def encode(self, encoder=RawEncoder):
