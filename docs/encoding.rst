@@ -36,6 +36,9 @@ Built in Encoders
 .. autoclass:: nacl.encoding.Base64Encoder
     :members:
 
+.. autoclass:: nacl.encoding.URLSafeBase64Encoder
+    :members:
+
 
 Defining your own Encoder
 -------------------------
