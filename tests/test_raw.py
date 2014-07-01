@@ -109,7 +109,7 @@ def test_scalarmult():
     assert len(x) == 32
     y, ypub = secret_scalar()
     # the Curve25519 base point (generator)
-    base = unhexlify(b"09" + b"00"*31)
+    base = unhexlify(b"09" + b"00" * 31)
 
     bx1 = c.crypto_scalarmult_base(x)
     bx2 = c.crypto_scalarmult(x, base)
@@ -120,7 +120,7 @@ def test_scalarmult():
     ybx = c.crypto_scalarmult(y, c.crypto_scalarmult_base(x))
     assert tohex(xby) == tohex(ybx)
 
-    z = unhexlify(b"10"*32)
+    z = unhexlify(b"10" * 32)
     bz1 = c.crypto_scalarmult_base(z)
     assert tohex(bz1) == ("781faab908430150daccdd6f9d6c5086"
                           "e34f73a93ebbaa271765e5036edfc519")
