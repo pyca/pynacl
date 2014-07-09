@@ -135,7 +135,9 @@ Reference
 
     .. classmethod:: decode(encoded, encoder)
 
-        I don't get this method.
+        Decodes a serialized :class:`~nacl.public.Box`.
+
+        :return: An instance of :class:`~nacl.public.Box`.
 
     .. method:: encrypt(plaintext, nonce, encoder)
 
