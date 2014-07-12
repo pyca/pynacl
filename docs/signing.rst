@@ -3,11 +3,11 @@ Digital Signatures
 
 .. currentmodule:: nacl.signing
 
-You can use a digital signature for many of the same reasons that you might sign
-a paper document. A valid digital signature gives a recipient reason to believe
-that the message was created by a known sender such that they cannot deny sending
-it (authentication and non-repudiation) and that the message was not altered in
-transit (integrity).
+You can use a digital signature for many of the same reasons that you might
+sign a paper document. A valid digital signature gives a recipient reason to
+believe that the message was created by a known sender such that they cannot
+deny sending it (authentication and non-repudiation) and that the message was
+not altered in transit (integrity).
 
 Digital signatures allow you to publish a public key, and then you can use your
 private signing key to sign messages. Others who have your public key can then
@@ -204,5 +204,6 @@ Algorithm
 :k: Ed25519 private key (passed into :class:`~nacl.signing.SigningKey`)
 :A: Ed25519 public key derived from k
 :M: message to be signed
-:R: a deterministic nonce value calculated from a combination of private key data RH and the message M
+:R: a deterministic nonce value calculated from a combination of private key
+    data RH and the message M
 :S: Ed25519 signature
