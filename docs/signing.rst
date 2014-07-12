@@ -1,11 +1,13 @@
 Digital Signatures
 ==================
 
-You can use a digital signature for many of the same reasons that you might
-sign a paper document. A valid digital signature gives a recipient reason to
-believe that the message was created by a known sender such that they cannot
-deny sending it (authentication and non-repudiation) and that the message was
-not altered in transit (integrity).
+.. currentmodule:: nacl.signing
+
+You can use a digital signature for many of the same reasons that you might sign
+a paper document. A valid digital signature gives a recipient reason to believe
+that the message was created by a known sender such that they cannot deny sending
+it (authentication and non-repudiation) and that the message was not altered in
+transit (integrity).
 
 Digital signatures allow you to publish a public key, and then you can use your
 private signing key to sign messages. Others who have your public key can then
@@ -51,18 +53,79 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 Reference
 ---------
 
-.. autoclass:: nacl.signing.SigningKey
-    :members:
+.. class:: SigningKey(seed, encoder)
 
-.. autoclass:: nacl.signing.VerifyKey
-    :members:
+    Private key for producing digital signatures using the Ed25519 algorithm.
 
-.. autoclass:: nacl.signing.SignedMessage
-    :members:
+    Signing keys are produced from a 32-byte (256-bit) random seed value. This
+    value can be passed into the :class:`~nacl.signing.SigningKey` as a
+    :func:`bytes` whose length is 32.
 
-.. autoclass:: nacl.exceptions.BadSignatureError
-    :members:
+    .. warning:: This **must** be protected and remain secret. Anyone who knows
+        the value of your :class:`~nacl.signing.SigningKey` or it's seed can
+        masquerade as you.
 
+    :param bytes seed: Random 32-byte value (i.e. private key).
+    :param encoder: A class that is able to decode the ``seed``.
+
+    .. attribute:: verify_key
+
+        An instance of :class:`~.nacl.signing.VerifyKey` (i.e. public key)
+        that corresponds with the signing key.
+
+    .. classmethod:: generate()
+
+        Generates a random :class:`~nacl.signing.SigningKey` object
+
+        :return: An instance of :class:`~nacl.signing.SigningKey`.
+
+    .. method:: sign(message, encoder)
+
+        Sign a message using this key.
+
+        :param bytes message: The data to be signed.
+        :param encoder: A class that is able to decode the signed message.
+
+        :return: An instance of :class:`~nacl.signing.SignedMessage`.
+
+.. class:: VerifyKey(key, encoder)
+
+    The public key counterpart to an Ed25519 :class:`~nacl.signing.SigningKey`
+    for producing digital signatures.
+
+    :param bytes key: A serialized Ed25519 public key.
+    :param encoder: A class that is able to decode the ``key``.
+
+    .. method:: verify(smessage, signature, encoder)
+
+        Verifies the signature of a signed message.
+
+        :param bytes smessage: The signed message to verify. This is either
+            the original message or the concated signature and message.
+        :param bytes signature: The signature of the message to verify against.
+            If the value of ``smessage`` is the concated signature and message,
+            this parameter can be ``None``.
+        :param encoder: A class that is able to decode the secret message and
+            signature.
+
+        :return bytes: The message if successfully verified.
+
+        :raises nacl.exceptions.BadSignatureError: This is raised if the
+            signature is invalid.
+
+.. class:: SignedMessage()
+
+    A bytes subclass that holds a messaged that has been signed by a
+    :class:`SigningKey`.
+
+    .. attribute:: signature
+
+        The signature contained within the
+        :class:`~nacl.signing.SignedMessage`.
+
+    .. attribute:: message
+
+        The message contained within the :class:`~nacl.signing.SignedMessage`.
 
 Ed25519
 -------
