@@ -77,7 +77,8 @@ with the key, to avoid accidental nonce reuse on the next session. For this
 reason, many protocols derive a new key for each session, reset the counter
 to zero with each new key, and never store the derived key or the counter.
 
-You can safely generate random nonces by calling ``nacl.utils.random(SecretBox.NONCE_SIZE)``.
+You can safely generate random nonces by calling
+``nacl.utils.random(SecretBox.NONCE_SIZE)``.
 
 
 Reference
