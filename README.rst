@@ -1,6 +1,10 @@
 PyNaCl
 ======
 
+.. image:: https://pypip.in/version/PyNaCl/badge.svg
+    :target: https://pypi.python.org/pypi/PyNaCl/
+    :alt: Latest Version
+
 .. image:: https://travis-ci.org/pyca/pynacl.png?branch=master
     :target: https://travis-ci.org/pyca/pynacl
 
