@@ -14,9 +14,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-from binascii import hexlify, unhexlify
-from nacl import c
 import hashlib
+from binascii import hexlify, unhexlify
+
+import pytest
+
+from nacl import c
 
 
 def tohex(b):
@@ -79,6 +82,18 @@ def test_box():
 
     m2 = c.crypto_box_open_afternm(ct1, nonce, k1)
     assert m2 == message
+
+
+def test_box_wrong_lengths():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    with pytest.raises(ValueError):
+        c.crypto_box(b"abc", "\x00", A_pubkey, A_secretkey)
+    with pytest.raises(ValueError):
+        c.crypto_box(
+            b"abc", "\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey)
+    with pytest.raises(ValueError):
+        c.crypto_box(
+            b"abc", "\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
 
 
 def test_sign():
