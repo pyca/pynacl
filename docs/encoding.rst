@@ -1,6 +1,8 @@
 Encoders
 ========
 
+.. currentmodule:: nacl.encoding
+
 PyNaCl supports a simple method of encoding and decoding messages in different
 formats. Encoders are simple classes with staticmethods that encode/decode and
 are typically passed as a keyword argument `encoder` to various methods.
@@ -21,23 +23,17 @@ Then you can later decode it from hex:
 Built in Encoders
 -----------------
 
-.. autoclass:: nacl.encoding.RawEncoder
-    :members:
+.. class:: RawEncoder
 
-.. autoclass:: nacl.encoding.HexEncoder
-    :members:
+.. class:: HexEncoder
 
-.. autoclass:: nacl.encoding.Base16Encoder
-    :members:
+.. class:: Base16Encoder
 
-.. autoclass:: nacl.encoding.Base32Encoder
-    :members:
+.. class:: Base32Encoder
 
-.. autoclass:: nacl.encoding.Base64Encoder
-    :members:
+.. class:: Base64Encoder
 
-.. autoclass:: nacl.encoding.URLSafeBase64Encoder
-    :members:
+.. class:: URLSafeBase64Encoder
 
 
 Defining your own Encoder
