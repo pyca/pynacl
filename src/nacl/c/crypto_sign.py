@@ -57,7 +57,7 @@ def crypto_sign_seed_keypair(seed):
     sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     if lib.crypto_sign_seed_keypair(pk, sk, seed) != 0:
-        raise CryptoError("An error occured while generating keypairs")
+        raise CryptoError("An error occurred while generating keypairs")
 
     return (
         lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
