@@ -1,7 +1,8 @@
 PyNaCl: Python binding to the Networking and Cryptography (NaCl) library
 ========================================================================
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
@@ -18,6 +19,7 @@ Support Features
     :maxdepth: 2
 
     encoding
+    exceptions
 
 
 Api Documentation
@@ -27,7 +29,7 @@ Api Documentation
     :maxdepth: 2
     :glob:
 
-    api/*
+    api/hash
 
 
 Indices and tables
