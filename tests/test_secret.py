@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+
 import pytest
 
 from nacl.encoding import HexEncoder

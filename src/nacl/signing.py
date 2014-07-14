@@ -16,10 +16,9 @@ from __future__ import absolute_import, division, print_function
 
 import six
 
+from nacl import encoding
 import nacl.c
-
-from . import encoding
-from .utils import StringFixer, random
+from nacl.utils import StringFixer, random
 
 
 class SignedMessage(six.binary_type):

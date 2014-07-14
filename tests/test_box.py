@@ -15,11 +15,12 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+
 import pytest
 
 from nacl.encoding import HexEncoder
-from nacl.public import PrivateKey, PublicKey, Box
 from nacl.exceptions import CryptoError
+from nacl.public import Box, PrivateKey, PublicKey
 
 
 VECTORS = [
