@@ -14,10 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl import encoding
 import nacl.c
-
-from . import encoding
-from .utils import EncryptedMessage, StringFixer
+from nacl.utils import EncryptedMessage, StringFixer
 
 
 class SecretBox(encoding.Encodable, StringFixer, object):

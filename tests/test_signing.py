@@ -20,9 +20,9 @@ import os
 
 import pytest
 
-import nacl.signing
 import nacl.encoding
 import nacl.exceptions
+import nacl.signing
 
 
 def ed25519_known_answers():
