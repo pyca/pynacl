@@ -16,7 +16,6 @@ from __future__ import absolute_import, division, print_function
 
 from nacl import encoding
 import nacl.c
-import nacl.c.crypto_box
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
