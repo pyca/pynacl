@@ -146,3 +146,24 @@ def test_box_failed_decryption(
 
     with pytest.raises(CryptoError):
         box.decrypt(ciphertext, binascii.unhexlify(nonce), encoder=HexEncoder)
+
+
+def test_box_wrong_length():
+    with pytest.raises(ValueError):
+        PublicKey(b"")
+    with pytest.raises(ValueError):
+        PrivateKey(b"")
+
+    pk = PublicKey(
+        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
+        encoder=HexEncoder,
+    )
+    sk = PrivateKey(
+        b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
+        encoder=HexEncoder,
+    )
+    b = Box(pk, sk)
+    with pytest.raises(ValueError):
+        b.encrypt(b"", b"")
+    with pytest.raises(ValueError):
+        b.decrypt(b"", b"")
