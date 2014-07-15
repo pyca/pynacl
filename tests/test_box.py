@@ -43,6 +43,7 @@ VECTORS = [
     ),
 ]
 
+
 def test_generate_private_key():
     PrivateKey.generate()
 
