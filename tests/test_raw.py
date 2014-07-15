@@ -20,6 +20,7 @@ from binascii import hexlify, unhexlify
 import pytest
 
 from nacl import c
+from nacl.exceptions import CryptoError
 
 
 def tohex(b):
@@ -56,6 +57,24 @@ def test_secretbox():
     assert tohex(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
     msg2 = c.crypto_secretbox_open(ct, nonce, key)
     assert msg2 == msg
+
+
+def test_secretbox_wrong_length():
+    with pytest.raises(ValueError):
+        c.crypto_secretbox(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_secretbox(b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES)
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_open(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_open(
+            b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES)
+    with pytest.raises(CryptoError):
+        c.crypto_secretbox_open(
+            b"",
+            "\x00" * c.crypto_secretbox_NONCEBYTES,
+            b"\x00" * c.crypto_secretbox_KEYBYTES
+        )
 
 
 def test_box():
