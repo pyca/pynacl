@@ -160,6 +160,11 @@ def test_sign():
     assert msg2 == msg
 
 
+def test_sign_wrong_lengths():
+    with pytest.raises(ValueError):
+        c.crypto_sign_seed_keypair(b"")
+
+
 def secret_scalar():
     pubkey, secretkey = c.crypto_box_keypair()
     assert len(secretkey) == c.crypto_box_SECRETKEYBYTES
