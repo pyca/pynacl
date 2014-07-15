@@ -16,10 +16,6 @@ from __future__ import absolute_import, division, print_function
 import glob
 import os.path
 
-# We need to import this prior to importing cffi to fix prebuilding the
-#   extension modules
-from nacl import _cffi_fix  # noqa
-
 from cffi import FFI
 from cffi.verifier import Verifier
 

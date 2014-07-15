@@ -214,10 +214,10 @@ setup(
     author_email=nacl.__email__,
 
     setup_requires=[
-        "cffi",
+        "cffi>=0.8",
     ],
     install_requires=[
-        "cffi",
+        "cffi>=0.8",
         "six",
     ],
     extras_require={
@@ -252,5 +252,6 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
     ]
 )
