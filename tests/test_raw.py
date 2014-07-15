@@ -72,7 +72,7 @@ def test_secretbox_wrong_length():
     with pytest.raises(CryptoError):
         c.crypto_secretbox_open(
             b"",
-            "\x00" * c.crypto_secretbox_NONCEBYTES,
+            b"\x00" * c.crypto_secretbox_NONCEBYTES,
             b"\x00" * c.crypto_secretbox_KEYBYTES
         )
 
