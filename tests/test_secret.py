@@ -47,6 +47,14 @@ def test_secret_box_creation():
     )
 
 
+def test_secret_box_bytes():
+    s = SecretBox(
+        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
+        encoder=HexEncoder,
+    )
+    assert bytes(s) == s._key
+
+
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
@@ -87,3 +95,17 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     decrypted = binascii.hexlify(box.decrypt(combined, encoder=HexEncoder))
 
     assert decrypted == plaintext
+
+
+def test_secret_box_wrong_lengths():
+    with pytest.raises(ValueError):
+        SecretBox(b"")
+
+    box = SecretBox(
+        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
+        encoder=HexEncoder,
+    )
+    with pytest.raises(ValueError):
+        box.encrypt(b"", b"")
+    with pytest.raises(ValueError):
+        box.decrypt(b"", b"")
