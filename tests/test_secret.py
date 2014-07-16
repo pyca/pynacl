@@ -55,7 +55,6 @@ def test_secret_box_bytes():
     assert bytes(s) == s._key
 
 
-
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
