@@ -20,6 +20,7 @@ Support Features
 
     encoding
     exceptions
+    utils
 
 
 Api Documentation
