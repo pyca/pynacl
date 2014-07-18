@@ -57,7 +57,7 @@ VECTORS = [
     (
         nacl.encoding.URLSafeBase64Encoder,
         (b"MTExMTExMTExMTExMTExMTExMTExMTEx_FXin-ZFktcORk09eIOPan0gdtTwGjHAiFV"
-         b"rEgIcZPpPSBPcDg7XQQcLLp8Bv-TQc_FQ0w6qnbP3XA8="),
+         b"rEgIcZPpPSBPcDg7XQQcLLp8Bv-TQc_FQ0w6qnbP3XA8."),
     ),
 ]
 
