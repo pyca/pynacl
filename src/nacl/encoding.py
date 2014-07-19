@@ -77,11 +77,11 @@ class URLSafeBase64Encoder(object):
 
     @staticmethod
     def encode(data):
-        return base64.urlsafe_b64encode(data).replace('=', '.')
+        return base64.urlsafe_b64encode(data).replace(b'=', b'.')
 
     @staticmethod
     def decode(data):
-        return base64.urlsafe_b64decode(data.replace('.', '='))
+        return base64.urlsafe_b64decode(data.replace(b'.', b'='))
 
 
 class Encodable(object):
