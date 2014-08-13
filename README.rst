@@ -40,6 +40,7 @@ Features
 * Digital signatures
 * Secret-key encryption
 * Public-key encryption
+* One-time authentication
 * HMAC (coming soon)
 
 
