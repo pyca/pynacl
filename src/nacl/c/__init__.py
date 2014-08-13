@@ -25,6 +25,10 @@ from nacl.c.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
+from nacl.c.crypto_onetimeauth import (
+    crypto_onetimeauth, crypto_onetimeauth_BYTES, crypto_onetimeauth_KEYBYTES,
+    crypto_onetimeauth_verify,
+)
 from nacl.c.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base
@@ -63,6 +67,11 @@ __all__ = [
     "crypto_hash",
     "crypto_hash_sha256",
     "crypto_hash_sha512",
+
+    "crypto_onetimeauth_BYTES",
+    "crypto_onetimeauth_KEYBYTES",
+    "crypto_onetimeauth",
+    "crypto_onetimeauth_verify",
 
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
