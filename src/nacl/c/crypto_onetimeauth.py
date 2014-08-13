@@ -40,9 +40,8 @@ def crypto_onetimeauth(message, k):
 
 def crypto_onetimeauth_verify(authenticator, message, k):
     """
-    Check that ``authenticator`` is a correct authenticator
-    of ``message`` under the secret key ``k``. Raises a ``BadSignatureError``
-    otherwise.
+    Check that ``authenticator`` is correct for ``message`` under the
+    secret ``k`` and raise a ``BadSignatureError`` otherwise.
 
     :param authenticator: bytes
     :param message: bytes
