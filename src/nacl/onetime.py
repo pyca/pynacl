@@ -54,6 +54,7 @@ def verify(authenticator, message, key, encoder=nacl.encoding.RawEncoder):
     """
 
     authenticator = encoder.decode(authenticator)
+    message = encoder.decode(message)
     key = encoder.decode(key)
 
     if len(authenticator) != AUTH_SIZE:
