@@ -3,10 +3,11 @@ Secret Key Encryption
 
 .. currentmodule:: nacl.secret
 
-Secret key encryption is analogous to a safe. You can store something secret
-through it and anyone who has the key can open it and view the contents.
-:class:`~nacl.secret.SecretBox` functions as just such a safe, and like any
-good safe any attempts to tamper with the contents is easily detected.
+Secret key encryption (also called symmetric key encryption) is analogous to a
+safe. You can store something secret through it and anyone who has the key can
+open it and view the contents. :class:`~nacl.secret.SecretBox` functions as
+just such a safe, and like any good safe any attempts to tamper with the
+contents is easily detected.
 
 Secret Key Encryption allows you to store or transmit data over insecure
 channels without leaking the contents of that message, nor anything about it
