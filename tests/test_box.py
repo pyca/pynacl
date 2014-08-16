@@ -57,7 +57,7 @@ def test_box_creation():
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    Box(pk, sk)
+    Box(sk, pk)
 
 
 def test_box_decode():
@@ -69,7 +69,7 @@ def test_box_decode():
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b1 = Box(pk, sk)
+    b1 = Box(sk, pk)
     b2 = Box.decode(b1._shared_key)
     assert b1._shared_key == b2._shared_key
 
@@ -83,7 +83,7 @@ def test_box_bytes():
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b = Box(pk, sk)
+    b = Box(sk, pk)
     assert bytes(b) == b._shared_key
 
 
@@ -172,8 +172,8 @@ def test_box_failed_decryption(
     skbob = PrivateKey(skbob, encoder=HexEncoder)
 
     # this cannot decrypt the ciphertext!
-    # the ciphertext must be decrypted by (pkbob, skalice) or (pkalice, skbob)
-    box = Box(pkbob, skbob)
+    # the ciphertext must be decrypted by (skalice, pkbob) or (skbob, pkalice)
+    box = Box(skbob, pkbob)
 
     with pytest.raises(CryptoError):
         box.decrypt(ciphertext, binascii.unhexlify(nonce), encoder=HexEncoder)
@@ -193,8 +193,41 @@ def test_box_wrong_length():
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b = Box(pk, sk)
+    b = Box(sk, pk)
     with pytest.raises(ValueError):
         b.encrypt(b"", b"")
     with pytest.raises(ValueError):
         b.decrypt(b"", b"")
+
+
+def check_type_error(expected, f, *args):
+    with pytest.raises(TypeError) as e:
+        f(*args)
+    assert expected in str(e)
+
+
+def test_wrong_types():
+    sk = PrivateKey.generate()
+
+    check_type_error("PrivateKey must be created from a 32 byte seed",
+                     PrivateKey, 12)
+    check_type_error("PrivateKey must be created from a 32 byte seed",
+                     PrivateKey, sk)
+    check_type_error("PrivateKey must be created from a 32 byte seed",
+                     PrivateKey, sk.public_key)
+
+    check_type_error("PublicKey must be created from 32 bytes",
+                     PublicKey, 13)
+    check_type_error("PublicKey must be created from 32 bytes",
+                     PublicKey, sk)
+    check_type_error("PublicKey must be created from 32 bytes",
+                     PublicKey, sk.public_key)
+
+    check_type_error("Box must be created from a PrivateKey and a PublicKey",
+                     Box, sk, "not a public key")
+    check_type_error("Box must be created from a PrivateKey and a PublicKey",
+                     Box, sk.encode(), sk.public_key.encode())
+    check_type_error("Box must be created from a PrivateKey and a PublicKey",
+                     Box, sk, sk.public_key.encode())
+    check_type_error("Box must be created from a PrivateKey and a PublicKey",
+                     Box, sk.encode(), sk.public_key)
