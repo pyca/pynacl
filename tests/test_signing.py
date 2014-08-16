@@ -131,3 +131,27 @@ class TestVerifyKey:
         with pytest.raises(BadSignatureError):
             forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
+
+
+def check_type_error(expected, f, *args):
+    with pytest.raises(TypeError) as e:
+        f(*args)
+    assert expected in str(e)
+
+
+def test_wrong_types():
+    sk = SigningKey.generate()
+
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, 12)
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, sk)
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, sk.verify_key)
+
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, 13)
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, sk)
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, sk.verify_key)
