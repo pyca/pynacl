@@ -15,7 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl._lib import lib
-from nacl.exceptions import BadSignatureError, CryptoError
+from nacl.exceptions import BadSignatureError
 
 
 crypto_sign_BYTES = lib.crypto_sign_bytes()
@@ -34,8 +34,8 @@ def crypto_sign_keypair():
     pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
     sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
-    if lib.crypto_sign_keypair(pk, sk) != 0:
-        raise CryptoError("An error occurred while generating keypairs")
+    rc = lib.crypto_sign_keypair(pk, sk)
+    assert rc == 0
 
     return (
         lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
@@ -56,8 +56,8 @@ def crypto_sign_seed_keypair(seed):
     pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
     sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
-    if lib.crypto_sign_seed_keypair(pk, sk, seed) != 0:
-        raise CryptoError("An error occurred while generating keypairs")
+    rc = lib.crypto_sign_seed_keypair(pk, sk, seed)
+    assert rc == 0
 
     return (
         lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
@@ -77,8 +77,8 @@ def crypto_sign(message, sk):
     signed = lib.ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
     signed_len = lib.ffi.new("unsigned long long *")
 
-    if lib.crypto_sign(signed, signed_len, message, len(message), sk) != 0:
-        raise CryptoError("Failed to sign the message")
+    rc = lib.crypto_sign(signed, signed_len, message, len(message), sk)
+    assert rc == 0
 
     return lib.ffi.buffer(signed, signed_len[0])[:]
 

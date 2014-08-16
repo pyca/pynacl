@@ -15,7 +15,6 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl._lib import lib
-from nacl.exceptions import CryptoError
 
 
 # crypto_hash_BYTES = lib.crypto_hash_bytes()
@@ -32,8 +31,8 @@ def crypto_hash(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_BYTES)
-    if lib.crypto_hash(digest, message, len(message)) != 0:
-        raise CryptoError("Hashing failed")
+    rc = lib.crypto_hash(digest, message, len(message))
+    assert rc == 0
     return lib.ffi.buffer(digest, crypto_hash_BYTES)[:]
 
 
@@ -45,8 +44,8 @@ def crypto_hash_sha256(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_sha256_BYTES)
-    if lib.crypto_hash_sha256(digest, message, len(message)) != 0:
-        raise CryptoError("Hashing failed")
+    rc = lib.crypto_hash_sha256(digest, message, len(message))
+    assert rc == 0
     return lib.ffi.buffer(digest, crypto_hash_sha256_BYTES)[:]
 
 
@@ -58,6 +57,6 @@ def crypto_hash_sha512(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_sha512_BYTES)
-    if lib.crypto_hash_sha512(digest, message, len(message)) != 0:
-        raise CryptoError("Hashing failed")
+    rc = lib.crypto_hash_sha512(digest, message, len(message))
+    assert rc == 0
     return lib.ffi.buffer(digest, crypto_hash_sha512_BYTES)[:]
