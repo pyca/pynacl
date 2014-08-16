@@ -24,7 +24,7 @@ from nacl.public import Box, PrivateKey, PublicKey
 
 
 VECTORS = [
-    # skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext
+    # privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
     (
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
         b"8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a",
@@ -49,57 +49,57 @@ def test_generate_private_key():
 
 
 def test_box_creation():
-    pk = PublicKey(
+    pub = PublicKey(
         b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    sk = PrivateKey(
+    priv = PrivateKey(
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    Box(sk, pk)
+    Box(priv, pub)
 
 
 def test_box_decode():
-    pk = PublicKey(
+    pub = PublicKey(
         b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    sk = PrivateKey(
+    priv = PrivateKey(
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b1 = Box(sk, pk)
+    b1 = Box(priv, pub)
     b2 = Box.decode(b1._shared_key)
     assert b1._shared_key == b2._shared_key
 
 
 def test_box_bytes():
-    pk = PublicKey(
+    pub = PublicKey(
         b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    sk = PrivateKey(
+    priv = PrivateKey(
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b = Box(sk, pk)
+    b = Box(priv, pub)
     assert bytes(b) == b._shared_key
 
 
 @pytest.mark.parametrize(
     (
-        "skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext",
+        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_encryption(
-        skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext):
-    pkalice = PublicKey(pkalice, encoder=HexEncoder)
-    skbob = PrivateKey(skbob, encoder=HexEncoder)
+        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    pubalice = PublicKey(pubalice, encoder=HexEncoder)
+    privbob = PrivateKey(privbob, encoder=HexEncoder)
 
-    box = Box(skbob, pkalice)
+    box = Box(privbob, pubalice)
     encrypted = box.encrypt(
         binascii.unhexlify(plaintext),
         binascii.unhexlify(nonce),
@@ -117,17 +117,17 @@ def test_box_encryption(
 
 @pytest.mark.parametrize(
     (
-        "skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext",
+        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_decryption(
-        skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext):
-    pkbob = PublicKey(pkbob, encoder=HexEncoder)
-    skalice = PrivateKey(skalice, encoder=HexEncoder)
+        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    pubbob = PublicKey(pubbob, encoder=HexEncoder)
+    privalice = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(skalice, pkbob)
+    box = Box(privalice, pubbob)
 
     nonce = binascii.unhexlify(nonce)
     decrypted = binascii.hexlify(
@@ -139,17 +139,17 @@ def test_box_decryption(
 
 @pytest.mark.parametrize(
     (
-        "skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext",
+        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_decryption_combined(
-        skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext):
-    pkbob = PublicKey(pkbob, encoder=HexEncoder)
-    skalice = PrivateKey(skalice, encoder=HexEncoder)
+        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    pubbob = PublicKey(pubbob, encoder=HexEncoder)
+    privalice = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(skalice, pkbob)
+    box = Box(privalice, pubbob)
 
     combined = binascii.hexlify(
         binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
@@ -161,19 +161,19 @@ def test_box_decryption_combined(
 
 @pytest.mark.parametrize(
     (
-        "skalice", "pkalice", "skbob", "pkbob", "nonce", "plaintext",
+        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_failed_decryption(
-        skalice, pkalice, skbob, pkbob, nonce, plaintext, ciphertext):
-    pkbob = PublicKey(pkbob, encoder=HexEncoder)
-    skbob = PrivateKey(skbob, encoder=HexEncoder)
+        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    pubbob = PublicKey(pubbob, encoder=HexEncoder)
+    privbob = PrivateKey(privbob, encoder=HexEncoder)
 
-    # this cannot decrypt the ciphertext!
-    # the ciphertext must be decrypted by (skalice, pkbob) or (skbob, pkalice)
-    box = Box(skbob, pkbob)
+    # this cannot decrypt the ciphertext! the ciphertext must be decrypted by
+    # (privalice, pubbob) or (privbob, pubalice)
+    box = Box(privbob, pubbob)
 
     with pytest.raises(CryptoError):
         box.decrypt(ciphertext, binascii.unhexlify(nonce), encoder=HexEncoder)
@@ -185,15 +185,15 @@ def test_box_wrong_length():
     with pytest.raises(ValueError):
         PrivateKey(b"")
 
-    pk = PublicKey(
+    pub = PublicKey(
         b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    sk = PrivateKey(
+    priv = PrivateKey(
         b"5c2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
         encoder=HexEncoder,
     )
-    b = Box(sk, pk)
+    b = Box(priv, pub)
     with pytest.raises(ValueError):
         b.encrypt(b"", b"")
     with pytest.raises(ValueError):
@@ -207,27 +207,27 @@ def check_type_error(expected, f, *args):
 
 
 def test_wrong_types():
-    sk = PrivateKey.generate()
+    priv = PrivateKey.generate()
 
     check_type_error("PrivateKey must be created from a 32 byte seed",
                      PrivateKey, 12)
     check_type_error("PrivateKey must be created from a 32 byte seed",
-                     PrivateKey, sk)
+                     PrivateKey, priv)
     check_type_error("PrivateKey must be created from a 32 byte seed",
-                     PrivateKey, sk.public_key)
+                     PrivateKey, priv.public_key)
 
     check_type_error("PublicKey must be created from 32 bytes",
                      PublicKey, 13)
     check_type_error("PublicKey must be created from 32 bytes",
-                     PublicKey, sk)
+                     PublicKey, priv)
     check_type_error("PublicKey must be created from 32 bytes",
-                     PublicKey, sk.public_key)
+                     PublicKey, priv.public_key)
 
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, sk, "not a public key")
+                     Box, priv, "not a public key")
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, sk.encode(), sk.public_key.encode())
+                     Box, priv.encode(), priv.public_key.encode())
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, sk, sk.public_key.encode())
+                     Box, priv, priv.public_key.encode())
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, sk.encode(), sk.public_key)
+                     Box, priv.encode(), priv.public_key)
