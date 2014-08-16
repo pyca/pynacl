@@ -109,3 +109,18 @@ def test_secret_box_wrong_lengths():
         box.encrypt(b"", b"")
     with pytest.raises(ValueError):
         box.decrypt(b"", b"")
+
+
+def check_type_error(expected, f, *args):
+    with pytest.raises(TypeError) as e:
+        f(*args)
+    assert expected in str(e)
+
+
+def test_wrong_types():
+    box = SecretBox(b"11" * 32, encoder=HexEncoder)
+
+    check_type_error("SecretBox must be created from 32 bytes",
+                     SecretBox, 12)
+    check_type_error("SecretBox must be created from 32 bytes",
+                     SecretBox, box)
