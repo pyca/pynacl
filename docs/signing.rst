@@ -28,7 +28,7 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     signing_key = nacl.signing.SigningKey.generate()
 
     # Sign a message with the signing key
-    signed = signing_key.sign("Attack at Dawn")
+    signed = signing_key.sign(b"Attack at Dawn")
 
     # Obtain the verify key for a given signing key
     verify_key = signing_key.verify_key
