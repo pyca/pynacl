@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#define TEST_NAME "scalarmult7"
+#define TEST_NAME "scalarmult8"
 #include "cmptest.h"
 
 unsigned char p1[32] = {
