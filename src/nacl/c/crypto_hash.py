@@ -32,7 +32,7 @@ def crypto_hash(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_BYTES)
-    if lib.crypto_hash(digest, message, len(message)) != 0:
+    if lib.crypto_hash(digest, message, lib.ffi.cast("unsigned long long", len(message))) != 0:
         raise CryptoError("Hashing failed")
     return lib.ffi.buffer(digest, crypto_hash_BYTES)[:]
 
@@ -45,7 +45,7 @@ def crypto_hash_sha256(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_sha256_BYTES)
-    if lib.crypto_hash_sha256(digest, message, len(message)) != 0:
+    if lib.crypto_hash_sha256(digest, message, lib.ffi.cast("unsigned long long", len(message))) != 0:
         raise CryptoError("Hashing failed")
     return lib.ffi.buffer(digest, crypto_hash_sha256_BYTES)[:]
 
@@ -58,6 +58,6 @@ def crypto_hash_sha512(message):
     :rtype: bytes
     """
     digest = lib.ffi.new("unsigned char[]", crypto_hash_sha512_BYTES)
-    if lib.crypto_hash_sha512(digest, message, len(message)) != 0:
+    if lib.crypto_hash_sha512(digest, message, lib.ffi.cast("unsigned long long", len(message))) != 0:
         raise CryptoError("Hashing failed")
     return lib.ffi.buffer(digest, crypto_hash_sha512_BYTES)[:]

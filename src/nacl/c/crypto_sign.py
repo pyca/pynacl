@@ -77,7 +77,7 @@ def crypto_sign(message, sk):
     signed = lib.ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
     signed_len = lib.ffi.new("unsigned long long *")
 
-    if lib.crypto_sign(signed, signed_len, message, len(message), sk) != 0:
+    if lib.crypto_sign(signed, signed_len, message, lib.ffi.cast("unsigned long long", len(message)), sk) != 0:
         raise CryptoError("Failed to sign the message")
 
     return lib.ffi.buffer(signed, signed_len[0])[:]
@@ -96,7 +96,7 @@ def crypto_sign_open(signed, pk):
     message_len = lib.ffi.new("unsigned long long *")
 
     if lib.crypto_sign_open(
-            message, message_len, signed, len(signed), pk) != 0:
+            message, message_len, signed, lib.ffi.cast("unsigned long long", len(signed)), pk) != 0:
         raise BadSignatureError("Signature was forged or corrupt")
 
     return lib.ffi.buffer(message, message_len[0])[:]

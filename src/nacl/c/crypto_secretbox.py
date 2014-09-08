@@ -43,7 +43,7 @@ def crypto_secretbox(message, nonce, key):
     padded = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ciphertext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_secretbox(ciphertext, padded, len(padded), nonce, key) != 0:
+    if lib.crypto_secretbox(ciphertext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, key) != 0:
         raise CryptoError("Encryption failed")
 
     ciphertext = lib.ffi.buffer(ciphertext, len(padded))
@@ -70,7 +70,7 @@ def crypto_secretbox_open(ciphertext, nonce, key):
     plaintext = lib.ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_secretbox_open(
-            plaintext, padded, len(padded), nonce, key) != 0:
+            plaintext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, key) != 0:
         raise CryptoError("Decryption failed. Ciphertext failed verification")
 
     plaintext = lib.ffi.buffer(plaintext, len(padded))

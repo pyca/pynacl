@@ -26,5 +26,5 @@ def randombytes(size):
     :rtype: bytes
     """
     buf = lib.ffi.new("unsigned char[]", size)
-    lib.randombytes(buf, size)
+    lib.randombytes(buf, lib.ffi.cast("unsigned long long", size))
     return lib.ffi.buffer(buf, size)[:]
