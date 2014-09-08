@@ -70,7 +70,7 @@ def crypto_box(message, nonce, pk, sk):
     padded = (b"\x00" * crypto_box_ZEROBYTES) + message
     ciphertext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk) != 0:
+    if lib.crypto_box(ciphertext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, pk, sk) != 0:
         raise CryptoError("An error occurred trying to encrypt the message")
 
     return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
@@ -99,7 +99,7 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box_open(plaintext, padded, len(padded), nonce, pk, sk) != 0:
+    if lib.crypto_box_open(plaintext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, pk, sk) != 0:
         raise CryptoError("An error occurred trying to decrypt the message")
 
     return lib.ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
@@ -148,7 +148,7 @@ def crypto_box_afternm(message, nonce, k):
     padded = b"\x00" * crypto_box_ZEROBYTES + message
     ciphertext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k) != 0:
+    if lib.crypto_box_afternm(ciphertext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, k) != 0:
         raise CryptoError("An error occurred trying to encrypt the message")
 
     return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
@@ -174,7 +174,7 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     plaintext = lib.ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_box_open_afternm(
-            plaintext, padded, len(padded), nonce, k) != 0:
+            plaintext, padded, lib.ffi.cast("unsigned long long", len(padded)), nonce, k) != 0:
         raise CryptoError("An error occurred trying to decrypt the message")
 
     return lib.ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
