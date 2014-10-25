@@ -1,6 +1,7 @@
 
 #include <sys/types.h>
 #ifndef _WIN32
+# include <sys/stat.h>
 # include <sys/time.h>
 #endif
 
@@ -12,7 +13,6 @@
 #include <stdlib.h>
 #include <string.h>
 #ifndef _WIN32
-# include <poll.h>
 # include <unistd.h>
 #endif
 
@@ -22,13 +22,48 @@
 
 #ifdef _WIN32
 # include <windows.h>
-# include <wincrypt.h>
+# define RtlGenRandom SystemFunction036
+# if defined(__cplusplus)
+extern "C"
+# endif
+BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
+# pragma comment(lib, "advapi32.lib")
 #endif
 
+#ifdef __OpenBSD__
+
+uint32_t
+randombytes_sysrandom(void)
+{
+    return arc4random();
+}
+
+void
+randombytes_sysrandom_stir(void)
+{
+}
+
+uint32_t
+randombytes_sysrandom_uniform(const uint32_t upper_bound)
+{
+    return arc4random_uniform(upper_bound);
+}
+
+void
+randombytes_sysrandom_buf(void * const buf, const size_t size)
+{
+    return arc4random_buf(buf, size);
+}
+
+int
+randombytes_sysrandom_close(void)
+{
+    return 0;
+}
+
+#else /* __OpenBSD__ */
+
 typedef struct SysRandom_ {
-#ifdef _WIN32
-    HCRYPTPROV hcrypt_prov;
-#endif
     int        random_data_source_fd;
     int        initialized;
 } SysRandom;
@@ -45,14 +80,15 @@ safe_read(const int fd, void * const buf_, size_t count)
     unsigned char *buf = (unsigned char *) buf_;
     ssize_t        readnb;
 
+    assert(count > (size_t) 0U);
     do {
         while ((readnb = read(fd, buf, count)) < (ssize_t) 0 &&
-               errno == EINTR);
+               errno == EINTR); /* LCOV_EXCL_LINE */
         if (readnb < (ssize_t) 0) {
-            return readnb;
+            return readnb; /* LCOV_EXCL_LINE */
         }
         if (readnb == (ssize_t) 0) {
-            break;
+            break; /* LCOV_EXCL_LINE */
         }
         count -= (size_t) readnb;
         buf += readnb;
@@ -66,31 +102,41 @@ safe_read(const int fd, void * const buf_, size_t count)
 static int
 randombytes_sysrandom_random_dev_open(void)
 {
-    static const char * const devices[] = {
+/* LCOV_EXCL_START */
+    struct stat        st;
+    static const char *devices[] = {
 # ifndef USE_BLOCKING_RANDOM
-        "/dev/arandom", "/dev/urandom",
+        "/dev/urandom",
 # endif
         "/dev/random", NULL
     };
-    const char * const *device = devices;
+    const char **      device = devices;
+    int                fd;
 
     do {
-        if (access(*device, F_OK | R_OK) == 0) {
-            return open(*device, O_RDONLY);
+        if ((fd = open(*device, O_RDONLY)) != -1) {
+            if (fstat(fd, &st) == 0 && S_ISCHR(st.st_mode)) {
+                return fd;
+            }
+            (void) close(fd);
         }
         device++;
     } while (*device != NULL);
 
     return -1;
+/* LCOV_EXCL_STOP */
 }
 
 static void
 randombytes_sysrandom_init(void)
 {
+    const int errno_save = errno;
+
     if ((stream.random_data_source_fd =
          randombytes_sysrandom_random_dev_open()) == -1) {
-        abort();
+        abort(); /* LCOV_EXCL_LINE */
     }
+    errno = errno_save;
 }
 
 #else /* _WIN32 */
@@ -98,10 +144,6 @@ randombytes_sysrandom_init(void)
 static void
 randombytes_sysrandom_init(void)
 {
-    if (! CryptAcquireContext(&stream.hcrypt_prov, NULL, NULL,
-                              PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
-        abort();
-    }
 }
 #endif
 
@@ -135,8 +177,7 @@ randombytes_sysrandom_close(void)
         ret = 0;
     }
 #else /* _WIN32 */
-    if (stream.initialized != 0 &&
-        CryptReleaseContext(stream.hcrypt_prov, 0)) {
+    if (stream.initialized != 0) {
         stream.initialized = 0;
         ret = 0;
     }
@@ -159,15 +200,19 @@ randombytes_sysrandom_buf(void * const buf, const size_t size)
 {
     randombytes_sysrandom_stir_if_needed();
 #ifdef ULONG_LONG_MAX
+    /* coverity[result_independent_of_operands] */
     assert(size <= ULONG_LONG_MAX);
 #endif
 #ifndef _WIN32
     if (safe_read(stream.random_data_source_fd, buf, size) != (ssize_t) size) {
-        abort();
+        abort(); /* LCOV_EXCL_LINE */
     }
 #else
-    if (! CryptGenRandom(stream.hcrypt_prov, size, (BYTE *) buf)) {
-        abort();
+    if (size > 0xffffffff) {
+        abort(); /* LCOV_EXCL_LINE */
+    }
+    if (! RtlGenRandom((PVOID) buf, (ULONG) size)) {
+        abort(); /* LCOV_EXCL_LINE */
     }
 #endif
 }
@@ -192,9 +237,11 @@ randombytes_sysrandom_uniform(const uint32_t upper_bound)
         if (r >= min) {
             break;
         }
-    }
+    } /* LCOV_EXCL_LINE */
     return r % upper_bound;
 }
+
+#endif
 
 const char *
 randombytes_sysrandom_implementation_name(void)

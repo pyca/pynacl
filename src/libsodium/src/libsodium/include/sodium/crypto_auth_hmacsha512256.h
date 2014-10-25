@@ -2,35 +2,52 @@
 #define crypto_auth_hmacsha512256_H
 
 #include <stddef.h>
+#include "crypto_auth_hmacsha512.h"
 #include "export.h"
 
-#define crypto_auth_hmacsha512256_BYTES 32U
-#define crypto_auth_hmacsha512256_KEYBYTES 32U
-
 #ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
 extern "C" {
 #endif
 
+typedef struct crypto_auth_hmacsha512_state crypto_auth_hmacsha512256_state;
+
+#define crypto_auth_hmacsha512256_BYTES 32U
 SODIUM_EXPORT
 size_t crypto_auth_hmacsha512256_bytes(void);
 
+#define crypto_auth_hmacsha512256_KEYBYTES 32U
 SODIUM_EXPORT
 size_t crypto_auth_hmacsha512256_keybytes(void);
 
 SODIUM_EXPORT
-const char * crypto_auth_hmacsha512256_primitive(void);
+int crypto_auth_hmacsha512256(unsigned char *out, const unsigned char *in,
+                              unsigned long long inlen,const unsigned char *k);
 
 SODIUM_EXPORT
-int crypto_auth_hmacsha512256(unsigned char *,const unsigned char *,unsigned long long,const unsigned char *);
+int crypto_auth_hmacsha512256_verify(const unsigned char *h,
+                                     const unsigned char *in,
+                                     unsigned long long inlen,
+                                     const unsigned char *k);
 
 SODIUM_EXPORT
-int crypto_auth_hmacsha512256_verify(const unsigned char *,const unsigned char *,unsigned long long,const unsigned char *);
+int crypto_auth_hmacsha512256_init(crypto_auth_hmacsha512256_state *state,
+                                   const unsigned char *key,
+                                   size_t keylen);
+
+SODIUM_EXPORT
+int crypto_auth_hmacsha512256_update(crypto_auth_hmacsha512256_state *state,
+                                     const unsigned char *in,
+                                     unsigned long long inlen);
+
+SODIUM_EXPORT
+int crypto_auth_hmacsha512256_final(crypto_auth_hmacsha512256_state *state,
+                                    unsigned char *out);
 
 #ifdef __cplusplus
 }
 #endif
-
-#define crypto_auth_hmacsha512256_ref crypto_auth_hmacsha512256
-#define crypto_auth_hmacsha512256_ref_verify crypto_auth_hmacsha512256_verify
 
 #endif

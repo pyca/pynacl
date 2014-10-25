@@ -2,8 +2,10 @@
 SODIUM_EXPORT = \
 	sodium.h \
 	sodium/core.h \
+	sodium/crypto_aead_chacha20poly1305.h \
 	sodium/crypto_auth.h \
 	sodium/crypto_auth_hmacsha256.h \
+	sodium/crypto_auth_hmacsha512.h \
 	sodium/crypto_auth_hmacsha512256.h \
 	sodium/crypto_box.h \
 	sodium/crypto_box_curve25519xsalsa20poly1305.h \
@@ -16,13 +18,11 @@ SODIUM_EXPORT = \
 	sodium/crypto_hash.h \
 	sodium/crypto_hash_sha256.h \
 	sodium/crypto_hash_sha512.h \
-	sodium/crypto_hashblocks_sha256.h \
-	sodium/crypto_hashblocks_sha512.h \
 	sodium/crypto_onetimeauth.h \
 	sodium/crypto_onetimeauth_poly1305.h \
-	sodium/crypto_onetimeauth_poly1305_53.h \
-	sodium/crypto_onetimeauth_poly1305_donna.h \
+	sodium/crypto_pwhash_scryptsalsa208sha256.h \
 	sodium/crypto_scalarmult.h \
+	sodium/crypto_scalarmult_curve25519.h \
 	sodium/crypto_secretbox.h \
 	sodium/crypto_secretbox_xsalsa20poly1305.h \
 	sodium/crypto_shorthash.h \
@@ -32,7 +32,8 @@ SODIUM_EXPORT = \
 	sodium/crypto_sign_edwards25519sha512batch.h \
 	sodium/crypto_stream.h \
 	sodium/crypto_stream_aes128ctr.h \
-	sodium/crypto_stream_aes256estream.h \
+	sodium/crypto_stream_chacha20.h \
+	sodium/crypto_stream_salsa20.h \
 	sodium/crypto_stream_salsa2012.h \
 	sodium/crypto_stream_salsa208.h \
 	sodium/crypto_stream_xsalsa20.h \
@@ -44,20 +45,18 @@ SODIUM_EXPORT = \
 	sodium/crypto_uint8.h \
 	sodium/crypto_verify_16.h \
 	sodium/crypto_verify_32.h \
+	sodium/crypto_verify_64.h \
 	sodium/export.h \
 	sodium/randombytes.h \
 	sodium/randombytes_salsa20_random.h \
 	sodium/randombytes_sysrandom.h \
+	sodium/runtime.h \
 	sodium/utils.h
 
 EXTRA_SRC = $(SODIUM_EXPORT) \
-	sodium/crypto_scalarmult_curve25519.h.in \
-	sodium/crypto_stream_salsa20.h.in \
 	sodium/version.h.in
 
 nobase_include_HEADERS = $(SODIUM_EXPORT)
 
 nobase_nodist_include_HEADERS = \
-	sodium/crypto_scalarmult_curve25519.h \
-	sodium/crypto_stream_salsa20.h \
 	sodium/version.h

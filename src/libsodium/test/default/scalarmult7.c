@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <string.h>
+
 #define TEST_NAME "scalarmult7"
 #include "cmptest.h"
 
@@ -23,12 +22,10 @@ unsigned char out2[32];
 
 int main(void)
 {
-  int i;
+    scalar[0] = 1U;
+    crypto_scalarmult_curve25519(out1, scalar, p1);
+    crypto_scalarmult_curve25519(out2, scalar, p2);
+    printf("%d\n", !!memcmp(out1, out2, 32));
 
-  scalar[0] = 1U;
-  crypto_scalarmult_curve25519(out1, scalar, p1);
-  crypto_scalarmult_curve25519(out2, scalar, p2);
-  printf("%d\n", memcmp(out1, out2, sizeof out1));
-
-  return 0;
+    return 0;
 }

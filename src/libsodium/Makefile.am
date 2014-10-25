@@ -10,11 +10,12 @@ EXTRA_DIST = \
 	THANKS
 
 SUBDIRS = \
+	dist-build \
 	msvc-scripts \
 	src \
 	test
 
-if HAVE_PKG_CONFIG
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = @PACKAGE_NAME@.pc
-endif
+DISTCLEANFILES = $(pkgconfig_DATA)
+

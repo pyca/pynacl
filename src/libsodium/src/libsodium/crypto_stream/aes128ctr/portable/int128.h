@@ -1,11 +1,20 @@
 #ifndef INT128_H
 #define INT128_H
 
+#include <stdint.h>
+
 #include "common.h"
 
-typedef struct{
-  unsigned long long a;
-  unsigned long long b;
+#ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
+#endif
+
+typedef union {
+  uint64_t u64[2];
+  uint32_t u32[4];
+  uint8_t  u8[16];
 } int128;
 
 #define xor2 crypto_stream_aes128ctr_portable_xor2

@@ -1,38 +1,81 @@
+
+#include <string.h>
+
 #include "api.h"
 #include "crypto_hash_sha512.h"
 #include "ge.h"
 #include "sc.h"
+#include "utils.h"
 
-int crypto_sign(
-  unsigned char *sm,unsigned long long *smlen,
-  const unsigned char *m,unsigned long long mlen,
-  const unsigned char *sk
-)
+int
+crypto_sign_detached(unsigned char *sig, unsigned long long *siglen,
+                     const unsigned char *m, unsigned long long mlen,
+                     const unsigned char *sk)
 {
-  unsigned char az[64];
-  unsigned char r[64];
-  unsigned char hram[64];
-  ge_p3 R;
-  unsigned long long i;
+    crypto_hash_sha512_state hs;
+    unsigned char pk[32];
+    unsigned char az[64];
+    unsigned char nonce[64];
+    unsigned char hram[64];
+    ge_p3 R;
 
-  crypto_hash_sha512(az,sk,32);
-  az[0] &= 248;
-  az[31] &= 63;
-  az[31] |= 64;
+    memmove(pk, sk + 32, 32);
 
-  *smlen = mlen + 64;
-  for (i = 0;i < mlen;++i) sm[64 + i] = m[i];
-  for (i = 0;i < 32;++i) sm[32 + i] = az[32 + i];
-  crypto_hash_sha512(r,sm + 32,mlen + 32);
-  for (i = 0;i < 32;++i) sm[32 + i] = sk[32 + i];
+    crypto_hash_sha512(az, sk, 32);
+    az[0] &= 248;
+    az[31] &= 63;
+    az[31] |= 64;
 
-  sc_reduce(r);
-  ge_scalarmult_base(&R,r);
-  ge_p3_tobytes(sm,&R);
+    crypto_hash_sha512_init(&hs);
+    crypto_hash_sha512_update(&hs, az + 32, 32);
+    crypto_hash_sha512_update(&hs, m, mlen);
+    crypto_hash_sha512_final(&hs, nonce);
 
-  crypto_hash_sha512(hram,sm,mlen + 64);
-  sc_reduce(hram);
-  sc_muladd(sm + 32,hram,az,r);
+    memmove(sig + 32, pk, 32);
 
-  return 0;
+    sc_reduce(nonce);
+    ge_scalarmult_base(&R, nonce);
+    ge_p3_tobytes(sig, &R);
+
+    crypto_hash_sha512_init(&hs);
+    crypto_hash_sha512_update(&hs, sig, 64);
+    crypto_hash_sha512_update(&hs, m, mlen);
+    crypto_hash_sha512_final(&hs, hram);
+
+    sc_reduce(hram);
+    sc_muladd(sig + 32, hram, az, nonce);
+
+    sodium_memzero(az, sizeof az);
+    sodium_memzero(nonce, sizeof nonce);
+
+    if (siglen != NULL) {
+        *siglen = 64U;
+    }
+    return 0;
+}
+
+int
+crypto_sign(unsigned char *sm, unsigned long long *smlen,
+            const unsigned char *m, unsigned long long mlen,
+            const unsigned char *sk)
+{
+    unsigned long long siglen;
+
+    memmove(sm + crypto_sign_ed25519_BYTES, m, mlen);
+/* LCOV_EXCL_START */
+    if (crypto_sign_detached(sm, &siglen, sm + crypto_sign_ed25519_BYTES,
+                             mlen, sk) != 0 ||
+        siglen != crypto_sign_ed25519_BYTES) {
+        if (smlen != NULL) {
+            *smlen = 0;
+        }
+        memset(sm, 0, mlen + crypto_sign_ed25519_BYTES);
+        return -1;
+    }
+/* LCOV_EXCL_STOP */
+
+    if (smlen != NULL) {
+        *smlen = mlen + siglen;
+    }
+    return 0;
 }
