@@ -14,8 +14,15 @@
 #include "export.h"
 
 #ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
 extern "C" {
 #endif
+
+#define crypto_box_SEEDBYTES crypto_box_curve25519xsalsa20poly1305_SEEDBYTES
+SODIUM_EXPORT
+size_t  crypto_box_seedbytes(void);
 
 #define crypto_box_PUBLICKEYBYTES crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES
 SODIUM_EXPORT
@@ -50,6 +57,10 @@ SODIUM_EXPORT
 const char *crypto_box_primitive(void);
 
 SODIUM_EXPORT
+int crypto_box_seed_keypair(unsigned char *pk, unsigned char *sk,
+                            const unsigned char *seed);
+
+SODIUM_EXPORT
 int crypto_box_keypair(unsigned char *pk, unsigned char *sk);
 
 SODIUM_EXPORT
@@ -76,6 +87,29 @@ int crypto_box_open(unsigned char *m, const unsigned char *c,
                     unsigned long long clen, const unsigned char *n,
                     const unsigned char *pk, const unsigned char *sk);
 
+SODIUM_EXPORT
+int crypto_box_easy(unsigned char *c, const unsigned char *m,
+                    unsigned long long mlen, const unsigned char *n,
+                    const unsigned char *pk, const unsigned char *sk);
+
+SODIUM_EXPORT
+int crypto_box_open_easy(unsigned char *m, const unsigned char *c,
+                         unsigned long long clen, const unsigned char *n,
+                         const unsigned char *pk, const unsigned char *sk);
+
+SODIUM_EXPORT
+int crypto_box_detached(unsigned char *c, unsigned char *mac,
+                        const unsigned char *m, unsigned long long mlen,
+                        const unsigned char *n, const unsigned char *pk,
+                        const unsigned char *sk);
+
+SODIUM_EXPORT
+int crypto_box_open_detached(unsigned char *m, const unsigned char *c,
+                             const unsigned char *mac,
+                             unsigned long long clen,
+                             const unsigned char *n,
+                             const unsigned char *pk,
+                             const unsigned char *sk);
 #ifdef __cplusplus
 }
 #endif

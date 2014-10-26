@@ -12,33 +12,32 @@
 #include <stddef.h>
 #include "export.h"
 
-#define crypto_stream_xsalsa20_KEYBYTES 32U
-#define crypto_stream_xsalsa20_NONCEBYTES 24U
-
 #ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
 extern "C" {
 #endif
 
+#define crypto_stream_xsalsa20_KEYBYTES 32U
 SODIUM_EXPORT
 size_t crypto_stream_xsalsa20_keybytes(void);
 
+#define crypto_stream_xsalsa20_NONCEBYTES 24U
 SODIUM_EXPORT
 size_t crypto_stream_xsalsa20_noncebytes(void);
 
 SODIUM_EXPORT
-const char * crypto_stream_xsalsa20_primitive(void);
+int crypto_stream_xsalsa20(unsigned char *c, unsigned long long clen,
+                           const unsigned char *n, const unsigned char *k);
 
 SODIUM_EXPORT
-int crypto_stream_xsalsa20(unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
-
-SODIUM_EXPORT
-int crypto_stream_xsalsa20_xor(unsigned char *,const unsigned char *,unsigned long long,const unsigned char *,const unsigned char *);
+int crypto_stream_xsalsa20_xor(unsigned char *c, const unsigned char *m,
+                               unsigned long long mlen, const unsigned char *n,
+                               const unsigned char *k);
 
 #ifdef __cplusplus
 }
 #endif
-
-#define crypto_stream_xsalsa20_ref crypto_stream_xsalsa20
-#define crypto_stream_xsalsa20_ref_xor crypto_stream_xsalsa20_xor
 
 #endif

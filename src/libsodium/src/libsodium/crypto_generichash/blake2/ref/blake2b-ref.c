@@ -43,18 +43,20 @@ static const uint8_t blake2b_sigma[12][16] =
 };
 
 
+/* LCOV_EXCL_START */
 static inline int blake2b_set_lastnode( blake2b_state *S )
 {
   S->f[1] = ~0ULL;
   return 0;
 }
-
+/* LCOV_EXCL_STOP */
+#if 0
 static inline int blake2b_clear_lastnode( blake2b_state *S )
 {
   S->f[1] = 0ULL;
   return 0;
 }
-
+#endif
 /* Some helper functions, not necessarily useful */
 static inline int blake2b_set_lastblock( blake2b_state *S )
 {
@@ -63,7 +65,7 @@ static inline int blake2b_set_lastblock( blake2b_state *S )
   S->f[0] = ~0ULL;
   return 0;
 }
-
+#if 0
 static inline int blake2b_clear_lastblock( blake2b_state *S )
 {
   if( S->last_node ) blake2b_clear_lastnode( S );
@@ -71,7 +73,7 @@ static inline int blake2b_clear_lastblock( blake2b_state *S )
   S->f[0] = 0ULL;
   return 0;
 }
-
+#endif
 static inline int blake2b_increment_counter( blake2b_state *S, const uint64_t inc )
 {
   S->t[0] += inc;
@@ -82,6 +84,7 @@ static inline int blake2b_increment_counter( blake2b_state *S, const uint64_t in
 
 
 // Parameter-related functions
+#if 0
 static inline int blake2b_param_set_digest_length( blake2b_param *P, const uint8_t digest_length )
 {
   P->digest_length = digest_length;
@@ -123,7 +126,7 @@ static inline int blake2b_param_set_inner_length( blake2b_param *P, const uint8_
   P->inner_length = inner_length;
   return 0;
 }
-
+#endif
 static inline int blake2b_param_set_salt( blake2b_param *P, const uint8_t salt[BLAKE2B_SALTBYTES] )
 {
   memcpy( P->salt, salt, BLAKE2B_SALTBYTES );
@@ -184,6 +187,34 @@ int blake2b_init( blake2b_state *S, const uint8_t outlen )
   return blake2b_init_param( S, P );
 }
 
+int blake2b_init_salt_personal( blake2b_state *S, const uint8_t outlen,
+                                const void *salt, const void *personal )
+{
+  blake2b_param P[1];
+
+  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+
+  P->digest_length = outlen;
+  P->key_length    = 0;
+  P->fanout        = 1;
+  P->depth         = 1;
+  store32( &P->leaf_length, 0 );
+  store64( &P->node_offset, 0 );
+  P->node_depth    = 0;
+  P->inner_length  = 0;
+  memset( P->reserved, 0, sizeof( P->reserved ) );
+  if (salt != NULL) {
+    blake2b_param_set_salt( P, (const uint8_t *) salt );
+  } else {
+    memset( P->salt, 0, sizeof( P->salt ) );
+  }
+  if (personal != NULL) {
+    blake2b_param_set_personal( P, (const uint8_t *) personal );
+  } else {
+    memset( P->personal, 0, sizeof( P->personal ) );
+  }
+  return blake2b_init_param( S, P );
+}
 
 int blake2b_init_key( blake2b_state *S, const uint8_t outlen, const void *key, const uint8_t keylen )
 {
@@ -204,6 +235,47 @@ int blake2b_init_key( blake2b_state *S, const uint8_t outlen, const void *key, c
   memset( P->reserved, 0, sizeof( P->reserved ) );
   memset( P->salt,     0, sizeof( P->salt ) );
   memset( P->personal, 0, sizeof( P->personal ) );
+
+  if( blake2b_init_param( S, P ) < 0 ) return -1;
+
+  {
+    uint8_t block[BLAKE2B_BLOCKBYTES];
+    memset( block, 0, BLAKE2B_BLOCKBYTES );
+    memcpy( block, key, keylen );
+    blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
+    secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
+  }
+  return 0;
+}
+
+int blake2b_init_key_salt_personal( blake2b_state *S, const uint8_t outlen, const void *key, const uint8_t keylen,
+                                    const void *salt, const void *personal )
+{
+  blake2b_param P[1];
+
+  if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
+
+  if ( !key || !keylen || keylen > BLAKE2B_KEYBYTES ) return -1;
+
+  P->digest_length = outlen;
+  P->key_length    = keylen;
+  P->fanout        = 1;
+  P->depth         = 1;
+  store32( &P->leaf_length, 0 );
+  store64( &P->node_offset, 0 );
+  P->node_depth    = 0;
+  P->inner_length  = 0;
+  memset( P->reserved, 0, sizeof( P->reserved ) );
+  if (salt != NULL) {
+    blake2b_param_set_salt( P, (const uint8_t *) salt );
+  } else {
+    memset( P->salt, 0, sizeof( P->salt ) );
+  }
+  if (personal != NULL) {
+    blake2b_param_set_personal( P, (const uint8_t *) personal );
+  } else {
+    memset( P->personal, 0, sizeof( P->personal ) );
+  }
 
   if( blake2b_init_param( S, P ) < 0 ) return -1;
 
@@ -317,12 +389,15 @@ int blake2b_final( blake2b_state *S, uint8_t *out, uint8_t outlen )
   uint8_t buffer[BLAKE2B_OUTBYTES];
   int     i;
 
+  if( outlen > BLAKE2B_OUTBYTES ) {
+    return -1;
+  }
   if( S->buflen > BLAKE2B_BLOCKBYTES )
   {
     blake2b_increment_counter( S, BLAKE2B_BLOCKBYTES );
     blake2b_compress( S, S->buf );
     S->buflen -= BLAKE2B_BLOCKBYTES;
-    memcpy( S->buf, S->buf + BLAKE2B_BLOCKBYTES, S->buflen );
+    memmove( S->buf, S->buf + BLAKE2B_BLOCKBYTES, S->buflen );
   }
 
   blake2b_increment_counter( S, S->buflen );
@@ -356,6 +431,32 @@ int blake2b( uint8_t *out, const void *in, const void *key, const uint8_t outlen
   else
   {
     if( blake2b_init( S, outlen ) < 0 ) return -1;
+  }
+
+  blake2b_update( S, ( const uint8_t * )in, inlen );
+  blake2b_final( S, out, outlen );
+  return 0;
+}
+
+int blake2b_salt_personal( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen,
+                           const void *salt, const void *personal )
+{
+  blake2b_state S[1];
+
+  /* Verify parameters */
+  if ( NULL == in ) return -1;
+
+  if ( NULL == out ) return -1;
+
+  if( NULL == key ) keylen = 0;
+
+  if( keylen > 0 )
+  {
+    if( blake2b_init_key_salt_personal( S, outlen, key, keylen, salt, personal ) < 0 ) return -1;
+  }
+  else
+  {
+    if( blake2b_init_salt_personal( S, outlen, salt, personal ) < 0 ) return -1;
   }
 
   blake2b_update( S, ( const uint8_t * )in, inlen );

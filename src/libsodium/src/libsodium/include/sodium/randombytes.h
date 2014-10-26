@@ -10,6 +10,9 @@
 #include "export.h"
 
 #ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
 extern "C" {
 #endif
 
@@ -23,28 +26,30 @@ typedef struct randombytes_implementation {
 } randombytes_implementation;
 
 SODIUM_EXPORT
-int         randombytes_set_implementation(randombytes_implementation *impl);
+void randombytes_buf(void * const buf, const size_t size);
 
 SODIUM_EXPORT
-void        randombytes(unsigned char * const buf, const unsigned long long buf_len);
+uint32_t randombytes_random(void);
+
+SODIUM_EXPORT
+uint32_t randombytes_uniform(const uint32_t upper_bound);
+
+SODIUM_EXPORT
+void randombytes_stir(void);
+
+SODIUM_EXPORT
+int randombytes_close(void);
+
+SODIUM_EXPORT
+int randombytes_set_implementation(randombytes_implementation *impl);
 
 SODIUM_EXPORT
 const char *randombytes_implementation_name(void);
 
-SODIUM_EXPORT
-uint32_t    randombytes_random(void);
+/* -- Compatibility layer with NaCl -- */
 
 SODIUM_EXPORT
-void        randombytes_stir(void);
-
-SODIUM_EXPORT
-uint32_t    randombytes_uniform(const uint32_t upper_bound);
-
-SODIUM_EXPORT
-void        randombytes_buf(void * const buf, const size_t size);
-
-SODIUM_EXPORT
-int         randombytes_close(void);
+void randombytes(unsigned char * const buf, const unsigned long long buf_len);
 
 #ifdef __cplusplus
 }

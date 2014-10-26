@@ -1,6 +1,11 @@
 #include "crypto_box_curve25519xsalsa20poly1305.h"
 
 size_t
+crypto_box_curve25519xsalsa20poly1305_seedbytes(void) {
+    return crypto_box_curve25519xsalsa20poly1305_SEEDBYTES;
+}
+
+size_t
 crypto_box_curve25519xsalsa20poly1305_publickeybytes(void) {
     return crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES;
 }
@@ -33,9 +38,4 @@ crypto_box_curve25519xsalsa20poly1305_boxzerobytes(void) {
 size_t
 crypto_box_curve25519xsalsa20poly1305_macbytes(void) {
     return crypto_box_curve25519xsalsa20poly1305_MACBYTES;
-}
-
-const char *
-crypto_box_curve25519xsalsa20poly1305_primitive(void) {
-    return "curve25519xsalsa20poly1305";
 }

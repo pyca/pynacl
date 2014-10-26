@@ -7,6 +7,9 @@
 #include "export.h"
 
 #ifdef __cplusplus
+# if __GNUC__
+#  pragma GCC diagnostic ignored "-Wlong-long"
+# endif
 extern "C" {
 #endif
 
@@ -26,6 +29,10 @@ size_t  crypto_secretbox_zerobytes(void);
 SODIUM_EXPORT
 size_t  crypto_secretbox_boxzerobytes(void);
 
+#define crypto_secretbox_MACBYTES crypto_secretbox_xsalsa20poly1305_MACBYTES
+SODIUM_EXPORT
+size_t  crypto_secretbox_macbytes(void);
+
 #define crypto_secretbox_PRIMITIVE "xsalsa20poly1305"
 SODIUM_EXPORT
 const char *crypto_secretbox_primitive(void);
@@ -40,6 +47,30 @@ int crypto_secretbox_open(unsigned char *m, const unsigned char *c,
                           unsigned long long clen, const unsigned char *n,
                           const unsigned char *k);
 
+SODIUM_EXPORT
+int crypto_secretbox_easy(unsigned char *c, const unsigned char *m,
+                          unsigned long long mlen, const unsigned char *n,
+                          const unsigned char *k);
+
+SODIUM_EXPORT
+int crypto_secretbox_open_easy(unsigned char *m, const unsigned char *c,
+                               unsigned long long clen, const unsigned char *n,
+                               const unsigned char *k);
+
+SODIUM_EXPORT
+int crypto_secretbox_detached(unsigned char *c, unsigned char *mac,
+                              const unsigned char *m,
+                              unsigned long long mlen,
+                              const unsigned char *n,
+                              const unsigned char *k);
+
+SODIUM_EXPORT
+int crypto_secretbox_open_detached(unsigned char *m,
+                                   const unsigned char *c,
+                                   const unsigned char *mac,
+                                   unsigned long long clen,
+                                   const unsigned char *n,
+                                   const unsigned char *k);
 #ifdef __cplusplus
 }
 #endif
