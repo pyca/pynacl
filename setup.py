@@ -38,7 +38,7 @@ def here(*paths):
 sodium = functools.partial(here, "src/libsodium/src/libsodium")
 
 
-sys.path.append(here("src"))
+sys.path.insert(0, here("src"))
 
 
 import nacl
