@@ -236,7 +236,9 @@ setup(
 
     author=nacl.__author__,
     author_email=nacl.__email__,
-    setup_requires=[CFFI_DEPENDENCY],
+    setup_requires=[
+        CFFI_DEPENDENCY
+    ],
     install_requires=[
         CFFI_DEPENDENCY,
         "six",
@@ -256,14 +258,14 @@ setup(
 
     ext_package="nacl._lib",
 
-    distclass=Distribution,
-    zip_safe=False,
-    cmdclass= {
+    cmdclass={
         "build": CFFIBuild,
         "install": CFFIInstall,
         "build_clib": build_clib,
         "build_ext": build_ext,
     },
+    distclass=Distribution,
+    zip_safe=False,
 
     classifiers=[
         "Programming Language :: Python :: Implementation :: CPython",
@@ -275,5 +277,5 @@ setup(
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
-    ],
+    ]
 )
