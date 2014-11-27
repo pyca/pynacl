@@ -22,14 +22,19 @@ import os.path
 import subprocess
 import sys
 
+from distutils.command.build import build
 from distutils.command.build_clib import build_clib as _build_clib
 from distutils.command.build_ext import build_ext as _build_ext
 
 from setuptools import Distribution, setup
 
+from setuptools.command.install import install
+
 
 SODIUM_MAJOR = 4
 SODIUM_MINOR = 5
+
+CFFI_DEPENDENCY = "cffi>=0.8"
 
 
 def here(*paths):
@@ -38,7 +43,7 @@ def here(*paths):
 sodium = functools.partial(here, "src/libsodium/src/libsodium")
 
 
-sys.path.append(here("src"))
+sys.path.insert(0, here("src"))
 
 
 import nacl
@@ -61,17 +66,36 @@ def which(name, flags=os.X_OK):  # Taken from twisted
     return result
 
 
-# This hack exists so that we can import nacl here
-sys.path += glob.glob("*.egg")
-
-try:
+def get_ext_modules():
     import nacl._lib
-except ImportError:
-    # installing - there is no cffi yet
-    ext_modules = []
-else:
-    # building bdist - cffi is here!
-    ext_modules = [nacl._lib.ffi.verifier.get_extension()]
+    return [nacl._lib.ffi.verifier.get_extension()]
+
+
+class CFFIBuild(build):
+    """
+    This class exists, instead of just providing ``ext_modules=[...]`` directly
+    in ``setup()`` because importing cryptography requires we have several
+    packages installed first.
+
+    By doing the imports here we ensure that packages listed in
+    ``setup_requires`` are already installed.
+    """
+
+    def finalize_options(self):
+        self.distribution.ext_modules = get_ext_modules()
+        build.finalize_options(self)
+
+
+class CFFIInstall(install):
+    """
+    As a consequence of CFFIBuild and it's late addition of ext_modules, we
+    need the equivalent for the ``install`` command to install into platlib
+    install-dir rather than purelib.
+    """
+
+    def finalize_options(self):
+        self.distribution.ext_modules = get_ext_modules()
+        install.finalize_options(self)
 
 
 def use_system():
@@ -212,12 +236,11 @@ setup(
 
     author=nacl.__author__,
     author_email=nacl.__email__,
-
     setup_requires=[
-        "cffi>=0.8",
+        CFFI_DEPENDENCY
     ],
     install_requires=[
-        "cffi>=0.8",
+        CFFI_DEPENDENCY,
         "six",
     ],
     extras_require={
@@ -234,9 +257,10 @@ setup(
     package_data={"nacl._lib": ["*.h"]},
 
     ext_package="nacl._lib",
-    ext_modules=ext_modules,
 
     cmdclass={
+        "build": CFFIBuild,
+        "install": CFFIInstall,
         "build_clib": build_clib,
         "build_ext": build_ext,
     },
