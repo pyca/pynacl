@@ -86,7 +86,7 @@ def crypto_sign(message, sk):
 def crypto_sign_open(signed, pk):
     """
     Verifies the signature of the signed message ``signed`` using the public
-    key ``pkg`` and returns the unsigned message.
+    key ``pk`` and returns the unsigned message.
 
     :param signed: bytes
     :param pk: bytes
