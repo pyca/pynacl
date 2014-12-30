@@ -37,7 +37,8 @@ keys to derive a shared key, which is used with the nonce given to encrypt the
 given messages and to decrypt the given ciphertexts.  The same shared key will
 be generated from both pairing of keys, so given two keypairs belonging to
 Alice (pkalice, skalice) and Bob (pkbob, skbob), the key derived from
-(pkalice, skbob) will equal that from (pkbob, skalice).  
+(pkalice, skbob) will equal that from (pkbob, skalice).
+
 This is how the system works:
 
 .. code-block:: python
