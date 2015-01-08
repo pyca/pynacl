@@ -1,8 +1,9 @@
 AC_PREREQ([2.65])
-AC_INIT([libsodium],[1.0.0],
+AC_INIT([libsodium],[1.0.1],
   [https://github.com/jedisct1/libsodium/issues],
   [libsodium],
   [https://github.com/jedisct1/libsodium])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/libsodium/sodium/version.c])
 AC_CANONICAL_HOST
@@ -16,9 +17,9 @@ ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 
 SODIUM_LIBRARY_VERSION_MAJOR=7
-SODIUM_LIBRARY_VERSION_MINOR=2
+SODIUM_LIBRARY_VERSION_MINOR=3
 DLL_VERSION=6
-SODIUM_LIBRARY_VERSION=13:2:0
+SODIUM_LIBRARY_VERSION=13:3:0
 #                       | | |
 #                +------+ | +---+
 #                |        |     |
@@ -135,7 +136,9 @@ dnl Checks
 AC_PROG_CC_C99
 AM_PROG_AS
 AC_USE_SYSTEM_EXTENSIONS
-CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"
+
+AX_CHECK_COMPILE_FLAG([-D_FORTIFY_SOURCE=2],
+  [CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"])
 
 AX_CHECK_COMPILE_FLAG([-fvisibility=hidden],
   [CFLAGS="$CFLAGS -fvisibility=hidden"])

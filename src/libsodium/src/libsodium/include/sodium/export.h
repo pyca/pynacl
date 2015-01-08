@@ -1,6 +1,6 @@
 
-#ifndef __SODIUM_EXPORT_H__
-#define __SODIUM_EXPORT_H__
+#ifndef sodium_export_H
+#define sodium_export_H
 
 #ifndef __GNUC__
 # ifdef __attribute__
@@ -13,7 +13,7 @@
 # define SODIUM_EXPORT
 #else
 # if defined(_MSC_VER)
-#  ifdef DLL_EXPORT
+#  ifdef SODIUM_DLL_EXPORT
 #   define SODIUM_EXPORT __declspec(dllexport)
 #  else
 #   define SODIUM_EXPORT __declspec(dllimport)
