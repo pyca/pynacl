@@ -183,8 +183,7 @@ class build_clib(_build_clib):
                 "src/libsodium/install-sh",
                 "src/libsodium/missing",
                 "src/libsodium/msvc-scripts/process.bat",
-                "src/libsodium/test/default/wintest.bat",
-                "src/libsodium/test-driver"]:
+                "src/libsodium/test/default/wintest.bat"]:
             os.chmod(here(filename), 0o755)
 
         # Locate our configure script
