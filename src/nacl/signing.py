@@ -73,7 +73,6 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
-
     def __eq__(self, value):
         return isinstance(value, self.__class__) and self._key == value._key
 
