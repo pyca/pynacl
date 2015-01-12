@@ -91,6 +91,14 @@ class TestVerifyKey:
         with pytest.raises(ValueError):
             nacl.signing.VerifyKey(b"")
 
+    def test_key_equality(self):
+        k = nacl.signing.VerifyKey(b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES)
+        p = nacl.signing.VerifyKey(b"\x01" * nacl.c.crypto_sign_PUBLICKEYBYTES)
+        assert k == k
+        assert p == p
+        assert k != p
+        assert k != "1234"
+
     def test_bytes(self):
         k = nacl.signing.VerifyKey(b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES)
         assert bytes(k) == b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES
