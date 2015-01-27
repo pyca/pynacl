@@ -16,13 +16,17 @@ from __future__ import absolute_import, division, print_function
 from nacl._lib import lib
 from nacl.exceptions import CryptoError
 
-__all__ = ["crypto_pwhash_scryptxsalsa208sha256", "crypto_pwhash_scryptxsalsa208sha256_str", "crypto_pwhash_scryptxsalsa208sha256_str_verify"]
+__all__ = [
+    "crypto_pwhash_scryptsalsa208sha256",
+    "crypto_pwhash_scryptsalsa208sha256_str",
+    "crypto_pwhash_scryptsalsa208sha256_str_verify"
+]
 
 
-crypto_pwhash_scryptxsalsa208sha256_SALTBYTES = lib.crypto_pwhash_scryptxsalsa208sha256_saltbytes()
-crypto_pwhash_scryptxsalsa208sha256_STRBYTES = lib.crypto_pwhash_scryptxsalsa208sha256_strbytes()
+crypto_pwhash_scryptsalsa208sha256_SALTBYTES = lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
+crypto_pwhash_scryptsalsa208sha256_STRBYTES = lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
 
-def crypto_pwhash_scryptxsalsa208sha256( outlen, passwd, salt, opslimit = 20000, memlimit = (2**20)*100 ):
+def crypto_pwhash_scryptsalsa208sha256( outlen, passwd, salt, opslimit = 20000, memlimit = (2**20)*100 ):
     """
     returns uses the ``passwd`` and ``salt`` to produce derive a key of ``outlen`` bytes
     can be tuned by picking different ``opslimit`` and ``memlimit``
@@ -33,22 +37,22 @@ def crypto_pwhash_scryptxsalsa208sha256( outlen, passwd, salt, opslimit = 20000,
     :rtype: bytes
     """
 
-    if len(salt) != crypto_pwhash_scryptxsalsa208sha256_SALTBYTES:
+    if len(salt) != crypto_pwhash_scryptsalsa208sha256_SALTBYTES:
         raise ValueError("Invalid salt")
 
     buf = lib.ffi.new("unsigned char[]", outlen)
 
-    ret = lib.crypto_pwhash_scryptxsalsa208sha256(buf, outlen, passwd, len(passwd), salt, opslimit, memlimit )
+    ret = lib.crypto_pwhash_scryptsalsa208sha256(buf, outlen, passwd, len(passwd), salt, opslimit, memlimit )
 
     if ret != 0:
         raise CryptoError( "Key derivation fails!" )
 
     return lib.ffi.buffer(buf, outlen)[:]
 
-def crypto_pwhash_scryptxsalsa208sha256_str( passwd, opslimit=5000, memlimit=(2**11)*50):
+def crypto_pwhash_scryptsalsa208sha256_str( passwd, opslimit=5000, memlimit=(2**11)*50):
     """
     returns uses the ``passwd`` and ``salt`` and hashes them, producing a 
-    ASCII string of crypto_pwhash_scryptxsalsa208sha256_STRBYTES in length, 
+    ASCII string of crypto_pwhash_scryptsalsa208sha256_STRBYTES in length, 
     including the null terminator. The returned string includes the salt
     and the tuning parameters, ``opslimit`` and ``memlimit``, and can be 
     written directly to disk as a password hash
@@ -58,16 +62,16 @@ def crypto_pwhash_scryptxsalsa208sha256_str( passwd, opslimit=5000, memlimit=(2*
     :param memlimit: int
     :rtype: bytestring
     """
-    buf = lib.ffi.new("unsigned char[]", crypto_pwhash_scryptxsalsa208sha256_STRBYTES)
+    buf = lib.ffi.new("unsigned char[]", crypto_pwhash_scryptsalsa208sha256_STRBYTES)
 
-    ret = lib.crypto_pwhash_scryptxsalsa208sha256_str(buf, passwd, len(passwd), opslimit, memlimit )
+    ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd, len(passwd), opslimit, memlimit)
 
     if( ret != 0 ):
         raise CryptoError( "Failed to hash password" )
 
     return lib.ffi.string( buf )
 
-def crypto_pwhash_scryptxsalsa208sha256_str_verify( passwd_hash, passwd ):
+def crypto_pwhash_scryptsalsa208sha256_str_verify( passwd_hash, passwd ):
     """
     Verifies the ``passwd`` against the ``passwd_hash`` that was generated.
     Returns True or False depending on the success
@@ -77,10 +81,10 @@ def crypto_pwhash_scryptxsalsa208sha256_str_verify( passwd_hash, passwd ):
     :rtype: boolean
     """
 
-    if len(passwd_hash) != crypto_pwhash_scryptxsalsa208sha256_STRBYTES:
+    if len(passwd_hash) != crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1:
         raise ValueError("Invalid password hash")
 
-    if lib.crypto_pwhash_scryptxsalsa208sha256_str_verify(passwd_hash, passwd, len(passwd) ) == 0:
+    if lib.crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd, len(passwd) ) == 0:
         return True
     else:
         return False
