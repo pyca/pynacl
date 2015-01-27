@@ -14,10 +14,10 @@
  */
 
 
-size_t crypto_pwhash_scryptxsalsa208sha256_saltbytes(void);
-size_t crypto_pwhash_scryptxsalsa208sha256_strbytes(void);
+size_t crypto_pwhash_scryptsalsa208sha256_saltbytes(void);
+size_t crypto_pwhash_scryptsalsa208sha256_strbytes(void);
 
-int crypto_pwhash_scryptxsalsa208sha256(unsigned char * const out,
+int crypto_pwhash_scryptsalsa208sha256(unsigned char * const out,
                                         unsigned long long outlen,
                                         const char * const passwd,
                                         unsigned long long passwdlen,
@@ -25,14 +25,14 @@ int crypto_pwhash_scryptxsalsa208sha256(unsigned char * const out,
                                         unsigned long long opslimit,
                                         size_t memlimit);
 
-/* #define crypto_pwhash_scryptxsalsa208sha256_STRBYTES 102 */
-int crypto_pwhash_scryptxsalsa208sha256_str(char out[102],
+/* #define crypto_pwhash_scryptsalsa208sha256_STRBYTES 102 */
+int crypto_pwhash_scryptsalsa208sha256_str(char out[102],
                                             const char * const passwd,
                                             unsigned long long passwdlen,
                                             unsigned long long opslimit,
                                             size_t memlimit);
 
-int crypto_pwhash_scryptxsalsa208sha256_str_verify(const char str[102],
+int crypto_pwhash_scryptsalsa208sha256_str_verify(const char str[102],
                                                    const char * const passwd,
                                                    unsigned long long passwdlen);
 

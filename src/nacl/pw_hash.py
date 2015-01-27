@@ -14,13 +14,13 @@
 from __future__ import absolute_import
 from __future__ import division
 
-import nacl.c
+import nacl.bindings
 import nacl.encoding
 
-SALT_SIZE = nacl.c.crypto_pwhash_scryptxsalsa208sha256_SALTBYTES
-PWHASH_SIZE = nacl.c.crypto_pwhash_scryptxsalsa208sha256_STRBYTES
+SALT_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
+PWHASH_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1
 
-def kdf_cryptxsalsa208sha256(size, password, salt, encoder=nacl.encoding.RawEncoder):
+def kdf_scryptsalsa208sha256(size, password, salt, encoder=nacl.encoding.RawEncoder):
     """
     Makes a key defined from ``password`` and ``salt`` that is ``size`` bytes long
 
@@ -31,14 +31,18 @@ def kdf_cryptxsalsa208sha256(size, password, salt, encoder=nacl.encoding.RawEnco
     """
     if len(salt) != SALT_SIZE:
         raise ValueError(
-                "The salt must be exactly %s bytes long" % 
-                nacl.c.crypto_pwhash_scryptxsalsa208sha256_SALTBYTES, 
+            "The salt must be exactly %s, not %s bytes long" % (
+                SALT_SIZE,
+                len(salt)
+            )
         )
 
-    return encoder.encode(nacl.c.crypto_pwhash_scryptxsalsa208sha256(size, password, salt))
+    return encoder.encode(
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256(size, password, salt)
+    )
 
 
-def cryptxsalsa208sha256(password):
+def scryptsalsa208sha256(password):
     """
     Hashes a password with a random salt, returns an ascii string
     that has all the needed info to check against a future password
@@ -47,24 +51,26 @@ def cryptxsalsa208sha256(password):
     :rtype: byte string
     """
 
-    return nacl.c.crypto_pwhash_cryptxsalsa208sha256S_str(message)
+    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password)
 
 
-def verify_cryptxsalsa208sha256( password_hash, password ):
+def verify_scryptsalsa208sha256(password_hash, password):
     """
-    Takes the output of cryptxsalsa208sha25 and compares it against
+    Takes the output of scryptsalsa208sha25 and compares it against
     a user provided password to see if they are the same
 
     :param password_hash: bytes
     :param password: bytes
     :rtype: boolean
     """
-    
+
     if len(password_hash) != PWHASH_SIZE:
         raise ValueError(
-                "The pw_hash must be exactly %s bytes long" % 
-                nacl.c.crypto_pwhash_scryptxsalsa208sha256_STRBYTES, 
-        ) 
+                "The pw_hash must be exactly %s bytes long" %
+                nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+        )
 
-    return nacl.c.crypto_pwhash_cryptxsalsa208sha256S_str_verify(password_hash, password)
+    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str_verify(
+        password_hash, password
+    )
 

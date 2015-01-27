@@ -135,6 +135,7 @@ class build_clib(_build_clib):
         # Ensure all of our executanle files have their permission set
         for filename in [
                 "src/libsodium/autogen.sh",
+                "src/libsodium/compile",
                 "src/libsodium/config.guess",
                 "src/libsodium/config.sub",
                 "src/libsodium/configure",
