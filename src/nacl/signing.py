@@ -61,6 +61,8 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __init__(self, key, encoder=encoding.RawEncoder):
         # Decode the key
         key = encoder.decode(key)
+        if not isinstance(key, bytes):
+            raise TypeError("VerifyKey must be created from 32 bytes")
 
         if len(key) != nacl.c.crypto_sign_PUBLICKEYBYTES:
             raise ValueError(
@@ -120,6 +122,8 @@ class SigningKey(encoding.Encodable, StringFixer, object):
     def __init__(self, seed, encoder=encoding.RawEncoder):
         # Decode the seed
         seed = encoder.decode(seed)
+        if not isinstance(seed, bytes):
+            raise TypeError("SigningKey must be created from a 32 byte seed")
 
         # Verify that our seed is the proper size
         if len(seed) != nacl.c.crypto_sign_SEEDBYTES:

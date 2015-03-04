@@ -20,9 +20,10 @@ import os
 
 import pytest
 
-import nacl.encoding
-import nacl.exceptions
-import nacl.signing
+from nacl.c import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
+from nacl.encoding import HexEncoder
+from nacl.exceptions import BadSignatureError
+from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
 
 def ed25519_known_answers():
@@ -48,21 +49,21 @@ def ed25519_known_answers():
 
 class TestSigningKey:
     def test_initialize_with_generate(self):
-        nacl.signing.SigningKey.generate()
+        SigningKey.generate()
 
     def test_wrong_length(self):
         with pytest.raises(ValueError):
-            nacl.signing.SigningKey(b"")
+            SigningKey(b"")
 
     def test_bytes(self):
-        k = nacl.signing.SigningKey(b"\x00" * nacl.c.crypto_sign_SEEDBYTES)
-        assert bytes(k) == b"\x00" * nacl.c.crypto_sign_SEEDBYTES
+        k = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        assert bytes(k) == b"\x00" * crypto_sign_SEEDBYTES
 
     @pytest.mark.parametrize("seed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
     ])
     def test_initialization_with_seed(self, seed):
-        nacl.signing.SigningKey(seed, encoder=nacl.encoding.HexEncoder)
+        SigningKey(seed, encoder=HexEncoder)
 
     @pytest.mark.parametrize(
         ("seed", "message", "signature", "expected"),
@@ -72,13 +73,13 @@ class TestSigningKey:
         ],
     )
     def test_message_signing(self, seed, message, signature, expected):
-        signing_key = nacl.signing.SigningKey(
+        signing_key = SigningKey(
             seed,
-            encoder=nacl.encoding.HexEncoder,
+            encoder=HexEncoder,
         )
         signed = signing_key.sign(
             binascii.unhexlify(message),
-            encoder=nacl.encoding.HexEncoder,
+            encoder=HexEncoder,
         )
 
         assert signed == expected
@@ -89,11 +90,11 @@ class TestSigningKey:
 class TestVerifyKey:
     def test_wrong_length(self):
         with pytest.raises(ValueError):
-            nacl.signing.VerifyKey(b"")
+            VerifyKey(b"")
 
     def test_bytes(self):
-        k = nacl.signing.VerifyKey(b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES)
-        assert bytes(k) == b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES
+        k = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        assert bytes(k) == b"\x00" * crypto_sign_PUBLICKEYBYTES
 
     @pytest.mark.parametrize(
         ("public_key", "signed", "message", "signature"),
@@ -104,29 +105,53 @@ class TestVerifyKey:
     )
     def test_valid_signed_message(
             self, public_key, signed, message, signature):
-        key = nacl.signing.VerifyKey(
+        key = VerifyKey(
             public_key,
-            encoder=nacl.encoding.HexEncoder,
+            encoder=HexEncoder,
         )
 
         assert binascii.hexlify(
-            key.verify(signed, encoder=nacl.encoding.HexEncoder),
+            key.verify(signed, encoder=HexEncoder),
         ) == message
         assert binascii.hexlify(
-            key.verify(message, signature, encoder=nacl.encoding.HexEncoder),
+            key.verify(message, signature, encoder=HexEncoder),
         ) == message
 
     def test_invalid_signed_message(self):
-        skey = nacl.signing.SigningKey.generate()
+        skey = SigningKey.generate()
         smessage = skey.sign(b"A Test Message!")
         signature, message = smessage.signature, b"A Forged Test Message!"
 
         # Small sanity check
         assert skey.verify_key.verify(smessage)
 
-        with pytest.raises(nacl.exceptions.BadSignatureError):
+        with pytest.raises(BadSignatureError):
             skey.verify_key.verify(message, signature)
 
-        with pytest.raises(nacl.exceptions.BadSignatureError):
-            forged = nacl.signing.SignedMessage(signature + message)
+        with pytest.raises(BadSignatureError):
+            forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
+
+
+def check_type_error(expected, f, *args):
+    with pytest.raises(TypeError) as e:
+        f(*args)
+    assert expected in str(e)
+
+
+def test_wrong_types():
+    sk = SigningKey.generate()
+
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, 12)
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, sk)
+    check_type_error("SigningKey must be created from a 32 byte seed",
+                     SigningKey, sk.verify_key)
+
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, 13)
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, sk)
+    check_type_error("VerifyKey must be created from 32 bytes",
+                     VerifyKey, sk.verify_key)
