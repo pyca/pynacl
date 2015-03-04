@@ -70,8 +70,8 @@ class Box(encoding.Encodable, StringFixer, object):
 
     def __init__(self, private_key, public_key):
         if private_key and public_key:
-            if ((not isinstance(private_key, PrivateKey)
-                 or not isinstance(public_key, PublicKey))):
+            if ((not isinstance(private_key, PrivateKey) or
+                 not isinstance(public_key, PublicKey))):
                 raise TypeError("Box must be created from "
                                 "a PrivateKey and a PublicKey")
             self._shared_key = nacl.bindings.crypto_box_beforenm(
