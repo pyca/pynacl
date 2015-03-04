@@ -20,6 +20,10 @@ import nacl.bindings
 
 
 class EncryptedMessage(six.binary_type):
+    """
+    A bytes subclass that holds a messaged that has been encrypted by a
+    :class:`SecretBox`.
+    """
 
     @classmethod
     def _from_parts(cls, nonce, ciphertext, combined):
@@ -30,10 +34,16 @@ class EncryptedMessage(six.binary_type):
 
     @property
     def nonce(self):
+        """
+        The nonce used during the encryption of the :class:`EncryptedMessage`.
+        """
         return self._nonce
 
     @property
     def ciphertext(self):
+        """
+        The ciphertext contained within the :class:`EncryptedMessage`.
+        """
         return self._ciphertext
 
 
