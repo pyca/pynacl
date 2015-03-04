@@ -34,6 +34,8 @@ class PublicKey(encoding.Encodable, StringFixer, object):
 
     def __init__(self, public_key, encoder=encoding.RawEncoder):
         self._public_key = encoder.decode(public_key)
+        if not isinstance(self._public_key, bytes):
+            raise TypeError("PublicKey must be created from 32 bytes")
 
         if len(self._public_key) != self.SIZE:
             raise ValueError("The public key must be exactly %s bytes long" %
@@ -63,6 +65,8 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
+        if not isinstance(private_key, bytes):
+            raise TypeError("PrivateKey must be created from a 32 byte seed")
 
         # Verify that our seed is the proper size
         if len(private_key) != self.SIZE:
@@ -111,6 +115,10 @@ class Box(encoding.Encodable, StringFixer, object):
 
     def __init__(self, private_key, public_key):
         if private_key and public_key:
+            if ((not isinstance(private_key, PrivateKey) or
+                 not isinstance(public_key, PublicKey))):
+                raise TypeError("Box must be created from "
+                                "a PrivateKey and a PublicKey")
             self._shared_key = nacl.bindings.crypto_box_beforenm(
                 public_key.encode(encoder=encoding.RawEncoder),
                 private_key.encode(encoder=encoding.RawEncoder),

@@ -44,6 +44,8 @@ class SecretBox(encoding.Encodable, StringFixer, object):
 
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
+        if not isinstance(key, bytes):
+            raise TypeError("SecretBox must be created from 32 bytes")
 
         if len(key) != self.KEY_SIZE:
             raise ValueError(
