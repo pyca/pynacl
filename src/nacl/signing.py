@@ -17,7 +17,7 @@ from __future__ import absolute_import, division, print_function
 import six
 
 from nacl import encoding
-import nacl.c
+import nacl.bindings
 from nacl.utils import StringFixer, random
 
 
@@ -62,10 +62,10 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         # Decode the key
         key = encoder.decode(key)
 
-        if len(key) != nacl.c.crypto_sign_PUBLICKEYBYTES:
+        if len(key) != nacl.bindings.crypto_sign_PUBLICKEYBYTES:
             raise ValueError(
                 "The key must be exactly %s bytes long" %
-                nacl.c.crypto_sign_PUBLICKEYBYTES,
+                nacl.bindings.crypto_sign_PUBLICKEYBYTES,
             )
 
         self._key = key
@@ -95,7 +95,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         # Decode the signed message
         smessage = encoder.decode(smessage)
 
-        return nacl.c.crypto_sign_open(smessage, self._key)
+        return nacl.bindings.crypto_sign_open(smessage, self._key)
 
 
 class SigningKey(encoding.Encodable, StringFixer, object):
@@ -122,13 +122,13 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         seed = encoder.decode(seed)
 
         # Verify that our seed is the proper size
-        if len(seed) != nacl.c.crypto_sign_SEEDBYTES:
+        if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
             raise ValueError(
                 "The seed must be exactly %d bytes long" %
-                nacl.c.crypto_sign_SEEDBYTES
+                nacl.bindings.crypto_sign_SEEDBYTES
             )
 
-        public_key, secret_key = nacl.c.crypto_sign_seed_keypair(seed)
+        public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)
 
         self._seed = seed
         self._signing_key = secret_key
@@ -145,7 +145,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         :rtype: :class:`~nacl.signing.SigningKey`
         """
         return cls(
-            random(nacl.c.crypto_sign_SEEDBYTES),
+            random(nacl.bindings.crypto_sign_SEEDBYTES),
             encoder=encoding.RawEncoder,
         )
 
@@ -157,10 +157,11 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         :param encoder: A class that is used to encode the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
-        raw_signed = nacl.c.crypto_sign(message, self._signing_key)
+        raw_signed = nacl.bindings.crypto_sign(message, self._signing_key)
 
-        signature = encoder.encode(raw_signed[:nacl.c.crypto_sign_BYTES])
-        message = encoder.encode(raw_signed[nacl.c.crypto_sign_BYTES:])
+        crypto_sign_BYTES = nacl.bindings.crypto_sign_BYTES
+        signature = encoder.encode(raw_signed[:crypto_sign_BYTES])
+        message = encoder.encode(raw_signed[crypto_sign_BYTES:])
         signed = encoder.encode(raw_signed)
 
         return SignedMessage._from_parts(signature, message, signed)

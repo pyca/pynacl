@@ -14,13 +14,13 @@
 
 from __future__ import absolute_import, division, print_function
 
-import nacl.c
+import nacl.bindings
 import nacl.encoding
 
 
 def sha256(message, encoder=nacl.encoding.HexEncoder):
-    return encoder.encode(nacl.c.crypto_hash_sha256(message))
+    return encoder.encode(nacl.bindings.crypto_hash_sha256(message))
 
 
 def sha512(message, encoder=nacl.encoding.HexEncoder):
-    return encoder.encode(nacl.c.crypto_hash_sha512(message))
+    return encoder.encode(nacl.bindings.crypto_hash_sha512(message))

@@ -15,14 +15,14 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl import encoding
-import nacl.c
+import nacl.bindings
 from nacl.utils import EncryptedMessage, StringFixer
 
 
 class SecretBox(encoding.Encodable, StringFixer, object):
 
-    KEY_SIZE = nacl.c.crypto_secretbox_KEYBYTES
-    NONCE_SIZE = nacl.c.crypto_secretbox_NONCEBYTES
+    KEY_SIZE = nacl.bindings.crypto_secretbox_KEYBYTES
+    NONCE_SIZE = nacl.bindings.crypto_secretbox_NONCEBYTES
 
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
@@ -45,7 +45,8 @@ class SecretBox(encoding.Encodable, StringFixer, object):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        ciphertext = nacl.c.crypto_secretbox(plaintext, nonce, self._key)
+        ciphertext = nacl.bindings.crypto_secretbox(plaintext,
+                                                    nonce, self._key)
 
         encoded_nonce = encoder.encode(nonce)
         encoded_ciphertext = encoder.encode(ciphertext)
@@ -71,6 +72,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        plaintext = nacl.c.crypto_secretbox_open(ciphertext, nonce, self._key)
+        plaintext = nacl.bindings.crypto_secretbox_open(ciphertext,
+                                                        nonce, self._key)
 
         return plaintext

@@ -15,13 +15,13 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl import encoding
-import nacl.c
+import nacl.bindings
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
 class PublicKey(encoding.Encodable, StringFixer, object):
 
-    SIZE = nacl.c.crypto_box_PUBLICKEYBYTES
+    SIZE = nacl.bindings.crypto_box_PUBLICKEYBYTES
 
     def __init__(self, public_key, encoder=encoding.RawEncoder):
         self._public_key = encoder.decode(public_key)
@@ -36,7 +36,7 @@ class PublicKey(encoding.Encodable, StringFixer, object):
 
 class PrivateKey(encoding.Encodable, StringFixer, object):
 
-    SIZE = nacl.c.crypto_box_SECRETKEYBYTES
+    SIZE = nacl.bindings.crypto_box_SECRETKEYBYTES
 
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
@@ -47,7 +47,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
             raise ValueError(
                 "The secret key must be exactly %d bytes long" % self.SIZE)
 
-        raw_public_key = nacl.c.crypto_scalarmult_base(private_key)
+        raw_public_key = nacl.bindings.crypto_scalarmult_base(private_key)
 
         self._private_key = private_key
         self.public_key = PublicKey(raw_public_key)
@@ -62,11 +62,11 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
 class Box(encoding.Encodable, StringFixer, object):
 
-    NONCE_SIZE = nacl.c.crypto_box_NONCEBYTES
+    NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
 
     def __init__(self, private_key, public_key):
         if private_key and public_key:
-            self._shared_key = nacl.c.crypto_box_beforenm(
+            self._shared_key = nacl.bindings.crypto_box_beforenm(
                 public_key.encode(encoder=encoding.RawEncoder),
                 private_key.encode(encoder=encoding.RawEncoder),
             )
@@ -92,7 +92,7 @@ class Box(encoding.Encodable, StringFixer, object):
             raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
-        ciphertext = nacl.c.crypto_box_afternm(
+        ciphertext = nacl.bindings.crypto_box_afternm(
             plaintext,
             nonce,
             self._shared_key,
@@ -121,7 +121,7 @@ class Box(encoding.Encodable, StringFixer, object):
             raise ValueError("The nonce must be exactly %s bytes long" %
                              self.NONCE_SIZE)
 
-        plaintext = nacl.c.crypto_box_open_afternm(
+        plaintext = nacl.bindings.crypto_box_open_afternm(
             ciphertext,
             nonce,
             self._shared_key,

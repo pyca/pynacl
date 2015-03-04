@@ -16,7 +16,7 @@ from __future__ import absolute_import, division, print_function
 
 import six
 
-import nacl.c
+import nacl.bindings
 
 
 class EncryptedMessage(six.binary_type):
@@ -47,4 +47,4 @@ class StringFixer(object):
 
 
 def random(size=32):
-    return nacl.c.randombytes(size)
+    return nacl.bindings.randombytes(size)
