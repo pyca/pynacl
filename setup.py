@@ -46,7 +46,7 @@ sodium = functools.partial(here, "src/libsodium/src/libsodium")
 sys.path.insert(0, here("src"))
 
 
-import nacl
+import nacl # flake8: noqa
 
 
 def which(name, flags=os.X_OK):  # Taken from twisted

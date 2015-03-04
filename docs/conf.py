@@ -20,7 +20,7 @@ except ImportError:
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("../src"))
 
-import nacl
+import nacl # flake8: noqa
 
 # -- General configuration ----------------------------------------------------
 
