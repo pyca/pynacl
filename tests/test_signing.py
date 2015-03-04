@@ -20,6 +20,7 @@ import os
 
 import pytest
 
+from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
 import nacl.encoding
 import nacl.exceptions
 import nacl.signing
@@ -55,8 +56,8 @@ class TestSigningKey:
             nacl.signing.SigningKey(b"")
 
     def test_bytes(self):
-        k = nacl.signing.SigningKey(b"\x00" * nacl.c.crypto_sign_SEEDBYTES)
-        assert bytes(k) == b"\x00" * nacl.c.crypto_sign_SEEDBYTES
+        k = nacl.signing.SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        assert bytes(k) == b"\x00" * crypto_sign_SEEDBYTES
 
     @pytest.mark.parametrize("seed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
@@ -92,8 +93,8 @@ class TestVerifyKey:
             nacl.signing.VerifyKey(b"")
 
     def test_bytes(self):
-        k = nacl.signing.VerifyKey(b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES)
-        assert bytes(k) == b"\x00" * nacl.c.crypto_sign_PUBLICKEYBYTES
+        k = nacl.signing.VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        assert bytes(k) == b"\x00" * crypto_sign_PUBLICKEYBYTES
 
     @pytest.mark.parametrize(
         ("public_key", "signed", "message", "signature"),

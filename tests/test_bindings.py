@@ -19,7 +19,7 @@ from binascii import hexlify, unhexlify
 
 import pytest
 
-from nacl import c
+from nacl import bindings as c
 from nacl.exceptions import CryptoError
 
 

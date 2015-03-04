@@ -48,7 +48,9 @@ Changes
 
 * 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the
   upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
-  The order of arguments and return values has changed significantly. If you
-  have code which calls these functions (e.g. `nacl.c.crypto_box_keypair()`),
-  you must review the new docstrings and update your code to match the new
+  The order of arguments and return values has changed significantly. To
+  avoid silent failures, `nacl.c` has been removed, and replaced with
+  `nacl.bindings` (with the new argument ordering). If you have code which
+  calls these functions (e.g. `nacl.c.crypto_box_keypair()`), you must review
+  the new docstrings and update your code/imports to match the new
   conventions.

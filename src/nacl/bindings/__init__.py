@@ -14,33 +14,33 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl.c.crypto_box import (
+from nacl.bindings.crypto_box import (
     crypto_box, crypto_box_BEFORENMBYTES, crypto_box_BOXZEROBYTES,
     crypto_box_NONCEBYTES, crypto_box_PUBLICKEYBYTES,
     crypto_box_SECRETKEYBYTES, crypto_box_ZEROBYTES, crypto_box_afternm,
     crypto_box_beforenm, crypto_box_keypair, crypto_box_open,
     crypto_box_open_afternm,
 )
-from nacl.c.crypto_hash import (
+from nacl.bindings.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
-from nacl.c.crypto_scalarmult import (
+from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base
 )
-from nacl.c.crypto_secretbox import (
+from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
     crypto_secretbox_NONCEBYTES, crypto_secretbox_ZEROBYTES,
     crypto_secretbox_open
 )
-from nacl.c.crypto_sign import (
+from nacl.bindings.crypto_sign import (
     crypto_sign, crypto_sign_BYTES, crypto_sign_PUBLICKEYBYTES,
     crypto_sign_SECRETKEYBYTES, crypto_sign_SEEDBYTES, crypto_sign_keypair,
     crypto_sign_open, crypto_sign_seed_keypair,
 )
-from nacl.c.randombytes import randombytes
-from nacl.c.sodium_core import sodium_init
+from nacl.bindings.randombytes import randombytes
+from nacl.bindings.sodium_core import sodium_init
 
 
 __all__ = [

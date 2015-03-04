@@ -251,7 +251,7 @@ setup(
     packages=[
         "nacl",
         "nacl._lib",
-        "nacl.c",
+        "nacl.bindings",
     ],
     package_data={"nacl._lib": ["*.h"]},
 
