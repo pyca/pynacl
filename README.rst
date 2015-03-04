@@ -1,14 +1,14 @@
 PyNaCl
 ======
 
-.. image:: https://pypip.in/version/PyNaCl/badge.svg
+.. image:: https://pypip.in/version/PyNaCl/badge.svg?style=flat
     :target: https://pypi.python.org/pypi/PyNaCl/
     :alt: Latest Version
 
-.. image:: https://travis-ci.org/pyca/pynacl.png?branch=master
+.. image:: https://travis-ci.org/pyca/pynacl.svg?branch=master
     :target: https://travis-ci.org/pyca/pynacl
 
-.. image:: https://coveralls.io/repos/pyca/pynacl/badge.png?branch=master
+.. image:: https://coveralls.io/repos/pyca/pynacl/badge.svg?branch=master
    :target: https://coveralls.io/r/pyca/pynacl?branch=master
 
 PyNaCl is a Python binding to the `Networking and Cryptography library`_,
