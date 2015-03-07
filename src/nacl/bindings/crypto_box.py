@@ -38,8 +38,8 @@ def crypto_box_keypair():
     pk = lib.ffi.new("unsigned char[]", crypto_box_PUBLICKEYBYTES)
     sk = lib.ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
 
-    if lib.crypto_box_keypair(pk, sk) != 0:
-        raise CryptoError("An error occurred trying to generate the keypair")
+    rc = lib.crypto_box_keypair(pk, sk)
+    assert rc == 0
 
     return (
         lib.ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
@@ -70,8 +70,8 @@ def crypto_box(message, nonce, pk, sk):
     padded = (b"\x00" * crypto_box_ZEROBYTES) + message
     ciphertext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk) != 0:
-        raise CryptoError("An error occurred trying to encrypt the message")
+    rc = lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk)
+    assert rc == 0
 
     return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
@@ -123,8 +123,8 @@ def crypto_box_beforenm(pk, sk):
 
     k = lib.ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
 
-    if lib.crypto_box_beforenm(k, pk, sk) != 0:
-        raise CryptoError("An error occurred computing the shared key.")
+    rc = lib.crypto_box_beforenm(k, pk, sk)
+    assert rc == 0
 
     return lib.ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
 
@@ -148,8 +148,8 @@ def crypto_box_afternm(message, nonce, k):
     padded = b"\x00" * crypto_box_ZEROBYTES + message
     ciphertext = lib.ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k) != 0:
-        raise CryptoError("An error occurred trying to encrypt the message")
+    rc = lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k)
+    assert rc == 0
 
     return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
