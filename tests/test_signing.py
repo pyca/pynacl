@@ -59,6 +59,16 @@ class TestSigningKey:
         k = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         assert bytes(k) == b"\x00" * crypto_sign_SEEDBYTES
 
+    def test_eq_returns_True_for_identical_keys(self):
+        k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        k2 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        assert k1 == k2
+
+    def test_eq_returns_False_for_wrong_type(self):
+        k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        k2 = b"\x00" * crypto_sign_SEEDBYTES
+        assert k1 != k2
+
     @pytest.mark.parametrize("seed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
     ])
@@ -95,6 +105,16 @@ class TestVerifyKey:
     def test_bytes(self):
         k = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         assert bytes(k) == b"\x00" * crypto_sign_PUBLICKEYBYTES
+
+    def test_eq_returns_True_for_identical_keys(self):
+        k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        k2 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        assert k1 == k2
+
+    def test_eq_returns_False_for_wrong_type(self):
+        k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        k2 = b"\x00" * crypto_sign_PUBLICKEYBYTES
+        assert k1 != k2
 
     @pytest.mark.parametrize(
         ("public_key", "signed", "message", "signature"),
