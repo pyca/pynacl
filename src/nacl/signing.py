@@ -78,6 +78,11 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return bytes(self) == bytes(other)
+
     def verify(self, smessage, signature=None, encoder=encoding.RawEncoder):
         """
         Verifies the signature of a signed message, returning the message
@@ -153,6 +158,11 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
     def __bytes__(self):
         return self._seed
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return bytes(self) == bytes(other)
 
     @classmethod
     def generate(cls):
