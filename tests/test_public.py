@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
-from nacl.public import PublicKey, PrivateKey
+from nacl.public import PrivateKey, PublicKey
 
 
 class TestPublicKey:
