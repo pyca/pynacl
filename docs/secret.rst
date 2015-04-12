@@ -134,5 +134,5 @@ Reference
 Algorithm details
 -----------------
 
-:Encryption: `Salsa20 steam cipher <https://en.wikipedia.org/wiki/Salsa20>`_
+:Encryption: `Salsa20 stream cipher <https://en.wikipedia.org/wiki/Salsa20>`_
 :Authentication: `Poly1305 MAC <https://en.wikipedia.org/wiki/Poly1305-AES>`_
