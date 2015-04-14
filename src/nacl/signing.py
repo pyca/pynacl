@@ -16,8 +16,9 @@ from __future__ import absolute_import, division, print_function
 
 import six
 
-import nacl.bindings
 from nacl import encoding
+
+import nacl.bindings
 from nacl.public import PrivateKey, PublicKey
 from nacl.utils import StringFixer, random
 
