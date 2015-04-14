@@ -207,9 +207,9 @@ def test_sign_test_key_conversion():
     curve25519_pk = c.crypto_sign_ed25519_pk_to_curve25519(ed25519_pk)
 
     with pytest.raises(ValueError):
-        c.crypto_sign_ed25519_pk_to_curve25519(unhexlify("12"))
+        c.crypto_sign_ed25519_pk_to_curve25519(unhexlify(b"12"))
     with pytest.raises(ValueError):
-        c.crypto_sign_ed25519_sk_to_curve25519(unhexlify("12"))
+        c.crypto_sign_ed25519_sk_to_curve25519(unhexlify(b"12"))
 
     curve25519_sk = c.crypto_sign_ed25519_sk_to_curve25519(ed25519_sk)
 
