@@ -18,7 +18,7 @@ import six
 
 import nacl.bindings
 from nacl import encoding
-from nacl.public import PublicKey, PrivateKey
+from nacl.public import PrivateKey, PublicKey
 from nacl.utils import StringFixer, random
 
 
