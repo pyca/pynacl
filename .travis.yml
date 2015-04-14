@@ -1,5 +1,5 @@
+sudo: false
 language: python
-python: 2.7
 env:
   - TOXENV=py26 SODIUM_INSTALL=bundled CC=gcc
   - TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
@@ -33,18 +33,17 @@ install:
   - "if [[ $SODIUM_INSTALL == 'system' ]]; then wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz; fi"
   - "if [[ $SODIUM_INSTALL == 'system' ]]; then tar zxvf LATEST.tar.gz; fi"
   - "if [[ $SODIUM_INSTALL == 'system' ]]; then cd libsodium-*; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then ./configure; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then ./configure --prefix=$HOME/libsodium; fi"
   - "if [[ $SODIUM_INSTALL == 'system' ]]; then make; fi"
   - "if [[ $SODIUM_INSTALL == 'system' ]]; then make check; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo make install; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo ldconfig; fi"
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then make install; fi"
 
   # Install tox and coveralls so we can run our tests
   - pip install tox coveralls
 
 
 script:
-  - tox
+  - "if [[ $SODIUM_INSTALL == 'system' ]]; then LD_LIBRARY_PATH=$HOME/libsodium/lib LDFLAGS=$HOME/libsodium/lib CFLAGS=$HOME/libsodium/include tox; else tox; fi"
 
 after_success:
   - coveralls
