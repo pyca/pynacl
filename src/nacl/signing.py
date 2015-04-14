@@ -21,6 +21,7 @@ from nacl import encoding
 from nacl.public import PublicKey, PrivateKey
 from nacl.utils import StringFixer, random
 
+
 class SignedMessage(six.binary_type):
     """
     A bytes subclass that holds a messaged that has been signed by a
@@ -106,9 +107,8 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         :rtype: :class:`~nacl.public.PublicKey`
         """
-        raw_public = nacl.bindings.crypto_sign_ed25519_pk_to_curve25519(
-                                                            self._key)
-        return PublicKey(raw_public)
+        raw_pk = nacl.bindings.crypto_sign_ed25519_pk_to_curve25519(self._key)
+        return PublicKey(raw_pk)
 
 
 class SigningKey(encoding.Encodable, StringFixer, object):
@@ -188,6 +188,6 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        raw_private = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(
-                                                            self._signing_key)
+        sk = self._signing_key
+        raw_sk = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(sk)
         return PrivateKey(raw_private)

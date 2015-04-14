@@ -142,15 +142,14 @@ class TestVerifyKey:
         signing_key = SigningKey(binascii.unhexlify(keypair_seed))
         verify_key = signing_key.verify_key
 
-        private_key = signing_key.to_private_key()
-        public_key = verify_key.to_public_key()
+        private_key = bytes(signing_key.to_private_key())
+        public_key = bytes(verify_key.to_public_key())
 
-        assert tohex(bytes(private_key)) == ("8052030376d47112be7f73ed7a019293"
-                                             "dd12ad910b654455798b4667d73de166")
+        assert tohex(private_key) == ("8052030376d47112be7f73ed7a019293"
+                                      "dd12ad910b654455798b4667d73de166")
 
-        assert tohex(bytes(public_key)) == ("f1814f0e8ff1043d8a44d25babff3ced"
-                                            "cae6c22c3edaa48f857ae70de2baae50")
-
+        assert tohex(public_key) == ("f1814f0e8ff1043d8a44d25babff3ced"
+                                     "cae6c22c3edaa48f857ae70de2baae50")
 
 
 def check_type_error(expected, f, *args):

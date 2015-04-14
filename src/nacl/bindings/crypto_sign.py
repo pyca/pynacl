@@ -26,6 +26,7 @@ crypto_sign_SECRETKEYBYTES = lib.crypto_sign_secretkeybytes()
 
 crypto_sign_curve25519_BYTES = lib.crypto_box_secretkeybytes()
 
+
 def crypto_sign_keypair():
     """
     Returns a randomly generated public key and secret key.
