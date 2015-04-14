@@ -26,6 +26,10 @@ from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
 
+def tohex(b):
+    return binascii.hexlify(b).decode('ascii')
+
+
 def ed25519_known_answers():
     # Known answers taken from: http://ed25519.cr.yp.to/python/sign.input
     answers = []
@@ -131,6 +135,22 @@ class TestVerifyKey:
         with pytest.raises(BadSignatureError):
             forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
+
+    def test_key_conversion(self):
+        keypair_seed = (b"421151a459faeade3d247115f94aedae"
+                        b"42318124095afabe4d1451a559faedee")
+        signing_key = SigningKey(binascii.unhexlify(keypair_seed))
+        verify_key = signing_key.verify_key
+
+        private_key = signing_key.to_private_key()
+        public_key = verify_key.to_public_key()
+
+        assert tohex(bytes(private_key)) == ("8052030376d47112be7f73ed7a019293"
+                                             "dd12ad910b654455798b4667d73de166")
+
+        assert tohex(bytes(public_key)) == ("f1814f0e8ff1043d8a44d25babff3ced"
+                                            "cae6c22c3edaa48f857ae70de2baae50")
+
 
 
 def check_type_error(expected, f, *args):

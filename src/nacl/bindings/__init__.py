@@ -38,6 +38,7 @@ from nacl.bindings.crypto_sign import (
     crypto_sign, crypto_sign_BYTES, crypto_sign_PUBLICKEYBYTES,
     crypto_sign_SECRETKEYBYTES, crypto_sign_SEEDBYTES, crypto_sign_keypair,
     crypto_sign_open, crypto_sign_seed_keypair,
+    crypto_sign_ed25519_pk_to_curve25519, crypto_sign_ed25519_sk_to_curve25519
 )
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.sodium_core import sodium_init
@@ -84,6 +85,8 @@ __all__ = [
     "crypto_sign_seed_keypair",
     "crypto_sign",
     "crypto_sign_open",
+    "crypto_sign_ed25519_pk_to_curve25519",
+    "crypto_sign_ed25519_sk_to_curve25519",
 
     "randombytes",
 

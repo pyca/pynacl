@@ -16,10 +16,10 @@ from __future__ import absolute_import, division, print_function
 
 import six
 
-from nacl import encoding
 import nacl.bindings
+from nacl import encoding
+from nacl.public import PublicKey, PrivateKey
 from nacl.utils import StringFixer, random
-
 
 class SignedMessage(six.binary_type):
     """
@@ -99,6 +99,17 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 
+    def to_public_key(self):
+        """
+        Converts a :class:`~nacl.signing.VerifyKey` to a
+        :class:`~nacl.public.PublicKey`
+
+        :rtype: :class:`~nacl.public.PublicKey`
+        """
+        raw_public = nacl.bindings.crypto_sign_ed25519_pk_to_curve25519(
+                                                            self._key)
+        return PublicKey(raw_public)
+
 
 class SigningKey(encoding.Encodable, StringFixer, object):
     """
@@ -169,3 +180,14 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         signed = encoder.encode(raw_signed)
 
         return SignedMessage._from_parts(signature, message, signed)
+
+    def to_private_key(self):
+        """
+        Converts a :class:`~nacl.signing.SigningKey` to a
+        :class:`~nacl.public.PrivateKey`
+
+        :rtype: :class:`~nacl.public.PrivateKey`
+        """
+        raw_private = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(
+                                                            self._signing_key)
+        return PrivateKey(raw_private)
