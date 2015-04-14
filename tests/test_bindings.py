@@ -205,6 +205,12 @@ def test_sign_test_key_conversion():
     ed25519_pk, ed25519_sk = c.crypto_sign_seed_keypair(keypair_seed)
 
     curve25519_pk = c.crypto_sign_ed25519_pk_to_curve25519(ed25519_pk)
+
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_pk_to_curve25519(unhexlify("12"))
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_sk_to_curve25519(unhexlify("12"))
+
     curve25519_sk = c.crypto_sign_ed25519_sk_to_curve25519(ed25519_sk)
 
     assert tohex(curve25519_pk) == ("f1814f0e8ff1043d8a44d25babff3ced"

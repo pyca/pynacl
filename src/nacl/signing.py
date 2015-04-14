@@ -189,5 +189,5 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         :rtype: :class:`~nacl.public.PrivateKey`
         """
         sk = self._signing_key
-        raw_sk = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(sk)
+        raw_private = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(sk)
         return PrivateKey(raw_private)
