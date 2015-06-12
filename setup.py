@@ -34,7 +34,11 @@ from setuptools.command.install import install
 SODIUM_MAJOR = 7
 SODIUM_MINOR = 3
 
-CFFI_DEPENDENCY = "cffi>=0.8"
+CFFI_DEPENDENCY = "cffi>=1.1"
+
+CFFI_MODULES = [
+    "src/bindings/build.py:ffi",
+]
 
 
 def here(*paths):
@@ -64,38 +68,6 @@ def which(name, flags=os.X_OK):  # Taken from twisted
             if os.access(pext, flags):
                 result.append(pext)
     return result
-
-
-def get_ext_modules():
-    import nacl._lib
-    return [nacl._lib.ffi.verifier.get_extension()]
-
-
-class CFFIBuild(build):
-    """
-    This class exists, instead of just providing ``ext_modules=[...]`` directly
-    in ``setup()`` because importing cryptography requires we have several
-    packages installed first.
-
-    By doing the imports here we ensure that packages listed in
-    ``setup_requires`` are already installed.
-    """
-
-    def finalize_options(self):
-        self.distribution.ext_modules = get_ext_modules()
-        build.finalize_options(self)
-
-
-class CFFIInstall(install):
-    """
-    As a consequence of CFFIBuild and it's late addition of ext_modules, we
-    need the equivalent for the ``install`` command to install into platlib
-    install-dir rather than purelib.
-    """
-
-    def finalize_options(self):
-        self.distribution.ext_modules = get_ext_modules()
-        install.finalize_options(self)
 
 
 def use_system():
@@ -250,16 +222,13 @@ setup(
     package_dir={"": "src"},
     packages=[
         "nacl",
-        "nacl._lib",
         "nacl.bindings",
     ],
-    package_data={"nacl._lib": ["*.h"]},
 
-    ext_package="nacl._lib",
+    ext_package="nacl",
+    cffi_modules=CFFI_MODULES,
 
     cmdclass={
-        "build": CFFIBuild,
-        "install": CFFIInstall,
         "build_clib": build_clib,
         "build_ext": build_ext,
     },

@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 
 
 def randombytes(size):
@@ -25,6 +25,6 @@ def randombytes(size):
     :param size: int
     :rtype: bytes
     """
-    buf = lib.ffi.new("unsigned char[]", size)
+    buf = ffi.new("unsigned char[]", size)
     lib.randombytes(buf, size)
-    return lib.ffi.buffer(buf, size)[:]
+    return ffi.buffer(buf, size)[:]

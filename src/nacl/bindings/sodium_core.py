@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import lib
 from nacl.exceptions import CryptoError
 
 
