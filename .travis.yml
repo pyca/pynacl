@@ -28,26 +28,11 @@ env:
   - TOXENV=docs
   - TOXENV=meta
 
-install:
-  # Install Sodium if we need too
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then tar zxvf LATEST.tar.gz; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then cd libsodium-*; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then ./configure; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then make; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then make check; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo make install; fi"
-  - "if [[ $SODIUM_INSTALL == 'system' ]]; then sudo ldconfig; fi"
+install: .travis/install.sh
 
-  # Install tox and coveralls so we can run our tests
-  - pip install tox coveralls
+script: .travis/run.sh
 
-
-script:
-  - tox
-
-after_success:
-  - coveralls
+after_success: coveralls
 
 notifications:
   irc:
