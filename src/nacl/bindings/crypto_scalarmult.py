@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 
 
 crypto_scalarmult_BYTES = lib.crypto_scalarmult_bytes()
@@ -29,12 +29,12 @@ def crypto_scalarmult_base(n):
     :param n: bytes
     :rtype: bytes
     """
-    q = lib.ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
+    q = ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
     rc = lib.crypto_scalarmult_base(q, n)
     assert rc == 0
 
-    return lib.ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
+    return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
 
 
 def crypto_scalarmult(n, p):
@@ -46,9 +46,9 @@ def crypto_scalarmult(n, p):
     :param n: bytes
     :rtype: bytes
     """
-    q = lib.ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
+    q = ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
     rc = lib.crypto_scalarmult(q, n, p)
     assert rc == 0
 
-    return lib.ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
+    return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]

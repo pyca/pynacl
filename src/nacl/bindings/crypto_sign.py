@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 from nacl.exceptions import BadSignatureError
 
 
@@ -31,15 +31,15 @@ def crypto_sign_keypair():
 
     :rtype: (bytes(public_key), bytes(secret_key))
     """
-    pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
-    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
+    pk = ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
+    sk = ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     rc = lib.crypto_sign_keypair(pk, sk)
     assert rc == 0
 
     return (
-        lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
-        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
+        ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
+        ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
     )
 
 
@@ -53,15 +53,15 @@ def crypto_sign_seed_keypair(seed):
     if len(seed) != crypto_sign_SEEDBYTES:
         raise ValueError("Invalid seed")
 
-    pk = lib.ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
-    sk = lib.ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
+    pk = ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
+    sk = ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     rc = lib.crypto_sign_seed_keypair(pk, sk, seed)
     assert rc == 0
 
     return (
-        lib.ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
-        lib.ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
+        ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
+        ffi.buffer(sk, crypto_sign_SECRETKEYBYTES)[:],
     )
 
 
@@ -74,13 +74,13 @@ def crypto_sign(message, sk):
     :param sk: bytes
     :rtype: bytes
     """
-    signed = lib.ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
-    signed_len = lib.ffi.new("unsigned long long *")
+    signed = ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
+    signed_len = ffi.new("unsigned long long *")
 
     rc = lib.crypto_sign(signed, signed_len, message, len(message), sk)
     assert rc == 0
 
-    return lib.ffi.buffer(signed, signed_len[0])[:]
+    return ffi.buffer(signed, signed_len[0])[:]
 
 
 def crypto_sign_open(signed, pk):
@@ -92,11 +92,11 @@ def crypto_sign_open(signed, pk):
     :param pk: bytes
     :rtype: bytes
     """
-    message = lib.ffi.new("unsigned char[]", len(signed))
-    message_len = lib.ffi.new("unsigned long long *")
+    message = ffi.new("unsigned char[]", len(signed))
+    message_len = ffi.new("unsigned long long *")
 
     if lib.crypto_sign_open(
             message, message_len, signed, len(signed), pk) != 0:
         raise BadSignatureError("Signature was forged or corrupt")
 
-    return lib.ffi.buffer(message, message_len[0])[:]
+    return ffi.buffer(message, message_len[0])[:]
