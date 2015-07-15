@@ -31,8 +31,8 @@ from setuptools import Distribution, setup
 from setuptools.command.install import install
 
 
-SODIUM_MAJOR = 4
-SODIUM_MINOR = 5
+SODIUM_MAJOR = 7
+SODIUM_MINOR = 3
 
 CFFI_DEPENDENCY = "cffi>=0.8"
 
@@ -118,7 +118,7 @@ def use_system():
     """)
 
     try:
-        system = ffi.dlopen("libsodium")
+        system = ffi.dlopen("sodium")
     except OSError:
         # We couldn't locate libsodium so we'll use the bundled one
         return False
