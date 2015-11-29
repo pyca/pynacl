@@ -46,6 +46,8 @@ Features
 Changes
 -------
 
+* master: Python 3.2 support has been dropped.
+
 * 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the
   upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
   The order of arguments and return values has changed significantly. To
