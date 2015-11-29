@@ -139,6 +139,9 @@ class Box(encoding.Encodable, StringFixer, object):
 
         return box
 
+    def sharedKey(self):
+        return self._shared_key
+
     def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
         """
         Encrypts the plaintext message using the given `nonce` and returns
