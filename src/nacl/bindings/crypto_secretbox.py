@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 from nacl.exceptions import CryptoError
 
 
@@ -41,12 +41,12 @@ def crypto_secretbox(message, nonce, key):
         raise ValueError("Invalid nonce")
 
     padded = b"\x00" * crypto_secretbox_ZEROBYTES + message
-    ciphertext = lib.ffi.new("unsigned char[]", len(padded))
+    ciphertext = ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_secretbox(ciphertext, padded, len(padded), nonce, key) != 0:
         raise CryptoError("Encryption failed")
 
-    ciphertext = lib.ffi.buffer(ciphertext, len(padded))
+    ciphertext = ffi.buffer(ciphertext, len(padded))
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
 
 
@@ -67,11 +67,11 @@ def crypto_secretbox_open(ciphertext, nonce, key):
         raise ValueError("Invalid nonce")
 
     padded = b"\x00" * crypto_secretbox_BOXZEROBYTES + ciphertext
-    plaintext = lib.ffi.new("unsigned char[]", len(padded))
+    plaintext = ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_secretbox_open(
             plaintext, padded, len(padded), nonce, key) != 0:
         raise CryptoError("Decryption failed. Ciphertext failed verification")
 
-    plaintext = lib.ffi.buffer(plaintext, len(padded))
+    plaintext = ffi.buffer(plaintext, len(padded))
     return plaintext[crypto_secretbox_ZEROBYTES:]

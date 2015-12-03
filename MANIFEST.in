@@ -29,4 +29,10 @@ recursive-include tests/data *
 global-exclude __pycache__/*
 
 # Add PyNaCl header files
-recursive-include src/nacl/_lib *.h
+recursive-include src/bindings *.py *.h
+
+# Remove our travis files
+exclude .travis.yml
+exclude .travis
+exclude .travis/install.sh
+exclude .travis/run.sh
