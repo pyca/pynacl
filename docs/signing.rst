@@ -46,7 +46,7 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
     verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
 
     # Check the validity of a message's signature
-    # Will raise nacl.signing.BadSignatureError if the signature check fails
+    # Will raise nacl.exceptions.BadSignatureError if the signature check fails
     verify_key.verify(signed)
 
 
