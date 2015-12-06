@@ -169,7 +169,7 @@ class build_clib(_build_clib):
         # Ensure our temporary build directory exists
         try:
             os.makedirs(build_temp)
-        except IOError:
+        except:
             pass
 
         # Ensure all of our executanle files have their permission set
