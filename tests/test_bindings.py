@@ -194,3 +194,26 @@ def test_scalarmult():
                           "e34f73a93ebbaa271765e5036edfc519")
     bz2 = c.crypto_scalarmult(z, base)
     assert tohex(bz1) == tohex(bz2)
+
+
+def test_sign_test_key_conversion():
+    """
+    Taken from test vectors in libsodium
+    """
+    keypair_seed = unhexlify(b"421151a459faeade3d247115f94aedae"
+                             b"42318124095afabe4d1451a559faedee")
+    ed25519_pk, ed25519_sk = c.crypto_sign_seed_keypair(keypair_seed)
+
+    curve25519_pk = c.crypto_sign_ed25519_pk_to_curve25519(ed25519_pk)
+
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_pk_to_curve25519(unhexlify(b"12"))
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_sk_to_curve25519(unhexlify(b"12"))
+
+    curve25519_sk = c.crypto_sign_ed25519_sk_to_curve25519(ed25519_sk)
+
+    assert tohex(curve25519_pk) == ("f1814f0e8ff1043d8a44d25babff3ced"
+                                    "cae6c22c3edaa48f857ae70de2baae50")
+    assert tohex(curve25519_sk) == ("8052030376d47112be7f73ed7a019293"
+                                    "dd12ad910b654455798b4667d73de166")

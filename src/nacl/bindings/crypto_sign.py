@@ -24,6 +24,8 @@ crypto_sign_SEEDBYTES = lib.crypto_sign_secretkeybytes() // 2
 crypto_sign_PUBLICKEYBYTES = lib.crypto_sign_publickeybytes()
 crypto_sign_SECRETKEYBYTES = lib.crypto_sign_secretkeybytes()
 
+crypto_sign_curve25519_BYTES = lib.crypto_box_secretkeybytes()
+
 
 def crypto_sign_keypair():
     """
@@ -100,3 +102,51 @@ def crypto_sign_open(signed, pk):
         raise BadSignatureError("Signature was forged or corrupt")
 
     return lib.ffi.buffer(message, message_len[0])[:]
+
+
+def crypto_sign_ed25519_pk_to_curve25519(public_key_bytes):
+    """
+    Converts a public Ed25519 key (encoded as bytes ``public_key_bytes``) to
+    a public Curve25519 key as bytes.
+
+    Raises a ValueError if ``public_key_bytes`` is not of length
+    ``crypto_sign_PUBLICKEYBYTES``
+
+    :param public_key_bytes: bytes
+    :rtype: bytes
+    """
+    if len(public_key_bytes) != crypto_sign_PUBLICKEYBYTES:
+        raise ValueError("Invalid curve public key")
+
+    curve_public_key_len = crypto_sign_curve25519_BYTES
+    curve_public_key = lib.ffi.new("unsigned char[]", curve_public_key_len)
+
+    rc = lib.crypto_sign_ed25519_pk_to_curve25519(curve_public_key,
+                                                  public_key_bytes)
+    assert rc == 0
+
+    return lib.ffi.buffer(curve_public_key, curve_public_key_len)[:]
+
+
+def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
+    """
+    Converts a secret Ed25519 key (encoded as bytes ``secret_key_bytes``) to
+    a secret Curve25519 key as bytes.
+
+    Raises a ValueError if ``secret_key_bytes``is not of length
+    ``crypto_sign_SECRETKEYBYTES``
+
+    :param public_key_bytes: bytes
+    :rtype: bytes
+    """
+    if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
+        raise ValueError("Invalid curve public key")
+
+    curve_secret_key_len = crypto_sign_curve25519_BYTES
+    curve_secret_key = lib.ffi.new("unsigned char[]", curve_secret_key_len)
+
+    rc = lib.crypto_sign_ed25519_sk_to_curve25519(curve_secret_key,
+                                                  secret_key_bytes)
+    assert rc == 0
+
+    return lib.ffi.buffer(curve_secret_key, curve_secret_key_len)[:]
