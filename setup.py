@@ -19,6 +19,7 @@ import functools
 import glob
 import os
 import os.path
+import platform
 import subprocess
 import sys
 
@@ -34,11 +35,18 @@ from setuptools.command.install import install
 SODIUM_MAJOR = 7
 SODIUM_MINOR = 3
 
-CFFI_DEPENDENCY = "cffi>=1.1"
+requirements = ["six"]
+setup_requirements = []
 
-CFFI_MODULES = [
-    "src/bindings/build.py:ffi",
-]
+if platform.python_implementation() == "PyPy":
+    if sys.pypy_version_info < (2, 6):
+        raise RuntimeError(
+            "PyNaCl is not compatible with PyPy < 2.6. Please "
+            "upgrade PyPy to use this library."
+        )
+else:
+    requirements.append("cffi>=1.1.0")
+    setup_requirements.append("cffi>=1.1.0")
 
 
 def here(*paths):
@@ -207,13 +215,8 @@ setup(
 
     author=nacl.__author__,
     author_email=nacl.__email__,
-    setup_requires=[
-        CFFI_DEPENDENCY
-    ],
-    install_requires=[
-        CFFI_DEPENDENCY,
-        "six",
-    ],
+    setup_requires=setup_requirements,
+    install_requires=requirements,
     extras_require={
         "tests": ["pytest"],
     },
@@ -226,7 +229,9 @@ setup(
     ],
 
     ext_package="nacl",
-    cffi_modules=CFFI_MODULES,
+    cffi_modules=[
+        "src/bindings/build.py:ffi",
+    ],
 
     cmdclass={
         "build_clib": build_clib,
