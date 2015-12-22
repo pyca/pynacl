@@ -19,7 +19,8 @@ import six
 from nacl import encoding
 
 import nacl.bindings
-from nacl.public import PrivateKey, PublicKey
+from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
+                         PublicKey as _Curve25519_PublicKey)
 from nacl.utils import StringFixer, random
 
 
@@ -109,7 +110,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         :rtype: :class:`~nacl.public.PublicKey`
         """
         raw_pk = nacl.bindings.crypto_sign_ed25519_pk_to_curve25519(self._key)
-        return PublicKey(raw_pk)
+        return _Curve25519_PublicKey(raw_pk)
 
 
 class SigningKey(encoding.Encodable, StringFixer, object):
@@ -191,4 +192,4 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         """
         sk = self._signing_key
         raw_private = nacl.bindings.crypto_sign_ed25519_sk_to_curve25519(sk)
-        return PrivateKey(raw_private)
+        return _Curve25519_PrivateKey(raw_private)
