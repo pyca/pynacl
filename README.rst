@@ -15,7 +15,7 @@ PyNaCl is a Python binding to the `Networking and Cryptography library`_,
 a crypto library with the stated goal of improving usability, security and
 speed.
 
-.. _Networking and Cryptography library: http://nacl.cr.yp.to/
+.. _Networking and Cryptography library: https://nacl.cr.yp.to/
 
 
 Installation
