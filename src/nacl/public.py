@@ -92,11 +92,15 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         :rtype: :class:`~nacl.public.PrivateKey`
         """
 
-        size = nacl.bindings.crypto_box_SECRETKEYBYTES
+        if not isinstance(ext_e, bytes):
+            raise TypeError("External entropy provided must be bytes")
 
+        # If no external entropy is provided, create string of zero-bytes.
+        size = nacl.bindings.crypto_box_SECRETKEYBYTES
         if not ext_e:
             ext_e = str(bytearray(size))
 
+        # Verify that external entropy is the proper size
         if len(ext_e) != size:
             raise ValueError(
                 "External entropy must be exactly %d bytes long" % size)
