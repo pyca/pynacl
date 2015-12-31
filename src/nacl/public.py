@@ -96,14 +96,14 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
             raise TypeError("External entropy provided must be bytes")
 
         # If no external entropy is provided, create string of zero-bytes.
-        size = nacl.bindings.crypto_box_SECRETKEYBYTES
         if not ext_e:
-            ext_e = str(bytearray(size))
+            ext_e = str(bytearray(PrivateKey.SIZE))
 
         # Verify that external entropy is the proper size
-        if len(ext_e) != size:
+        if len(ext_e) != PrivateKey.SIZE:
             raise ValueError(
-                "External entropy must be exactly %d bytes long" % size)
+                "External entropy must be exactly %d bytes long"
+                % PrivateKey.SIZE)
 
         nacl_e = random(PrivateKey.size)
 
