@@ -105,7 +105,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
                 "External entropy must be exactly %d bytes long"
                 % PrivateKey.SIZE)
 
-        nacl_e = random(PrivateKey.size)
+        nacl_e = random(PrivateKey.SIZE)
 
         # XOR nacl.utils.random with ext. entropy or with bit string of zeroes.
         final = ''.join(chr(ord(s) ^ ord(a)) for s, a in zip(nacl_e, ext_e))
