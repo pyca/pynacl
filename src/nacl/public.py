@@ -82,29 +82,29 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         return self._private_key
 
     @classmethod
-    def generate(cls, add_e=''):
+    def generate(cls, ext_e=''):
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
-        :param add_e: Additional entropy provided by user. XORed with system
-            entropy. If left empty, uses only nacl.utils.random().
+        :param ext_e: External entropy provided by user. XORed with system
+            entropy. If left empty, only nacl.utils.random() is used.
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
 
         size = nacl.bindings.crypto_box_SECRETKEYBYTES
 
-        if not add_e:
-            add_e = str(bytearray(size))
+        if not ext_e:
+            ext_e = str(bytearray(size))
 
-        if len(add_e) != size:
+        if len(ext_e) != size:
             raise ValueError(
-                "Additional entropy must be exactly %d bytes long" % size)
+                "External entropy must be exactly %d bytes long" % size)
 
-        sys_e = random(PrivateKey.size)
+        nacl_e = random(PrivateKey.size)
 
-        # XOR nacl.utils.random with add. entropy or with bit string of zeroes.
-        final = ''.join(chr(ord(s) ^ ord(a)) for s, a in zip(sys_e, add_e))
+        # XOR nacl.utils.random with ext. entropy or with bit string of zeroes.
+        final = ''.join(chr(ord(s) ^ ord(a)) for s, a in zip(nacl_e, ext_e))
 
         return cls(final, encoder=encoding.RawEncoder)
 
