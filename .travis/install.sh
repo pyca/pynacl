@@ -15,6 +15,7 @@ if [[ $SODIUM_INSTALL == 'system' ]]; then
 fi
 
 if [[ "${TOXENV}" == "pypy" ]]; then
+    rm -rf ~/.pyenv
     git clone https://github.com/yyuu/pyenv.git ~/.pyenv
     PYENV_ROOT="$HOME/.pyenv"
     PATH="$PYENV_ROOT/bin:$PATH"
