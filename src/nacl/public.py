@@ -202,3 +202,18 @@ class Box(encoding.Encodable, StringFixer, object):
         )
 
         return plaintext
+
+    def shared_key(self):
+        """
+        Returns the Curve25519 shared secret, that can then be used as a key in
+        other symmetric ciphers.
+
+        .. warning:: It is **VITALLY** important that you use a nonce with your
+            symmetric cipher. If you fail to do this, you compromise the
+            privacy of the messages encrypted. Ensure that the key length of
+            your cipher is 32 bytes.
+        :rtype: [:class:`bytes`]
+        """
+
+        return self._shared_key
+
