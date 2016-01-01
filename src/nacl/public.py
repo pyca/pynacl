@@ -216,4 +216,3 @@ class Box(encoding.Encodable, StringFixer, object):
         """
 
         return self._shared_key
-
