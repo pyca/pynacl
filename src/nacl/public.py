@@ -82,7 +82,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         return self._private_key
 
     @classmethod
-    def generate(cls, ext_e=''):
+    def generate(cls, ext_e=b''):
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
