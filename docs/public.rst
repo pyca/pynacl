@@ -112,9 +112,12 @@ Reference
         An instance of :class:`~.nacl.public.PublicKey` that corresponds with
         the private key.
 
-    .. classmethod:: generate()
+    .. classmethod:: generate(ext_e)
 
         Generates a random :class:`~nacl.public.PrivateKey` object
+
+        :param ext_e: Optional external entropy provided by user. XORed with
+            system entropy. If empty, only nacl.utils.random() is used.        
 
         :return: An instance of :class:`~nacl.public.PrivateKey`.
 
