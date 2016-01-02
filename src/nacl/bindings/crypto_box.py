@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 from nacl.exceptions import CryptoError
 
 
@@ -35,15 +35,15 @@ def crypto_box_keypair():
 
     :rtype: (bytes(public_key), bytes(secret_key))
     """
-    pk = lib.ffi.new("unsigned char[]", crypto_box_PUBLICKEYBYTES)
-    sk = lib.ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
+    pk = ffi.new("unsigned char[]", crypto_box_PUBLICKEYBYTES)
+    sk = ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
 
     rc = lib.crypto_box_keypair(pk, sk)
     assert rc == 0
 
     return (
-        lib.ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
-        lib.ffi.buffer(sk, crypto_box_SECRETKEYBYTES)[:],
+        ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
+        ffi.buffer(sk, crypto_box_SECRETKEYBYTES)[:],
     )
 
 
@@ -68,12 +68,12 @@ def crypto_box(message, nonce, pk, sk):
         raise ValueError("Invalid secret key")
 
     padded = (b"\x00" * crypto_box_ZEROBYTES) + message
-    ciphertext = lib.ffi.new("unsigned char[]", len(padded))
+    ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk)
     assert rc == 0
 
-    return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
+    return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
 
 def crypto_box_open(ciphertext, nonce, pk, sk):
@@ -97,12 +97,12 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
         raise ValueError("Invalid secret key")
 
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
-    plaintext = lib.ffi.new("unsigned char[]", len(padded))
+    plaintext = ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_box_open(plaintext, padded, len(padded), nonce, pk, sk) != 0:
         raise CryptoError("An error occurred trying to decrypt the message")
 
-    return lib.ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
+    return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
 
 def crypto_box_beforenm(pk, sk):
@@ -121,12 +121,12 @@ def crypto_box_beforenm(pk, sk):
     if len(sk) != crypto_box_SECRETKEYBYTES:
         raise ValueError("Invalid secret key")
 
-    k = lib.ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
+    k = ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
 
     rc = lib.crypto_box_beforenm(k, pk, sk)
     assert rc == 0
 
-    return lib.ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
+    return ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
 
 
 def crypto_box_afternm(message, nonce, k):
@@ -146,12 +146,12 @@ def crypto_box_afternm(message, nonce, k):
         raise ValueError("Invalid shared key")
 
     padded = b"\x00" * crypto_box_ZEROBYTES + message
-    ciphertext = lib.ffi.new("unsigned char[]", len(padded))
+    ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k)
     assert rc == 0
 
-    return lib.ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
+    return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
 
 def crypto_box_open_afternm(ciphertext, nonce, k):
@@ -171,10 +171,10 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
         raise ValueError("Invalid shared key")
 
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
-    plaintext = lib.ffi.new("unsigned char[]", len(padded))
+    plaintext = ffi.new("unsigned char[]", len(padded))
 
     if lib.crypto_box_open_afternm(
             plaintext, padded, len(padded), nonce, k) != 0:
         raise CryptoError("An error occurred trying to decrypt the message")
 
-    return lib.ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
+    return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]

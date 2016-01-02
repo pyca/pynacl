@@ -46,6 +46,9 @@ Features
 Changes
 -------
 
+* master: PyNaCl has been ported to use the new APIs available in cffi 1.0+.
+  Due to this change we no longer support PyPy releases older than 2.6.
+
 * master: Python 3.2 support has been dropped.
 
 * 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the

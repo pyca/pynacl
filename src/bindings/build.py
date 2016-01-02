@@ -17,7 +17,6 @@ import glob
 import os.path
 
 from cffi import FFI
-from cffi.verifier import Verifier
 
 
 __all__ = ["ffi"]
@@ -40,37 +39,5 @@ for header in sorted(HEADERS):
         ffi.cdef(hfile.read())
 
 
-# TODO: Can we use the ABI of libsodium for this instead?
-ffi.verifier = Verifier(
-    ffi,
-
-    "#include <sodium.h>",
-
-    # We need to link to the sodium library
-    libraries=["sodium"],
-
-    # Our ext_package is nacl so look for it
-    ext_package="nacl._lib",
-)
-
-
-class Library(object):
-
-    def __init__(self, ffi):
-        self.ffi = ffi
-        self._lib = None
-
-        # This prevents the compile_module() from being called, the module
-        # should have been compiled by setup.py
-        def _compile_module(*args, **kwargs):
-            raise RuntimeError("Cannot compile module during runtime")
-        self.ffi.verifier.compile_module = _compile_module
-
-    def __getattr__(self, name):
-        if self._lib is None:
-            self._lib = self.ffi.verifier.load_library()
-
-        # redirect attribute access to the underlying lib
-        return getattr(self._lib, name)
-
-lib = Library(ffi)
+# Set our source so that we can actually build our bindings to sodium.
+ffi.set_source("_sodium", "#include <sodium.h>", libraries=["sodium"])

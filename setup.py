@@ -19,6 +19,7 @@ import functools
 import glob
 import os
 import os.path
+import platform
 import subprocess
 import sys
 
@@ -34,7 +35,18 @@ from setuptools.command.install import install
 SODIUM_MAJOR = 7
 SODIUM_MINOR = 3
 
-CFFI_DEPENDENCY = "cffi>=0.8"
+requirements = ["six"]
+setup_requirements = []
+
+if platform.python_implementation() == "PyPy":
+    if sys.pypy_version_info < (2, 6):
+        raise RuntimeError(
+            "PyNaCl is not compatible with PyPy < 2.6. Please "
+            "upgrade PyPy to use this library."
+        )
+else:
+    requirements.append("cffi>=1.1.0")
+    setup_requirements.append("cffi>=1.1.0")
 
 
 def here(*paths):
@@ -64,38 +76,6 @@ def which(name, flags=os.X_OK):  # Taken from twisted
             if os.access(pext, flags):
                 result.append(pext)
     return result
-
-
-def get_ext_modules():
-    import nacl._lib
-    return [nacl._lib.ffi.verifier.get_extension()]
-
-
-class CFFIBuild(build):
-    """
-    This class exists, instead of just providing ``ext_modules=[...]`` directly
-    in ``setup()`` because importing cryptography requires we have several
-    packages installed first.
-
-    By doing the imports here we ensure that packages listed in
-    ``setup_requires`` are already installed.
-    """
-
-    def finalize_options(self):
-        self.distribution.ext_modules = get_ext_modules()
-        build.finalize_options(self)
-
-
-class CFFIInstall(install):
-    """
-    As a consequence of CFFIBuild and it's late addition of ext_modules, we
-    need the equivalent for the ``install`` command to install into platlib
-    install-dir rather than purelib.
-    """
-
-    def finalize_options(self):
-        self.distribution.ext_modules = get_ext_modules()
-        install.finalize_options(self)
 
 
 def use_system():
@@ -235,13 +215,8 @@ setup(
 
     author=nacl.__author__,
     author_email=nacl.__email__,
-    setup_requires=[
-        CFFI_DEPENDENCY
-    ],
-    install_requires=[
-        CFFI_DEPENDENCY,
-        "six",
-    ],
+    setup_requires=setup_requirements,
+    install_requires=requirements,
     extras_require={
         "tests": ["pytest"],
     },
@@ -250,16 +225,15 @@ setup(
     package_dir={"": "src"},
     packages=[
         "nacl",
-        "nacl._lib",
         "nacl.bindings",
     ],
-    package_data={"nacl._lib": ["*.h"]},
 
-    ext_package="nacl._lib",
+    ext_package="nacl",
+    cffi_modules=[
+        "src/bindings/build.py:ffi",
+    ],
 
     cmdclass={
-        "build": CFFIBuild,
-        "install": CFFIInstall,
         "build_clib": build_clib,
         "build_ext": build_ext,
     },
