@@ -14,7 +14,8 @@
 from __future__ import absolute_import, division, print_function
 
 import glob
-import os
+import os.path
+import sys
 
 from cffi import FFI
 
@@ -41,8 +42,8 @@ if os.getenv("PYNACL_SODIUM_STATIC") is not None:
 
 source.append("#include <sodium.h>")
 
-if os.getenv("PYNACL_SODIUM_LIBRARY_NAME") is not None:
-    libraries = [os.getenv("PYNACL_SODIUM_LIBRARY_NAME")]
+if sys.platform == "windows":
+    libraries = ["libsodium"]
 else:
     libraries = ["sodium"]
 
