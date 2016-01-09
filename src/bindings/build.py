@@ -35,14 +35,18 @@ for header in HEADERS:
     with open(header, "r") as hfile:
         ffi.cdef(hfile.read())
 
-# we need to easily control a few values for Windows builds
 source = []
+
+# SODIUM_STATIC controls the visibility of symbols in the headers. (see
+# export.h in the libsodium source tree). If you do not set SODIUM_STATIC
+# when linking against the static library in Windows then the compile will
+# fail with no symbols found.
 if os.getenv("PYNACL_SODIUM_STATIC") is not None:
     source.append("#define SODIUM_STATIC")
 
 source.append("#include <sodium.h>")
 
-if sys.platform == "windows":
+if sys.platform == "win32":
     libraries = ["libsodium"]
 else:
     libraries = ["sodium"]
