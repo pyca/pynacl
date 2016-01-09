@@ -15,6 +15,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import errno
 import functools
 import glob
 import os
@@ -149,8 +150,9 @@ class build_clib(_build_clib):
         # Ensure our temporary build directory exists
         try:
             os.makedirs(build_temp)
-        except IOError:
-            pass
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
         # Ensure all of our executanle files have their permission set
         for filename in [
