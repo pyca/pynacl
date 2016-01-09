@@ -14,7 +14,7 @@
 from __future__ import absolute_import, division, print_function
 
 import glob
-import os.path
+import os
 
 from cffi import FFI
 
@@ -34,6 +34,17 @@ for header in HEADERS:
     with open(header, "r") as hfile:
         ffi.cdef(hfile.read())
 
+# we need to easily control a few values for Windows builds
+source = []
+if os.getenv("PYNACL_SODIUM_STATIC") is not None:
+    source.append("#define SODIUM_STATIC")
+
+source.append("#include <sodium.h>")
+
+if os.getenv("PYNACL_SODIUM_LIBRARY_NAME") is not None:
+    libraries = [os.getenv("PYNACL_SODIUM_LIBRARY_NAME")]
+else:
+    libraries = ["sodium"]
 
 # Set our source so that we can actually build our bindings to sodium.
-ffi.set_source("_sodium", "#include <sodium.h>", libraries=["sodium"])
+ffi.set_source("_sodium", "\n".join(source), libraries=libraries)
