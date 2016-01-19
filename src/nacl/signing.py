@@ -102,7 +102,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 
-    def to_public_key(self):
+    def to_curve25519_public_key(self):
         """
         Converts a :class:`~nacl.signing.VerifyKey` to a
         :class:`~nacl.public.PublicKey`
@@ -183,7 +183,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         return SignedMessage._from_parts(signature, message, signed)
 
-    def to_private_key(self):
+    def to_curve25519_private_key(self):
         """
         Converts a :class:`~nacl.signing.SigningKey` to a
         :class:`~nacl.public.PrivateKey`

@@ -142,8 +142,8 @@ class TestVerifyKey:
         signing_key = SigningKey(binascii.unhexlify(keypair_seed))
         verify_key = signing_key.verify_key
 
-        private_key = bytes(signing_key.to_private_key())
-        public_key = bytes(verify_key.to_public_key())
+        private_key = bytes(signing_key.to_curve25519_private_key())
+        public_key = bytes(verify_key.to_curve25519_public_key())
 
         assert tohex(private_key) == ("8052030376d47112be7f73ed7a019293"
                                       "dd12ad910b654455798b4667d73de166")
