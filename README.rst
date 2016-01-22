@@ -46,7 +46,7 @@ Mac OS X & Windows
 ~~~~~~~~~~~~~~~~~~
 
 PyNaCl ships as a binary wheel on OS X and Windows so all dependencies
-are included. Make sure you have an up-to-date pip and then just run:
+are included. Make sure you have an up-to-date pip and run:
 
 .. code-block:: console
 
@@ -71,7 +71,7 @@ Changes
 
   * Python 3.2 support has been dropped.
 
-  * ed25519 to curve25519 functions have been added.
+  * Functions to convert between Ed25519 and Curve25519 keys have been added.
 
 * 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the
   upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
