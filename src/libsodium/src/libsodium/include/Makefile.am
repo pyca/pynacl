@@ -2,6 +2,7 @@
 SODIUM_EXPORT = \
 	sodium.h \
 	sodium/core.h \
+	sodium/crypto_aead_aes256gcm.h \
 	sodium/crypto_aead_chacha20poly1305.h \
 	sodium/crypto_auth.h \
 	sodium/crypto_auth_hmacsha256.h \
@@ -52,6 +53,11 @@ SODIUM_EXPORT = \
 	sodium/randombytes_sysrandom.h \
 	sodium/runtime.h \
 	sodium/utils.h
+
+if NATIVECLIENT
+SODIUM_EXPORT += \
+	sodium/randombytes_nativeclient.h
+endif
 
 EXTRA_SRC = $(SODIUM_EXPORT) \
 	sodium/version.h.in
