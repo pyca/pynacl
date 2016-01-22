@@ -21,17 +21,36 @@ speed.
 Installation
 ------------
 
-PyNaCl relies on libsodium_, a portable C library which can be compiled
-on a variety of systems. It may already be available from your package
-manager.
+
+Linux
+~~~~~
+
+PyNaCl relies on libsodium_, a portable C library. A copy is bundled
+with PyNaCl so to install you can run:
+
+.. code-block:: console
+
+    $ pip install pynacl
+
+If you'd prefer to use one provided by your distribution you can disable
+the bundled copy during install by running:
+
+.. code-block:: console
+
+    $ SODIUM_INSTALL=system pip install pynacl
+
 
 .. _libsodium: https://github.com/jedisct1/libsodium
 
-Once libsodium is installed, PyNaCl can be installed by:
+Mac OS X & Windows
+~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
+PyNaCl ships as a binary wheel on OS X and Windows so all dependencies
+are included. Make sure you have an up-to-date pip and then just run:
 
-    $ python setup.py install
+.. code-block:: console
+
+    $ pip install pynacl
 
 
 Features
@@ -40,16 +59,19 @@ Features
 * Digital signatures
 * Secret-key encryption
 * Public-key encryption
-* HMAC (coming soon)
 
 
 Changes
 -------
 
-* master: PyNaCl has been ported to use the new APIs available in cffi 1.0+.
-  Due to this change we no longer support PyPy releases older than 2.6.
+* 0.4.0:
 
-* master: Python 3.2 support has been dropped.
+  * PyNaCl has been ported to use the new APIs available in cffi 1.0+.
+    Due to this change we no longer support PyPy releases older than 2.6.
+
+  * Python 3.2 support has been dropped.
+
+  * ed25519 to curve25519 functions have been added.
 
 * 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the
   upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
