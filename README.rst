@@ -64,7 +64,7 @@ Features
 Changes
 -------
 
-* 0.4.0:
+* 1.0:
 
   * PyNaCl has been ported to use the new APIs available in cffi 1.0+.
     Due to this change we no longer support PyPy releases older than 2.6.
@@ -73,11 +73,13 @@ Changes
 
   * Functions to convert between Ed25519 and Curve25519 keys have been added.
 
-* 0.3.0: the low-level API (`nacl.c.*`) has been changed to match the
-  upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
-  The order of arguments and return values has changed significantly. To
-  avoid silent failures, `nacl.c` has been removed, and replaced with
-  `nacl.bindings` (with the new argument ordering). If you have code which
-  calls these functions (e.g. `nacl.c.crypto_box_keypair()`), you must review
-  the new docstrings and update your code/imports to match the new
-  conventions.
+* 0.3.0:
+
+  * The low-level API (`nacl.c.*`) has been changed to match the
+    upstream NaCl C/C++ conventions (as well as those of other NaCl bindings).
+    The order of arguments and return values has changed significantly. To
+    avoid silent failures, `nacl.c` has been removed, and replaced with
+    `nacl.bindings` (with the new argument ordering). If you have code which
+    calls these functions (e.g. `nacl.c.crypto_box_keypair()`), you must review
+    the new docstrings and update your code/imports to match the new
+    conventions.
