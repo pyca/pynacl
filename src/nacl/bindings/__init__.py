@@ -15,8 +15,8 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl.bindings.crypto_aead_aes256gcm import (
-    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_decrypt, 
-    crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available, 
+    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_decrypt,
+    crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available,
     crypto_aead_aes256gcm_KEYBYTES, crypto_aead_aes256gcm_NPUBBYTES,
 )
 from nacl.bindings.crypto_box import (

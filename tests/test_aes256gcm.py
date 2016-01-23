@@ -26,7 +26,7 @@ VECTORS = [
 ]
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", 
+@pytest.mark.parametrize(("key", "nonce", "plaintext",
                           "ciphertext", "tag"), VECTORS)
 def test_aes256gcm_encryption(key, nonce, plaintext, ciphertext, tag):
     box = AES256GCM(key, encoder=HexEncoder)
@@ -40,7 +40,7 @@ def test_aes256gcm_encryption(key, nonce, plaintext, ciphertext, tag):
     assert encryptedtag == tag
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", 
+@pytest.mark.parametrize(("key", "nonce", "plaintext",
                           "ciphertext", "tag"), VECTORS)
 def test_aes256gcm_decryption(key, nonce, plaintext, ciphertext, tag):
     box = AES256GCM(key, encoder=HexEncoder)

@@ -75,7 +75,7 @@ def test_aes256gcm():
         cipher = ciphertext[0:len(msg)]
         tag = ciphertext[len(msg):]
         msg2 = c.crypto_aead_aes256gcm_decrypt(
-            cipher, tag, nonce, 
+            cipher, tag, nonce,
             key, None, 0)
         assert msg2[:] == msg
 
