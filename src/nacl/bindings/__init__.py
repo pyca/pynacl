@@ -14,6 +14,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl.bindings.crypto_aead_aes256gcm import (
+    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_decrypt, 
+    crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available, 
+    crypto_aead_aes256gcm_KEYBYTES, crypto_aead_aes256gcm_NPUBBYTES,
+)
 from nacl.bindings.crypto_box import (
     crypto_box, crypto_box_BEFORENMBYTES, crypto_box_BOXZEROBYTES,
     crypto_box_NONCEBYTES, crypto_box_PUBLICKEYBYTES,
@@ -33,11 +38,6 @@ from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
     crypto_secretbox_NONCEBYTES, crypto_secretbox_ZEROBYTES,
     crypto_secretbox_open
-)
-from nacl.bindings.crypto_aead_aes256gcm import (
-    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_decrypt, 
-    crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available, 
-    crypto_aead_aes256gcm_KEYBYTES, crypto_aead_aes256gcm_NPUBBYTES,
 )
 from nacl.bindings.crypto_sign import (
     crypto_sign, crypto_sign_BYTES, crypto_sign_PUBLICKEYBYTES,
