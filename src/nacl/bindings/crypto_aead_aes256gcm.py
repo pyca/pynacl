@@ -9,7 +9,7 @@ crypto_aead_aes256gcm_NPUBBYTES = lib.crypto_aead_aes256gcm_npubbytes()
 crypto_aead_aes256gcm_ABYTES = lib.crypto_aead_aes256gcm_abytes()
 
 
-def crypto_aead_aes256gcm_encrypt(message, nonce, key):
+def crypto_aead_aes256gcm_encrypt(message, nonce, key, additional_data, additional_data_len):
     """
     Encrypts the message ``message`` with secret ``key`` and 
     the nonce ``nonce`` and computes an authentication tag 
@@ -27,14 +27,17 @@ def crypto_aead_aes256gcm_encrypt(message, nonce, key):
         raise ValueError("Invalid nonce")
 
     ciphertext = ffi.new("unsigned char[]", len(message) + crypto_aead_aes256gcm_ABYTES)
-    cipherlen = ffi.new("unsigned long long *");
+    cipherlen = ffi.new("unsigned long long *")
+
+    if additional_data is None:
+        additional_data = ffi.NULL
     
-    lib.crypto_aead_aes256gcm_encrypt(ciphertext, cipherlen, message, len(message), ffi.NULL, 0, ffi.NULL, nonce, key)
+    lib.crypto_aead_aes256gcm_encrypt(ciphertext, cipherlen, message, len(message), additional_data, additional_data_len, ffi.NULL, nonce, key)
 
     ciphertext = ffi.buffer(ciphertext, len(message) + crypto_aead_aes256gcm_ABYTES)
-    return ciphertext[0:len(message)], ciphertext[len(message):]
+    return ciphertext
 
-def crypto_aead_aes256gcm_decrypt(cipher, tag, nonce ,key):
+def crypto_aead_aes256gcm_decrypt(cipher, tag, nonce, key, additional_data, additional_data_len):
     if len(key) != crypto_aead_aes256gcm_KEYBYTES:
         raise ValueError("Invalid key")
 
@@ -46,7 +49,10 @@ def crypto_aead_aes256gcm_decrypt(cipher, tag, nonce ,key):
 
     ciphertext = cipher + tag 
 
-    if (lib.crypto_aead_aes256gcm_decrypt(plaintext, decrypted_len, ffi.NULL, ciphertext, len(ciphertext), ffi.NULL, 0, nonce, key) != 0):
+    if additional_data is None:
+        additional_data = ffi.NULL
+
+    if (lib.crypto_aead_aes256gcm_decrypt(plaintext, decrypted_len, ffi.NULL, ciphertext, len(ciphertext), additional_data, additional_data_len, nonce, key) != 0):
         raise CryptoError("Decryption failed. Ciphertext failed verification")
 
     plaintext = ffi.buffer(plaintext, len(cipher))
