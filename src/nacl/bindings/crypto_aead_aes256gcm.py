@@ -50,6 +50,7 @@ def crypto_aead_aes256gcm_encrypt(
         len(message) + crypto_aead_aes256gcm_ABYTES)
     return ciphertext
 
+
 def crypto_aead_aes256gcm_decrypt(
         cipher, tag, nonce, key, 
         additional_data, additional_data_len):
