@@ -39,7 +39,7 @@ class AES256GCM(encoding.Encodable, StringFixer, object):
 
         ciphertext = nacl.bindings.crypto_aead_aes256gcm_encrypt(message, nonce, self._key, additional_data, additional_data_len)
 
-	cipher = ciphertext[0:len(message)]
+        cipher = ciphertext[0:len(message)]
         tag = ciphertext[len(message):]
 
         encoded_cipher = encoder.encode(cipher)
