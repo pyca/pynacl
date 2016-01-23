@@ -15,9 +15,9 @@
 from __future__ import absolute_import, division, print_function
 
 from nacl.bindings.crypto_aead_aes256gcm import (
-    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_decrypt,
+    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_KEYBYTES,
+    crypto_aead_aes256gcm_NPUBBYTES, crypto_aead_aes256gcm_decrypt,
     crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available,
-    crypto_aead_aes256gcm_KEYBYTES, crypto_aead_aes256gcm_NPUBBYTES,
 )
 from nacl.bindings.crypto_box import (
     crypto_box, crypto_box_BEFORENMBYTES, crypto_box_BOXZEROBYTES,
@@ -50,6 +50,13 @@ from nacl.bindings.sodium_core import sodium_init
 
 
 __all__ = [
+    "crypto_aead_aes256gcm_ABYTES",
+    "crypto_aead_aes256gcm_decrypt",
+    "crypto_aead_aes256gcm_encrypt",
+    "crypto_aead_aes256gcm_is_available",
+    "crypto_aead_aes256gcm_KEYBYTES",
+    "crypto_aead_aes256gcm_NPUBBYTES",
+
     "crypto_box_SECRETKEYBYTES",
     "crypto_box_PUBLICKEYBYTES",
     "crypto_box_NONCEBYTES",
@@ -92,13 +99,6 @@ __all__ = [
     "crypto_sign_open",
     "crypto_sign_ed25519_pk_to_curve25519",
     "crypto_sign_ed25519_sk_to_curve25519",
-
-    "crypto_aead_aes256gcm_encrypt",
-    "crypto_aead_aes256gcm_KEYBYTES",
-    "crypto_aead_aes256gcm_NPUBBYTES",
-    "crypto_aead_aes256gcm_ABYTES",
-    "crypto_aead_aes256gcm_decrypt",
-    "crypto_aead_aes256gcm_is_available",
 
     "randombytes",
 
