@@ -65,6 +65,27 @@ def test_secretbox():
             key,
         )
 
+def test_aes256gcm():
+    key = b"\x00" * c.crypto_aead_aes256gcm_KEYBYTES
+    msg = b"message"
+    nonce = b"\x01" * c.crypto_aead_aes256gcm_NPUBBYTES
+    if c.crypto_aead_aes256gcm_is_available():
+        ciphertext = c.crypto_aead_aes256gcm_encrypt(msg, nonce, key, None, 0)
+        cipher = ciphertext[0:len(msg)]
+        tag = ciphertext[len(msg):]
+        msg2 = c.crypto_aead_aes256gcm_decrypt(cipher, tag, nonce, key, None, 0)
+        assert msg2[:] == msg
+
+        with pytest.raises(CryptoError):
+            c.crypto_aead_aes256gcm_decrypt(
+                msg + b"!",
+                tag,
+                nonce,
+                key,
+                None,
+                0
+            )
+
 
 def test_secretbox_wrong_length():
     with pytest.raises(ValueError):

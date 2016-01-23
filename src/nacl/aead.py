@@ -42,7 +42,6 @@ class AES256GCM(encoding.Encodable, StringFixer, object):
 	cipher = ciphertext[0:len(message)]
         tag = ciphertext[len(message):]
 
-        #encoded_nonce = encoder.encode(nonce)
         encoded_cipher = encoder.encode(cipher)
         encoded_tag = encoder.encode(tag)
         return encoded_cipher, encoded_tag
