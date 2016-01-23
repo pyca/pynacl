@@ -8,6 +8,9 @@ crypto_aead_aes256gcm_KEYBYTES = lib.crypto_aead_aes256gcm_keybytes()
 crypto_aead_aes256gcm_NPUBBYTES = lib.crypto_aead_aes256gcm_npubbytes()
 crypto_aead_aes256gcm_ABYTES = lib.crypto_aead_aes256gcm_abytes()
 
+def crypto_aead_aes256gcm_is_available():
+    return lib.crypto_aead_aes256gcm_is_available()
+
 
 def crypto_aead_aes256gcm_encrypt(message, nonce, key, additional_data, additional_data_len):
     """

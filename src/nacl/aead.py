@@ -27,6 +27,10 @@ class AES256GCM(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
+    @staticmethod
+    def aes256gcm_is_available():
+        return nacl.bindings.crypto_aead_aes256gcm_is_available()
+
     def encrypt_and_mac(self, message, nonce, additional_data=None, additional_data_len=0, encoder=encoding.RawEncoder):
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError(

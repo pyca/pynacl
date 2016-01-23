@@ -4,6 +4,8 @@ size_t crypto_aead_aes256gcm_nsecbytes();
 size_t crypto_aead_aes256gcm_npubbytes();
 size_t crypto_aead_aes256gcm_abytes();
 
+int crypto_aead_aes256gcm_is_available();
+
 
 int crypto_aead_aes256gcm_encrypt(unsigned char *c,
                                   unsigned long long *clen_p,
