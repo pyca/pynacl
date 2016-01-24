@@ -51,12 +51,20 @@ else:
 
 
 def here(*paths):
+    return os.path.relpath(
+        abshere(*paths),
+        os.path.abspath(os.path.dirname(__file__)),
+    )
+
+
+def abshere(*paths):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
+
 
 sodium = functools.partial(here, "src/libsodium/src/libsodium")
 
 
-sys.path.insert(0, here("src"))
+sys.path.insert(0, abshere("src"))
 
 
 import nacl # flake8: noqa
@@ -169,7 +177,7 @@ class build_clib(_build_clib):
             os.chmod(here(filename), 0o755)
 
         # Locate our configure script
-        configure = here("src/libsodium/configure")
+        configure = abshere("src/libsodium/configure")
 
         # Run ./configure
         subprocess.check_call(
