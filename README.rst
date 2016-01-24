@@ -64,6 +64,10 @@ Features
 Changes
 -------
 
+* 1.0.1:
+
+  * Fix an issue with absolute paths that prevented the creation of wheels.
+
 * 1.0:
 
   * PyNaCl has been ported to use the new APIs available in cffi 1.0+.
