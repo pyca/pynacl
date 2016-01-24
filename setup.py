@@ -51,14 +51,11 @@ else:
 
 
 def here(*paths):
-    return os.path.relpath(
-        abshere(*paths),
-        os.path.abspath(os.path.dirname(__file__)),
-    )
+    return os.path.relpath(os.path.join(*paths))
 
 
 def abshere(*paths):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), *paths))
+    return os.path.abspath(here(*paths))
 
 
 sodium = functools.partial(here, "src/libsodium/src/libsodium")
