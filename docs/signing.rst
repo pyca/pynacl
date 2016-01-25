@@ -62,7 +62,7 @@ Reference
     :func:`bytes` whose length is 32.
 
     .. warning:: This **must** be protected and remain secret. Anyone who knows
-        the value of your :class:`~nacl.signing.SigningKey` or it's seed can
+        the value of your :class:`~nacl.signing.SigningKey` or its seed can
         masquerade as you.
 
     :param bytes seed: Random 32-byte value (i.e. private key).
