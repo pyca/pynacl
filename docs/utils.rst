@@ -1,5 +1,7 @@
-Utility Classes
-===============
+Utilities
+=========
+
+.. currentmodule:: nacl.utils
 
 .. class:: EncryptedMessage
 
@@ -15,3 +17,10 @@ Utility Classes
     .. attribute:: ciphertext
 
         The ciphertext contained within the :class:`EncryptedMessage`.
+
+.. function:: random(size=32)
+
+    Returns a random bytestring with the given ``size``.
+
+    :param bytes size: The size of the random bytestring.
+    :return bytes: The random bytestring.
