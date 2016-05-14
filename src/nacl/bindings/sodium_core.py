@@ -22,5 +22,5 @@ def sodium_init():
     Initializes sodium, picking the best implementations available for this
     machine.
     """
-    if lib.sodium_init() != 0:
+    if lib.sodium_init() == -1:
         raise CryptoError("Could not initialize sodium")
