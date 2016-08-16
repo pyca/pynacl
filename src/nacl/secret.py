@@ -14,8 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from nacl import encoding
 import nacl.bindings
+from nacl import encoding
 from nacl.utils import EncryptedMessage, StringFixer
 
 
