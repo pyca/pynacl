@@ -24,4 +24,24 @@ if [[ "${TOXENV}" == "pypy" ]]; then
     pyenv global pypy-5.3.1
 fi
 
+if [[ "${TOXENV}" == "py26" ]]; then
+    rm -rf ~/.pyenv
+    git clone https://github.com/yyuu/pyenv.git ~/.pyenv
+    PYENV_ROOT="$HOME/.pyenv"
+    PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install 2.6.9
+    pyenv global 2.6.9
+fi
+
+if [[ "${TOXENV}" == "py33" ]]; then
+    rm -rf ~/.pyenv
+    git clone https://github.com/yyuu/pyenv.git ~/.pyenv
+    PYENV_ROOT="$HOME/.pyenv"
+    PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install 3.3.6
+    pyenv global 3.3.6
+fi
+
 pip install -U tox coveralls
