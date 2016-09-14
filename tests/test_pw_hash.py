@@ -25,11 +25,13 @@ import nacl.pw_hash
         32,
         b"The quick brown fox jumps over the lazy dog.",
         b"ef537f25c895bfa782526529a9b63d97",
-        b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*",
+        (b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98"
+         b"EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*"),
     ),
 ])
 def test_kdf_scryptsalsa208sha256(size, password, salt, expected):
-    assert nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt) == expected
+    res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt)
+    assert res == expected
 
 
 @pytest.mark.parametrize(("password", ), [
@@ -38,8 +40,9 @@ def test_kdf_scryptsalsa208sha256(size, password, salt, expected):
     ),
 ])
 def test_scryptsalsa208sha256_random(password):
-    assert nacl.pw_hash.scryptsalsa208sha256(password) != \
-           nacl.pw_hash.scryptsalsa208sha256(password)
+    h1 = nacl.pw_hash.scryptsalsa208sha256(password)
+    h2 = nacl.pw_hash.scryptsalsa208sha256(password)
+    assert h1 != h2
 
 
 @pytest.mark.parametrize(("password", ), [

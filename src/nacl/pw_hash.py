@@ -20,9 +20,12 @@ import nacl.encoding
 SALT_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
 PWHASH_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1
 
-def kdf_scryptsalsa208sha256(size, password, salt, encoder=nacl.encoding.RawEncoder):
+
+def kdf_scryptsalsa208sha256(size, password, salt,
+                             encoder=nacl.encoding.RawEncoder):
     """
-    Makes a key defined from ``password`` and ``salt`` that is ``size`` bytes long
+    Makes a key defined from ``password`` and ``salt`` that is
+    ``size`` bytes long
 
     :param size: int
     :param password: bytes
@@ -66,11 +69,10 @@ def verify_scryptsalsa208sha256(password_hash, password):
 
     if len(password_hash) != PWHASH_SIZE:
         raise ValueError(
-                "The pw_hash must be exactly %s bytes long" %
-                nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+            "The pw_hash must be exactly %s bytes long" %
+            nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
         )
 
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str_verify(
         password_hash, password
     )
-

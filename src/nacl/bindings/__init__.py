@@ -25,6 +25,13 @@ from nacl.bindings.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
+from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
+    crypto_pwhash_scryptsalsa208sha256,
+    crypto_pwhash_scryptsalsa208sha256_str,
+    crypto_pwhash_scryptsalsa208sha256_str_verify,
+    scrypt_SALTBYTES as crypto_pwhash_scryptsalsa208sha256_SALTBYTES,
+    scrypt_STRBYTES as crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+)
 from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base
@@ -44,11 +51,6 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_SECRETKEYBYTES, crypto_sign_SEEDBYTES,
     crypto_sign_ed25519_pk_to_curve25519, crypto_sign_ed25519_sk_to_curve25519,
     crypto_sign_keypair, crypto_sign_open, crypto_sign_seed_keypair
-)
-from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
-    crypto_pwhash_scryptsalsa208sha256_SALTBYTES, crypto_pwhash_scryptsalsa208sha256_STRBYTES,
-    crypto_pwhash_scryptsalsa208sha256, crypto_pwhash_scryptsalsa208sha256_str,
-    crypto_pwhash_scryptsalsa208sha256_str_verify,
 )
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.utils import sodium_memcmp
@@ -103,11 +105,11 @@ __all__ = [
     "crypto_sign_ed25519_pk_to_curve25519",
     "crypto_sign_ed25519_sk_to_curve25519",
 
-    "crypto_pwhash_scryptxsalsa208sha256_SALTBYTES",
-    "crypto_pwhash_scryptxsalsa208sha256_STRBYTES", 
-    "crypto_pwhash_scryptxsalsa208sha256", 
-    "crypto_pwhash_scryptxsalsa208sha256_str", 
-    "crypto_pwhash_scryptxsalsa208sha256_str_verify",
+    "crypto_pwhash_scryptsalsa208sha256",
+    "crypto_pwhash_scryptsalsa208sha256_SALTBYTES",
+    "crypto_pwhash_scryptsalsa208sha256_STRBYTES",
+    "crypto_pwhash_scryptsalsa208sha256_str",
+    "crypto_pwhash_scryptsalsa208sha256_str_verify",
 
     "randombytes",
 
