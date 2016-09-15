@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
-from nacl._lib import lib
+from nacl._sodium import ffi, lib
 from nacl.exceptions import CryptoError
 
 __all__ = [
@@ -45,7 +45,7 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
     if len(salt) != scrypt_SALTBYTES:
         raise ValueError("Invalid salt")
 
-    buf = lib.ffi.new("unsigned char[]", outlen)
+    buf = ffi.new("unsigned char[]", outlen)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256(buf, outlen, passwd,
                                                  len(passwd), salt,
@@ -54,7 +54,7 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
     if ret != 0:
         raise CryptoError("Key derivation fails!")
 
-    return lib.ffi.buffer(buf, outlen)[:]
+    return ffi.buffer(buf, outlen)[:]
 
 
 def crypto_pwhash_scryptsalsa208sha256_str(passwd, opslimit=5000,
@@ -72,7 +72,7 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd, opslimit=5000,
     :param memlimit: int
     :rtype: bytestring
     """
-    buf = lib.ffi.new("unsigned char[]", scrypt_STRBYTES)
+    buf = ffi.new("unsigned char[]", scrypt_STRBYTES)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd,
                                                      len(passwd),
@@ -82,7 +82,7 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd, opslimit=5000,
     if(ret != 0):
         raise CryptoError("Failed to hash password")
 
-    return lib.ffi.string(buf)
+    return ffi.string(buf)
 
 
 def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
