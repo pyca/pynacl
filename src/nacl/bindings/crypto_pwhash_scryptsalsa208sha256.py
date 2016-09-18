@@ -19,30 +19,56 @@ from nacl.exceptions import CryptoError
 __all__ = [
     "crypto_pwhash_scryptsalsa208sha256",
     "crypto_pwhash_scryptsalsa208sha256_str",
-    "crypto_pwhash_scryptsalsa208sha256_str_verify"
+    "crypto_pwhash_scryptsalsa208sha256_str_verify",
+    "SALTBYTES",
+    "STRBYTES",
+    "OPSLIMIT_INTERACTIVE",
+    "MEMLIMIT_INTERACTIVE",
+    "OPSLIMIT_SENSITIVE",
+    "MEMLIMIT_SENSITIVE"
 ]
 
 
-scrypt_SALTBYTES = lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
-scrypt_STRBYTES = lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
+SALTBYTES = lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
+STRBYTES = lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
+OPSLIMIT_INTERACTIVE = \
+    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_interactive()
+MEMLIMIT_INTERACTIVE = \
+    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_interactive()
+OPSLIMIT_SENSITIVE = \
+    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive()
+MEMLIMIT_SENSITIVE = \
+    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
 
 
 def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
-                                       opslimit=20000,
-                                       memlimit=(2 ** 20) * 100
+                                       opslimit=OPSLIMIT_SENSITIVE,
+                                       memlimit=MEMLIMIT_SENSITIVE
                                        ):
     """
     returns uses the ``passwd`` and ``salt`` to produce derive a key
-    of ``outlen`` bytes
-    can be tuned by picking different ``opslimit`` and ``memlimit``
+    of ``outlen`` bytes can be tuned by picking different
+    ``opslimit`` and ``memlimit``.
+
+    The constants
+        - :py:const:`.OPSLIMIT_INTERACTIVE`
+        - :py:const:`.MEMLIMIT_INTERACTIVE`
+        - :py:const:`.OPSLIMIT_SENSITIVE`
+        - :py:const:`.MEMLIMIT_SENSITIVE`
+
+    are provided as a guidance for correct settings respectively for the
+    interactive login and the long term key protecting sensitive data
+    usage cases.
 
     :param outlen: int
     :param passwd: bytes
     :param salt: bytes
+    :param opslimit: int
+    :param memlimit: int
     :rtype: bytes
     """
 
-    if len(salt) != scrypt_SALTBYTES:
+    if len(salt) != SALTBYTES:
         raise ValueError("Invalid salt")
 
     buf = ffi.new("unsigned char[]", outlen)
@@ -57,22 +83,24 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
     return ffi.buffer(buf, outlen)[:]
 
 
-def crypto_pwhash_scryptsalsa208sha256_str(passwd, opslimit=5000,
-                                           memlimit=(2 ** 11) * 50
+def crypto_pwhash_scryptsalsa208sha256_str(passwd,
+                                           opslimit=OPSLIMIT_INTERACTIVE,
+                                           memlimit=MEMLIMIT_INTERACTIVE
                                            ):
     """
     returns uses the ``passwd`` and ``salt`` and hashes them, producing a
-    ASCII string of scrypt_STRBYTES in length,
-    including the null terminator. The returned string includes the salt
-    and the tuning parameters, ``opslimit`` and ``memlimit``, and can be
-    written directly to disk as a password hash
+    ASCII string of STRBYTES in length, including the null terminator.
+
+    The returned string includes the salt and the tuning parameters,
+    ``opslimit`` and ``memlimit``, and can be written directly to disk
+    as a password hash
 
     :param passwd: bytes
     :param opslimit: int
     :param memlimit: int
     :rtype: bytestring
     """
-    buf = ffi.new("unsigned char[]", scrypt_STRBYTES)
+    buf = ffi.new("unsigned char[]", STRBYTES)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd,
                                                      len(passwd),
@@ -95,7 +123,7 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     :rtype: boolean
     """
 
-    if len(passwd_hash) != scrypt_STRBYTES - 1:
+    if len(passwd_hash) != STRBYTES - 1:
         raise ValueError("Invalid password hash")
 
     if lib.crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,

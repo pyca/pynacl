@@ -20,17 +20,24 @@ import nacl.encoding
 import nacl.pw_hash
 
 
-@pytest.mark.parametrize(("size", "password", "salt", "expected"), [
-    (
-        32,
-        b"The quick brown fox jumps over the lazy dog.",
-        b"ef537f25c895bfa782526529a9b63d97",
-        (b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98"
-         b"EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*"),
-    ),
-])
-def test_kdf_scryptsalsa208sha256(size, password, salt, expected):
-    res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt)
+@pytest.mark.parametrize(("size", "password", "salt",
+                          "opslimit", "memlimit",
+                          "expected"), [
+        (
+            32,
+            b"The quick brown fox jumps over the lazy dog.",
+            b"ef537f25c895bfa782526529a9b63d97",
+            20000,
+            (2 ** 20) * 100,
+            (b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98"
+             b"EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*")
+        ),
+    ],
+)
+def test_kdf_scryptsalsa208sha256(size, password, salt,
+                                  opslimit, memlimit, expected):
+    res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
+                                                opslimit, memlimit)
     assert res == expected
 
 

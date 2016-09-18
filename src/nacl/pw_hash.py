@@ -19,9 +19,19 @@ import nacl.encoding
 
 SALT_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
 PWHASH_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1
+_SC_OPS_INTERACTIVE = \
+    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
+_SC_MEM_INTERACTIVE = \
+    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
+_SC_OPS_SENSITIVE = \
+    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
+_SC_MEM_SENSITIVE = \
+    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
 
 
 def kdf_scryptsalsa208sha256(size, password, salt,
+                             opslimit=_SC_OPS_SENSITIVE,
+                             memlimit=_SC_MEM_SENSITIVE,
                              encoder=nacl.encoding.RawEncoder):
     """
     Makes a key defined from ``password`` and ``salt`` that is
@@ -30,6 +40,8 @@ def kdf_scryptsalsa208sha256(size, password, salt,
     :param size: int
     :param password: bytes
     :param salt: bytes
+    :param opslimit: int
+    :param memlimit: int
     :rtype: bytes
     """
     if len(salt) != SALT_SIZE:
@@ -41,25 +53,35 @@ def kdf_scryptsalsa208sha256(size, password, salt,
         )
 
     return encoder.encode(
-        nacl.bindings.crypto_pwhash_scryptsalsa208sha256(size, password, salt)
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256(size, password, salt,
+                                                         opslimit, memlimit)
     )
 
 
-def scryptsalsa208sha256(password):
+def scryptsalsa208sha256(password,
+                         opslimit=_SC_OPS_INTERACTIVE,
+                         memlimit=_SC_MEM_INTERACTIVE):
     """
     Hashes a password with a random salt, returns an ascii string
     that has all the needed info to check against a future password
 
+    The default settings for opslimit and memlimit are those deemed
+    correct for the interactive user login case.
+
     :param password: bytes
+    :param opslimit: int
+    :param memlimit: int
     :rtype: byte string
     """
 
-    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password)
+    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password,
+                                                                opslimit,
+                                                                memlimit)
 
 
 def verify_scryptsalsa208sha256(password_hash, password):
     """
-    Takes the output of scryptsalsa208sha25 and compares it against
+    Takes the output of scryptsalsa208sha256 and compares it against
     a user provided password to see if they are the same
 
     :param password_hash: bytes
