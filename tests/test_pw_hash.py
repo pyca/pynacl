@@ -19,6 +19,11 @@ import pytest
 import nacl.encoding
 import nacl.pw_hash
 
+from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
+    crypto_pwhash_scryptsalsa208sha256,
+    crypto_pwhash_scryptsalsa208sha256_str_verify,
+)
+
 
 @pytest.mark.parametrize(("size", "password", "salt",
                           "opslimit", "memlimit",
@@ -74,3 +79,69 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
         nacl.pw_hash.scryptsalsa208sha256(password),
         password.replace(b'dog', b'cat')
     )
+
+
+@pytest.mark.parametrize(("size", "password", "salt",
+                          "opslimit", "memlimit"), [
+        (
+            32,
+            b"The quick brown fox jumps over the lazy dog.",
+            b"ef537f25c895bfa782526529a9",
+            20000,
+            (2 ** 20) * 100
+        ),
+    ],
+)
+def test_wrong_salt_length(size, password, salt,
+                           opslimit, memlimit):
+    with pytest.raises(ValueError):
+        res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
+                                                    opslimit, memlimit)
+        assert res is not None
+
+
+@pytest.mark.parametrize(("passwd_hash", "password"), [
+        (
+            b"Too short (and wrong) hash",
+            b"a password",
+        ),
+    ],
+)
+def test_wrong_hash_length(passwd_hash, password):
+    with pytest.raises(ValueError):
+        res = nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
+                                                       password)
+        assert res is not None
+
+
+@pytest.mark.parametrize(("size", "password", "salt",
+                          "opslimit", "memlimit"), [
+        (
+            32,
+            b"The quick brown fox jumps over the lazy dog.",
+            b"ef537f25c895bfa782526529a9b6",
+            20000,
+            (2 ** 20) * 100
+        ),
+    ],
+)
+def test_bindings_wrong_salt_length(size, password, salt,
+                                    opslimit, memlimit):
+    with pytest.raises(ValueError):
+        res = crypto_pwhash_scryptsalsa208sha256(size, password, salt,
+                                                 opslimit, memlimit)
+        assert res is not None
+
+
+@pytest.mark.parametrize(("passwd_hash", "password"), [
+        (
+            b"Too short (and wrong) hash",
+            b"another password",
+        ),
+    ],
+)
+def test_bindings_wrong_hash_length(passwd_hash, password):
+    with pytest.raises(ValueError):
+        res = crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
+                                                            password)
+        assert res is not None
