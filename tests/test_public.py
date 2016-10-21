@@ -12,29 +12,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
+
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
 from nacl.public import PrivateKey, PublicKey
 
+from utils import TestCase
 
-class TestPublicKey:
-    def test_eq_returns_True_for_identical_keys(self):
+
+class TestPublicKey(TestCase):
+    def test_equal_keys_are_equal(self):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
         k2 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
-        assert k1 == k2
+        self._assert_equal(k1, k1)
+        self._assert_equal(k1, k2)
 
-    def test_eq_returns_False_for_wrong_type(self):
+    @pytest.mark.parametrize('k2', [
+        b"\x00" * crypto_box_PUBLICKEYBYTES
+        PublicKey(b"\x01" * crypto_box_PUBLICKEYBYTES),
+        PublicKey(b"\x00" * (crypto_box_PUBLICKEYBYTES - 1) + b"\x01"),
+    ])
+    def test_different_keys_are_not_equal(self, k2):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
-        k2 = b"\x00" * crypto_box_PUBLICKEYBYTES
-        assert k1 != k2
+        self._assert_not_equal(k1, k2)
 
 
-class TestPrivateKey:
-    def test_eq_returns_True_for_identical_keys(self):
+class TestPrivateKey(TestCase):
+    def test_equal_keys_are_equal(self):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         k2 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
-        assert k1 == k2
+        self._assert_equal(k1, k1)
+        self._assert_equal(k1, k2)
 
-    def test_eq_returns_False_for_wrong_type(self):
+    @pytest.mark.parametrize('k2', [
+        b"\x00" * crypto_box_SECRETKEYBYTES
+        PrivateKey(b"\x01" * crypto_box_SECRETKEYBYTES),
+        PrivateKey(b"\x00" * (crypto_box_SECRETKEYBYTES - 1) + b"\x01"),
+    ])
+    def test_different_keys_are_not_equal(self, k2):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
-        k2 = b"\x00" * crypto_box_SECRETKEYBYTES
-        assert k1 != k2
+        self._assert_not_equal(k1, k2)
