@@ -28,7 +28,7 @@ class TestPublicKey(TestCase):
         self._assert_equal(k1, k2)
 
     @pytest.mark.parametrize('k2', [
-        b"\x00" * crypto_box_PUBLICKEYBYTES
+        b"\x00" * crypto_box_PUBLICKEYBYTES,
         PublicKey(b"\x01" * crypto_box_PUBLICKEYBYTES),
         PublicKey(b"\x00" * (crypto_box_PUBLICKEYBYTES - 1) + b"\x01"),
     ])
@@ -45,7 +45,7 @@ class TestPrivateKey(TestCase):
         self._assert_equal(k1, k2)
 
     @pytest.mark.parametrize('k2', [
-        b"\x00" * crypto_box_SECRETKEYBYTES
+        b"\x00" * crypto_box_SECRETKEYBYTES,
         PrivateKey(b"\x01" * crypto_box_SECRETKEYBYTES),
         PrivateKey(b"\x00" * (crypto_box_SECRETKEYBYTES - 1) + b"\x01"),
     ])
