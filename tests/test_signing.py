@@ -25,6 +25,8 @@ from nacl.encoding import HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
+from utils import TestCase
+
 
 def tohex(b):
     return binascii.hexlify(b).decode('ascii')
@@ -51,7 +53,7 @@ def ed25519_known_answers():
     return answers
 
 
-class TestSigningKey:
+class TestSigningKey(TestCase):
     def test_initialize_with_generate(self):
         SigningKey.generate()
 
@@ -63,15 +65,20 @@ class TestSigningKey:
         k = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         assert bytes(k) == b"\x00" * crypto_sign_SEEDBYTES
 
-    def test_eq_returns_True_for_identical_keys(self):
+    def test_equal_keys_are_equal(self):
         k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         k2 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
-        assert k1 == k2
+        self._assert_equal(k1, k1)
+        self._assert_equal(k1, k2)
 
-    def test_eq_returns_False_for_wrong_type(self):
+    @pytest.mark.parametrize('k2', [
+        b"\x00" * crypto_sign_SEEDBYTES,
+        SigningKey(b"\x01" * crypto_sign_SEEDBYTES),
+        SigningKey(b"\x00" * (crypto_sign_SEEDBYTES - 1) + b"\x01"),
+    ])
+    def test_different_keys_are_not_equal(self, k2):
         k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
-        k2 = b"\x00" * crypto_sign_SEEDBYTES
-        assert k1 != k2
+        self._assert_not_equal(k1, k2)
 
     @pytest.mark.parametrize("seed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
@@ -101,7 +108,7 @@ class TestSigningKey:
         assert signed.signature == signature
 
 
-class TestVerifyKey:
+class TestVerifyKey(TestCase):
     def test_wrong_length(self):
         with pytest.raises(ValueError):
             VerifyKey(b"")
@@ -110,15 +117,20 @@ class TestVerifyKey:
         k = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         assert bytes(k) == b"\x00" * crypto_sign_PUBLICKEYBYTES
 
-    def test_eq_returns_True_for_identical_keys(self):
+    def test_equal_keys_are_equal(self):
         k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         k2 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
-        assert k1 == k2
+        self._assert_equal(k1, k1)
+        self._assert_equal(k1, k2)
 
-    def test_eq_returns_False_for_wrong_type(self):
+    @pytest.mark.parametrize('k2', [
+        b"\x00" * crypto_sign_PUBLICKEYBYTES,
+        VerifyKey(b"\x01" * crypto_sign_PUBLICKEYBYTES),
+        VerifyKey(b"\x00" * (crypto_sign_PUBLICKEYBYTES - 1) + b"\x01"),
+    ])
+    def test_different_keys_are_not_equal(self, k2):
         k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
-        k2 = b"\x00" * crypto_sign_PUBLICKEYBYTES
-        assert k1 != k2
+        self._assert_not_equal(k1, k2)
 
     @pytest.mark.parametrize(
         ("public_key", "signed", "message", "signature"),
