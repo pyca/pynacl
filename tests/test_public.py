@@ -14,10 +14,10 @@
 
 import pytest
 
+from utils import TestCase
+
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
 from nacl.public import PrivateKey, PublicKey
-
-from utils import TestCase
 
 
 class TestPublicKey(TestCase):

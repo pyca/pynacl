@@ -20,12 +20,12 @@ import os
 
 import pytest
 
+from utils import TestCase
+
 from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
 from nacl.encoding import HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
-
-from utils import TestCase
 
 
 def tohex(b):

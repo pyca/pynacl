@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 class TestCase(object):
     """
     Helper class that provides some extra methods for testing equality
@@ -20,7 +21,7 @@ class TestCase(object):
     def _assert_equal(self, x, y):
         assert x == y
         assert not (x != y)
-    
+
     def _assert_not_equal(self, x, y):
         assert x != y
         assert not (x == y)
