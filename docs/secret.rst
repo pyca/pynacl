@@ -82,7 +82,7 @@ reason, many protocols derive a new key for each session, reset the counter
 to zero with each new key, and never store the derived key or the counter.
 
 You can safely generate random nonces by calling
-:func:`~nacl.utils.random(SecretBox.NONCE_SIZE)`.
+:func:`~nacl.utils.random` with ``SecretBox.NONCE_SIZE``.
 
 
 Reference
