@@ -101,14 +101,9 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
 def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
-    encrypted = box.encrypt(
-        binascii.unhexlify(plaintext),
-        encoder=HexEncoder,
-    )
+    encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder)
 
-    decrypted = binascii.hexlify(
-        box.decrypt(encrypted, encoder=HexEncoder),
-    )
+    decrypted = binascii.hexlify(box.decrypt(encrypted, encoder=HexEncoder))
 
     assert decrypted == plaintext
 

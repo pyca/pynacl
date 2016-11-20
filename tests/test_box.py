@@ -173,10 +173,7 @@ def test_box_optional_nonce(
 
     box = Box(privalice, pubbob)
 
-    encrypted = box.encrypt(
-        binascii.unhexlify(plaintext),
-        encoder=HexEncoder,
-    )
+    encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder)
 
     decrypted = binascii.hexlify(box.decrypt(encrypted, encoder=HexEncoder))
 
