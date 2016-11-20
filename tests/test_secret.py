@@ -97,6 +97,22 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     assert decrypted == plaintext
 
 
+@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
+    box = SecretBox(key, encoder=HexEncoder)
+
+    encrypted = box.encrypt(
+        binascii.unhexlify(plaintext),
+        encoder=HexEncoder,
+    )
+
+    decrypted = binascii.hexlify(
+        box.decrypt(encrypted, encoder=HexEncoder),
+    )
+
+    assert decrypted == plaintext
+
+
 def test_secret_box_wrong_lengths():
     with pytest.raises(ValueError):
         SecretBox(b"")

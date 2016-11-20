@@ -166,6 +166,30 @@ def test_box_decryption_combined(
     ),
     VECTORS,
 )
+def test_box_optional_nonce(
+        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    pubbob = PublicKey(pubbob, encoder=HexEncoder)
+    privalice = PrivateKey(privalice, encoder=HexEncoder)
+
+    box = Box(privalice, pubbob)
+
+    encrypted = box.encrypt(
+        binascii.unhexlify(plaintext),
+        encoder=HexEncoder,
+    )
+
+    decrypted = binascii.hexlify(box.decrypt(encrypted, encoder=HexEncoder))
+
+    assert decrypted == plaintext
+
+
+@pytest.mark.parametrize(
+    (
+        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "ciphertext",
+    ),
+    VECTORS,
+)
 def test_box_failed_decryption(
         privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
