@@ -133,4 +133,4 @@ def test_crypto_shorthash_siphash24(inp, key, expected):
 ])
 def test_shortened_key(inp, key, expected):
     with pytest.raises(Exception):
-        rs = crypto_shorthash_siphash24(inp, key)
+        crypto_shorthash_siphash24(inp, key)
