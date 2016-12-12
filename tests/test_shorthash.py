@@ -103,6 +103,12 @@ KEY = (
 
 
 def sip24_vectors():
+    """Generate test vectors using data from the reference implementation's
+    test defined in  https://github.com/veorq/SipHash/blob/master/main.c
+
+    The key, the messages sequence and the expected hashes are all coming
+    from that file's definitions.
+    """
     vectors = []
     for i, expected in enumerate(HASHES):
         mesg = MESG[0:i]
@@ -122,9 +128,9 @@ def test_crypto_shorthash_siphash24(inp, key, expected):
     (
         b'\00',
         b'\x00\x01\x02\x03\x04\x05\x06\x07',
-        b'\xfd\x67\xdc\x93\xc5\x39\xf8\x74'
+        b''
     )
 ])
 def test_shortened_key(inp, key, expected):
-    rs = crypto_shorthash_siphash24(inp, key)
-    assert rs != expected
+    with pytest.raises(Exception):
+        rs = crypto_shorthash_siphash24(inp, key)
