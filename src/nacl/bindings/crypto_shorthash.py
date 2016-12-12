@@ -20,19 +20,18 @@ BYTES = lib.crypto_shorthash_siphash24_bytes()
 KEYBYTES = lib.crypto_shorthash_siphash24_keybytes()
 
 
-def crypto_shorthash_siphash24(data, key=b''):
+def crypto_shorthash_siphash24(data, key):
     """Compute a fast, cryptographic quality, keyed hash of the input data
 
     :param data:
     :type data: bytes
-    :param key:
+    :param key: len(key) must be equal to
+                :py:data:`.KEYBYTES` (16)
     :type key: bytes
     """
-    _key = ffi.new("unsigned char[]", KEYBYTES)
+    assert len(key) == KEYBYTES
     digest = ffi.new("unsigned char[]", BYTES)
-    ffi.memmove(_key, key, min(len(key), KEYBYTES))
-    # The key will be truncated or zero-padded to KEYBYTES length
-    rc = lib.crypto_shorthash_siphash24(digest, data, len(data), _key)
+    rc = lib.crypto_shorthash_siphash24(digest, data, len(data), key)
 
     assert rc == 0
     return ffi.buffer(digest, BYTES)[:]
