@@ -40,6 +40,6 @@ after_success: coveralls
 notifications:
   irc:
     channels:
-      - "irc.freenode.org#cryptography-dev"
+      - secure: "DjoeF3KknBb3hZjNhFdthtXM1rYscZ5hd9hzYyN006rOY4CxnshJVYFoRIAEfZ58H2kAB6ZBntLmmXpARYQD636YQY9RLN4GytFYjJF0lpD2OoS9XrOJNUl1LivR7yFarPucDFnzZKo20myelUDA/X7eh21c9G+JM3Vukq2jNog="
     use_notice: true
     skip_join: true
