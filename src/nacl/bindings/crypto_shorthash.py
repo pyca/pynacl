@@ -29,7 +29,8 @@ def crypto_shorthash_siphash24(data, key):
                 :py:data:`.KEYBYTES` (16)
     :type key: bytes
     """
-    assert len(key) == KEYBYTES
+    if len(key) != KEYBYTES:
+        raise ValueError("Key length must be {0} bytes".format(KEYBYTES))
     digest = ffi.new("unsigned char[]", BYTES)
     rc = lib.crypto_shorthash_siphash24(digest, data, len(data), key)
 
