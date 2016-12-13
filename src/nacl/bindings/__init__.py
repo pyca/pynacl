@@ -34,6 +34,11 @@ from nacl.bindings.crypto_secretbox import (
     crypto_secretbox_NONCEBYTES, crypto_secretbox_ZEROBYTES,
     crypto_secretbox_open
 )
+from nacl.bindings.crypto_shorthash import (
+    BYTES as crypto_shorthash_siphash24_BYTES,
+    KEYBYTES as crypto_shorthash_siphash24_KEYBYTES,
+    crypto_shorthash_siphash24
+)
 from nacl.bindings.crypto_sign import (
     crypto_sign, crypto_sign_BYTES, crypto_sign_PUBLICKEYBYTES,
     crypto_sign_SECRETKEYBYTES, crypto_sign_SEEDBYTES,
@@ -76,6 +81,10 @@ __all__ = [
     "crypto_secretbox_BOXZEROBYTES",
     "crypto_secretbox",
     "crypto_secretbox_open",
+
+    "crypto_shorthash_siphash24_BYTES",
+    "crypto_shorthash_siphash24_KEYBYTES",
+    "crypto_shorthash_siphash24",
 
     "crypto_sign_BYTES",
     "crypto_sign_SEEDBYTES",
