@@ -36,3 +36,6 @@ exclude .travis.yml
 exclude .travis
 exclude .travis/install.sh
 exclude .travis/run.sh
+
+# Remove the coverage config
+exclude .coveragerc
