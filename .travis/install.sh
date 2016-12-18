@@ -44,4 +44,4 @@ if [[ "${TOXENV}" == "py33" ]]; then
     pyenv global 3.3.6
 fi
 
-pip install -U tox coveralls
+pip install -U tox
