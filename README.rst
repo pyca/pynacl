@@ -64,6 +64,10 @@ Features
 Changes
 -------
 
+* 1.1.0 (UNRELEASED):
+
+  * Dropped support for Python 2.6.
+
 * 1.0.1:
 
   * Fix an issue with absolute paths that prevented the creation of wheels.
