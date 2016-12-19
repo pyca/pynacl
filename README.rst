@@ -1,7 +1,7 @@
 PyNaCl
 ======
 
-.. image:: https://pypip.in/version/PyNaCl/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/v/pynacl.svg
     :target: https://pypi.python.org/pypi/PyNaCl/
     :alt: Latest Version
 
@@ -13,7 +13,7 @@ PyNaCl
 
 PyNaCl is a Python binding to the `Networking and Cryptography library`_,
 a crypto library with the stated goal of improving usability, security and
-speed.
+speed. It supports Python 2.7 and 3.3+ as well as PyPy 2.6+.
 
 .. _Networking and Cryptography library: https://nacl.cr.yp.to/
 
@@ -63,6 +63,10 @@ Features
 
 Changes
 -------
+
+* 1.1.0 (UNRELEASED):
+
+  * Dropped support for Python 2.6.
 
 * 1.0.1:
 
