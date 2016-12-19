@@ -8,8 +8,8 @@ PyNaCl
 .. image:: https://travis-ci.org/pyca/pynacl.svg?branch=master
     :target: https://travis-ci.org/pyca/pynacl
 
-.. image:: https://coveralls.io/repos/pyca/pynacl/badge.svg?branch=master
-   :target: https://coveralls.io/r/pyca/pynacl?branch=master
+.. image:: https://codecov.io/github/pyca/pynacl/coverage.svg?branch=master
+    :target: https://codecov.io/github/pyca/pynacl?branch=master
 
 PyNaCl is a Python binding to the `Networking and Cryptography library`_,
 a crypto library with the stated goal of improving usability, security and

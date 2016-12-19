@@ -1,0 +1,11 @@
+[run]
+branch = True
+source =
+    nacl
+    tests/
+
+[paths]
+source =
+   src/nacl
+   .tox/*/lib/python*/site-packages/nacl
+   .tox/pypy/site-packages/nacl

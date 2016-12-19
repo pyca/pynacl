@@ -35,7 +35,8 @@ install: .travis/install.sh
 
 script: .travis/run.sh
 
-after_success: coveralls
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   irc:
