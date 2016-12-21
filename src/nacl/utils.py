@@ -58,3 +58,24 @@ class StringFixer(object):
 
 def random(size=32):
     return nacl.bindings.randombytes(size)
+
+
+def check_condition(cond, *args, **kwds):
+    """
+    Return if a condition is true, otherwise raise a caller-configurable
+    :py:class:`Exception`
+    :param bool cond: the condition to be chacked
+    :param sequence args: the arguments to be passed to the exception's
+                          consructor
+    The only accepted named parameter is `raising` used to configure the
+    exception to be raised if `cond` is not `True`
+    """
+    _CHK_UNEXP = 'check_condition() got an unexpected keyword argument {0}'
+
+    raising = kwds.pop('raising', AssertionError)
+    if kwds:
+        raise TypeError(_CHK_UNEXP.format(repr(kwds.popitem[0])))
+
+    if cond is True:
+        return
+    raise raising(*args)

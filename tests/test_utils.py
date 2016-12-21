@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import pytest
+
 import nacl.utils
 
 
@@ -23,3 +25,17 @@ def test_random_bytes_produces():
 
 def test_random_bytes_produces_different_bytes():
     assert nacl.utils.random(16) != nacl.utils.random(16)
+
+
+def test_util_check_true_condition():
+    nacl.utils.check_condition(1 == 1, AssertionError, 'one equals one')
+
+
+def test_util_check_false_condition():
+    with pytest.raises(AssertionError):
+        nacl.utils.check_condition(1 == 0, AssertionError, 'one is not zero')
+
+
+def test_util_check_unwanted_kwarg():
+    with pytest.raises(TypeError):
+        nacl.utils.check_condition(1 == 1, unexpected='unexpected')
