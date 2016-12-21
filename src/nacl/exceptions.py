@@ -25,3 +25,7 @@ class BadSignatureError(CryptoError):
     """
     Raised when the signature was forged or otherwise corrupt.
     """
+
+
+class RuntimeError(CryptoError, RuntimeError):
+    pass
