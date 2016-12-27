@@ -60,7 +60,7 @@ def random(size=32):
     return nacl.bindings.randombytes(size)
 
 
-def check_condition(cond, *args, **kwds):
+def ensure(cond, *args, **kwds):
     """
     Return if a condition is true, otherwise raise a caller-configurable
     :py:class:`Exception`
