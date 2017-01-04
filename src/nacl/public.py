@@ -82,13 +82,35 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         return self._private_key
 
     @classmethod
-    def generate(cls):
+    def generate(cls, ext_e=''):
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
+        :param ext_e: External entropy provided by user. XORed with system
+            entropy. If left empty, only nacl.utils.random() is used.
+
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
+
+        if not isinstance(ext_e, bytes):
+            raise TypeError("External entropy provided must be bytes")
+
+        # If no external entropy is provided, create string of zero-bytes.
+        if not ext_e:
+            ext_e = str(bytearray(PrivateKey.SIZE))
+
+        # Verify that external entropy is the proper size
+        if len(ext_e) != PrivateKey.SIZE:
+            raise ValueError(
+                "External entropy must be exactly %d bytes long"
+                % PrivateKey.SIZE)
+
+        nacl_e = random(PrivateKey.SIZE)
+
+        # XOR nacl.utils.random with ext. entropy or with bit string of zeroes.
+        final = ''.join(chr(ord(s) ^ ord(a)) for s, a in zip(nacl_e, ext_e))
+
+        return cls(final, encoder=encoding.RawEncoder)
 
 
 class Box(encoding.Encodable, StringFixer, object):
@@ -138,6 +160,20 @@ class Box(encoding.Encodable, StringFixer, object):
         box._shared_key = encoder.decode(encoded)
 
         return box
+
+    def sharedKey(self):
+        """
+        Returns the Curve 25519 shared key to use as a key with other symmetric
+        algorithms.
+
+        .. warning:: It is **VITALLY** important that you use a nonce with the
+            symmetric cipher. If you fail to do this, you compromise the
+            privacy of the messages encrypted.
+
+        :rtype: [:class:`bytes`]
+        """
+
+        return self._shared_key
 
     def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
         """
