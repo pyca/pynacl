@@ -29,3 +29,7 @@ class BadSignatureError(CryptoError):
 
 class RuntimeError(CryptoError, RuntimeError):
     pass
+
+
+class AssertionError(CryptoError, AssertionError):
+    pass

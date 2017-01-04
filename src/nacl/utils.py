@@ -17,6 +17,7 @@ from __future__ import absolute_import, division, print_function
 import six
 
 import nacl.bindings
+from nacl import exceptions as exc
 
 
 class EncryptedMessage(six.binary_type):
@@ -72,7 +73,7 @@ def ensure(cond, *args, **kwds):
     """
     _CHK_UNEXP = 'check_condition() got an unexpected keyword argument {0}'
 
-    raising = kwds.pop('raising', AssertionError)
+    raising = kwds.pop('raising', exc.AssertionError)
     if kwds:
         raise TypeError(_CHK_UNEXP.format(repr(kwds.popitem[0])))
 

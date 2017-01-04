@@ -17,6 +17,11 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import nacl.utils
+from nacl import exceptions as exc
+
+
+class CustomError(exc.CryptoError):
+    pass
 
 
 def test_random_bytes_produces():
@@ -28,14 +33,20 @@ def test_random_bytes_produces_different_bytes():
 
 
 def test_util_ensure_with_true_condition():
-    nacl.utils.ensure(1 == 1, AssertionError, 'one equals one')
+    nacl.utils.ensure(1 == 1, 'one equals one')
 
 
 def test_util_ensure_with_false_condition():
     with pytest.raises(AssertionError):
-        nacl.utils.ensure(1 == 0, AssertionError, 'one is not zero')
+        nacl.utils.ensure(1 == 0, 'one is not zero',
+                          raising=exc.AssertionError)
 
 
 def test_util_ensure_with_unwanted_kwarg():
     with pytest.raises(TypeError):
         nacl.utils.ensure(1 == 1, unexpected='unexpected')
+
+
+def test_util_ensure_custom_exception():
+    with pytest.raises(CustomError):
+        nacl.utils.ensure(1 == 0, 'Raising a CustomError', raising=CustomError)
