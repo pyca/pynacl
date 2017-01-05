@@ -16,7 +16,7 @@ from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 from nacl import encoding
-from nacl.utils import EncryptedMessage, StringFixer
+from nacl.utils import EncryptedMessage, StringFixer, random
 
 
 class SecretBox(encoding.Encodable, StringFixer, object):
@@ -58,10 +58,11 @@ class SecretBox(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
-    def encrypt(self, plaintext, nonce, encoder=encoding.RawEncoder):
+    def encrypt(self, plaintext, nonce=None, encoder=encoding.RawEncoder):
         """
-        Encrypts the plaintext message using the given nonce and returns the
-        ciphertext encoded with the encoder.
+        Encrypts the plaintext message using the given `nonce` (or generates
+        one randomly if omitted) and returns the ciphertext encoded with the
+        encoder.
 
         .. warning:: It is **VITALLY** important that the nonce is a nonce,
             i.e. it is a number used only once for any given key. If you fail
@@ -74,6 +75,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
         :param encoder: The encoder to use to encode the ciphertext
         :rtype: [:class:`nacl.utils.EncryptedMessage`]
         """
+        if nonce is None:
+            nonce = random(self.NONCE_SIZE)
+
         if len(nonce) != self.NONCE_SIZE:
             raise ValueError(
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
