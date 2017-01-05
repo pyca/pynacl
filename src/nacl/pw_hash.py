@@ -17,37 +17,48 @@ from __future__ import division
 import nacl.bindings
 import nacl.encoding
 
-SALT_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
+SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
 PWHASH_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1
-_SC_OPS_INTERACTIVE = \
+OPSLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
-_SC_MEM_INTERACTIVE = \
+MEMLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
-_SC_OPS_SENSITIVE = \
+OPSLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
-_SC_MEM_SENSITIVE = \
+MEMLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
 
 
 def kdf_scryptsalsa208sha256(size, password, salt,
-                             opslimit=_SC_OPS_SENSITIVE,
-                             memlimit=_SC_MEM_SENSITIVE,
+                             opslimit=OPSLIMIT_SENSITIVE,
+                             memlimit=MEMLIMIT_SENSITIVE,
                              encoder=nacl.encoding.RawEncoder):
     """
     Makes a key defined from ``password`` and ``salt`` that is
     ``size`` bytes long
 
-    :param size: int
-    :param password: bytes
-    :param salt: bytes
-    :param opslimit: int
-    :param memlimit: int
+    the enclosing module provides the constants
+
+        - :py:const:`.OPSLIMIT_INTERACTIVE`
+        - :py:const:`.MEMLIMIT_INTERACTIVE`
+        - :py:const:`.OPSLIMIT_SENSITIVE`
+        - :py:const:`.MEMLIMIT_SENSITIVE`
+
+    as a guidance for correct settings respectively for the
+    interactive login and the long term key protecting sensitive data
+    use cases.
+
+    :param int size: int
+    :param bytes password: bytes
+    :param bytes salt: bytes
+    :param int opslimit:
+    :param int memlimit:
     :rtype: bytes
     """
-    if len(salt) != SALT_SIZE:
+    if len(salt) != SALTBYTES:
         raise ValueError(
             "The salt must be exactly %s, not %s bytes long" % (
-                SALT_SIZE,
+                SALTBYTES,
                 len(salt)
             )
         )
@@ -59,19 +70,19 @@ def kdf_scryptsalsa208sha256(size, password, salt,
 
 
 def scryptsalsa208sha256(password,
-                         opslimit=_SC_OPS_INTERACTIVE,
-                         memlimit=_SC_MEM_INTERACTIVE):
+                         opslimit=OPSLIMIT_INTERACTIVE,
+                         memlimit=MEMLIMIT_INTERACTIVE):
     """
-    Hashes a password with a random salt, returns an ascii string
+    Hashes a password with a random salt, returning an ascii string
     that has all the needed info to check against a future password
 
     The default settings for opslimit and memlimit are those deemed
     correct for the interactive user login case.
 
-    :param password: bytes
-    :param opslimit: int
-    :param memlimit: int
-    :rtype: byte string
+    :param bytes password:
+    :param int opslimit:
+    :param int memlimit:
+    :rtype: bytes
     """
 
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password,
