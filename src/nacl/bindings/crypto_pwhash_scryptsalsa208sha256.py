@@ -135,9 +135,11 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     ensure(len(passwd_hash) == STRBYTES - 1, 'Invalid password hash',
            raising=exc.ValueError)
 
-    if lib.crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
-                                                         passwd,
-                                                         len(passwd)) == 0:
-        return True
-    else:
-        return False
+    ret = lib.crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
+                                                            passwd,
+                                                            len(passwd))
+    ensure(ret == 0,
+           "Wrong password",
+           raising=exc.ValueError)
+    # all went well, therefore:
+    return True

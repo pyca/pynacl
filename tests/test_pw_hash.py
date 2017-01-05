@@ -76,10 +76,11 @@ def test_scryptsalsa208sha256_verify(password):
     ),
 ])
 def test_scryptsalsa208sha256_verify_incorrect(password):
-    assert not nacl.pw_hash.verify_scryptsalsa208sha256(
-        nacl.pw_hash.scryptsalsa208sha256(password),
-        password.replace(b'dog', b'cat')
-    )
+    with pytest.raises(exc.ValueError):
+        nacl.pw_hash.verify_scryptsalsa208sha256(
+            nacl.pw_hash.scryptsalsa208sha256(password),
+            password.replace(b'dog', b'cat')
+        )
 
 
 @pytest.mark.parametrize(("size", "password", "salt",
