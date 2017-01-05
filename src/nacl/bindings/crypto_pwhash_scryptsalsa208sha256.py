@@ -15,6 +15,7 @@ from __future__ import absolute_import, division, print_function
 
 from nacl._sodium import ffi, lib
 from nacl.exceptions import CryptoError
+from nacl.utils import ensure
 
 
 crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \
@@ -82,8 +83,8 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
                                                  len(passwd), salt,
                                                  opslimit, memlimit)
 
-    if ret != 0:
-        raise CryptoError("Key derivation fails!")
+    ensure(ret == 0, 'Unexpected failure in key derivation',
+           raising=CryptoError)
 
     return ffi.buffer(buf, outlen)[:]
 
@@ -115,8 +116,8 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd,
                                                      opslimit,
                                                      memlimit)
 
-    if(ret != 0):
-        raise CryptoError("Failed to hash password")
+    ensure(ret == 0, 'Unexpected failure in password hashing',
+           raising=CryptoError)
 
     return ffi.string(buf)
 
