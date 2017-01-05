@@ -76,7 +76,7 @@ def test_scryptsalsa208sha256_verify(password):
     ),
 ])
 def test_scryptsalsa208sha256_verify_incorrect(password):
-    with pytest.raises(exc.ValueError):
+    with pytest.raises(exc.InvalidkeyError):
         nacl.pw_hash.verify_scryptsalsa208sha256(
             nacl.pw_hash.scryptsalsa208sha256(password),
             password.replace(b'dog', b'cat')

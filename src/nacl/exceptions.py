@@ -41,3 +41,7 @@ class TypeError(CryptoError, TypeError):
 
 class ValueError(CryptoError, ValueError):
     pass
+
+
+class InvalidkeyError(CryptoError):
+    pass

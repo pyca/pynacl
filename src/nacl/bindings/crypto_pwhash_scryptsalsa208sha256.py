@@ -140,6 +140,6 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
                                                             len(passwd))
     ensure(ret == 0,
            "Wrong password",
-           raising=exc.ValueError)
+           raising=exc.InvalidkeyError)
     # all went well, therefore:
     return True
