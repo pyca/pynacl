@@ -49,8 +49,10 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
                                        memlimit=MEMLIMIT_SENSITIVE
                                        ):
     """
-    returns uses the ``passwd`` and ``salt`` to produce derive a key
-    of ``outlen`` bytes can be tuned by picking different
+    Derive a cryptographic key using the ``passwd`` and ``salt``
+    given as input.
+
+    The work factor can be tuned by by picking different
     ``opslimit`` and ``memlimit``.
 
     The constants
@@ -63,11 +65,11 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
     interactive login and the long term key protecting sensitive data
     usage cases.
 
-    :param outlen: int
-    :param passwd: bytes
-    :param salt: bytes  *must* be *exactly* :py:const:`.SALTBYTES` long
-    :param opslimit: int
-    :param memlimit: int
+    :param int outlen: int
+    :param bytes passwd: bytes
+    :param bytes salt: *must* be *exactly* :py:const:`.SALTBYTES` long
+    :param int opslimit:
+    :param int memlimit:
     :rtype: bytes
     """
 
@@ -91,17 +93,20 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd,
                                            memlimit=MEMLIMIT_INTERACTIVE
                                            ):
     """
-    returns uses the ``passwd`` and ``salt`` and hashes them, producing an
-    ASCII string :py:const:`.STRBYTES` long, including the null terminator.
+    Derive a cryptographic key using the ``passwd`` and ``salt``
+    given as input, returning a string representation which includes
+    the salt and the tuning parameters.
 
-    The returned string includes the salt and the tuning parameters,
-    ``opslimit`` and ``memlimit``, and can be written directly to disk
-    as a password hash
+    The returned string can be directly stored as a password hash.
 
-    :param passwd: bytes
-    :param opslimit: int
-    :param memlimit: int
-    :rtype: bytestring
+    See :py:func:`.crypto_pwhash_scryptsalsa208sha256` for a short
+    discussion about ``opslimit`` and ``memlimit`` values.
+
+    :param bytes passwd:
+    :param int opslimit:
+    :param int memlimit:
+    :return: serialized key hash, including salt and tuning parameters
+    :rtype: bytes
     """
     buf = ffi.new("unsigned char[]", STRBYTES)
 
