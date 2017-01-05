@@ -16,29 +16,32 @@ from __future__ import absolute_import, division, print_function
 from nacl._sodium import ffi, lib
 from nacl.exceptions import CryptoError
 
-__all__ = [
-    "crypto_pwhash_scryptsalsa208sha256",
-    "crypto_pwhash_scryptsalsa208sha256_str",
-    "crypto_pwhash_scryptsalsa208sha256_str_verify",
-    "SALTBYTES",
-    "STRBYTES",
-    "OPSLIMIT_INTERACTIVE",
-    "MEMLIMIT_INTERACTIVE",
-    "OPSLIMIT_SENSITIVE",
-    "MEMLIMIT_SENSITIVE"
-]
 
-
-SALTBYTES = lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
-STRBYTES = lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
-OPSLIMIT_INTERACTIVE = \
+crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \
+    lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
+crypto_pwhash_scryptsalsa208sha256_STRBYTES = \
+    lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_opslimit_interactive()
-MEMLIMIT_INTERACTIVE = \
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_memlimit_interactive()
-OPSLIMIT_SENSITIVE = \
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive()
-MEMLIMIT_SENSITIVE = \
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
+
+OPSLIMIT_INTERACTIVE = \
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
+MEMLIMIT_INTERACTIVE = \
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
+OPSLIMIT_SENSITIVE = \
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
+MEMLIMIT_SENSITIVE = \
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
+SALTBYTES = \
+    crypto_pwhash_scryptsalsa208sha256_SALTBYTES
+STRBYTES = \
+    crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
 
 def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
@@ -62,7 +65,7 @@ def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
 
     :param outlen: int
     :param passwd: bytes
-    :param salt: bytes
+    :param salt: bytes  *must* be *exactly* :py:const:`.SALTBYTES` long
     :param opslimit: int
     :param memlimit: int
     :rtype: bytes
@@ -88,8 +91,8 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd,
                                            memlimit=MEMLIMIT_INTERACTIVE
                                            ):
     """
-    returns uses the ``passwd`` and ``salt`` and hashes them, producing a
-    ASCII string of STRBYTES in length, including the null terminator.
+    returns uses the ``passwd`` and ``salt`` and hashes them, producing an
+    ASCII string :py:const:`.STRBYTES` long, including the null terminator.
 
     The returned string includes the salt and the tuning parameters,
     ``opslimit`` and ``memlimit``, and can be written directly to disk

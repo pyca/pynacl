@@ -95,9 +95,8 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
 def test_wrong_salt_length(size, password, salt,
                            opslimit, memlimit):
     with pytest.raises(ValueError):
-        res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
-                                                    opslimit, memlimit)
-        assert res is not None
+        nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
+                                              opslimit, memlimit)
 
 
 @pytest.mark.parametrize(("passwd_hash", "password"), [
@@ -109,9 +108,8 @@ def test_wrong_salt_length(size, password, salt,
 )
 def test_wrong_hash_length(passwd_hash, password):
     with pytest.raises(ValueError):
-        res = nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
-                                                       password)
-        assert res is not None
+        nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
+                                                 password)
 
 
 @pytest.mark.parametrize(("size", "password", "salt",
@@ -128,9 +126,8 @@ def test_wrong_hash_length(passwd_hash, password):
 def test_bindings_wrong_salt_length(size, password, salt,
                                     opslimit, memlimit):
     with pytest.raises(ValueError):
-        res = crypto_pwhash_scryptsalsa208sha256(size, password, salt,
-                                                 opslimit, memlimit)
-        assert res is not None
+        crypto_pwhash_scryptsalsa208sha256(size, password, salt,
+                                           opslimit, memlimit)
 
 
 @pytest.mark.parametrize(("passwd_hash", "password"), [
@@ -142,6 +139,5 @@ def test_bindings_wrong_salt_length(size, password, salt,
 )
 def test_bindings_wrong_hash_length(passwd_hash, password):
     with pytest.raises(ValueError):
-        res = crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
-                                                            password)
-        assert res is not None
+        crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
+                                                      password)

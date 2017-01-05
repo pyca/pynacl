@@ -26,17 +26,13 @@ from nacl.bindings.crypto_hash import (
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
 from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
-    MEMLIMIT_INTERACTIVE
-    as crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE,
-    MEMLIMIT_SENSITIVE
-    as crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE,
-    OPSLIMIT_INTERACTIVE
-    as crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
-    OPSLIMIT_SENSITIVE
-    as crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE,
-    SALTBYTES as crypto_pwhash_scryptsalsa208sha256_SALTBYTES,
-    STRBYTES as crypto_pwhash_scryptsalsa208sha256_STRBYTES,
     crypto_pwhash_scryptsalsa208sha256,
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE,
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE,
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE,
+    crypto_pwhash_scryptsalsa208sha256_SALTBYTES,
+    crypto_pwhash_scryptsalsa208sha256_STRBYTES,
     crypto_pwhash_scryptsalsa208sha256_str,
     crypto_pwhash_scryptsalsa208sha256_str_verify,
 )
@@ -114,14 +110,14 @@ __all__ = [
     "crypto_sign_ed25519_sk_to_curve25519",
 
     "crypto_pwhash_scryptsalsa208sha256",
+    "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE",
+    "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE",
+    "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE",
+    "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE",
     "crypto_pwhash_scryptsalsa208sha256_SALTBYTES",
     "crypto_pwhash_scryptsalsa208sha256_STRBYTES",
     "crypto_pwhash_scryptsalsa208sha256_str",
     "crypto_pwhash_scryptsalsa208sha256_str_verify",
-    "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE",
-    "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE",
-    "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE",
-    "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE",
 
     "randombytes",
 
