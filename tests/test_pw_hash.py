@@ -17,6 +17,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import nacl.encoding
+import nacl.exceptions as exc
 import nacl.pw_hash
 
 from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
@@ -94,7 +95,7 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
 )
 def test_wrong_salt_length(size, password, salt,
                            opslimit, memlimit):
-    with pytest.raises(ValueError):
+    with pytest.raises(exc.ValueError):
         nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
                                               opslimit, memlimit)
 
@@ -107,7 +108,7 @@ def test_wrong_salt_length(size, password, salt,
     ],
 )
 def test_wrong_hash_length(passwd_hash, password):
-    with pytest.raises(ValueError):
+    with pytest.raises(exc.ValueError):
         nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
                                                  password)
 
@@ -125,7 +126,7 @@ def test_wrong_hash_length(passwd_hash, password):
 )
 def test_bindings_wrong_salt_length(size, password, salt,
                                     opslimit, memlimit):
-    with pytest.raises(ValueError):
+    with pytest.raises(exc.ValueError):
         crypto_pwhash_scryptsalsa208sha256(size, password, salt,
                                            opslimit, memlimit)
 
@@ -138,6 +139,6 @@ def test_bindings_wrong_salt_length(size, password, salt,
     ],
 )
 def test_bindings_wrong_hash_length(passwd_hash, password):
-    with pytest.raises(ValueError):
+    with pytest.raises(exc.ValueError):
         crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
                                                       password)

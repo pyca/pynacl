@@ -16,6 +16,9 @@ from __future__ import division
 
 import nacl.bindings
 import nacl.encoding
+import nacl.exceptions as exc
+
+from nacl.utils import ensure
 
 SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
 PWHASH_SIZE = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES - 1
@@ -55,13 +58,13 @@ def kdf_scryptsalsa208sha256(size, password, salt,
     :param int memlimit:
     :rtype: bytes
     """
-    if len(salt) != SALTBYTES:
-        raise ValueError(
-            "The salt must be exactly %s, not %s bytes long" % (
+    ensure(len(salt) == SALTBYTES,
+           "The salt must be exactly %s, not %s bytes long" % (
                 SALTBYTES,
                 len(salt)
-            )
-        )
+            ),
+           raising=exc.ValueError
+           )
 
     return encoder.encode(
         nacl.bindings.crypto_pwhash_scryptsalsa208sha256(size, password, salt,
@@ -100,11 +103,10 @@ def verify_scryptsalsa208sha256(password_hash, password):
     :rtype: boolean
     """
 
-    if len(password_hash) != PWHASH_SIZE:
-        raise ValueError(
-            "The pw_hash must be exactly %s bytes long" %
-            nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
-        )
+    ensure(len(password_hash) == PWHASH_SIZE,
+           "The pw_hash must be exactly %s bytes long" %
+           nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+           raising=exc.ValueError)
 
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str_verify(
         password_hash, password
