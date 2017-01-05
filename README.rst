@@ -17,7 +17,6 @@ improving usability, security and speed. It supports Python 2.7 and 3.3+ as
 well as PyPy 2.6+.
 
 .. _Networking and Cryptography library: https://nacl.cr.yp.to/
-.. _libsodium: https://libsodium.org
 
 
 Installation
