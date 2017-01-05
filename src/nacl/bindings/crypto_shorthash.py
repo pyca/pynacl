@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import nacl.exceptions as exc
+from nacl import utils
 from nacl._sodium import ffi, lib
 
 BYTES = lib.crypto_shorthash_siphash24_bytes()
@@ -34,5 +36,5 @@ def crypto_shorthash_siphash24(data, key):
     digest = ffi.new("unsigned char[]", BYTES)
     rc = lib.crypto_shorthash_siphash24(digest, data, len(data), key)
 
-    assert rc == 0
+    utils.ensure(rc == 0, raising=exc.RuntimeError)
     return ffi.buffer(digest, BYTES)[:]
