@@ -65,9 +65,9 @@ def ensure(cond, *args, **kwds):
     """
     Return if a condition is true, otherwise raise a caller-configurable
     :py:class:`Exception`
-    :param bool cond: the condition to be chacked
+    :param bool cond: the condition to be checked
     :param sequence args: the arguments to be passed to the exception's
-                          consructor
+                          constructor
     The only accepted named parameter is `raising` used to configure the
     exception to be raised if `cond` is not `True`
     """
