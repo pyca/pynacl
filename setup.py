@@ -33,9 +33,6 @@ from setuptools import Distribution, setup
 from setuptools.command.install import install
 
 
-SODIUM_MAJOR = 7
-SODIUM_MINOR = 3
-
 requirements = ["six"]
 setup_requirements = []
 
@@ -90,33 +87,9 @@ def use_system():
     if install_type == "system":
         # If we are forcing system installs, don't compile the bundled one
         return True
-    elif install_type == "bundled":
-        # If we are forcing bundled installs, compile it
+    else:
+        # By default we just use the bundled copy
         return False
-
-    # Detect if we have libsodium available
-    import cffi
-
-    ffi = cffi.FFI()
-    ffi.cdef("""
-        int sodium_library_version_major();
-        int sodium_library_version_minor();
-    """)
-
-    try:
-        system = ffi.dlopen("sodium")
-    except OSError:
-        # We couldn't locate libsodium so we'll use the bundled one
-        return False
-
-    if system.sodium_library_version_major() != SODIUM_MAJOR:
-        return False
-
-    if system.sodium_library_version_minor() < SODIUM_MINOR:
-        return False
-
-    # If we got this far then the system library should be good enough
-    return True
 
 
 class Distribution(Distribution):
