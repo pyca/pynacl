@@ -44,6 +44,11 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._public_key
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return bytes(self) == bytes(other)
+
 
 class PrivateKey(encoding.Encodable, StringFixer, object):
     """
@@ -80,6 +85,11 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
     def __bytes__(self):
         return self._private_key
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return bytes(self) == bytes(other)
 
     @classmethod
     def generate(cls):
