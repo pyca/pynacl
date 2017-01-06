@@ -18,9 +18,9 @@
 
 #include "blake2.h"
 #include "blake2-impl.h"
-#include "blake2b-round.h"
+#include "blake2b-compress-sse41.h"
 
-static const uint64_t blake2b_IV[8] =
+CRYPTO_ALIGN(64) static const uint64_t blake2b_IV[8] =
 {
   0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
   0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,

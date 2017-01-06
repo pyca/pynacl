@@ -7,6 +7,7 @@
 #endif
 #ifdef __linux__
 # include <sys/syscall.h>
+# include <poll.h>
 #endif
 
 #include <assert.h>
@@ -24,6 +25,12 @@
 #include "utils.h"
 
 #ifdef _WIN32
+/* `RtlGenRandom` is used over `CryptGenRandom` on Microsoft Windows based systems:
+ *  - `CryptGenRandom` requires pulling in `CryptoAPI` which causes unnecessary
+ *     memory overhead if this API is not being used for other purposes
+ *  - `RtlGenRandom` is thus called directly instead. A detailed explanation
+ *     can be found here: https://blogs.msdn.microsoft.com/michael_howard/2005/01/14/cryptographically-secure-random-number-on-windows-without-using-cryptoapi/
+ */
 # include <windows.h>
 # define RtlGenRandom SystemFunction036
 # if defined(__cplusplus)
@@ -107,6 +114,33 @@ safe_read(const int fd, void * const buf_, size_t size)
 #endif
 
 #ifndef _WIN32
+# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM)
+static int
+randombytes_block_on_dev_random(void)
+{
+    struct pollfd pfd;
+    int           fd;
+    int           pret;
+
+    fd = open("/dev/random", O_RDONLY);
+    if (fd == -1) {
+        return 0;
+    }
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    do {
+        pret = poll(&pfd, 1, -1);
+    } while (pret < 0 && (errno == EINTR || errno == EAGAIN));
+    if (pret != 1) {
+        (void) close(fd);
+        errno = EIO;
+        return -1;
+    }
+    return close(fd);
+}
+# endif
+
 static int
 randombytes_sysrandom_random_dev_open(void)
 {
@@ -121,6 +155,11 @@ randombytes_sysrandom_random_dev_open(void)
     const char **      device = devices;
     int                fd;
 
+# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM)
+    if (randombytes_block_on_dev_random() != 0) {
+        return -1;
+    }
+# endif
     do {
         fd = open(*device, O_RDONLY);
         if (fd != -1) {
@@ -150,7 +189,7 @@ randombytes_sysrandom_random_dev_open(void)
 /* LCOV_EXCL_STOP */
 }
 
-# ifdef SYS_getrandom
+# if defined(SYS_getrandom) && defined(__NR_getrandom)
 static int
 _randombytes_linux_getrandom(void * const buf, const size_t size)
 {
@@ -191,7 +230,7 @@ randombytes_sysrandom_init(void)
 {
     const int     errno_save = errno;
 
-# ifdef SYS_getrandom
+# if defined(SYS_getrandom) && defined(__NR_getrandom)
     {
         unsigned char fodder[16];
 
@@ -248,7 +287,7 @@ randombytes_sysrandom_close(void)
         stream.initialized = 0;
         ret = 0;
     }
-# ifdef SYS_getrandom
+# if defined(SYS_getrandom) && defined(__NR_getrandom)
     if (stream.getrandom_available != 0) {
         ret = 0;
     }
@@ -271,7 +310,7 @@ randombytes_sysrandom_buf(void * const buf, const size_t size)
     assert(size <= ULONG_LONG_MAX);
 #endif
 #ifndef _WIN32
-# ifdef SYS_getrandom
+# if defined(SYS_getrandom) && defined(__NR_getrandom)
     if (stream.getrandom_available != 0) {
         if (randombytes_linux_getrandom(buf, size) != 0) {
             abort();

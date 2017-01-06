@@ -37,6 +37,7 @@ EXTRA_DIST = \
 	onetimeauth2.exp \
 	onetimeauth7.exp \
 	pwhash.exp \
+	pwhash_scrypt.exp \
 	pwhash_scrypt_ll.exp \
 	randombytes.exp \
 	scalarmult.exp \
@@ -98,6 +99,7 @@ DISTCLEANFILES = \
 	onetimeauth2.res \
 	onetimeauth7.res \
 	pwhash.res \
+	pwhash_scrypt.res \
 	pwhash_scrypt_ll.res \
 	randombytes.res \
 	scalarmult.res \
@@ -160,6 +162,7 @@ CLEANFILES = \
 	onetimeauth2.final \
 	onetimeauth7.final \
 	pwhash.final \
+	pwhash_scrypt.final \
 	pwhash_scrypt_ll.final \
 	randombytes.final \
 	scalarmult.final \
@@ -217,6 +220,7 @@ CLEANFILES = \
 	onetimeauth2.nexe \
 	onetimeauth7.nexe \
 	pwhash.nexe \
+	pwhash_scrypt.nexe \
 	pwhash_scrypt_ll.nexe \
 	randombytes.nexe \
 	scalarmult.nexe \
@@ -286,6 +290,7 @@ TESTS_TARGETS = \
 	onetimeauth2 \
 	onetimeauth7 \
 	pwhash \
+	pwhash_scrypt \
 	pwhash_scrypt_ll \
 	randombytes \
 	scalarmult \
@@ -424,6 +429,9 @@ onetimeauth7_LDADD        = $(TESTS_LDADD)
 pwhash_SOURCE             = cmptest.h pwhash.c
 pwhash_LDADD              = $(TESTS_LDADD)
 
+pwhash_scrypt_SOURCE      = cmptest.h pwhash_scrypt.c
+pwhash_scrypt_LDADD       = $(TESTS_LDADD)
+
 pwhash_scrypt_ll_SOURCE   = cmptest.h pwhash_scrypt_ll.c
 pwhash_scrypt_ll_LDADD    = $(TESTS_LDADD)
 
@@ -504,3 +512,5 @@ LOG_COMPILER = ./nacl-test-wrapper.sh
 endif
 
 verify: check
+
+@VALGRIND_CHECK_RULES@

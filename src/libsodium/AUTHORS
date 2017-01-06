@@ -2,6 +2,10 @@
 Designers
 =========
 
+argon2                                 Alex Biryukov
+                                       Daniel Dinu
+                                       Dmitry Khovratovich
+
 blake2                                 Jean-Philippe Aumasson
                                        Christian Winnerlein
                                        Samuel Neves
@@ -38,7 +42,11 @@ crypto_aead/aes256gcm/aesni            Romain Dolbeau
 
 crypto_aead/chacha20poly1305           Frank Denis
 
+crypto_core/curve25519                 Daniel J. Bernstein
+
 crypto_box/curve25519xsalsa20poly1305  Daniel J. Bernstein
+
+crypto_core/hchacha20                  Frank Denis
 
 crypto_core/hsalsa20                   Daniel J. Bernstein
 crypto_core/salsa20
@@ -89,6 +97,12 @@ crypto_generichash/blake2b             Jean-Philippe Aumasson
 crypto_onetimeauth/poly1305/donna      Andrew "floodyberry" Moon
 
 crypto_onetimeauth/poly1305/sse2       Andrew "floodyberry" Moon
+
+crypto_pwhash/argon2                   Samuel Neves
+                                       Dmitry Khovratovich
+                                       Jean-Philippe Aumasson
+                                       Daniel Dinu
+                                       Thomas Pornin
 
 crypto_pwhash/scryptsalsa208sha256     Colin Percival
                                        Alexander Peslyak

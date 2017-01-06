@@ -4,8 +4,9 @@
 
 #include "blake2.h"
 #include "blake2-impl.h"
+#include "private/common.h"
 
-static const uint64_t blake2b_IV[8] =
+CRYPTO_ALIGN(64) static const uint64_t blake2b_IV[8] =
 {
   0x6a09e667f3bcc908ULL, 0xbb67ae8584caa73bULL,
   0x3c6ef372fe94f82bULL, 0xa54ff53a5f1d36f1ULL,
@@ -36,7 +37,7 @@ int blake2b_compress_ref( blake2b_state *S, const uint8_t block[BLAKE2B_BLOCKBYT
   int      i;
 
   for( i = 0; i < 16; ++i )
-    m[i] = load64( block + i * sizeof( m[i] ) );
+    m[i] = LOAD64_LE( block + i * sizeof( m[i] ) );
 
   for( i = 0; i < 8; ++i )
     v[i] = S->h[i];

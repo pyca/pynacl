@@ -98,6 +98,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/ax_check_define.m4 \
 	$(top_srcdir)/m4/ax_check_link_flag.m4 \
+	$(top_srcdir)/m4/ax_pthread.m4 \
+	$(top_srcdir)/m4/ax_valgrind_check.m4 \
 	$(top_srcdir)/m4/ld-output-def.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
@@ -121,7 +123,7 @@ am__EXEEXT_2 = aead_aes256gcm$(EXEEXT) aead_chacha20poly1305$(EXEEXT) \
 	ed25519_convert$(EXEEXT) generichash$(EXEEXT) \
 	generichash2$(EXEEXT) generichash3$(EXEEXT) hash$(EXEEXT) \
 	hash3$(EXEEXT) onetimeauth$(EXEEXT) onetimeauth2$(EXEEXT) \
-	onetimeauth7$(EXEEXT) pwhash$(EXEEXT) \
+	onetimeauth7$(EXEEXT) pwhash$(EXEEXT) pwhash_scrypt$(EXEEXT) \
 	pwhash_scrypt_ll$(EXEEXT) randombytes$(EXEEXT) \
 	scalarmult$(EXEEXT) scalarmult2$(EXEEXT) scalarmult5$(EXEEXT) \
 	scalarmult6$(EXEEXT) scalarmult7$(EXEEXT) secretbox$(EXEEXT) \
@@ -234,6 +236,9 @@ onetimeauth7_DEPENDENCIES = $(TESTS_LDADD)
 pwhash_SOURCES = pwhash.c
 pwhash_OBJECTS = pwhash.$(OBJEXT)
 pwhash_DEPENDENCIES = $(TESTS_LDADD)
+pwhash_scrypt_SOURCES = pwhash_scrypt.c
+pwhash_scrypt_OBJECTS = pwhash_scrypt.$(OBJEXT)
+pwhash_scrypt_DEPENDENCIES = $(TESTS_LDADD)
 pwhash_scrypt_ll_SOURCES = pwhash_scrypt_ll.c
 pwhash_scrypt_ll_OBJECTS = pwhash_scrypt_ll.$(OBJEXT)
 pwhash_scrypt_ll_DEPENDENCIES = $(TESTS_LDADD)
@@ -349,26 +354,26 @@ SOURCES = aead_aes256gcm.c aead_chacha20poly1305.c auth.c auth2.c \
 	core1.c core2.c core3.c core4.c core5.c core6.c \
 	ed25519_convert.c generichash.c generichash2.c generichash3.c \
 	hash.c hash3.c onetimeauth.c onetimeauth2.c onetimeauth7.c \
-	pwhash.c pwhash_scrypt_ll.c randombytes.c scalarmult.c \
-	scalarmult2.c scalarmult5.c scalarmult6.c scalarmult7.c \
-	secretbox.c secretbox2.c secretbox7.c secretbox8.c \
-	secretbox_easy.c secretbox_easy2.c shorthash.c sign.c \
-	sodium_core.c sodium_utils.c sodium_utils2.c sodium_utils3.c \
-	sodium_version.c stream.c stream2.c stream3.c stream4.c \
-	verify1.c
+	pwhash.c pwhash_scrypt.c pwhash_scrypt_ll.c randombytes.c \
+	scalarmult.c scalarmult2.c scalarmult5.c scalarmult6.c \
+	scalarmult7.c secretbox.c secretbox2.c secretbox7.c \
+	secretbox8.c secretbox_easy.c secretbox_easy2.c shorthash.c \
+	sign.c sodium_core.c sodium_utils.c sodium_utils2.c \
+	sodium_utils3.c sodium_version.c stream.c stream2.c stream3.c \
+	stream4.c verify1.c
 DIST_SOURCES = aead_aes256gcm.c aead_chacha20poly1305.c auth.c auth2.c \
 	auth3.c auth5.c auth6.c auth7.c box.c box2.c box7.c box8.c \
 	box_easy.c box_easy2.c box_seal.c box_seed.c chacha20.c \
 	core1.c core2.c core3.c core4.c core5.c core6.c \
 	ed25519_convert.c generichash.c generichash2.c generichash3.c \
 	hash.c hash3.c onetimeauth.c onetimeauth2.c onetimeauth7.c \
-	pwhash.c pwhash_scrypt_ll.c randombytes.c scalarmult.c \
-	scalarmult2.c scalarmult5.c scalarmult6.c scalarmult7.c \
-	secretbox.c secretbox2.c secretbox7.c secretbox8.c \
-	secretbox_easy.c secretbox_easy2.c shorthash.c sign.c \
-	sodium_core.c sodium_utils.c sodium_utils2.c sodium_utils3.c \
-	sodium_version.c stream.c stream2.c stream3.c stream4.c \
-	verify1.c
+	pwhash.c pwhash_scrypt.c pwhash_scrypt_ll.c randombytes.c \
+	scalarmult.c scalarmult2.c scalarmult5.c scalarmult6.c \
+	scalarmult7.c secretbox.c secretbox2.c secretbox7.c \
+	secretbox8.c secretbox_easy.c secretbox_easy2.c shorthash.c \
+	sign.c sodium_core.c sodium_utils.c sodium_utils2.c \
+	sodium_utils3.c sodium_version.c stream.c stream2.c stream3.c \
+	stream4.c verify1.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -617,6 +622,8 @@ CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CFLAGS_AESNI = @CFLAGS_AESNI@
+CFLAGS_AVX = @CFLAGS_AVX@
+CFLAGS_AVX2 = @CFLAGS_AVX2@
 CFLAGS_MMX = @CFLAGS_MMX@
 CFLAGS_PCLMUL = @CFLAGS_PCLMUL@
 CFLAGS_SSE2 = @CFLAGS_SSE2@
@@ -679,6 +686,9 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PTHREAD_CC = @PTHREAD_CC@
+PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+PTHREAD_LIBS = @PTHREAD_LIBS@
 RANLIB = @RANLIB@
 SAFECODE_HOME = @SAFECODE_HOME@
 SED = @SED@
@@ -689,6 +699,12 @@ SODIUM_LIBRARY_VERSION_MAJOR = @SODIUM_LIBRARY_VERSION_MAJOR@
 SODIUM_LIBRARY_VERSION_MINOR = @SODIUM_LIBRARY_VERSION_MINOR@
 STRIP = @STRIP@
 TEST_LDFLAGS = @TEST_LDFLAGS@
+VALGRIND = @VALGRIND@
+VALGRIND_ENABLED = @VALGRIND_ENABLED@
+VALGRIND_HAVE_TOOL_drd = @VALGRIND_HAVE_TOOL_drd@
+VALGRIND_HAVE_TOOL_exp_sgcheck = @VALGRIND_HAVE_TOOL_exp_sgcheck@
+VALGRIND_HAVE_TOOL_helgrind = @VALGRIND_HAVE_TOOL_helgrind@
+VALGRIND_HAVE_TOOL_memcheck = @VALGRIND_HAVE_TOOL_memcheck@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -702,6 +718,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+ax_pthread_config = @ax_pthread_config@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
@@ -780,6 +797,7 @@ EXTRA_DIST = \
 	onetimeauth2.exp \
 	onetimeauth7.exp \
 	pwhash.exp \
+	pwhash_scrypt.exp \
 	pwhash_scrypt_ll.exp \
 	randombytes.exp \
 	scalarmult.exp \
@@ -841,6 +859,7 @@ DISTCLEANFILES = \
 	onetimeauth2.res \
 	onetimeauth7.res \
 	pwhash.res \
+	pwhash_scrypt.res \
 	pwhash_scrypt_ll.res \
 	randombytes.res \
 	scalarmult.res \
@@ -902,6 +921,7 @@ DISTCLEANFILES = \
 @NATIVECLIENT_TRUE@	onetimeauth2.final \
 @NATIVECLIENT_TRUE@	onetimeauth7.final \
 @NATIVECLIENT_TRUE@	pwhash.final \
+@NATIVECLIENT_TRUE@	pwhash_scrypt.final \
 @NATIVECLIENT_TRUE@	pwhash_scrypt_ll.final \
 @NATIVECLIENT_TRUE@	randombytes.final \
 @NATIVECLIENT_TRUE@	scalarmult.final \
@@ -959,6 +979,7 @@ DISTCLEANFILES = \
 @NATIVECLIENT_TRUE@	onetimeauth2.nexe \
 @NATIVECLIENT_TRUE@	onetimeauth7.nexe \
 @NATIVECLIENT_TRUE@	pwhash.nexe \
+@NATIVECLIENT_TRUE@	pwhash_scrypt.nexe \
 @NATIVECLIENT_TRUE@	pwhash_scrypt_ll.nexe \
 @NATIVECLIENT_TRUE@	randombytes.nexe \
 @NATIVECLIENT_TRUE@	scalarmult.nexe \
@@ -997,11 +1018,12 @@ TESTS_TARGETS = aead_aes256gcm aead_chacha20poly1305 auth auth2 auth3 \
 	box_seal box_seed chacha20 core1 core2 core3 core4 core5 core6 \
 	ed25519_convert generichash generichash2 generichash3 hash \
 	hash3 onetimeauth onetimeauth2 onetimeauth7 pwhash \
-	pwhash_scrypt_ll randombytes scalarmult scalarmult2 \
-	scalarmult5 scalarmult6 scalarmult7 secretbox secretbox2 \
-	secretbox7 secretbox8 secretbox_easy secretbox_easy2 shorthash \
-	sign sodium_core sodium_utils sodium_version stream stream2 \
-	stream3 stream4 verify1 $(am__append_1)
+	pwhash_scrypt pwhash_scrypt_ll randombytes scalarmult \
+	scalarmult2 scalarmult5 scalarmult6 scalarmult7 secretbox \
+	secretbox2 secretbox7 secretbox8 secretbox_easy \
+	secretbox_easy2 shorthash sign sodium_core sodium_utils \
+	sodium_version stream stream2 stream3 stream4 verify1 \
+	$(am__append_1)
 TESTS_LDADD = \
 	${top_builddir}/src/libsodium/libsodium.la
 
@@ -1071,6 +1093,8 @@ onetimeauth7_SOURCE = cmptest.h onetimeauth7.c
 onetimeauth7_LDADD = $(TESTS_LDADD)
 pwhash_SOURCE = cmptest.h pwhash.c
 pwhash_LDADD = $(TESTS_LDADD)
+pwhash_scrypt_SOURCE = cmptest.h pwhash_scrypt.c
+pwhash_scrypt_LDADD = $(TESTS_LDADD)
 pwhash_scrypt_ll_SOURCE = cmptest.h pwhash_scrypt_ll.c
 pwhash_scrypt_ll_LDADD = $(TESTS_LDADD)
 randombytes_SOURCE = cmptest.h randombytes.c
@@ -1297,6 +1321,10 @@ pwhash$(EXEEXT): $(pwhash_OBJECTS) $(pwhash_DEPENDENCIES) $(EXTRA_pwhash_DEPENDE
 	@rm -f pwhash$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(pwhash_OBJECTS) $(pwhash_LDADD) $(LIBS)
 
+pwhash_scrypt$(EXEEXT): $(pwhash_scrypt_OBJECTS) $(pwhash_scrypt_DEPENDENCIES) $(EXTRA_pwhash_scrypt_DEPENDENCIES) 
+	@rm -f pwhash_scrypt$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(pwhash_scrypt_OBJECTS) $(pwhash_scrypt_LDADD) $(LIBS)
+
 pwhash_scrypt_ll$(EXEEXT): $(pwhash_scrypt_ll_OBJECTS) $(pwhash_scrypt_ll_DEPENDENCIES) $(EXTRA_pwhash_scrypt_ll_DEPENDENCIES) 
 	@rm -f pwhash_scrypt_ll$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(pwhash_scrypt_ll_OBJECTS) $(pwhash_scrypt_ll_LDADD) $(LIBS)
@@ -1436,6 +1464,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/onetimeauth2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/onetimeauth7.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwhash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwhash_scrypt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pwhash_scrypt_ll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randombytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalarmult.Po@am__quote@
@@ -1916,6 +1945,13 @@ pwhash.log: pwhash$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+pwhash_scrypt.log: pwhash_scrypt$(EXEEXT)
+	@p='pwhash_scrypt$(EXEEXT)'; \
+	b='pwhash_scrypt'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 pwhash_scrypt_ll.log: pwhash_scrypt_ll$(EXEEXT)
 	@p='pwhash_scrypt_ll$(EXEEXT)'; \
 	b='pwhash_scrypt_ll'; \
@@ -2268,6 +2304,8 @@ uninstall-am:
 
 
 verify: check
+
+@VALGRIND_CHECK_RULES@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
