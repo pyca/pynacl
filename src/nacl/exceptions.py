@@ -33,3 +33,7 @@ class RuntimeError(CryptoError, RuntimeError):
 
 class AssertionError(CryptoError, AssertionError):
     pass
+
+
+class TypeError(CryptoError, TypeError):
+    pass

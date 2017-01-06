@@ -47,6 +47,7 @@ from nacl.bindings.crypto_sign import (
 )
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.sodium_core import sodium_init
+from nacl.bindings.utils import sodium_memcmp
 
 
 __all__ = [
@@ -100,6 +101,8 @@ __all__ = [
     "randombytes",
 
     "sodium_init",
+
+    "sodium_memcmp",
 ]
 
 # Initialize Sodium
