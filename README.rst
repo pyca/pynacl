@@ -67,6 +67,9 @@ Changes
 * 1.1.0 (UNRELEASED):
 
   * Dropped support for Python 2.6.
+  * Added ``shared_key()`` method on ``Box``.
+  * You can now pass ``None`` to ``nonce`` when encrypting with ``Box`` or
+    ``SecretBox`` and it will automatically generate a random nonce.
 
 * 1.0.1:
 
