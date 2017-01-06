@@ -47,7 +47,7 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return bytes(self) == bytes(other)
+        return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
 
     def __ne__(self, other):
         return not (self == other)
@@ -92,7 +92,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return bytes(self) == bytes(other)
+        return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
 
     def __ne__(self, other):
         return not (self == other)
