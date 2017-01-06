@@ -13,13 +13,15 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
+from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.exceptions import CryptoError
+from nacl.utils import ensure
 
 
 def _sodium_init():
-    if lib.sodium_init() == -1:
-        raise CryptoError("Could not initialize sodium")
+    ensure(lib.sodium_init() != -1,
+           "Could not initialize sodium",
+           raising=exc.RuntimeError)
 
 
 def sodium_init():
