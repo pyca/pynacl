@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
+import sys
+
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.utils import ensure
@@ -43,6 +45,99 @@ SALTBYTES = \
     crypto_pwhash_scryptsalsa208sha256_SALTBYTES
 STRBYTES = \
     crypto_pwhash_scryptsalsa208sha256_STRBYTES
+
+SCRYPT_PR_MAX = ((1 << 30) - 1)
+LOG2_UINT64_MAX = 63
+UINT64_MAX = (1 << 64) - 1
+SCRYPT_MAX_MEM = 32 * (1024 * 1024)
+
+
+def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
+    ensure(r != 0, 'Invalid block size',
+           raising=exc.ValueError)
+
+    ensure(p != 0, 'Invalid parallelization factor',
+           raising=exc.ValueError)
+
+    ensure((n & (n-1)) == 0, 'Cost factor must be a power of 2',
+           raising=exc.ValueError)
+
+    ensure(n > 1, 'Cost factor must be at least 2',
+           raising=exc.ValueError)
+
+    ensure(p <= SCRYPT_PR_MAX / r, 'p*r is greater than {0}'.format(
+                                                                SCRYPT_PR_MAX),
+           raising=exc.ValueError)
+
+    ensure(n < (1 << (16*r)),
+           raising=exc.ValueError)
+
+    Blen = p * 128 * r
+
+    i = UINT64_MAX / 128
+
+    ensure(n + 2 <= i / r,
+           raising=exc.ValueError)
+
+    Vlen = 32 * r * (n + 2) * 4
+
+    ensure(Blen <= UINT64_MAX - Vlen,
+           raising=exc.ValueError)
+
+    ensure(Blen <= sys.maxsize - Vlen,
+           raising=exc.ValueError)
+
+    ensure(Blen + Vlen <= maxmem,
+           'Memory limit would be exceeded with the choosen n, r, p',
+           raising=exc.ValueError)
+
+
+def crypto_pwhash_scryptsalsa208sha256_ll(passwd, salt, n, r, p, dklen=64,
+                                          maxmem=SCRYPT_MAX_MEM):
+    """
+    Derive a cryptographic key using the ``passwd`` and ``salt``
+    given as input.
+
+    The work factor can be tuned by by picking different
+    values for the parameters
+
+    :param bytes passwd:
+    :param bytes salt:
+    :param bytes salt: *must* be *exactly* :py:const:`.SALTBYTES` long
+    :param int dklen:
+    :param int opslimit:
+    :param int n:
+    :param int r: block size,
+    :param int p: the parallelism factor
+    :param int maxmem: the maximum available memory available for scrypt's
+                       operations
+    :rtype: bytes
+    """
+    ensure(isinstance(n, int),
+           raising=TypeError)
+    ensure(isinstance(r, int),
+           raising=TypeError)
+    ensure(isinstance(p, int),
+           raising=TypeError)
+
+    ensure(isinstance(passwd, bytes),
+           raising=TypeError)
+    ensure(isinstance(salt, bytes),
+           raising=TypeError)
+
+    _check_memory_occupation(n, r, p, maxmem)
+
+    buf = ffi.new("uint8_t[]", dklen)
+
+    ret = lib.crypto_pwhash_scryptsalsa208sha256_ll(passwd, len(passwd),
+                                                    salt, len(salt),
+                                                    n, r, p,
+                                                    buf, dklen)
+
+    ensure(ret == 0, 'Unexpected failure in key derivation',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(ffi.cast("char *", buf), dklen)[:]
 
 
 def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,

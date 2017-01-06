@@ -29,6 +29,13 @@ int crypto_pwhash_scryptsalsa208sha256(unsigned char * const out,
                                         unsigned long long opslimit,
                                         size_t memlimit);
 
+int crypto_pwhash_scryptsalsa208sha256_ll(const uint8_t * const passwd,
+                                           size_t passwdlen,
+                                           const uint8_t * salt,
+                                           size_t saltlen,
+                                           uint64_t N, uint32_t r, uint32_t p,
+                                           uint8_t * buf, size_t buflen);
+
 /* #define crypto_pwhash_scryptsalsa208sha256_STRBYTES 102 */
 int crypto_pwhash_scryptsalsa208sha256_str(char out[102],
                                             const char * const passwd,
