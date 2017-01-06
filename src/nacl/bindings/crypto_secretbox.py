@@ -14,8 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.exceptions import CryptoError
+from nacl.utils import ensure
 
 
 crypto_secretbox_KEYBYTES = lib.crypto_secretbox_keybytes()
@@ -43,8 +44,8 @@ def crypto_secretbox(message, nonce, key):
     padded = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_secretbox(ciphertext, padded, len(padded), nonce, key) != 0:
-        raise CryptoError("Encryption failed")
+    res = lib.crypto_secretbox(ciphertext, padded, len(padded), nonce, key)
+    ensure(res == 0, "Encryption failed", raising=exc.CryptoError)
 
     ciphertext = ffi.buffer(ciphertext, len(padded))
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
@@ -69,9 +70,10 @@ def crypto_secretbox_open(ciphertext, nonce, key):
     padded = b"\x00" * crypto_secretbox_BOXZEROBYTES + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_secretbox_open(
-            plaintext, padded, len(padded), nonce, key) != 0:
-        raise CryptoError("Decryption failed. Ciphertext failed verification")
+    res = lib.crypto_secretbox_open(
+               plaintext, padded, len(padded), nonce, key)
+    ensure(res == 0, "Decryption failed. Ciphertext failed verification",
+           raising=exc.CryptoError)
 
     plaintext = ffi.buffer(plaintext, len(padded))
     return plaintext[crypto_secretbox_ZEROBYTES:]

@@ -14,8 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.exceptions import BadSignatureError
+from nacl.utils import ensure
 
 
 crypto_sign_BYTES = lib.crypto_sign_bytes()
@@ -37,7 +38,9 @@ def crypto_sign_keypair():
     sk = ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     rc = lib.crypto_sign_keypair(pk, sk)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return (
         ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
@@ -59,7 +62,9 @@ def crypto_sign_seed_keypair(seed):
     sk = ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
 
     rc = lib.crypto_sign_seed_keypair(pk, sk, seed)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return (
         ffi.buffer(pk, crypto_sign_PUBLICKEYBYTES)[:],
@@ -80,7 +85,9 @@ def crypto_sign(message, sk):
     signed_len = ffi.new("unsigned long long *")
 
     rc = lib.crypto_sign(signed, signed_len, message, len(message), sk)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(signed, signed_len[0])[:]
 
@@ -99,7 +106,7 @@ def crypto_sign_open(signed, pk):
 
     if lib.crypto_sign_open(
             message, message_len, signed, len(signed), pk) != 0:
-        raise BadSignatureError("Signature was forged or corrupt")
+        raise exc.BadSignatureError("Signature was forged or corrupt")
 
     return ffi.buffer(message, message_len[0])[:]
 
@@ -123,7 +130,9 @@ def crypto_sign_ed25519_pk_to_curve25519(public_key_bytes):
 
     rc = lib.crypto_sign_ed25519_pk_to_curve25519(curve_public_key,
                                                   public_key_bytes)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(curve_public_key, curve_public_key_len)[:]
 
@@ -147,6 +156,8 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
 
     rc = lib.crypto_sign_ed25519_sk_to_curve25519(curve_secret_key,
                                                   secret_key_bytes)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(curve_secret_key, curve_secret_key_len)[:]

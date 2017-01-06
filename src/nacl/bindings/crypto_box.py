@@ -14,8 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.exceptions import CryptoError
+from nacl.utils import ensure
 
 
 __all__ = ["crypto_box_keypair", "crypto_box"]
@@ -39,7 +40,9 @@ def crypto_box_keypair():
     sk = ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
 
     rc = lib.crypto_box_keypair(pk, sk)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return (
         ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
@@ -71,7 +74,9 @@ def crypto_box(message, nonce, pk, sk):
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
@@ -99,8 +104,9 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box_open(plaintext, padded, len(padded), nonce, pk, sk) != 0:
-        raise CryptoError("An error occurred trying to decrypt the message")
+    res = lib.crypto_box_open(plaintext, padded, len(padded), nonce, pk, sk)
+    ensure(res == 0, "An error occurred trying to decrypt the message",
+           raising=exc.CryptoError)
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
@@ -124,7 +130,9 @@ def crypto_box_beforenm(pk, sk):
     k = ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
 
     rc = lib.crypto_box_beforenm(k, pk, sk)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
 
@@ -149,7 +157,9 @@ def crypto_box_afternm(message, nonce, k):
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k)
-    assert rc == 0
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
 
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
@@ -173,8 +183,9 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
 
-    if lib.crypto_box_open_afternm(
-            plaintext, padded, len(padded), nonce, k) != 0:
-        raise CryptoError("An error occurred trying to decrypt the message")
+    res = lib.crypto_box_open_afternm(
+                plaintext, padded, len(padded), nonce, k)
+    ensure(res == 0, "An error occurred trying to decrypt the message",
+           raising=exc.CryptoError)
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
