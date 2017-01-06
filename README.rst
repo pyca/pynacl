@@ -11,9 +11,10 @@ PyNaCl
 .. image:: https://codecov.io/github/pyca/pynacl/coverage.svg?branch=master
     :target: https://codecov.io/github/pyca/pynacl?branch=master
 
-PyNaCl is a Python binding to the `Networking and Cryptography library`_,
-a crypto library with the stated goal of improving usability, security and
-speed. It supports Python 2.7 and 3.3+ as well as PyPy 2.6+.
+PyNaCl is a Python binding to `libsodium`_, which is a fork of the
+`Networking and Cryptography library`_. These libraries have a stated goal of
+improving usability, security and speed. It supports Python 2.7 and 3.3+ as
+well as PyPy 2.6+.
 
 .. _Networking and Cryptography library: https://nacl.cr.yp.to/
 
@@ -25,7 +26,7 @@ Installation
 Linux
 ~~~~~
 
-PyNaCl relies on libsodium_, a portable C library. A copy is bundled
+PyNaCl relies on `libsodium`_, a portable C library. A copy is bundled
 with PyNaCl so to install you can run:
 
 .. code-block:: console
