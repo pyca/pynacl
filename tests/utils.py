@@ -17,6 +17,7 @@ def assert_equal(x, y):
     assert x == y
     assert not (x != y)
 
+
 def assert_not_equal(x, y):
     assert x != y
     assert not (x == y)
