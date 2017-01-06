@@ -14,18 +14,18 @@
 
 import pytest
 
-from utils import TestCase
+from utils import assert_equal, assert_not_equal
 
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
 from nacl.public import PrivateKey, PublicKey
 
 
-class TestPublicKey(TestCase):
+class TestPublicKey:
     def test_equal_keys_are_equal(self):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
         k2 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
-        self._assert_equal(k1, k1)
-        self._assert_equal(k1, k2)
+        assert_equal(k1, k1)
+        assert_equal(k1, k2)
 
     @pytest.mark.parametrize('k2', [
         b"\x00" * crypto_box_PUBLICKEYBYTES,
@@ -34,15 +34,15 @@ class TestPublicKey(TestCase):
     ])
     def test_different_keys_are_not_equal(self, k2):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
-        self._assert_not_equal(k1, k2)
+        assert_not_equal(k1, k2)
 
 
-class TestPrivateKey(TestCase):
+class TestPrivateKey:
     def test_equal_keys_are_equal(self):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         k2 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
-        self._assert_equal(k1, k1)
-        self._assert_equal(k1, k2)
+        assert_equal(k1, k1)
+        assert_equal(k1, k2)
 
     @pytest.mark.parametrize('k2', [
         b"\x00" * crypto_box_SECRETKEYBYTES,
@@ -51,4 +51,4 @@ class TestPrivateKey(TestCase):
     ])
     def test_different_keys_are_not_equal(self, k2):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
-        self._assert_not_equal(k1, k2)
+        assert_not_equal(k1, k2)

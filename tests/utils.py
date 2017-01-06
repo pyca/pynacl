@@ -13,15 +13,10 @@
 # limitations under the License.
 
 
-class TestCase(object):
-    """
-    Helper class that provides some extra methods for testing equality
-    methods.
-    """
-    def _assert_equal(self, x, y):
-        assert x == y
-        assert not (x != y)
+def assert_equal(x, y):
+    assert x == y
+    assert not (x != y)
 
-    def _assert_not_equal(self, x, y):
-        assert x != y
-        assert not (x == y)
+def assert_not_equal(x, y):
+    assert x != y
+    assert not (x == y)
