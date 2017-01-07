@@ -44,6 +44,14 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._public_key
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
+
+    def __ne__(self, other):
+        return not (self == other)
+
 
 class PrivateKey(encoding.Encodable, StringFixer, object):
     """
@@ -80,6 +88,14 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
     def __bytes__(self):
         return self._private_key
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
+
+    def __ne__(self, other):
+        return not (self == other)
 
     @classmethod
     def generate(cls):

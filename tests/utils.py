@@ -12,28 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
+
+def assert_equal(x, y):
+    assert x == y
+    assert not (x != y)
 
 
-class CryptoError(Exception):
-    """
-    Base exception for all nacl related errors
-    """
-
-
-class BadSignatureError(CryptoError):
-    """
-    Raised when the signature was forged or otherwise corrupt.
-    """
-
-
-class RuntimeError(CryptoError, RuntimeError):
-    pass
-
-
-class AssertionError(CryptoError, AssertionError):
-    pass
-
-
-class TypeError(CryptoError, TypeError):
-    pass
+def assert_not_equal(x, y):
+    assert x != y
+    assert not (x == y)
