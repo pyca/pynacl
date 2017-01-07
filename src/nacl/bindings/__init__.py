@@ -57,8 +57,8 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_keypair, crypto_sign_open, crypto_sign_seed_keypair
 )
 from nacl.bindings.randombytes import randombytes
-from nacl.bindings.utils import sodium_memcmp
 from nacl.bindings.sodium_core import sodium_init
+from nacl.bindings.utils import sodium_memcmp
 
 
 __all__ = [
