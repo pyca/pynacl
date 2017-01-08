@@ -21,6 +21,14 @@ from nacl.bindings.crypto_box import (
     crypto_box_beforenm, crypto_box_keypair, crypto_box_open,
     crypto_box_open_afternm,
 )
+from nacl.bindings.crypto_generichash import (
+    crypto_generichash_BYTES, crypto_generichash_BYTES_MAX,
+    crypto_generichash_BYTES_MIN, crypto_generichash_KEYBYTES,
+    crypto_generichash_KEYBYTES_MAX, crypto_generichash_KEYBYTES_MIN,
+    crypto_generichash_PERSONALBYTES, crypto_generichash_SALTBYTES,
+    generichash_blake2b_salt_personal as
+    crypto_generichash_blake2b_salt_personal,
+)
 from nacl.bindings.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
@@ -82,6 +90,16 @@ __all__ = [
     "crypto_hash",
     "crypto_hash_sha256",
     "crypto_hash_sha512",
+
+    "crypto_generichash_BYTES",
+    "crypto_generichash_BYTES_MIN",
+    "crypto_generichash_BYTES_MAX",
+    "crypto_generichash_KEYBYTES",
+    "crypto_generichash_KEYBYTES_MIN",
+    "crypto_generichash_KEYBYTES_MAX",
+    "crypto_generichash_SALTBYTES",
+    "crypto_generichash_PERSONALBYTES",
+    "crypto_generichash_blake2b_salt_personal",
 
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
