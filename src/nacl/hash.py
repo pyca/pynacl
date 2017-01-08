@@ -37,31 +37,6 @@ def sha512(message, encoder=nacl.encoding.HexEncoder):
     return encoder.encode(nacl.bindings.crypto_hash_sha512(message))
 
 
-def generichash(data, digest_size=BYTES, key=b'',
-                encoder=nacl.encoding.HexEncoder):
-    """
-    One-shot generichash digest
-
-    :param data:
-    :type data: bytes
-    :param digest_size: the requested digest size; must be between
-                        :py:data:`.BYTES_MIN` and :py:data:`.BYTES_MAX`;
-                        the default length is :py:data:`.BYTES`
-    :type digest_size: int
-    :param key: the key to be set for keyed MAC/PRF usage; if set, key size
-                should be comprised between :py:data:`.KEYBYTES_MIN`
-                and :py:data:`.KEYBYTES_MAX`
-    :type key: bytes
-    :param encoder: the encoder to use on returned digest
-    :type encoder: :py:data:`types.FunctionType`
-    :return: the encoded digest of input data
-    :rtype: the return type of `encoder`
-    """
-
-    digest = _b2b_hash(data, digest_size=digest_size, key=key)
-    return encoder.encode(digest)
-
-
 def blake2b(data, digest_size=BYTES, key=b'',
             salt=b'', person=b'',
             encoder=nacl.encoding.HexEncoder):
@@ -93,3 +68,6 @@ def blake2b(data, digest_size=BYTES, key=b'',
     digest = _b2b_hash(data, digest_size=digest_size, key=key,
                        salt=salt, person=person)
     return encoder.encode(digest)
+
+
+generichash = blake2b
