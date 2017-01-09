@@ -21,6 +21,12 @@ from nacl.public import PrivateKey, PublicKey
 
 
 class TestPublicKey:
+    def test_equal_keys_have_equal_hashes(self):
+        k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
+        k2 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
+        assert hash(k1) == hash(k2)
+        assert id(k1) != id(k2)
+
     def test_equal_keys_are_equal(self):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
         k2 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
@@ -38,6 +44,12 @@ class TestPublicKey:
 
 
 class TestPrivateKey:
+    def test_equal_keys_have_equal_hashes(self):
+        k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
+        k2 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
+        assert hash(k1) == hash(k2)
+        assert id(k1) != id(k2)
+
     def test_equal_keys_are_equal(self):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         k2 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)

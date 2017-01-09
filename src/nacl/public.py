@@ -44,6 +44,9 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._public_key
 
+    def __hash__(self):
+        return hash(bytes(self))
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -88,6 +91,9 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
     def __bytes__(self):
         return self._private_key
+
+    def __hash__(self):
+        return hash(bytes(self))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
