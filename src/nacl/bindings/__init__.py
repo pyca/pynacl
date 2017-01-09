@@ -33,6 +33,7 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE,
     crypto_pwhash_scryptsalsa208sha256_SALTBYTES,
     crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+    crypto_pwhash_scryptsalsa208sha256_ll,
     crypto_pwhash_scryptsalsa208sha256_str,
     crypto_pwhash_scryptsalsa208sha256_str_verify,
 )
@@ -116,6 +117,7 @@ __all__ = [
     "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE",
     "crypto_pwhash_scryptsalsa208sha256_SALTBYTES",
     "crypto_pwhash_scryptsalsa208sha256_STRBYTES",
+    "crypto_pwhash_scryptsalsa208sha256_ll",
     "crypto_pwhash_scryptsalsa208sha256_str",
     "crypto_pwhash_scryptsalsa208sha256_str_verify",
 
