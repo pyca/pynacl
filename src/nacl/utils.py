@@ -57,6 +57,13 @@ class StringFixer(object):
             return self.__bytes__()
 
 
+def bytes_as_string(bytes_in):
+    if six.PY3:
+        return bytes_in.decode('ascii')
+    else:
+        return bytes_in
+
+
 def random(size=32):
     return nacl.bindings.randombytes(size)
 
