@@ -25,7 +25,7 @@ from nacl.bindings.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
-from nacl.bindings.crypto_pwhash_scryptsalsa208sha256 import (
+from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_scryptsalsa208sha256,
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE,
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE,
