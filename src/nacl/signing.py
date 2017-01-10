@@ -173,7 +173,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
     @classmethod
     def generate(cls):
         """
-        Generates a random :class:`~nacl.signing.SingingKey` object.
+        Generates a random :class:`~nacl.signing.SigningKey` object.
 
         :rtype: :class:`~nacl.signing.SigningKey`
         """
