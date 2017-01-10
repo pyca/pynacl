@@ -78,6 +78,9 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
+    def __hash__(self):
+        return hash(bytes(self))
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -161,6 +164,9 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
     def __bytes__(self):
         return self._seed
+
+    def __hash__(self):
+        return hash(bytes(self))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
