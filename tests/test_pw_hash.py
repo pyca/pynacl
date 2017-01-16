@@ -18,15 +18,10 @@ from binascii import unhexlify
 
 import pytest
 
+import nacl.bindings
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.pw_hash
-
-from nacl.bindings import (
-    crypto_pwhash_scryptsalsa208sha256,
-    crypto_pwhash_scryptsalsa208sha256_ll,
-    crypto_pwhash_scryptsalsa208sha256_str_verify,
-)
 
 
 @pytest.mark.parametrize(("size", "password", "salt",
@@ -56,8 +51,8 @@ def test_kdf_scryptsalsa208sha256(size, password, salt,
     ),
 ])
 def test_scryptsalsa208sha256_random(password):
-    h1 = nacl.pw_hash.scryptsalsa208sha256(password)
-    h2 = nacl.pw_hash.scryptsalsa208sha256(password)
+    h1 = nacl.pw_hash.scryptsalsa208sha256_str(password)
+    h2 = nacl.pw_hash.scryptsalsa208sha256_str(password)
     assert h1 != h2
 
 
@@ -68,7 +63,7 @@ def test_scryptsalsa208sha256_random(password):
 ])
 def test_scryptsalsa208sha256_verify(password):
     assert nacl.pw_hash.verify_scryptsalsa208sha256(
-        nacl.pw_hash.scryptsalsa208sha256(password),
+        nacl.pw_hash.scryptsalsa208sha256_str(password),
         password
     )
 
@@ -81,7 +76,7 @@ def test_scryptsalsa208sha256_verify(password):
 def test_scryptsalsa208sha256_verify_incorrect(password):
     with pytest.raises(exc.InvalidkeyError):
         nacl.pw_hash.verify_scryptsalsa208sha256(
-            nacl.pw_hash.scryptsalsa208sha256(password),
+            nacl.pw_hash.scryptsalsa208sha256_str(password),
             password.replace(b'dog', b'cat')
         )
 
@@ -164,13 +159,10 @@ RFC_7914_VECTORS = [
 @pytest.mark.parametrize(('password', 'salt', 'n', 'r', 'p',
                           'dklen', 'expected'),
                          RFC_7914_VECTORS)
-def test_rfc_7914_vectors(password, salt, n, r, p, dklen, expected):
+def test_hashlib_scrypt_api(password, salt, n, r, p, dklen, expected):
     _exp = unhexlify(expected.replace(b" ", b""))
-    dgst = crypto_pwhash_scryptsalsa208sha256_ll(password,
-                                                 salt,
-                                                 n, r, p,
-                                                 dklen=dklen,
-                                                 maxmem=2*(1024 ** 3))
+    dgst = nacl.pw_hash.scrypt(password, salt=salt, n=n, r=r, p=p,
+                               dklen=dklen, maxmem=2*(1024 ** 3))
     assert _exp == dgst
 
 
@@ -198,11 +190,58 @@ def test_wrong_hash_length(passwd_hash, password):
         ),
     ],
 )
-def test_bindings_wrong_salt_length(size, password, salt,
-                                    opslimit, memlimit):
+def test_kdf_wrong_salt_length(size, password, salt,
+                               opslimit, memlimit):
     with pytest.raises(exc.ValueError):
-        crypto_pwhash_scryptsalsa208sha256(size, password, salt,
-                                           opslimit, memlimit)
+        nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
+                                              opslimit, memlimit)
+
+
+@pytest.mark.parametrize(("opslimit", "memlimit",
+                          "n", "r", "p"), [
+        (
+            32768,
+            2 * (2 ** 20),
+            10,
+            8,
+            1
+        ),
+        (
+            32768,
+            8 * (2 ** 10),
+            3,
+            8,
+            128
+        ),
+        (
+            65536,
+            (2 ** 20) * 2,
+            11,
+            8,
+            1
+        ),
+        (
+            262144,
+            (2 ** 20) * 2,
+            11,
+            8,
+            4
+        ),
+        (
+            2 * (2 ** 20),
+            2 * (2 ** 20),
+            11,
+            8,
+            32
+        ),
+    ],
+)
+def test_variable_limits(opslimit, memlimit, n, r, p):
+    rn, rr, rp = nacl.bindings.nacl_bindings_pick_scrypt_params(opslimit,
+                                                                memlimit)
+    assert rn == n
+    assert rr == r
+    assert rp == p
 
 
 @pytest.mark.parametrize(("passwd_hash", "password"), [
@@ -212,7 +251,7 @@ def test_bindings_wrong_salt_length(size, password, salt,
         ),
     ],
 )
-def test_bindings_wrong_hash_length(passwd_hash, password):
+def test_str_verify_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
-        crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,
-                                                      password)
+        nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
+                                                 password)

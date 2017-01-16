@@ -33,17 +33,17 @@ crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = \
 crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
 
-OPSLIMIT_INTERACTIVE = \
+SCRYPT_OPSLIMIT_INTERACTIVE = \
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
-MEMLIMIT_INTERACTIVE = \
+SCRYPT_MEMLIMIT_INTERACTIVE = \
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
-OPSLIMIT_SENSITIVE = \
+SCRYPT_OPSLIMIT_SENSITIVE = \
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
-MEMLIMIT_SENSITIVE = \
+SCRYPT_MEMLIMIT_SENSITIVE = \
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
-SALTBYTES = \
+SCRYPT_SALTBYTES = \
     crypto_pwhash_scryptsalsa208sha256_SALTBYTES
-STRBYTES = \
+SCRYPT_STRBYTES = \
     crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
 SCRYPT_PR_MAX = ((1 << 30) - 1)
@@ -90,6 +90,36 @@ def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
     ensure(Blen + Vlen <= maxmem,
            'Memory limit would be exceeded with the choosen n, r, p',
            raising=exc.ValueError)
+
+
+def nacl_bindings_pick_scrypt_params(opslimit, memlimit):
+    """Python implementation of libsodium's pickparams"""
+
+    if opslimit < 32768:
+        opslimit = 32768
+
+    r = 8
+
+    if opslimit < (memlimit // 32):
+        p = 1
+        maxn = opslimit // (4 * r)
+        for n_log2 in range(1, 63):  # pragma: no branch
+            if (2 ** n_log2) > (maxn // 2):
+                break
+    else:
+        maxn = memlimit // (r * 128)
+        for n_log2 in range(1, 63):  # pragma: no branch
+            if (2 ** n_log2) > maxn // 2:
+                break
+
+        maxrp = (opslimit // 4) // (2 ** n_log2)
+
+        if maxrp > 0x3fffffff:  # pragma: no cover
+            maxrp = 0x3fffffff
+
+        p = maxrp // r
+
+    return n_log2, r, p
 
 
 def crypto_pwhash_scryptsalsa208sha256_ll(passwd, salt, n, r, p, dklen=64,
@@ -140,54 +170,9 @@ def crypto_pwhash_scryptsalsa208sha256_ll(passwd, salt, n, r, p, dklen=64,
     return ffi.buffer(ffi.cast("char *", buf), dklen)[:]
 
 
-def crypto_pwhash_scryptsalsa208sha256(outlen, passwd, salt,
-                                       opslimit=OPSLIMIT_SENSITIVE,
-                                       memlimit=MEMLIMIT_SENSITIVE
-                                       ):
-    """
-    Derive a cryptographic key using the ``passwd`` and ``salt``
-    given as input.
-
-    The work factor can be tuned by by picking different
-    ``opslimit`` and ``memlimit``.
-
-    The constants
-        - :py:const:`.OPSLIMIT_INTERACTIVE`
-        - :py:const:`.MEMLIMIT_INTERACTIVE`
-        - :py:const:`.OPSLIMIT_SENSITIVE`
-        - :py:const:`.MEMLIMIT_SENSITIVE`
-
-    are provided as a guidance for correct settings respectively for the
-    interactive login and the long term key protecting sensitive data
-    usage cases.
-
-    :param int outlen: int
-    :param bytes passwd: bytes
-    :param bytes salt: *must* be *exactly* :py:const:`.SALTBYTES` long
-    :param int opslimit:
-    :param int memlimit:
-    :rtype: bytes
-    """
-
-    ensure(len(salt) == SALTBYTES, 'Invalid salt',
-           raising=exc.ValueError)
-
-    buf = ffi.new("unsigned char[]", outlen)
-
-    ret = lib.crypto_pwhash_scryptsalsa208sha256(buf, outlen, passwd,
-                                                 len(passwd), salt,
-                                                 opslimit, memlimit)
-
-    ensure(ret == 0, 'Unexpected failure in key derivation',
-           raising=exc.RuntimeError)
-
-    return ffi.buffer(buf, outlen)[:]
-
-
-def crypto_pwhash_scryptsalsa208sha256_str(passwd,
-                                           opslimit=OPSLIMIT_INTERACTIVE,
-                                           memlimit=MEMLIMIT_INTERACTIVE
-                                           ):
+def crypto_pwhash_scryptsalsa208sha256_str(
+        passwd, opslimit=SCRYPT_OPSLIMIT_INTERACTIVE,
+        memlimit=SCRYPT_MEMLIMIT_INTERACTIVE):
     """
     Derive a cryptographic key using the ``passwd`` and ``salt``
     given as input, returning a string representation which includes
@@ -204,7 +189,7 @@ def crypto_pwhash_scryptsalsa208sha256_str(passwd,
     :return: serialized key hash, including salt and tuning parameters
     :rtype: bytes
     """
-    buf = ffi.new("unsigned char[]", STRBYTES)
+    buf = ffi.new("unsigned char[]", SCRYPT_STRBYTES)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd,
                                                      len(passwd),
@@ -227,7 +212,7 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     :rtype: boolean
     """
 
-    ensure(len(passwd_hash) == STRBYTES - 1, 'Invalid password hash',
+    ensure(len(passwd_hash) == SCRYPT_STRBYTES - 1, 'Invalid password hash',
            raising=exc.ValueError)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash,

@@ -26,7 +26,6 @@ from nacl.bindings.crypto_hash import (
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
 from nacl.bindings.crypto_pwhash import (
-    crypto_pwhash_scryptsalsa208sha256,
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE,
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE,
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE,
@@ -36,6 +35,7 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_scryptsalsa208sha256_ll,
     crypto_pwhash_scryptsalsa208sha256_str,
     crypto_pwhash_scryptsalsa208sha256_str_verify,
+    nacl_bindings_pick_scrypt_params,
 )
 from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
@@ -110,7 +110,6 @@ __all__ = [
     "crypto_sign_ed25519_pk_to_curve25519",
     "crypto_sign_ed25519_sk_to_curve25519",
 
-    "crypto_pwhash_scryptsalsa208sha256",
     "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE",
     "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE",
     "crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE",
@@ -120,6 +119,7 @@ __all__ = [
     "crypto_pwhash_scryptsalsa208sha256_ll",
     "crypto_pwhash_scryptsalsa208sha256_str",
     "crypto_pwhash_scryptsalsa208sha256_str_verify",
+    "nacl_bindings_pick_scrypt_params",
 
     "randombytes",
 
