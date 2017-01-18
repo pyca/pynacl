@@ -30,39 +30,14 @@ crypto_generichash_KEYBYTES_MAX = lib.crypto_generichash_blake2b_keybytes_max()
 crypto_generichash_SALTBYTES = lib.crypto_generichash_blake2b_saltbytes()
 crypto_generichash_PERSONALBYTES = \
     lib.crypto_generichash_blake2b_personalbytes()
+crypto_generichash_STATEBYTES = lib.crypto_generichash_statebytes()
 
 _OVERLONG = '{0} length greater than {1} bytes'
 _TOOBIG = '{0} greater than {1}'
 
 
-def generichash_blake2b_salt_personal(data,
-                                      digest_size=crypto_generichash_BYTES,
-                                      key=b'', salt=b'', person=b''):
-    """One shot hash interface
-    :param data: the input data to the hash function
-    :param digest_size: must be at most
-                        :py:data:`.crypto_generichash_BYTES_MAX`;
-                        the default digest size is
-                        :py:data:`.crypto_generichash_BYTES`
-    :type digest_size: int
-    :param key: must be at most
-                :py:data:`.crypto_generichash_KEYBYTES_MAX` long
-    :type key: bytes
-    :param salt: must be at most
-                 :py:data:`.crypto_generichash_SALTBYTES` long;
-                 will be zero-padded if needed
-    :type salt: bytes
-    :param person: must be at most
-                   :py:data:`.crypto_generichash_PERSONALBYTES` long:
-                                          will be zero-padded if needed
-    :type person: bytes
-    :return: digest_size long digest
-    :rtype: bytes
-    """
-    ensure(isinstance(data, bytes),
-           'Input data must be a bytes sequence',
-           raising=exc.TypeError)
-
+def _checkparams(digest_size, key, salt, person):
+    """Check hash paramters"""
     ensure(isinstance(key, bytes),
            'Key must be a bytes sequence',
            raising=exc.TypeError)
@@ -95,6 +70,38 @@ def generichash_blake2b_salt_personal(data,
            _OVERLONG.format("Person", crypto_generichash_PERSONALBYTES),
            raising=exc.ValueError)
 
+
+def generichash_blake2b_salt_personal(data,
+                                      digest_size=crypto_generichash_BYTES,
+                                      key=b'', salt=b'', person=b''):
+    """One shot hash interface
+    :param data: the input data to the hash function
+    :param digest_size: must be at most
+                        :py:data:`.crypto_generichash_BYTES_MAX`;
+                        the default digest size is
+                        :py:data:`.crypto_generichash_BYTES`
+    :type digest_size: int
+    :param key: must be at most
+                :py:data:`.crypto_generichash_KEYBYTES_MAX` long
+    :type key: bytes
+    :param salt: must be at most
+                 :py:data:`.crypto_generichash_SALTBYTES` long;
+                 will be zero-padded if needed
+    :type salt: bytes
+    :param person: must be at most
+                   :py:data:`.crypto_generichash_PERSONALBYTES` long:
+                                          will be zero-padded if needed
+    :type person: bytes
+    :return: digest_size long digest
+    :rtype: bytes
+    """
+
+    _checkparams(digest_size, key, salt, person)
+
+    ensure(isinstance(data, bytes),
+           'Input data must be a bytes sequence',
+           raising=exc.TypeError)
+
     digest = ffi.new("unsigned char[]", digest_size)
 
     # both _salt and _personal must be zero-padded to the correct length
@@ -112,3 +119,101 @@ def generichash_blake2b_salt_personal(data,
            raising=exc.RuntimeError)
 
     return ffi.buffer(digest, digest_size)[:]
+
+
+def generichash_blake2b_init(key=b'', salt=b'',
+                             person=b'',
+                             digest_size=crypto_generichash_BYTES):
+    """
+    Create a new initialized blake2b hash state
+
+    :param key: must be at most
+                :py:data:`.crypto_generichash_KEYBYTES_MAX` long
+    :type key: bytes
+    :param salt: must be at most
+                 :py:data:`.crypto_generichash_SALTBYTES` long;
+                 will be zero-padded if needed
+    :type salt: bytes
+    :param person: must be at most
+                   :py:data:`.crypto_generichash_PERSONALBYTES` long:
+                   will be zero-padded if needed
+    :type person: bytes
+    :param digest_size: must be at most
+                        :py:data:`.crypto_generichash_BYTES_MAX`;
+                        the default digest size is
+                        :py:data:`.crypto_generichash_BYTES`
+    :type digest_size: int
+    :return: an initizialized state buffer
+    :rtype: bytes
+    """
+
+    _checkparams(digest_size, key, salt, person)
+
+    statebuf = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
+    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
+
+    # both _salt and _personal must be zero-padded to the correct length
+    _salt = ffi.new("unsigned char []", crypto_generichash_SALTBYTES)
+    _person = ffi.new("unsigned char []", crypto_generichash_PERSONALBYTES)
+
+    ffi.memmove(_salt, salt, len(salt))
+    ffi.memmove(_person, person, len(person))
+
+    rc = lib.crypto_generichash_blake2b_init_salt_personal(_state,
+                                                           key, len(key),
+                                                           digest_size,
+                                                           _salt, _person)
+    ensure(rc == 0, 'Unexpected failure',
+           raising=exc.RuntimeError)
+
+    return statebuf
+
+
+def generichash_blake2b_update(statebuf, data):
+    """Update the blake2b hash state
+
+    :param statebuf: an initialized blake2b state buffer as returned from
+                     :py:func:`.crypto_generichash_blake2b_init`
+    :type name: bytes
+    :param data:
+    :type data: bytes
+    """
+
+    ensure(isinstance(data, bytes),
+           'Input data must be a bytes sequence',
+           raising=exc.TypeError)
+
+    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
+
+    rc = lib.crypto_generichash_blake2b_update(_state, data, len(data))
+    ensure(rc == 0, 'Unexpected failure',
+           raising=exc.RuntimeError)
+
+
+def generichash_blake2b_final(statebuf, digest_size):
+    """Finalize the blake2b hash state and return the digest.
+
+    :param statebuf:
+    :type statebuf: bytes
+    :param digest_size:
+    :type digest_size: int
+    :return: the blake2 digest of the passed-in data stream
+    :rtype: bytes
+    """
+
+    _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
+    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
+    rc = lib.crypto_generichash_blake2b_final(_state, _digest, digest_size)
+
+    ensure(rc == 0, 'Unexpected failure',
+           raising=exc.RuntimeError)
+    return ffi.buffer(_digest, digest_size)[:]
+
+
+def generichash_blake2b_state_copy(statebuf):
+    """Return a copy of the given blake2b hash state"""
+
+    _statebuf = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
+    ffi.memmove(_statebuf, statebuf, crypto_generichash_STATEBYTES)
+
+    return _statebuf
