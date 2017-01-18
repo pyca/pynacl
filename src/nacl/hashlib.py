@@ -35,11 +35,14 @@ _b2b_copy = nacl.bindings.crypto_generichash_blake2b_state_copy
 _b2b_update = nacl.bindings.crypto_generichash_blake2b_update
 
 
-class blake2b_bs(object):
+class blake2b(object):
     """
-    base implementation for
-    :py:mod:`hashlib` API compatible blake2b digests
+    :py:mod:`hashlib` API compatible blake2b algorithm implementation
     """
+    MAX_DIGEST_SIZE = BYTES
+    MAX_KEY_SIZE = KEYBYTES_MAX
+    PERSON_SIZE = PERSONALBYTES
+    SALT_SIZE = SALTBYTES
 
     def __init__(self, data=b'', digest_size=BYTES, key=b'',
                  salt=b'', person=b''):
@@ -100,38 +103,4 @@ class blake2b_bs(object):
         return _cp
 
 
-class blake2b(blake2b_bs):
-    """
-    :py:mod:`hashlib` API compatible blake2b algorithm implementation
-    """
-    MAX_DIGEST_SIZE = BYTES
-    MAX_KEY_SIZE = KEYBYTES_MAX
-    PERSON_SIZE = PERSONALBYTES
-    SALT_SIZE = SALTBYTES
-
-
-class generic(blake2b_bs):
-    """
-    :py:mod:hashlib API compatible
-    libsodium generichash algorithm implementation
-    """
-    MAX_DIGEST_SIZE = BYTES
-    MAX_KEY_SIZE = KEYBYTES_MAX
-
-    def __init__(self, data=b'', digest_size=BYTES, key=b''):
-        """
-        :py:class:`.generic` algorithm initializer
-
-        :param bytes data:
-        :param key: the key to be set for keyed MAC/PRF usage; if set,
-                    key should be at most :py:attr:`.MAX_KEY_SIZE` long
-        :type key: bytes
-        :param int digest_size: the requested digest size; must be
-                                less or equal to the default size
-                                :py:attr:`.MAX_DIGEST_SIZE`
-        """
-        blake2b_bs.__init__(self, data=data, key=key, digest_size=digest_size)
-
-    @property
-    def name(self):
-        return 'generic'
+generic = blake2b
