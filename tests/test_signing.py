@@ -71,6 +71,12 @@ class TestSigningKey:
         assert_equal(k1, k1)
         assert_equal(k1, k2)
 
+    def test_equal_keys_have_equal_hashes(self):
+        k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        k2 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
+        assert hash(k1) == hash(k2)
+        assert id(k1) != id(k2)
+
     @pytest.mark.parametrize('k2', [
         b"\x00" * crypto_sign_SEEDBYTES,
         SigningKey(b"\x01" * crypto_sign_SEEDBYTES),
@@ -122,6 +128,12 @@ class TestVerifyKey:
         k2 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         assert_equal(k1, k1)
         assert_equal(k1, k2)
+
+    def test_equal_keys_have_equal_hashes(self):
+        k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        k2 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
+        assert hash(k1) == hash(k2)
+        assert id(k1) != id(k2)
 
     @pytest.mark.parametrize('k2', [
         b"\x00" * crypto_sign_PUBLICKEYBYTES,
