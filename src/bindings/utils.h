@@ -1,4 +1,4 @@
-/* Copyright 2013-2017 Donald Stufft and individual contributors
+/* Copyright 2013 Donald Stufft and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,4 +13,8 @@
  * limitations under the License.
  */
 
+void sodium_memzero(void * const pnt, const size_t len);
 int sodium_memcmp(const void * const b1_, const void * const b2_, size_t len);
+
+int sodium_mlock(void * const addr, const size_t len);
+int sodium_munlock(void * const addr, const size_t len);

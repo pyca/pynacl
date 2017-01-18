@@ -37,3 +37,11 @@ class AssertionError(CryptoError, AssertionError):
 
 class TypeError(CryptoError, TypeError):
     pass
+
+
+class ValueError(CryptoError, ValueError):
+    pass
+
+
+class InvalidkeyError(CryptoError):
+    pass
