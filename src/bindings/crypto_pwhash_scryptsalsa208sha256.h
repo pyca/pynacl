@@ -21,14 +21,6 @@ size_t crypto_pwhash_scryptsalsa208sha256_memlimit_interactive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive(void);
 
-int crypto_pwhash_scryptsalsa208sha256(unsigned char * const out,
-                                        unsigned long long outlen,
-                                        const char * const passwd,
-                                        unsigned long long passwdlen,
-                                        const unsigned char * const salt,
-                                        unsigned long long opslimit,
-                                        size_t memlimit);
-
 int crypto_pwhash_scryptsalsa208sha256_ll(const uint8_t * const passwd,
                                            size_t passwdlen,
                                            const uint8_t * salt,
@@ -46,4 +38,3 @@ int crypto_pwhash_scryptsalsa208sha256_str(char out[102],
 int crypto_pwhash_scryptsalsa208sha256_str_verify(const char str[102],
                                                    const char * const passwd,
                                                    unsigned long long passwdlen);
-
