@@ -1,0 +1,159 @@
+Hashing
+=======
+
+.. currentmodule:: nacl.hash
+
+Cryptographic secure hash functions are irreversible transforms
+of input data to a fixed length `digest`.
+
+The standard properties of a cryptographic hash make these functions useful
+both for standalone usage as data integrity checkers, as well as ``black-box``
+building blocks of other kind of algorithms and data structures.
+
+All of the hash functions exposed in :py:mod:`nacl.hash` can be used
+as data integrity checkers.
+
+Integrity check examples:
+-------------------------
+
+Message's creator perspective (:py:func:`~nacl.hash.sha256`,
+                               :py:func:`~nacl.hash.sha512`,
+                               :py:func:`~nacl.hash.blake2b`)
+
+.. code-block:: python
+
+    import nacl.encoding
+    import nacl.hash
+
+    HASHER = nacl.hash.sha256
+    # could be nacl.hash.sha512 or nacl.hash.blake2b instead
+
+    # define a 1024 bytes log message
+    msg = 16*b'256 BytesMessage'
+    digest = nacl.hash.HASHER(msg, encoder=nacl.encoding.HexEncoder)
+
+    # now send msg and digest to the user
+    print(nacl.encoding.HexEncoder.encode(msg))
+    print(digest)
+
+
+Message's user perspective (:py:func:`~nacl.hash.sha256`,
+                            :py:func:`~nacl.hash.sha512`,
+                            :py:func:`~nacl.hash.blake2b`)
+
+.. code-block:: python
+
+    from nacl.bindings.utils import sodium_memcmp
+    import nacl.encoding
+    import nacl.hash
+
+    HASHER = nacl.hash.sha256
+    # could be nacl.hash.sha512 or nacl.hash.blake2b instead
+
+    # we received a 1024 bytes long message and it hex encoded digest
+    received_msg = nacl.encoding.HexEncoder.decode(
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    b'3235362042797465734d6573736167653235362042797465734d657373616765'
+    )
+
+    dgst = b'12b413c70c148d79bb57a1542156c5f35e24ad77c38e8c0e776d055e827cdd45'
+
+    shortened = received_msg[:-1]
+    modified = b'modified' + received_msg[:-8]
+
+    orig_dgs = HASHER(received_msg, encoder=nacl.encoding.HexEncoder)
+    shrt_dgs = HASHER(shortened, encoder=nacl.encoding.HexEncoder)
+    mdfd_dgs = HASHER(modified, encoder=nacl.encoding.HexEncoder)
+
+    def eq_chk(dgs0, dgs1):
+        if sodium_memcmp(dgs0, dgs1):
+            return 'equals'
+        return 'is different from'
+
+    MSG = 'Digest of {0} message {1} original digest'
+
+    for chk in (('original', orig_dgs),
+                ('truncated', shrt_dgs),
+                ('modified', mdfd_dgs)):
+
+        print(MSG.format(chk[0], eq_chk(dgst, chk[1])))
+
+
+Additional hashing usages for :class:`~nacl.hash.blake2b`:
+==========================================================
+
+As already hinted above, traditional cryptographic hash functions can be used
+as building blocks for other uses, tipically combining a secret-key with
+the message via some construct like the ``HMAC`` one.
+
+The :class:`~nacl.hash.blake2b` hash function can be used directly both
+for message authentication and key derivation, replacing the ``HMAC`` construct
+and the ``HKDF`` one by setting the additional parameters ``key``, ``salt``
+and ``person``.
+
+Message authentication:
+-----------------------
+
+To authenticate a message, using a secret key, the blake2b function
+must be called as in the following example.
+
+Message authentication example:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    import nacl.encoding
+    from nacl.hash import blake2b
+
+    msg = 16*b'256 BytesMessage'
+    msg2 = 16*b'256 bytesMessage'
+
+    auth_key = b''.join([bytearray((i,)) for i in range(64)])
+    # should really be a cryptographic quality random key, like
+    # the ones you could get with nacl.utils.random(size=64)
+
+    auth1_key = b''.join([bytearray((i,)) for i in range(64,128)])
+
+    mac0 = blake2b(msg, key=auth_key, encoder=nacl.encoding.HexEncoder)
+    mac1 = blake2b(msg, key=auth1_key, encoder=nacl.encoding.HexEncoder)
+    mac2 = blake2b(msg2, key=auth_key, encoder=nacl.encoding.HexEncoder)
+
+    for i, mac in enumerate((mac0, mac1, mac2)):
+        print('Mac{0} is: {1}.'.format(i, mac))
+
+
+Key derivation:
+---------------
+
+The blake2b algorithm can replace a key derivation function by
+following the lines of:
+
+Key derivation example:
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    import nacl.encoding
+    import nacl.utils
+    from nacl.hash import blake2b
+
+    master_key = nacl.utils.random(64)
+
+    derivation_salt = nacl.utils.random(16)
+
+    personalization = b'<DK usage>'
+
+    derived = blake2b(b'', key=master_key, salt=derivation_salt,
+                      personal=personalization,
+                      encoding=nacl.encoding.RawEncoder)
+
+By repeating the key derivation procedure before encrypting our messages,
+and sending the derivation_salt along with the encrypted message, we can
+expect to never reuse a key, drastically reducing the risks which ensue from
+such a reuse.
