@@ -23,7 +23,6 @@ import pytest
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.hash
-from nacl.utils import bytes_as_string
 
 OVERLONG_PARAMS_VECTORS = [
     (b'key', 65*b'\xaa', 16*b'\xaa', 16*b'\x55', 64, b'will raise'),
@@ -36,12 +35,12 @@ OVERLONG_PARAMS_VECTORS = [
 def _read_crypto_test_vectors(fname):
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
-    with open(path, "r") as fp:
+    with open(path, "rb") as fp:
         for line in fp:
             line = line.rstrip()
-            if line[0] == '#':
+            if line[0] == b'#'[0]:
                 continue
-            splt = [x for x in line.split('\t')]
+            splt = [x for x in line.split(b'\t')]
             vectors.append(tuple(splt))
     return vectors
 
@@ -73,10 +72,11 @@ def blake2_reference_vectors():
                          generichash_vectors())
 def test_generichash(message, key, outlen, output):
     msg = binascii.unhexlify(message)
+    output = binascii.hexlify(binascii.unhexlify(output))
     k = binascii.unhexlify(key)
     outlen = int(outlen)
     out = nacl.hash.generichash(msg, digest_size=outlen, key=k)
-    assert (bytes_as_string(out) == output)
+    assert (out == output)
 
 
 @pytest.mark.parametrize(["message", "key", "salt", "person", "outlen",
@@ -100,10 +100,11 @@ def test_generichash_blake2_ref(message, key, outlen, output):
                          blake2_salt_pers_vectors())
 def test_hash_blake2b(message, key, salt, person, outlen, output):
     msg = binascii.unhexlify(message)
+    output = binascii.hexlify(binascii.unhexlify(output))
     k = binascii.unhexlify(key)
     slt = binascii.unhexlify(salt)
     pers = binascii.unhexlify(person)
     outlen = int(outlen)
     out = nacl.hash.blake2b(msg, digest_size=outlen, key=k,
                             salt=slt, person=pers)
-    assert (bytes_as_string(out) == output)
+    assert (out == output)
