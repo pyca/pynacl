@@ -150,7 +150,6 @@ def generichash_blake2b_init(key=b'', salt=b'',
     _checkparams(digest_size, key, salt, person)
 
     statebuf = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
-    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
 
     # both _salt and _personal must be zero-padded to the correct length
     _salt = ffi.new("unsigned char []", crypto_generichash_SALTBYTES)
@@ -159,7 +158,7 @@ def generichash_blake2b_init(key=b'', salt=b'',
     ffi.memmove(_salt, salt, len(salt))
     ffi.memmove(_person, person, len(person))
 
-    rc = lib.crypto_generichash_blake2b_init_salt_personal(_state,
+    rc = lib.crypto_generichash_blake2b_init_salt_personal(statebuf,
                                                            key, len(key),
                                                            digest_size,
                                                            _salt, _person)
@@ -183,9 +182,7 @@ def generichash_blake2b_update(statebuf, data):
            'Input data must be a bytes sequence',
            raising=exc.TypeError)
 
-    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
-
-    rc = lib.crypto_generichash_blake2b_update(_state, data, len(data))
+    rc = lib.crypto_generichash_blake2b_update(statebuf, data, len(data))
     ensure(rc == 0, 'Unexpected failure',
            raising=exc.RuntimeError)
 
@@ -202,8 +199,7 @@ def generichash_blake2b_final(statebuf, digest_size):
     """
 
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
-    _state = ffi.cast("struct crypto_generichash_blake2b_state *", statebuf)
-    rc = lib.crypto_generichash_blake2b_final(_state, _digest, digest_size)
+    rc = lib.crypto_generichash_blake2b_final(statebuf, _digest, digest_size)
 
     ensure(rc == 0, 'Unexpected failure',
            raising=exc.RuntimeError)
@@ -213,7 +209,7 @@ def generichash_blake2b_final(statebuf, digest_size):
 def generichash_blake2b_state_copy(statebuf):
     """Return a copy of the given blake2b hash state"""
 
-    _statebuf = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
-    ffi.memmove(_statebuf, statebuf, crypto_generichash_STATEBYTES)
+    newstate = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
+    ffi.memmove(newstate, statebuf, crypto_generichash_STATEBYTES)
 
-    return _statebuf
+    return newstate
