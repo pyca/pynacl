@@ -13,8 +13,8 @@ building blocks of other kind of algorithms and data structures.
 All of the hash functions exposed in :py:mod:`nacl.hash` can be used
 as data integrity checkers.
 
-Integrity check examples:
--------------------------
+Integrity check examples
+------------------------
 
 Message's creator perspective (:py:func:`~nacl.hash.sha256`,
                                :py:func:`~nacl.hash.sha512`,
@@ -85,8 +85,8 @@ Message's user perspective (:py:func:`~nacl.hash.sha256`,
         print(MSG.format(chk[0], eq_chk(dgst, chk[1])))
 
 
-Additional hashing usages for :class:`~nacl.hash.blake2b`:
-==========================================================
+Additional hashing usages for :class:`~nacl.hash.blake2b`
+=========================================================
 
 As already hinted above, traditional cryptographic hash functions can be used
 as building blocks for other uses, tipically combining a secret-key with
@@ -97,14 +97,22 @@ for message authentication and key derivation, replacing the ``HMAC`` construct
 and the ``HKDF`` one by setting the additional parameters ``key``, ``salt``
 and ``person``.
 
-Message authentication:
------------------------
+Please note that **key stretching procedures** like ``HKDF`` or
+the one outlined in `Key derivation`_ are **not** suited to derive
+a *crytpographically-strong* key from a *low-entropy input* like a plain-text
+password or to compute a strong *long-term stored* hash used as password
+verifier. The :py:mod:`~nacl.pw_hash` module provides implementations of the
+``scrypt`` password hash, suitable both for key generation, an long-term
+password storage.
+
+Message authentication
+----------------------
 
 To authenticate a message, using a secret key, the blake2b function
 must be called as in the following example.
 
-Message authentication example:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Message authentication example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -114,11 +122,14 @@ Message authentication example:
     msg = 16*b'256 BytesMessage'
     msg2 = 16*b'256 bytesMessage'
 
-    auth_key = b''.join([bytearray((i,)) for i in range(64)])
-    # should really be a cryptographic quality random key, like
-    # the ones you could get with nacl.utils.random(size=64)
+    auth_key = nacl.utils.random(size=64)
+    # the simplest way to get a cryptographic quality auth_key
+    # is to generate it with a cryptographic quality
+    # random number generator
 
-    auth1_key = b''.join([bytearray((i,)) for i in range(64,128)])
+    auth1_key = nacl.utils.random(size=64)
+    # generate a different key, just to show the mac is changed
+    # both with changing messages and with changing keys
 
     mac0 = blake2b(msg, key=auth_key, encoder=nacl.encoding.HexEncoder)
     mac1 = blake2b(msg, key=auth1_key, encoder=nacl.encoding.HexEncoder)
@@ -128,14 +139,14 @@ Message authentication example:
         print('Mac{0} is: {1}.'.format(i, mac))
 
 
-Key derivation:
----------------
+Key derivation
+--------------
 
 The blake2b algorithm can replace a key derivation function by
 following the lines of:
 
-Key derivation example:
-~~~~~~~~~~~~~~~~~~~~~~~
+Key derivation example
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
