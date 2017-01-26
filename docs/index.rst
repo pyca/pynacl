@@ -11,6 +11,7 @@ Contents
    secret
    hashing
    signing
+   password_hashing
 
 
 Support Features
