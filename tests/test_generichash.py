@@ -176,7 +176,7 @@ def test_blake2_descriptors_presence():
     h = nacl.hashlib.blake2b()
     assert h.name == 'blake2b'
     h.block_size == 128
-    h.digest_size == 32 # this is the default digest_size
+    h.digest_size == 32  # this is the default digest_size
 
 
 def test_blake2_digest_size_descriptor_coherence():
