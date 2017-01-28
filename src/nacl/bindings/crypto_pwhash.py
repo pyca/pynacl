@@ -189,7 +189,7 @@ def crypto_pwhash_scryptsalsa208sha256_str(
     :return: serialized key hash, including salt and tuning parameters
     :rtype: bytes
     """
-    buf = ffi.new("unsigned char[]", SCRYPT_STRBYTES)
+    buf = ffi.new("char[]", SCRYPT_STRBYTES)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd,
                                                      len(passwd),
