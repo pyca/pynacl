@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
+import six
 
 import nacl.utils
 from nacl import exceptions as exc
@@ -22,6 +23,23 @@ from nacl import exceptions as exc
 
 class CustomError(exc.CryptoError):
     pass
+
+
+class StringFixerChild(nacl.utils.StringFixer):
+    def __unicode__(self):
+        return u'test'
+
+    def __bytes__(self):
+        return b'test'
+
+
+def test_string_fixer():
+    sfc = StringFixerChild()
+    assert str(sfc) == u'test' if six.PY3 else b'test'
+
+
+def test_bytes_as_string():
+    assert nacl.utils.bytes_as_string(b'test') == u'test' if six.PY3 else b'test'
 
 
 def test_random_bytes_produces():
