@@ -130,7 +130,7 @@ def test_hashlib_blake2_iuf_ref_vectors(message, key, outlen, output):
     k = binascii.unhexlify(key)
     outlen = int(outlen)
     out = binascii.unhexlify(output)
-    h = nacl.hashlib.generic(digest_size=outlen, key=k)
+    h = nacl.hashlib.blake2b(digest_size=outlen, key=k)
     for _pos in range(len(msg)):
         _end = _pos + 1
         h.update(bytes(msg[_pos:_end]))
@@ -150,7 +150,7 @@ def test_hashlib_blake2_iuf_cp_ref_vectors(message, key, outlen, output):
     k = binascii.unhexlify(key)
     outlen = int(outlen)
     out = binascii.unhexlify(output)
-    h = nacl.hashlib.generic(digest_size=outlen, key=k)
+    h = nacl.hashlib.blake2b(digest_size=outlen, key=k)
     for _pos in range(len(msg)):
         _end = _pos + 1
         h.update(bytes(msg[_pos:_end]))
@@ -174,13 +174,13 @@ def test_overlong_blake2b_iuf_params(message, key, salt, person,
 
 def test_blake2_descriptors_presence():
     h = nacl.hashlib.blake2b()
-    h.name
-    h.block_size
-    h.digest_size
+    assert h.name == 'blake2b'
+    h.block_size == 128
+    h.digest_size == 32 # this is the default digest_size
 
 
-def test_generic_descriptors_presence():
-    h = nacl.hashlib.generic()
-    h.name
-    h.block_size
-    h.digest_size
+def test_blake2_digest_size_descriptor_coherence():
+    h = nacl.hashlib.blake2b(digest_size=64)
+    assert h.name == 'blake2b'
+    h.block_size == 128
+    h.digest_size == 64
