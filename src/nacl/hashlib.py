@@ -101,6 +101,3 @@ class blake2b(object):
         _st = _b2b_copy(self.state)
         _cp.state = _st
         return _cp
-
-
-generic = blake2b
