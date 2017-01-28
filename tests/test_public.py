@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import binascii
+
 import pytest
 
 from utils import assert_equal, assert_not_equal
 
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
-from nacl.public import PrivateKey, PublicKey
+from nacl.public import Box, PrivateKey, PublicKey
 
 
 class TestPublicKey:
@@ -64,3 +66,45 @@ class TestPrivateKey:
     def test_different_keys_are_not_equal(self, k2):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         assert_not_equal(k1, k2)
+
+    def test_shared_key_getter(self):
+        """
+        RFC 7748 "Elliptic Curves for Security" gives a set of test
+        parameters for the Diffie-Hellman key exchange on Curve25519:
+
+        6.1.  [Diffie-Hellman on] Curve25519
+            [ . . . ]
+        Alice's private key, a:
+          77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a
+        Alice's public key, X25519(a, 9):
+          8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a
+        Bob's private key, b:
+          5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb
+        Bob's public key, X25519(b, 9):
+          de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f
+
+        Since libNaCl/libsodium shared key generation adds an HSalsa20
+        key derivation pass on the raw shared Diffie-Hellman key, which
+        is not exposed by itself, we just check the shared key for equality.
+        """
+        prv_A = (b'77076d0a7318a57d3c16c17251b26645'
+                 b'df4c2f87ebc0992ab177fba51db92c2a')
+        pub_A = (b'8520f0098930a754748b7ddcb43ef75a'
+                 b'0dbf3a0d26381af4eba4a98eaa9b4e6a')
+        prv_B = (b'5dab087e624a8a4b79e17f8b83800ee6'
+                 b'6f3bb1292618b6fd1c2f8b27ff88e0eb')
+        pub_B = (b'de9edb7d7b7dc1b4d35b61c2ece43537'
+                 b'3f8343c85b78674dadfc7e146f882b4f')
+
+        alices = PrivateKey(binascii.unhexlify(prv_A))
+        bobs = PrivateKey(binascii.unhexlify(prv_B))
+        alicesP = alices.public_key
+        bobsP = bobs.public_key
+
+        assert binascii.unhexlify(pub_A) == bytes(alicesP)
+        assert binascii.unhexlify(pub_B) == bytes(bobsP)
+
+        box_AB = Box(alices, bobsP)
+        box_BA = Box(bobs, alicesP)
+
+        assert box_AB.shared_key() == box_BA.shared_key()
