@@ -39,7 +39,8 @@ def test_string_fixer():
 
 
 def test_bytes_as_string():
-    assert nacl.utils.bytes_as_string(b'test') == u'test' if six.PY3 else b'test'
+    string = nacl.utils.bytes_as_string(b'test')
+    assert string == u'test' if six.PY3 else b'test'
 
 
 def test_random_bytes_produces():
