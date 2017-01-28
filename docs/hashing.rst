@@ -89,7 +89,7 @@ Additional hashing usages for :class:`~nacl.hash.blake2b`
 =========================================================
 
 As already hinted above, traditional cryptographic hash functions can be used
-as building blocks for other uses, tipically combining a secret-key with
+as building blocks for other uses, typically combining a secret-key with
 the message via some construct like the ``HMAC`` one.
 
 The :class:`~nacl.hash.blake2b` hash function can be used directly both
