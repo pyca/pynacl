@@ -3,13 +3,9 @@
 set -e
 set -x
 
-# pin pyenv at the last known good release
-PYENV_COMMIT=99d16707e372143fb35d822c26fe8427719b903c
-
-# the following commit breaks tox virtualenv building
-# on travis-ci
-#
-# PYENV_COMMIT=2657f1049cd45656918f601096509957d5b74e7c
+# to pin pyenv version, set the PYENV_COMMIT variable
+# to the required version commit identifier/tag like in
+# PYENV_COMMIT=v1.0.7
 
 if [[ $SODIUM_INSTALL == 'system' ]]; then
     wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
