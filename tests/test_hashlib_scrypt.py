@@ -20,7 +20,6 @@ import pytest
 
 import nacl.bindings
 import nacl.encoding
-import nacl.exceptions as exc
 import nacl.hashlib
 
 
