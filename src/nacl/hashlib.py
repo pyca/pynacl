@@ -101,3 +101,15 @@ class blake2b(object):
         _st = _b2b_copy(self._state)
         _cp._state = _st
         return _cp
+
+
+def scrypt(password, salt='', n=2**20, r=8, p=1,
+           maxmem=2**25, dklen=64):
+    """
+    Derive a cryptographic key using the scrypt KDF.
+
+    Implements the same signature as the ``hashlib.scrypt`` implemented
+    in cpython version 3.6
+    """
+    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
+            password, salt, n, r, p, maxmem=maxmem, dklen=dklen)
