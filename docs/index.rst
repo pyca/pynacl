@@ -9,8 +9,8 @@ Contents
 
    public
    secret
-   hashing
    signing
+   hashing
    password_hashing
 
 
