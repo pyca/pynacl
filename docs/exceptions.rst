@@ -1,6 +1,18 @@
 Exceptions
 ==========
 
+All of the exceptions raised from PyNaCl-exposed methods/functions
+are subclasses of :py:exc:`nacl.exceptions.CryptoError`. This means
+downstream users can just wrap cryptographic operations inside a
+
+.. code-block:: python
+
+    try:
+        # cryptographic operations
+    except nacl.exceptions.CryptoError:
+        # cleanup after any kind of exception
+        # raised from cryptographic-related operations
+
 These are the exceptions implemented in :py:mod:`nacl.exceptions`:
 
 PyNaCl specific exceptions
