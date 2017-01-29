@@ -56,7 +56,7 @@ def crypto_sign_seed_keypair(seed):
     :rtype: (bytes(public_key), bytes(secret_key))
     """
     if len(seed) != crypto_sign_SEEDBYTES:
-        raise ValueError("Invalid seed")
+        raise exc.ValueError("Invalid seed")
 
     pk = ffi.new("unsigned char[]", crypto_sign_PUBLICKEYBYTES)
     sk = ffi.new("unsigned char[]", crypto_sign_SECRETKEYBYTES)
@@ -123,7 +123,7 @@ def crypto_sign_ed25519_pk_to_curve25519(public_key_bytes):
     :rtype: bytes
     """
     if len(public_key_bytes) != crypto_sign_PUBLICKEYBYTES:
-        raise ValueError("Invalid curve public key")
+        raise exc.ValueError("Invalid curve public key")
 
     curve_public_key_len = crypto_sign_curve25519_BYTES
     curve_public_key = ffi.new("unsigned char[]", curve_public_key_len)
@@ -149,7 +149,7 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
     :rtype: bytes
     """
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
-        raise ValueError("Invalid curve public key")
+        raise exc.ValueError("Invalid curve public key")
 
     curve_secret_key_len = crypto_sign_curve25519_BYTES
     curve_secret_key = ffi.new("unsigned char[]", curve_secret_key_len)

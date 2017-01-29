@@ -36,10 +36,10 @@ def crypto_secretbox(message, nonce, key):
     :rtype: bytes
     """
     if len(key) != crypto_secretbox_KEYBYTES:
-        raise ValueError("Invalid key")
+        raise exc.ValueError("Invalid key")
 
     if len(nonce) != crypto_secretbox_NONCEBYTES:
-        raise ValueError("Invalid nonce")
+        raise exc.ValueError("Invalid nonce")
 
     padded = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ciphertext = ffi.new("unsigned char[]", len(padded))
@@ -62,10 +62,10 @@ def crypto_secretbox_open(ciphertext, nonce, key):
     :rtype: bytes
     """
     if len(key) != crypto_secretbox_KEYBYTES:
-        raise ValueError("Invalid key")
+        raise exc.ValueError("Invalid key")
 
     if len(nonce) != crypto_secretbox_NONCEBYTES:
-        raise ValueError("Invalid nonce")
+        raise exc.ValueError("Invalid nonce")
 
     padded = b"\x00" * crypto_secretbox_BOXZEROBYTES + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))

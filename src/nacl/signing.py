@@ -18,6 +18,7 @@ import six
 
 import nacl.bindings
 from nacl import encoding
+from nacl import exceptions as exc
 
 from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
                          PublicKey as _Curve25519_PublicKey)
@@ -65,10 +66,10 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         # Decode the key
         key = encoder.decode(key)
         if not isinstance(key, bytes):
-            raise TypeError("VerifyKey must be created from 32 bytes")
+            raise exc.TypeError("VerifyKey must be created from 32 bytes")
 
         if len(key) != nacl.bindings.crypto_sign_PUBLICKEYBYTES:
-            raise ValueError(
+            raise exc.ValueError(
                 "The key must be exactly %s bytes long" %
                 nacl.bindings.crypto_sign_PUBLICKEYBYTES,
             )
@@ -147,11 +148,12 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         # Decode the seed
         seed = encoder.decode(seed)
         if not isinstance(seed, bytes):
-            raise TypeError("SigningKey must be created from a 32 byte seed")
+            raise exc.TypeError(
+                "SigningKey must be created from a 32 byte seed")
 
         # Verify that our seed is the proper size
         if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
-            raise ValueError(
+            raise exc.ValueError(
                 "The seed must be exactly %d bytes long" %
                 nacl.bindings.crypto_sign_SEEDBYTES
             )

@@ -62,13 +62,13 @@ def crypto_box(message, nonce, pk, sk):
     :rtype: bytes
     """
     if len(nonce) != crypto_box_NONCEBYTES:
-        raise ValueError("Invalid nonce size")
+        raise exc.ValueError("Invalid nonce size")
 
     if len(pk) != crypto_box_PUBLICKEYBYTES:
-        raise ValueError("Invalid public key")
+        raise exc.ValueError("Invalid public key")
 
     if len(sk) != crypto_box_SECRETKEYBYTES:
-        raise ValueError("Invalid secret key")
+        raise exc.ValueError("Invalid secret key")
 
     padded = (b"\x00" * crypto_box_ZEROBYTES) + message
     ciphertext = ffi.new("unsigned char[]", len(padded))
@@ -93,13 +93,13 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
     :rtype: bytes
     """
     if len(nonce) != crypto_box_NONCEBYTES:
-        raise ValueError("Invalid nonce size")
+        raise exc.ValueError("Invalid nonce size")
 
     if len(pk) != crypto_box_PUBLICKEYBYTES:
-        raise ValueError("Invalid public key")
+        raise exc.ValueError("Invalid public key")
 
     if len(sk) != crypto_box_SECRETKEYBYTES:
-        raise ValueError("Invalid secret key")
+        raise exc.ValueError("Invalid secret key")
 
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
@@ -122,10 +122,10 @@ def crypto_box_beforenm(pk, sk):
     :rtype: bytes
     """
     if len(pk) != crypto_box_PUBLICKEYBYTES:
-        raise ValueError("Invalid public key")
+        raise exc.ValueError("Invalid public key")
 
     if len(sk) != crypto_box_SECRETKEYBYTES:
-        raise ValueError("Invalid secret key")
+        raise exc.ValueError("Invalid secret key")
 
     k = ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
 
@@ -148,10 +148,10 @@ def crypto_box_afternm(message, nonce, k):
     :rtype: bytes
     """
     if len(nonce) != crypto_box_NONCEBYTES:
-        raise ValueError("Invalid nonce")
+        raise exc.ValueError("Invalid nonce")
 
     if len(k) != crypto_box_BEFORENMBYTES:
-        raise ValueError("Invalid shared key")
+        raise exc.ValueError("Invalid shared key")
 
     padded = b"\x00" * crypto_box_ZEROBYTES + message
     ciphertext = ffi.new("unsigned char[]", len(padded))
@@ -175,10 +175,10 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     :rtype: bytes
     """
     if len(nonce) != crypto_box_NONCEBYTES:
-        raise ValueError("Invalid nonce")
+        raise exc.ValueError("Invalid nonce")
 
     if len(k) != crypto_box_BEFORENMBYTES:
-        raise ValueError("Invalid shared key")
+        raise exc.ValueError("Invalid shared key")
 
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
