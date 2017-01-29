@@ -67,7 +67,7 @@ class blake2b(object):
         :type person: bytes
         """
 
-        self.state = _b2b_init(key=key, salt=salt, person=person,
+        self._state = _b2b_init(key=key, salt=salt, person=person,
                                digest_size=digest_size)
         self._digest_size = digest_size
 
@@ -87,10 +87,10 @@ class blake2b(object):
         return 'blake2b'
 
     def update(self, data):
-        _b2b_update(self.state, data)
+        _b2b_update(self._state, data)
 
     def digest(self):
-        _st = nacl.bindings.crypto_generichash_blake2b_state_copy(self.state)
+        _st = nacl.bindings.crypto_generichash_blake2b_state_copy(self._state)
         return _b2b_final(_st, self.digest_size)
 
     def hexdigest(self):
@@ -98,6 +98,6 @@ class blake2b(object):
 
     def copy(self):
         _cp = type(self)(digest_size=self.digest_size)
-        _st = _b2b_copy(self.state)
-        _cp.state = _st
+        _st = _b2b_copy(self._state)
+        _cp._state = _st
         return _cp
