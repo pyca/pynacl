@@ -32,6 +32,7 @@ Api Documentation
     :glob:
 
     api/hash
+    api/hashlib
 
 
 Indices and tables
