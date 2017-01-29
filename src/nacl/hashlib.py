@@ -68,7 +68,7 @@ class blake2b(object):
         """
 
         self._state = _b2b_init(key=key, salt=salt, person=person,
-                               digest_size=digest_size)
+                                digest_size=digest_size)
         self._digest_size = digest_size
 
         if data:
