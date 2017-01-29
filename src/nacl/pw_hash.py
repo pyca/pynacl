@@ -34,18 +34,6 @@ SCRYPT_MEMLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
 
 
-def scrypt(password, salt='', n=2**20, r=8, p=1,
-           maxmem=2**25, dklen=64):
-    """
-    Derive a cryptographic key using the scrypt KDF.
-
-    Implements the same signature as the ``hashlib.scrypt`` implemented
-    in cpython version 3.6
-    """
-    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
-            password, salt, n, r, p, maxmem=maxmem, dklen=dklen)
-
-
 def kdf_scryptsalsa208sha256(size, password, salt,
                              opslimit=SCRYPT_OPSLIMIT_SENSITIVE,
                              memlimit=SCRYPT_MEMLIMIT_SENSITIVE,
