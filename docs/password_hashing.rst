@@ -1,3 +1,5 @@
+.. _password-hashing:
+
 Password hashing
 ================
 
