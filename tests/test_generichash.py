@@ -23,6 +23,7 @@ import pytest
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.hash
+import nacl.hashlib
 
 OVERLONG_PARAMS_VECTORS = [
     (b'key', 65*b'\xaa', 16*b'\xaa', 16*b'\x55', 64, b'will raise'),
@@ -108,3 +109,78 @@ def test_hash_blake2b(message, key, salt, person, outlen, output):
     out = nacl.hash.blake2b(msg, digest_size=outlen, key=k,
                             salt=slt, person=pers)
     assert (out == output)
+
+
+@pytest.mark.parametrize(["message", "key", "outlen", "output"],
+                         blake2_reference_vectors())
+def test_hashlib_blake2_ref_vectors(message, key, outlen, output):
+    msg = binascii.unhexlify(message)
+    k = binascii.unhexlify(key)
+    outlen = int(outlen)
+    out = binascii.unhexlify(output)
+    h = nacl.hashlib.blake2b(msg, digest_size=outlen, key=k)
+    dgst = h.digest()
+    assert (out == dgst)
+
+
+@pytest.mark.parametrize(["message", "key", "outlen", "output"],
+                         blake2_reference_vectors())
+def test_hashlib_blake2_iuf_ref_vectors(message, key, outlen, output):
+    msg = binascii.unhexlify(message)
+    k = binascii.unhexlify(key)
+    outlen = int(outlen)
+    out = binascii.unhexlify(output)
+    h = nacl.hashlib.blake2b(digest_size=outlen, key=k)
+    for _pos in range(len(msg)):
+        _end = _pos + 1
+        h.update(bytes(msg[_pos:_end]))
+    dgst = h.digest()
+    hdgst = h.hexdigest()
+    assert (hdgst == output)
+    assert (out == dgst)
+
+
+@pytest.mark.parametrize(["message", "key", "outlen", "output"],
+                         blake2_reference_vectors())
+def test_hashlib_blake2_iuf_cp_ref_vectors(message, key, outlen, output):
+    msg = binascii.unhexlify(message)
+    msglen = len(msg)
+    if msglen < 2:
+        pytest.skip("Message too short for splitting")
+    k = binascii.unhexlify(key)
+    outlen = int(outlen)
+    out = binascii.unhexlify(output)
+    h = nacl.hashlib.blake2b(digest_size=outlen, key=k)
+    for _pos in range(len(msg)):
+        _end = _pos + 1
+        h.update(bytes(msg[_pos:_end]))
+        if _end == msglen // 2:
+            h2 = h.copy()
+    dgst = h.digest()
+    d2 = h2.digest()
+    assert (out == dgst)
+    assert (d2 != dgst)
+
+
+@pytest.mark.parametrize(["message", "key", "salt", "person", "outlen",
+                          "output"],
+                         OVERLONG_PARAMS_VECTORS)
+def test_overlong_blake2b_iuf_params(message, key, salt, person,
+                                     outlen, output):
+    with pytest.raises(exc.ValueError):
+        nacl.hashlib.blake2b(message, digest_size=outlen,
+                             key=key, salt=salt, person=person)
+
+
+def test_blake2_descriptors_presence():
+    h = nacl.hashlib.blake2b()
+    assert h.name == 'blake2b'
+    h.block_size == 128
+    h.digest_size == 32  # this is the default digest_size
+
+
+def test_blake2_digest_size_descriptor_coherence():
+    h = nacl.hashlib.blake2b(digest_size=64)
+    assert h.name == 'blake2b'
+    h.block_size == 128
+    h.digest_size == 64

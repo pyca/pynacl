@@ -1,4 +1,4 @@
-/* Copyright 2013 Donald Stufft and individual contributors
+/* Copyright 2013-2017 Donald Stufft and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,17 @@ size_t crypto_generichash_blake2b_keybytes();
 size_t crypto_generichash_blake2b_saltbytes();
 size_t crypto_generichash_blake2b_personalbytes();
 
+size_t crypto_generichash_statebytes();
+
+/*
+ * We use crypto_generichash_blake2b_state * as
+ * a pointer to a opaque buffer,
+ * therefore the following typedef makes sense:
+ */
+
+typedef void crypto_generichash_blake2b_state;
+
+
 int crypto_generichash_blake2b_salt_personal(
 				unsigned char *out, size_t outlen,
 				const unsigned char *in,
@@ -31,3 +42,20 @@ int crypto_generichash_blake2b_salt_personal(
 				const unsigned char *key, size_t keylen,
 				const unsigned char *salt,
 				const unsigned char *personal);
+
+int crypto_generichash_blake2b_init_salt_personal(
+				crypto_generichash_blake2b_state *state,
+				const unsigned char *key,
+				const size_t keylen, const size_t outlen,
+				const unsigned char *salt,
+				const unsigned char *personal);
+
+int crypto_generichash_blake2b_update(
+				crypto_generichash_blake2b_state *state,
+				const unsigned char *in,
+				unsigned long long inlen);
+
+int crypto_generichash_blake2b_final(
+				crypto_generichash_blake2b_state *state,
+				unsigned char *out,
+				const size_t outlen);

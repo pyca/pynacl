@@ -9,6 +9,7 @@ Contents
 
    public
    secret
+   hashing
    signing
 
 
