@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import pytest
+
 import six
 
 import nacl.utils
@@ -26,6 +27,7 @@ class CustomError(exc.CryptoError):
 
 
 class StringFixerChild(nacl.utils.StringFixer):
+
     def __unicode__(self):
         return u'test'
 
@@ -35,12 +37,17 @@ class StringFixerChild(nacl.utils.StringFixer):
 
 def test_string_fixer():
     sfc = StringFixerChild()
-    assert str(sfc) == u'test' if six.PY3 else b'test'
+    if six.PY3:
+        assert str(sfc) == u'test'
+    else:
+        assert str(sfc) == b'test'
 
 
 def test_bytes_as_string():
-    string = nacl.utils.bytes_as_string(b'test')
-    assert string == u'test' if six.PY3 else b'test'
+    if six.PY3:
+        assert nacl.utils.bytes_as_string(b'test') == u'test'
+    else:
+        assert nacl.utils.bytes_as_string(b'test') == b'test'
 
 
 def test_random_bytes_produces():
