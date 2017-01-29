@@ -5,19 +5,15 @@ Password hashing
 
 .. currentmodule:: nacl.pw_hash
 
-An ever important use of cryptographic hashing primitives has been
-the password hashing one, starting from the early 1970's years, at
-first just to avoid storing clear-text passwords.
+Password hashing and password based key derivation mechanisms in
+actual use are all based on the idea of iterating a hash function
+many times on a combination of the password and a random ``salt``,
+which is stored along with the hash, and allows verifying a proposed
+password while avoiding clear-text storage.
 
-To make a long story short [SD2012]_, password hashing and password based key
-derivation mechanisms in actual use are all based on the idea of iterating
-many times a hash function on a combination of the password and
-a random ``salt`` which is stored along with the hash, and allows
-verifying a proposed password while avoiding clear-text storage.
-
-The latest developments in password hashing have been mechanisms
-pionereed by the ``scrypt`` mechanism, which is implemented by functions
-exposed in :py:mod:`nacl.pw_hash`.
+The latest developments in password hashing have been *memory-hard*
+mechanisms, pioneered by the ``scrypt`` mechanism[SD2012]_, which
+is implemented by functions exposed in :py:mod:`nacl.pw_hash`.
 
 
 Scrypt usage
@@ -26,8 +22,8 @@ Scrypt usage
 Password storage and verification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :py:func:`~nacl.pw_hash.scryptsalsa208sha256_str` does internally
-generate a random salt, and returns a scrypt hash already encoded
+The :py:func:`~nacl.pw_hash.scryptsalsa208sha256_str` internally
+generates a random salt, and returns a scrypt hash already encoded
 in ascii modular crypt format, which can be stored in a shadow-like file::
 
     >>> import nacl.pw_hash
@@ -43,7 +39,7 @@ in ascii modular crypt format, which can be stored in a shadow-like file::
 
 To verify a user-proposed password, the
 :py:func:`~nacl.pw_hash.scryptsalsa208sha256_verify` function
-does extract the used salt and scrypt memory and operation count parameters
+extracts the used salt and scrypt memory and operation count parameters
 from the modular format string and checks the compliance of the
 proposed password with the stored hash::
 
@@ -69,10 +65,11 @@ proposed password with the stored hash::
 Key derivation
 ~~~~~~~~~~~~~~
 
-If Alice needs to send a secret message to Bob, using a shared
-password to protect the content, she can use a salt, which she
-must then send along to the message, to derive a cryptographically
-strong key using :py:func:`~nacl.pw_hash.kdf_scryptsalsa208sha256`:
+Alice needs to send a secret message to Bob, using a shared
+password to protect the content. She generates a random salt,
+combines it with the password using
+:py:func:`~nacl.pw_hash.kdf_scryptsalsa208sha256` and sends
+the message along with the salt and key derivation parameters.
 
 .. code-block:: python
 
@@ -107,9 +104,9 @@ strong key using :py:func:`~nacl.pw_hash.kdf_scryptsalsa208sha256`:
     received = Bobs_box.decrypt(encrypted)
     print(received)
 
-if Eve's manages to get the encrypted message, and tries to decrypt it
-with a wrongly guessed password, even if she does know all of the key
-derivation parameters, she would derive a different key, therefore
+if Eve manages to get the encrypted message, and tries to decrypt it
+with a incorrect password, even if she does know all of the key
+derivation parameters, she would derive a different key. Therefore
 the decryption would fail and an exception would be raised::
 
     >>> from nacl import pw_hash, secret, utils
