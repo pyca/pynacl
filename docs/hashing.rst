@@ -86,7 +86,7 @@ Message's user perspective (:py:func:`~nacl.hash.sha256`,
 
 
 Additional hashing usages for :class:`~nacl.hash.blake2b`
-=========================================================
+---------------------------------------------------------
 
 As already hinted above, traditional cryptographic hash functions can be used
 as building blocks for other uses, typically combining a secret-key with
