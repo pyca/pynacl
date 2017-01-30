@@ -1,19 +1,18 @@
 nacl.hashlib
 ============
 
-The :py:mod:`nacl.hashlib` module exposes directly usable implementations
-of raw constructs which libsodium exposes with simplified APIs, like the
-ones in :py:mod:`nacl.hash` and in :py:mod:`nacl.pw_hash`.
-
-When such constructs are exposed in some cpython version standard library,
-we will do our best to keep API compatibility with such implementations.
-
-
-
 .. currentmodule:: nacl.hashlib
 
+The :py:mod:`nacl.hashlib` module exposes directly usable implementations
+of raw constructs which libsodium exposes with simplified APIs, like the
+ones in :py:mod:`nacl.hash` and in :py:mod:`nacl.pwhash`.
 
-.. function:: scrypt(password, salt='', n=2**20, r=8, p=1,
+The :py:func:`~.scrypt` and :py:class:`~.blake2b`
+constructs are as API compatible as possible with the corresponding ones
+added to cpython standard library's hashlib module in cpython's version 3.6.
+
+
+.. function:: scrypt(password, salt='', n=2**20, r=8, p=1,\
                      maxmem=2**25, dklen=64)
 
     Derive a raw cryptographic key using the scrypt KDF.
@@ -51,8 +50,7 @@ we will do our best to keep API compatibility with such implementations.
 
 
 
-.. class:: blake2b(data=b'', digest_size=BYTES, key=b'',
-                   salt=b'', person=b'')
+.. class:: blake2b(data=b'', digest_size=BYTES, key=b'', salt=b'', person=b'')
 
     Returns an hash object which exposes an API mostly compatible
     to python3.6's hashlib.blake2b (the only difference being missing
@@ -80,4 +78,3 @@ we will do our best to keep API compatibility with such implementations.
     .. attribute:: SALT_SIZE
 
         the maximimum size of the salt
-
