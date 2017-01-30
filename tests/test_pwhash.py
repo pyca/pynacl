@@ -19,7 +19,7 @@ import pytest
 import nacl.bindings
 import nacl.encoding
 import nacl.exceptions as exc
-import nacl.pw_hash
+import nacl.pwhash
 
 
 @pytest.mark.parametrize(("size", "password", "salt",
@@ -38,8 +38,8 @@ import nacl.pw_hash
 )
 def test_kdf_scryptsalsa208sha256(size, password, salt,
                                   opslimit, memlimit, expected):
-    res = nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
-                                                opslimit, memlimit)
+    res = nacl.pwhash.kdf_scryptsalsa208sha256(size, password, salt,
+                                               opslimit, memlimit)
     assert res == expected
 
 
@@ -49,8 +49,8 @@ def test_kdf_scryptsalsa208sha256(size, password, salt,
     ),
 ])
 def test_scryptsalsa208sha256_random(password):
-    h1 = nacl.pw_hash.scryptsalsa208sha256_str(password)
-    h2 = nacl.pw_hash.scryptsalsa208sha256_str(password)
+    h1 = nacl.pwhash.scryptsalsa208sha256_str(password)
+    h2 = nacl.pwhash.scryptsalsa208sha256_str(password)
     assert h1 != h2
 
 
@@ -60,8 +60,8 @@ def test_scryptsalsa208sha256_random(password):
     ),
 ])
 def test_scryptsalsa208sha256_verify(password):
-    assert nacl.pw_hash.verify_scryptsalsa208sha256(
-        nacl.pw_hash.scryptsalsa208sha256_str(password),
+    assert nacl.pwhash.verify_scryptsalsa208sha256(
+        nacl.pwhash.scryptsalsa208sha256_str(password),
         password
     )
 
@@ -73,8 +73,8 @@ def test_scryptsalsa208sha256_verify(password):
 ])
 def test_scryptsalsa208sha256_verify_incorrect(password):
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pw_hash.verify_scryptsalsa208sha256(
-            nacl.pw_hash.scryptsalsa208sha256_str(password),
+        nacl.pwhash.verify_scryptsalsa208sha256(
+            nacl.pwhash.scryptsalsa208sha256_str(password),
             password.replace(b'dog', b'cat')
         )
 
@@ -93,8 +93,8 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
 def test_wrong_salt_length(size, password, salt,
                            opslimit, memlimit):
     with pytest.raises(exc.ValueError):
-        nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
-                                              opslimit, memlimit)
+        nacl.pwhash.kdf_scryptsalsa208sha256(size, password, salt,
+                                             opslimit, memlimit)
 
 
 @pytest.mark.parametrize(("passwd_hash", "password"), [
@@ -106,8 +106,8 @@ def test_wrong_salt_length(size, password, salt,
 )
 def test_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
-        nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
-                                                 password)
+        nacl.pwhash.verify_scryptsalsa208sha256(passwd_hash,
+                                                password)
 
 
 @pytest.mark.parametrize(("size", "password", "salt",
@@ -124,8 +124,8 @@ def test_wrong_hash_length(passwd_hash, password):
 def test_kdf_wrong_salt_length(size, password, salt,
                                opslimit, memlimit):
     with pytest.raises(exc.ValueError):
-        nacl.pw_hash.kdf_scryptsalsa208sha256(size, password, salt,
-                                              opslimit, memlimit)
+        nacl.pwhash.kdf_scryptsalsa208sha256(size, password, salt,
+                                             opslimit, memlimit)
 
 
 @pytest.mark.parametrize(("opslimit", "memlimit",
@@ -184,5 +184,5 @@ def test_variable_limits(opslimit, memlimit, n, r, p):
 )
 def test_str_verify_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
-        nacl.pw_hash.verify_scryptsalsa208sha256(passwd_hash,
-                                                 password)
+        nacl.pwhash.verify_scryptsalsa208sha256(passwd_hash,
+                                                password)
