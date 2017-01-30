@@ -65,15 +65,31 @@ This is how the system works:
     #   as just a binary blob of data.
     message = b"Kill all humans"
 
+PyNaCl can automatically generate a random nonce for us, making the encryption
+very simple:
+
+.. code-block:: python
+
+    # Encrypt our message, it will be exactly 40 bytes longer than the
+    #   original message as it stores authentication information and the
+    #   nonce alongside it.
+    encrypted = bob_box.encrypt(message)
+
+However, if we need to use an explicit nonce, it can be passed along with the
+message:
+
+.. code-block:: python
+
     # This is a nonce, it *MUST* only be used once, but it is not considered
     #   secret and can be transmitted or stored alongside the ciphertext. A
     #   good source of nonces are just sequences of 24 random bytes.
     nonce = nacl.utils.random(Box.NONCE_SIZE)
 
-    # Encrypt our message, it will be exactly 40 bytes longer than the
-    #   original message as it stores authentication information and the
-    #   nonce alongside it.
     encrypted = bob_box.encrypt(message, nonce)
+
+Finally, the message is decrypted (regardless of how the nonce was generated):
+
+.. code-block:: python
 
     # Alice creates a second box with her private key to decrypt the message
     alice_box = Box(skalice, pkbob)
