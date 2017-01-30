@@ -19,8 +19,8 @@ nacl.hash
     :param encoder: A class that is able to encode the hashed message.
     :return bytes: The hashed message.
 
-.. function:: blake2b(data, digest_size=BLAKE2B_BYTES, key=b'',
-                      salt=b'', person=b'', encoder=nacl.encoding.HexEncoder):
+.. function:: blake2b(data, digest_size=BLAKE2B_BYTES, key=b'', \
+                      salt=b'', person=b'', encoder=nacl.encoding.HexEncoder)
 
     One-shot blake2b digest
 
