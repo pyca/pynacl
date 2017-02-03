@@ -106,10 +106,10 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         if signature is not None:
             # If we were given the message and signature separately, combine
             #   them.
-            smessage = signature + smessage
-
-        # Decode the signed message
-        smessage = encoder.decode(smessage)
+            smessage = encoder.decode(signature) + encoder.decode(smessage)
+        else:
+            # Decode the signed message
+            smessage = encoder.decode(smessage)
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 
