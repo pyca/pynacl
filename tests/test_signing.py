@@ -23,7 +23,7 @@ import pytest
 from utils import assert_equal, assert_not_equal
 
 from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
-from nacl.encoding import HexEncoder
+from nacl.encoding import Base64Encoder, HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
@@ -179,6 +179,34 @@ class TestVerifyKey:
         with pytest.raises(BadSignatureError):
             forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
+
+    def test_both_verify_uses_are_equal_with_b64encoder(self):
+        sk = SigningKey.generate()
+        vk = sk.verify_key
+
+        smsg = sk.sign(b"Hello World", encoder=Base64Encoder)
+
+        msg = smsg.message
+        sig = smsg.signature
+
+        assert vk.verify(
+            msg, sig, encoder=Base64Encoder
+        ) == vk.verify(
+            smsg, encoder=Base64Encoder)
+
+    def test_both_verify_uses_are_equal_with_hexencoder(self):
+        sk = SigningKey.generate()
+        vk = sk.verify_key
+
+        smsg = sk.sign(b"Hello World", encoder=HexEncoder)
+
+        msg = smsg.message
+        sig = smsg.signature
+
+        assert vk.verify(
+            msg, sig, encoder=HexEncoder
+        ) == vk.verify(
+            smsg, encoder=HexEncoder)
 
     def test_key_conversion(self):
         keypair_seed = (b"421151a459faeade3d247115f94aedae"
