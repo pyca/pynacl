@@ -71,6 +71,7 @@ Changes
   * Added ``shared_key()`` method on ``Box``.
   * You can now pass ``None`` to ``nonce`` when encrypting with ``Box`` or
     ``SecretBox`` and it will automatically generate a random nonce.
+  * Added support for ``siphash24``.
   * Added support for ``blake2b``.
   * Added support for ``scrypt``.
   * Update ``libsodium`` to 1.0.11.

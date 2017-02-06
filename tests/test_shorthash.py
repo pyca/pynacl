@@ -14,9 +14,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from binascii import hexlify
+
 import pytest
 
-from nacl.bindings import crypto_shorthash_siphash24
+from nacl.hash import siphash24
 
 HASHES = [
     b"\x31\x0e\x0e\xdd\x47\xdb\x6f\x72",
@@ -119,9 +121,9 @@ def sip24_vectors():
 @pytest.mark.parametrize(("inp", "key", "expected"),
                          sip24_vectors()
                          )
-def test_crypto_shorthash_siphash24(inp, key, expected):
-    rs = crypto_shorthash_siphash24(inp, key)
-    assert rs == expected
+def test_siphash24(inp, key, expected):
+    rs = siphash24(inp, key)
+    assert rs == hexlify(expected)
 
 
 @pytest.mark.parametrize(("inp", "key", "expected"), [
@@ -133,4 +135,4 @@ def test_crypto_shorthash_siphash24(inp, key, expected):
 ])
 def test_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
-        crypto_shorthash_siphash24(inp, key)
+        siphash24(inp, key)
