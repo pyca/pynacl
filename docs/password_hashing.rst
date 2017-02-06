@@ -92,7 +92,7 @@ the message along with the salt and key derivation parameters.
     encrypted = Alices_box.encrypt(message, nonce)
 
     # now Alice must send to Bob both the encrypted message
-    # and the KDF parameters: salt, opslimit and memlimit
+    # and the KDF parameters: salt, opslimit and memlimit;
     # using the same parameters **and password**
     # Bob is able to derive the correct key to decrypt the message
 
