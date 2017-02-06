@@ -110,7 +110,7 @@ def verify_scryptsalsa208sha256(password_hash, password):
     """
 
     ensure(len(password_hash) == SCRYPT_PWHASH_SIZE,
-           "The pw_hash must be exactly %s bytes long" %
+           "The password hash must be exactly %s bytes long" %
            nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
            raising=exc.ValueError)
 

@@ -101,9 +101,9 @@ Please note that **key stretching procedures** like ``HKDF`` or
 the one outlined in `Key derivation`_ are **not** suited to derive
 a *cryptographically-strong* key from a *low-entropy input* like a plain-text
 password or to compute a strong *long-term stored* hash used as password
-verifier. The :py:mod:`~nacl.pw_hash` module provides implementations of the
-``scrypt`` password hash, suitable both for key generation, and long-term
-password storage.
+verifier. See the :ref:`password-hashing` section for some more informations
+and usage examples of the password hashing constructs provided in
+:py:mod:`~nacl.pwhash`.
 
 Message authentication
 ----------------------
