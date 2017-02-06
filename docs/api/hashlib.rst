@@ -59,7 +59,7 @@ to cpython standard library's hashlib module in cpython's version 3.6.
               scrypt constructs which will contribute to the final key
               generation
     :type p: int
-    :param maxmem: maximum memory the whole scrypt constract will be
+    :param maxmem: maximum memory the whole scrypt construct will be
                    entitled to use
     :type maxmem: int
     :param dklen: length of the derived key
@@ -69,7 +69,7 @@ to cpython standard library's hashlib module in cpython's version 3.6.
     Implements the same signature as the ``hashlib.scrypt`` implemented
     in cpython version 3.6
 
-    The recommended values for n, r, p in 2012 were n: 2**14, r: 8, p: 1
+    The recommended values for n, r, p in 2012 were n = 2**14, r = 8, p = 1;
     as of 2016, libsodium suggests using n = 2**14, r = 8, p = 1
     in a "interactive" setting and n = 2**20, r = 8, p = 1
     in a "sensitive" setting.
