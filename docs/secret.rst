@@ -122,8 +122,9 @@ Reference
 
     .. method:: encrypt(plaintext, nonce, encoder)
 
-        Encrypts the plaintext message using the given nonce and returns the
-        ciphertext encoded with the encoder.
+        Encrypts the plaintext message using the given `nonce` (or generates
+        one randomly if omitted) and returns the ciphertext encoded with the
+        encoder.
 
         .. warning:: It is **VITALLY** important that the nonce is a nonce,
             i.e. it is a number used only once for any given key. If you fail
@@ -139,8 +140,9 @@ Reference
 
     .. method:: decrypt(ciphertext, nonce, encoder)
 
-        Decrypts the ciphertext using the given nonce and returns the plaintext
-        message.
+        Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
+        parameter or implicitly, when omitted, as part of the ciphertext) and
+        returns the plaintext message.
 
         :param bytes ciphertext: The encrypted message to decrypt.
         :param bytes nonce: The nonce to use in the decryption.
