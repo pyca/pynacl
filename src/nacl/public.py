@@ -200,8 +200,9 @@ class Box(encoding.Encodable, StringFixer, object):
 
     def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
         """
-        Decrypts the ciphertext using the given nonce and returns the
-        plaintext message.
+        Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
+        parameter or implicitly, when omitted, as part of the ciphertext) and
+        returns the plaintext message.
 
         :param ciphertext: [:class:`bytes`] The encrypted message to decrypt
         :param nonce: [:class:`bytes`] The nonce used when encrypting the
