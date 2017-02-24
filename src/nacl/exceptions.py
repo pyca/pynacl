@@ -27,19 +27,19 @@ class BadSignatureError(CryptoError):
     """
 
 
-class RuntimeError(CryptoError, RuntimeError):
+class RuntimeError(RuntimeError, CryptoError):
     pass
 
 
-class AssertionError(CryptoError, AssertionError):
+class AssertionError(AssertionError, CryptoError):
     pass
 
 
-class TypeError(CryptoError, TypeError):
+class TypeError(TypeError, CryptoError):
     pass
 
 
-class ValueError(CryptoError, ValueError):
+class ValueError(ValueError, CryptoError):
     pass
 
 
