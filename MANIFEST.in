@@ -39,3 +39,6 @@ exclude .travis/run.sh
 
 # Remove the coverage config
 exclude .coveragerc
+
+# Remove release automation script
+exclude tasks.py
