@@ -100,12 +100,12 @@ def release(ctx, version):
     """
     ``version`` should be a string like '0.4' or '1.0'.
     """
-    # invoke.run("git tag -s {0} -m '{0} release'".format(version))
-    # invoke.run("git push --tags")
+    invoke.run("git tag -s {0} -m '{0} release'".format(version))
+    invoke.run("git push --tags")
 
     invoke.run("python setup.py sdist")
 
-    # invoke.run("twine upload -s dist/PyNaCl-{0}* ".format(version))
+    invoke.run("twine upload -s dist/PyNaCl-{0}* ".format(version))
 
     session = requests.Session()
 
@@ -128,4 +128,4 @@ def release(ctx, version):
     response.raise_for_status()
     wait_for_build_completed(session)
     paths = download_artifacts(session)
-    # invoke.run("twine upload {0}".format(" ".join(paths)))
+    invoke.run("twine upload {0}".format(" ".join(paths)))
