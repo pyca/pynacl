@@ -16,6 +16,7 @@ from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 from nacl import encoding
+from nacl import exceptions as exc
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
@@ -45,10 +46,10 @@ class SecretBox(encoding.Encodable, StringFixer, object):
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
         if not isinstance(key, bytes):
-            raise TypeError("SecretBox must be created from 32 bytes")
+            raise exc.TypeError("SecretBox must be created from 32 bytes")
 
         if len(key) != self.KEY_SIZE:
-            raise ValueError(
+            raise exc.ValueError(
                 "The key must be exactly %s bytes long" %
                 self.KEY_SIZE,
             )
@@ -79,7 +80,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
             nonce = random(self.NONCE_SIZE)
 
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError(
+            raise exc.ValueError(
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
@@ -116,7 +117,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
             ciphertext = ciphertext[self.NONCE_SIZE:]
 
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError(
+            raise exc.ValueError(
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 

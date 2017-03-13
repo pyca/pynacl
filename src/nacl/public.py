@@ -16,6 +16,7 @@ from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 from nacl import encoding
+from nacl import exceptions as exc
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
@@ -35,11 +36,13 @@ class PublicKey(encoding.Encodable, StringFixer, object):
     def __init__(self, public_key, encoder=encoding.RawEncoder):
         self._public_key = encoder.decode(public_key)
         if not isinstance(self._public_key, bytes):
-            raise TypeError("PublicKey must be created from 32 bytes")
+            raise exc.TypeError("PublicKey must be created from 32 bytes")
 
         if len(self._public_key) != self.SIZE:
-            raise ValueError("The public key must be exactly %s bytes long" %
-                             self.SIZE)
+            raise exc.ValueError(
+                "The public key must be exactly {0} bytes long".format(
+                                                                    self.SIZE)
+            )
 
     def __bytes__(self):
         return self._public_key
@@ -77,11 +80,12 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
         if not isinstance(private_key, bytes):
-            raise TypeError("PrivateKey must be created from a 32 byte seed")
+            raise exc.TypeError(
+                "PrivateKey must be created from a 32 byte seed")
 
         # Verify that our seed is the proper size
         if len(private_key) != self.SIZE:
-            raise ValueError(
+            raise exc.ValueError(
                 "The secret key must be exactly %d bytes long" % self.SIZE)
 
         raw_public_key = nacl.bindings.crypto_scalarmult_base(private_key)
@@ -139,8 +143,8 @@ class Box(encoding.Encodable, StringFixer, object):
         if private_key and public_key:
             if ((not isinstance(private_key, PrivateKey) or
                  not isinstance(public_key, PublicKey))):
-                raise TypeError("Box must be created from "
-                                "a PrivateKey and a PublicKey")
+                raise exc.TypeError("Box must be created from "
+                                    "a PrivateKey and a PublicKey")
             self._shared_key = nacl.bindings.crypto_box_beforenm(
                 public_key.encode(encoder=encoding.RawEncoder),
                 private_key.encode(encoder=encoding.RawEncoder),
@@ -180,8 +184,8 @@ class Box(encoding.Encodable, StringFixer, object):
             nonce = random(self.NONCE_SIZE)
 
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError("The nonce must be exactly %s bytes long" %
-                             self.NONCE_SIZE)
+            raise exc.ValueError("The nonce must be exactly %s bytes long" %
+                                 self.NONCE_SIZE)
 
         ciphertext = nacl.bindings.crypto_box_afternm(
             plaintext,
@@ -219,8 +223,8 @@ class Box(encoding.Encodable, StringFixer, object):
             ciphertext = ciphertext[self.NONCE_SIZE:]
 
         if len(nonce) != self.NONCE_SIZE:
-            raise ValueError("The nonce must be exactly %s bytes long" %
-                             self.NONCE_SIZE)
+            raise exc.ValueError("The nonce must be exactly %s bytes long" %
+                                 self.NONCE_SIZE)
 
         plaintext = nacl.bindings.crypto_box_open_afternm(
             ciphertext,
