@@ -65,6 +65,9 @@ Features
 Changes
 -------
 
+* 1.2.0 (UNRELEASED):
+
+
 * 1.1.0 - 2017-03-14:
 
   * Dropped support for Python 2.6.
