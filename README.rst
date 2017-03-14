@@ -76,6 +76,8 @@ Changes
   * Added support for ``scrypt``.
   * Update ``libsodium`` to 1.0.11.
   * Default to the bundled ``libsodium`` when compiling.
+  * All raised exceptions are defined mixing-in
+    ``nacl.exceptions.CryptoError``
 
 * 1.0.1:
 
