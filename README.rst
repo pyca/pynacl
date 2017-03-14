@@ -65,7 +65,7 @@ Features
 Changes
 -------
 
-* 1.1.0 (UNRELEASED):
+* 1.1.0 - 2017-03-14:
 
   * Dropped support for Python 2.6.
   * Added ``shared_key()`` method on ``Box``.
