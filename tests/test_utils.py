@@ -16,12 +16,38 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
+import six
+
 import nacl.utils
 from nacl import exceptions as exc
 
 
 class CustomError(exc.CryptoError):
     pass
+
+
+class StringFixerChild(nacl.utils.StringFixer):
+
+    def __unicode__(self):
+        return u'test'
+
+    def __bytes__(self):
+        return b'test'
+
+
+def test_string_fixer():
+    sfc = StringFixerChild()
+    if six.PY3:
+        assert str(sfc) == u'test'
+    else:
+        assert str(sfc) == b'test'
+
+
+def test_bytes_as_string():
+    if six.PY3:
+        assert nacl.utils.bytes_as_string(b'test') == u'test'
+    else:
+        assert nacl.utils.bytes_as_string(b'test') == b'test'
 
 
 def test_random_bytes_produces():
