@@ -65,6 +65,10 @@ Features
 Changes
 -------
 
+* 1.1.1 - 2017-03-15:
+
+  * Fixed a circular import bug in ``nacl.utils``.
+
 * 1.1.0 - 2017-03-14:
 
   * Dropped support for Python 2.6.
