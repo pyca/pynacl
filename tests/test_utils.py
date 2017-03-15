@@ -32,21 +32,21 @@ def test_random_bytes_produces_different_bytes():
     assert nacl.utils.random(16) != nacl.utils.random(16)
 
 
-def test_util_ensure_with_true_condition():
-    nacl.utils.ensure(1 == 1, 'one equals one')
+def test_exceptions_ensure_with_true_condition():
+    exc.ensure(1 == 1, 'one equals one')
 
 
-def test_util_ensure_with_false_condition():
-    with pytest.raises(AssertionError):
-        nacl.utils.ensure(1 == 0, 'one is not zero',
+def test_exceptions_ensure_with_false_condition():
+    with pytest.raises(exc.AssertionError):
+        exc.ensure(1 == 0, 'one is not zero',
                           raising=exc.AssertionError)
 
 
-def test_util_ensure_with_unwanted_kwarg():
-    with pytest.raises(TypeError):
-        nacl.utils.ensure(1 == 1, unexpected='unexpected')
+def test_exceptions_ensure_with_unwanted_kwarg():
+    with pytest.raises(exc.TypeError):
+        exc.ensure(1 == 1, unexpected='unexpected')
 
 
-def test_util_ensure_custom_exception():
+def test_exceptions_ensure_custom_exception():
     with pytest.raises(CustomError):
-        nacl.utils.ensure(1 == 0, 'Raising a CustomError', raising=CustomError)
+        exc.ensure(1 == 0, 'Raising a CustomError', raising=CustomError)
