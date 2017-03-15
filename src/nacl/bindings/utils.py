@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.utils import ensure
+from nacl.exceptions import ensure
 
 
 def sodium_memcmp(inp1, inp2):
