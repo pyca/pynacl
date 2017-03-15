@@ -11,22 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __future__ import absolute_import, division, print_function
 
+import pytest
+
 from nacl import exceptions as exc
-from nacl._sodium import ffi, lib
-from nacl.exceptions import ensure
 
 
-def _sodium_init():
-    ensure(lib.sodium_init() != -1,
-           "Could not initialize sodium",
-           raising=exc.RuntimeError)
+class CustomError(exc.CryptoError):
+    pass
 
 
-def sodium_init():
-    """
-    Initializes sodium, picking the best implementations available for this
-    machine.
-    """
-    ffi.init_once(_sodium_init, "libsodium")
+def test_exceptions_ensure_with_true_condition():
+    exc.ensure(1 == 1, 'one equals one')
+
+
+def test_exceptions_ensure_with_false_condition():
+    with pytest.raises(exc.AssertionError):
+        exc.ensure(1 == 0, 'one is not zero',
+                   raising=exc.AssertionError)
+
+
+def test_exceptions_ensure_with_unwanted_kwarg():
+    with pytest.raises(exc.TypeError):
+        exc.ensure(1 == 1, unexpected='unexpected')
+
+
+def test_exceptions_ensure_custom_exception():
+    with pytest.raises(CustomError):
+        exc.ensure(1 == 0, 'Raising a CustomError', raising=CustomError)

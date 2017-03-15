@@ -17,9 +17,9 @@ from __future__ import absolute_import, division, print_function
 from six import integer_types
 
 from nacl import exceptions as exc
-
 from nacl._sodium import ffi, lib
-from nacl.utils import ensure
+from nacl.exceptions import ensure
+
 
 crypto_generichash_BYTES = lib.crypto_generichash_blake2b_bytes()
 crypto_generichash_BYTES_MIN = lib.crypto_generichash_blake2b_bytes_min()

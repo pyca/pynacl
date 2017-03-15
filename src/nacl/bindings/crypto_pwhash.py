@@ -17,7 +17,7 @@ import sys
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.utils import ensure
+from nacl.exceptions import ensure
 
 
 crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \

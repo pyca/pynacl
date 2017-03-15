@@ -18,7 +18,7 @@ import nacl.bindings
 import nacl.encoding
 import nacl.exceptions as exc
 
-from nacl.utils import ensure
+from nacl.exceptions import ensure
 
 _strbytes_plus_one = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
