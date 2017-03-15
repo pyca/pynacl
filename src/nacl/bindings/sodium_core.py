@@ -15,7 +15,7 @@ from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
-from nacl.utils import ensure
+from nacl.exceptions import ensure
 
 
 def _sodium_init():
