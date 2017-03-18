@@ -67,10 +67,11 @@ Changes
 
 * 1.2.0 (UNRELEASED):
 
+  * Update ``libsodium`` to 1.0.12.
 
 * 1.1.1 - 2017-03-15:
 
-* Fixed a circular import bug in ``nacl.utils``.
+  * Fixed a circular import bug in ``nacl.utils``.
 
 * 1.1.0 - 2017-03-14:
 
