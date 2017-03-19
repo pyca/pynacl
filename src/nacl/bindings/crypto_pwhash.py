@@ -14,7 +14,6 @@
 from __future__ import absolute_import, division, print_function
 
 import sys
-from ctypes import c_void_p, sizeof
 
 from six import integer_types
 
@@ -55,20 +54,24 @@ crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE = \
 crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 
-_argon2i_max_memory_bits = min(32, sizeof(c_void_p) * 8 - 11)
-_argon2i_max_memory_blocks = min(0xFFFFFFFF, 2 ** _argon2i_max_memory_bits)
+crypto_pwhash_argon2i_MEMLIMIT_MIN = \
+    max(lib.crypto_pwhash_argon2i_memlimit_min(), 8*1024)
+# Workaround for a strange behaviour in libsodium
 
-crypto_pwhash_argon2i_MIN_MEMORY = 2 * 4 * 1024
-crypto_pwhash_argon2i_MAX_MEMORY = _argon2i_max_memory_blocks * 1024
-
-crypto_pwhash_argon2i_MIN_TIME = 3
-crypto_pwhash_argon2i_MAX_TIME = 0xFFFFFFFF
-
-crypto_pwhash_argon2i_MIN_PWLEN = 0
-crypto_pwhash_argon2i_MAX_PWLEN = 0xFFFFFFFF
-
-crypto_pwhash_argon2i_MIN_OUTLEN = 16
-crypto_pwhash_argon2i_MAX_OUTLEN = 0xFFFFFFFF
+crypto_pwhash_argon2i_MEMLIMIT_MAX = \
+    lib.crypto_pwhash_argon2i_memlimit_max()
+crypto_pwhash_argon2i_OPSLIMIT_MIN = \
+    lib.crypto_pwhash_argon2i_opslimit_min()
+crypto_pwhash_argon2i_OPSLIMIT_MAX = \
+    lib.crypto_pwhash_argon2i_opslimit_max()
+crypto_pwhash_argon2i_PASSWD_MIN = \
+    lib.crypto_pwhash_argon2i_passwd_min()
+crypto_pwhash_argon2i_PASSWD_MAX = \
+    lib.crypto_pwhash_argon2i_passwd_max()
+crypto_pwhash_argon2i_BYTES_MIN = \
+    lib.crypto_pwhash_argon2i_bytes_min()
+crypto_pwhash_argon2i_BYTES_MAX = \
+    lib.crypto_pwhash_argon2i_bytes_max()
 
 SCRYPT_OPSLIMIT_INTERACTIVE = \
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
@@ -296,35 +299,35 @@ def crypto_pwhash_argon2i(outlen, passwd, salt, opslimit, memlimit, alg):
                               "bytes long").format(
                                               crypto_pwhash_argon2i_SALTBYTES))
 
-    if outlen < crypto_pwhash_argon2i_MIN_OUTLEN:
+    if outlen < crypto_pwhash_argon2i_BYTES_MIN:
         raise exc.ValueError(('derived key must be '
                               'at least {0} bytes long').format(
-                                             crypto_pwhash_argon2i_MIN_OUTLEN))
+                                             crypto_pwhash_argon2i_BYTES_MIN))
 
-    elif outlen > crypto_pwhash_argon2i_MAX_OUTLEN:
+    elif outlen > crypto_pwhash_argon2i_BYTES_MAX:
         raise exc.ValueError(('derived key must be '
                               'at most {0} bytes long').format(
-                                             crypto_pwhash_argon2i_MAX_OUTLEN))
+                                             crypto_pwhash_argon2i_BYTES_MAX))
 
-    if memlimit < crypto_pwhash_argon2i_MIN_MEMORY:
+    if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
         raise exc.ValueError(('memlimit must be '
                               'at least {0} bytes').format(
-                                             crypto_pwhash_argon2i_MIN_MEMORY))
+                                           crypto_pwhash_argon2i_MEMLIMIT_MIN))
 
-    elif memlimit > crypto_pwhash_argon2i_MAX_MEMORY:
+    elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
         raise exc.ValueError(('memlimit must be '
                               'at most {0} bytes').format(
-                                             crypto_pwhash_argon2i_MAX_MEMORY))
+                                           crypto_pwhash_argon2i_MEMLIMIT_MAX))
 
-    if opslimit < crypto_pwhash_argon2i_MIN_TIME:
+    if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
         raise exc.ValueError(('opslimit must be '
                               'at least {0}').format(
-                                               crypto_pwhash_argon2i_MIN_TIME))
+                                           crypto_pwhash_argon2i_OPSLIMIT_MIN))
 
-    elif opslimit > crypto_pwhash_argon2i_MAX_TIME:
+    elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
         raise exc.ValueError(('opslimit must be '
                               'at most {0}').format(
-                                               crypto_pwhash_argon2i_MAX_TIME))
+                                           crypto_pwhash_argon2i_OPSLIMIT_MAX))
 
     outbuf = ffi.new("unsigned char[]", outlen)
 

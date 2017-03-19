@@ -34,14 +34,20 @@ SCRYPT_MEMLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
 
 _argon2i_strbytes_plus_one = nacl.bindings.crypto_pwhash_argon2i_STRBYTES
-ARGON2I_SALTBYTES = nacl.bindings.crypto_pwhash_argon2i_SALTBYTES
-ARGON2I_MIN_MEMORY = nacl.bindings.crypto_pwhash_argon2i_MIN_MEMORY
-ARGON2I_MAX_MEMORY = nacl.bindings.crypto_pwhash_argon2i_MAX_MEMORY
-ARGON2I_MIN_OUTLEN = nacl.bindings.crypto_pwhash_argon2i_MIN_OUTLEN
-ARGON2I_MAX_OUTLEN = nacl.bindings.crypto_pwhash_argon2i_MAX_OUTLEN
-ARGON2I_MIN_TIME = nacl.bindings.crypto_pwhash_argon2i_MIN_TIME
-ARGON2I_MAX_TIME = nacl.bindings.crypto_pwhash_argon2i_MAX_TIME
 ARGON2I_PWHASH_SIZE = _argon2i_strbytes_plus_one - 1
+ARGON2I_SALTBYTES = nacl.bindings.crypto_pwhash_argon2i_SALTBYTES
+ARGON2I_BYTES_MAX = \
+    nacl.bindings.crypto_pwhash_argon2i_BYTES_MAX
+ARGON2I_BYTES_MIN = \
+    nacl.bindings.crypto_pwhash_argon2i_BYTES_MIN
+ARGON2I_MEMLIMIT_MAX = \
+    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
+ARGON2I_MEMLIMIT_MIN = \
+    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN
+ARGON2I_OPSLIMIT_MAX = \
+    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MAX
+ARGON2I_OPSLIMIT_MIN = \
+    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MIN
 ARGON2I_OPSLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE
 ARGON2I_MEMLIMIT_INTERACTIVE = \
@@ -165,11 +171,11 @@ def kdf_argon2i(size, password, salt,
     as a guidance for correct settings.
 
     :param size: derived key size, must be comprised
-                 between :py:const:`.ARGON2I_MIN_OUTLEN`
-                 and :py:const:`.ARGON2I_MAX_OUTLEN`
+                 between :py:const:`.ARGON2I_BYTES_MIN`
+                 and :py:const:`.ARGON2I_BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
-                     it maximum length is :py:const:`.ARGON2I_MAX_PWLEN`
+                     it maximum length is :py:const:`.ARGON2I_PASSWD_MAX`
     :type password: bytes
     :param salt: **RANDOM** salt used in the key derivation procedure;
                  its length must be exactly :py:const:`.ARGON2I_SALTBYTES`
