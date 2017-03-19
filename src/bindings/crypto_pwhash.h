@@ -16,6 +16,14 @@
 
 size_t crypto_pwhash_scryptsalsa208sha256_saltbytes(void);
 size_t crypto_pwhash_scryptsalsa208sha256_strbytes(void);
+size_t crypto_pwhash_scryptsalsa208sha256_bytes_min(void);
+size_t crypto_pwhash_scryptsalsa208sha256_bytes_max(void);
+size_t crypto_pwhash_scryptsalsa208sha256_passwd_min(void);
+size_t crypto_pwhash_scryptsalsa208sha256_passwd_max(void);
+size_t crypto_pwhash_scryptsalsa208sha256_opslimit_min(void);
+size_t crypto_pwhash_scryptsalsa208sha256_opslimit_max(void);
+size_t crypto_pwhash_scryptsalsa208sha256_memlimit_min(void);
+size_t crypto_pwhash_scryptsalsa208sha256_memlimit_max(void);
 size_t crypto_pwhash_scryptsalsa208sha256_opslimit_interactive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_memlimit_interactive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive(void);
@@ -45,9 +53,17 @@ int crypto_pwhash_scryptsalsa208sha256_str_verify(const char str[102],
 
 size_t crypto_pwhash_argon2i_strbytes(void);
 size_t crypto_pwhash_argon2i_saltbytes(void);
+size_t crypto_pwhash_argon2i_bytes_min(void);
+size_t crypto_pwhash_argon2i_bytes_max(void);
+size_t crypto_pwhash_argon2i_passwd_min(void);
+size_t crypto_pwhash_argon2i_passwd_max(void);
+size_t crypto_pwhash_argon2i_memlimit_min(void);
+size_t crypto_pwhash_argon2i_memlimit_max(void);
 size_t crypto_pwhash_argon2i_memlimit_interactive(void);
 size_t crypto_pwhash_argon2i_memlimit_moderate(void);
 size_t crypto_pwhash_argon2i_memlimit_sensitive(void);
+size_t crypto_pwhash_argon2i_opslimit_min(void);
+size_t crypto_pwhash_argon2i_opslimit_max(void);
 size_t crypto_pwhash_argon2i_opslimit_interactive(void);
 size_t crypto_pwhash_argon2i_opslimit_moderate(void);
 size_t crypto_pwhash_argon2i_opslimit_sensitive(void);
