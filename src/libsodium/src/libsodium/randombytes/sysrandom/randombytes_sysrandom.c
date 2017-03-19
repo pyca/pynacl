@@ -1,15 +1,4 @@
 
-#include <stdlib.h>
-#include <sys/types.h>
-#ifndef _WIN32
-# include <sys/stat.h>
-# include <sys/time.h>
-#endif
-#ifdef __linux__
-# include <sys/syscall.h>
-# include <poll.h>
-#endif
-
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -18,6 +7,21 @@
 #include <string.h>
 #ifndef _WIN32
 # include <unistd.h>
+#endif
+
+#include <stdlib.h>
+#include <sys/types.h>
+#ifndef _WIN32
+# include <sys/stat.h>
+# include <sys/time.h>
+#endif
+#ifdef __linux__
+# ifdef __dietlibc__
+#  define _LINUX_SOURCE
+# else
+#  include <sys/syscall.h>
+# endif
+# include <poll.h>
 #endif
 
 #include "randombytes.h"
@@ -114,7 +118,7 @@ safe_read(const int fd, void * const buf_, size_t size)
 #endif
 
 #ifndef _WIN32
-# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM)
+# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM) && !defined(NO_BLOCKING_RANDOM_POLL)
 static int
 randombytes_block_on_dev_random(void)
 {
@@ -155,7 +159,7 @@ randombytes_sysrandom_random_dev_open(void)
     const char **      device = devices;
     int                fd;
 
-# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM)
+# if defined(__linux__) && !defined(USE_BLOCKING_RANDOM) && !defined(NO_BLOCKING_RANDOM_POLL)
     if (randombytes_block_on_dev_random() != 0) {
         return -1;
     }
@@ -189,7 +193,7 @@ randombytes_sysrandom_random_dev_open(void)
 /* LCOV_EXCL_STOP */
 }
 
-# if defined(SYS_getrandom) && defined(__NR_getrandom)
+# if defined(__dietlibc__) || (defined(SYS_getrandom) && defined(__NR_getrandom))
 static int
 _randombytes_linux_getrandom(void * const buf, const size_t size)
 {
@@ -197,7 +201,11 @@ _randombytes_linux_getrandom(void * const buf, const size_t size)
 
     assert(size <= 256U);
     do {
+#  ifdef __dietlibc__
+        readnb = getrandom(buf, size, 0);
+#  else
         readnb = syscall(SYS_getrandom, buf, (int) size, 0);
+#  endif
     } while (readnb < 0 && (errno == EINTR || errno == EAGAIN));
 
     return (readnb == (int) size) - 1;
@@ -305,9 +313,11 @@ static void
 randombytes_sysrandom_buf(void * const buf, const size_t size)
 {
     randombytes_sysrandom_stir_if_needed();
-#ifdef ULONG_LONG_MAX
+#if defined(ULONG_LONG_MAX) && defined(SIZE_MAX)
+# if SIZE_MAX > ULONG_LONG_MAX
     /* coverity[result_independent_of_operands] */
     assert(size <= ULONG_LONG_MAX);
+# endif
 #endif
 #ifndef _WIN32
 # if defined(SYS_getrandom) && defined(__NR_getrandom)

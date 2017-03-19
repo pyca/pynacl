@@ -1,34 +1,42 @@
 
-#include <stdlib.h>
-#include <sys/types.h>
-
 #include <assert.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdlib.h>
+
+#include <sys/types.h>
 
 #ifdef __EMSCRIPTEN__
 # include <emscripten.h>
 #endif
 
+#include "crypto_stream_chacha20.h"
 #include "randombytes.h"
-#include "randombytes_sysrandom.h"
-
-#ifdef __native_client__
-# include "randombytes_nativeclient.h"
+#ifdef RANDOMBYTES_DEFAULT_IMPLEMENTATION
+# include "randombytes_default.h"
+#else
+# ifdef __native_client__
+#  include "randombytes_nativeclient.h"
+# else
+#  include "randombytes_sysrandom.h"
+# endif
 #endif
+#include "private/common.h"
 
 /* C++Builder defines a "random" macro */
 #undef random
 
 static const randombytes_implementation *implementation;
 
-#ifdef __EMSCRIPTEN__
-# define RANDOMBYTES_DEFAULT_IMPLEMENTATION NULL
-#else
-# ifdef __native_client__
-#  define RANDOMBYTES_DEFAULT_IMPLEMENTATION &randombytes_nativeclient_implementation;
+#ifndef RANDOMBYTES_DEFAULT_IMPLEMENTATION
+# ifdef __EMSCRIPTEN__
+#  define RANDOMBYTES_DEFAULT_IMPLEMENTATION NULL
 # else
-#  define RANDOMBYTES_DEFAULT_IMPLEMENTATION &randombytes_sysrandom_implementation;
+#  ifdef __native_client__
+#   define RANDOMBYTES_DEFAULT_IMPLEMENTATION &randombytes_nativeclient_implementation;
+#  else
+#   define RANDOMBYTES_DEFAULT_IMPLEMENTATION &randombytes_sysrandom_implementation;
+#  endif
 # endif
 #endif
 
@@ -112,10 +120,6 @@ randombytes_stir(void)
 #endif
 }
 
-/*
- * randombytes_uniform() derives from OpenBSD's arc4random_uniform()
- * Copyright (c) 2008, Damien Miller <djm@openbsd.org>
- */
 uint32_t
 randombytes_uniform(const uint32_t upper_bound)
 {
@@ -131,7 +135,7 @@ randombytes_uniform(const uint32_t upper_bound)
     if (upper_bound < 2) {
         return 0;
     }
-    min = (uint32_t) (-upper_bound % upper_bound);
+    min = (1U + ~upper_bound) % upper_bound;
     do {
         r = randombytes_random();
     } while (r < min);
@@ -148,13 +152,37 @@ randombytes_buf(void * const buf, const size_t size)
         implementation->buf(buf, size);
     }
 #else
-    unsigned char *p = buf;
+    unsigned char *p = (unsigned char *) buf;
     size_t         i;
 
     for (i = (size_t) 0U; i < size; i++) {
         p[i] = (unsigned char) randombytes_random();
     }
 #endif
+}
+
+void
+randombytes_buf_deterministic(void * const buf, const size_t size,
+                              const unsigned char seed[randombytes_SEEDBYTES])
+{
+    static const unsigned char nonce[crypto_stream_chacha20_ietf_NONCEBYTES] = {
+        'L', 'i', 'b', 's', 'o', 'd', 'i', 'u', 'm', 'D', 'R', 'G'
+    };
+
+    COMPILER_ASSERT(randombytes_SEEDBYTES == crypto_stream_chacha20_ietf_KEYBYTES);
+#if SIZE_MAX > 0x4000000000ULL
+    if (size > 0x4000000000ULL) {
+        abort();
+    }
+#endif
+    crypto_stream_chacha20_ietf((unsigned char *) buf, (unsigned long long) size,
+                                nonce, seed);
+}
+
+size_t
+randombytes_seedbytes(void)
+{
+    return randombytes_SEEDBYTES;
 }
 
 int

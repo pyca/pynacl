@@ -1,10 +1,10 @@
 
 #include <string.h>
 #include <time.h>
-#ifdef HAVE_PTHREAD
-# include <pthread.h>
-#elif defined(_WIN32)
+#ifdef _WIN32
 # include <windows.h>
+#elif defined(HAVE_PTHREAD)
+# include <pthread.h>
 #endif
 
 #include "core.h"
@@ -13,6 +13,7 @@
 #include "crypto_pwhash_argon2i.h"
 #include "crypto_scalarmult.h"
 #include "crypto_stream_chacha20.h"
+#include "crypto_stream_salsa20.h"
 #include "randombytes.h"
 #include "runtime.h"
 #include "utils.h"
@@ -55,6 +56,7 @@ sodium_init(void)
     _crypto_onetimeauth_poly1305_pick_best_implementation();
     _crypto_scalarmult_curve25519_pick_best_implementation();
     _crypto_stream_chacha20_pick_best_implementation();
+    _crypto_stream_salsa20_pick_best_implementation();
     initialized = 1;
     if (sodium_crit_leave() != 0) {
         return -1;
@@ -62,23 +64,7 @@ sodium_init(void)
     return 0;
 }
 
-#if defined(HAVE_PTHREAD) && !defined(__EMSCRIPTEN__)
-
-static pthread_mutex_t _sodium_lock = PTHREAD_MUTEX_INITIALIZER;
-
-int
-sodium_crit_enter(void)
-{
-    return pthread_mutex_lock(&_sodium_lock);
-}
-
-int
-sodium_crit_leave(void)
-{
-    return pthread_mutex_unlock(&_sodium_lock);
-}
-
-#elif defined(_WIN32)
+#ifdef _WIN32
 
 static CRITICAL_SECTION _sodium_lock;
 static volatile LONG    _sodium_lock_initialized;
@@ -123,7 +109,23 @@ sodium_crit_leave(void)
     return 0;
 }
 
-#elif defined(__GNUC__) && !defined(__EMSCRIPTEN__) && !defined(__native_client__)
+#elif defined(HAVE_PTHREAD) && !defined(__EMSCRIPTEN__)
+
+static pthread_mutex_t _sodium_lock = PTHREAD_MUTEX_INITIALIZER;
+
+int
+sodium_crit_enter(void)
+{
+    return pthread_mutex_lock(&_sodium_lock);
+}
+
+int
+sodium_crit_leave(void)
+{
+    return pthread_mutex_unlock(&_sodium_lock);
+}
+
+#elif defined(HAVE_ATOMIC_OPS) && !defined(__EMSCRIPTEN__) && !defined(__native_client__)
 
 static volatile int _sodium_lock;
 
