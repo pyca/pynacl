@@ -56,7 +56,7 @@ crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = \
 
 crypto_pwhash_argon2i_MEMLIMIT_MIN = \
     max(lib.crypto_pwhash_argon2i_memlimit_min(), 8*1024)
-# Workaround for a strange behaviour in libsodium
+# Workaround for jedisct1/libsodium#516
 
 crypto_pwhash_argon2i_MEMLIMIT_MAX = \
     lib.crypto_pwhash_argon2i_memlimit_max()
