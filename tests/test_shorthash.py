@@ -18,7 +18,7 @@ from binascii import hexlify
 
 import pytest
 
-from nacl.hash import siphash24
+from nacl.hash import siphash24, siphashx24
 
 HASHES = [
     b"\x31\x0e\x0e\xdd\x47\xdb\x6f\x72",
@@ -103,6 +103,73 @@ KEY = (
     b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
 )
 
+XHASHES = [
+    b"a3817f04ba25a8e66df67214c7550293",
+    b"da87c1d86b99af44347659119b22fc45",
+    b"8177228da4a45dc7fca38bdef60affe4",
+    b"9c70b60c5267a94e5f33b6b02985ed51",
+    b"f88164c12d9c8faf7d0f6e7c7bcd5579",
+    b"1368875980776f8854527a07690e9627",
+    b"14eeca338b208613485ea0308fd7a15e",
+    b"a1f1ebbed8dbc153c0b84aa61ff08239",
+    b"3b62a9ba6258f5610f83e264f31497b4",
+    b"264499060ad9baabc47f8b02bb6d71ed",
+    b"00110dc378146956c95447d3f3d0fbba",
+    b"0151c568386b6677a2b4dc6f81e5dc18",
+    b"d626b266905ef35882634df68532c125",
+    b"9869e247e9c08b10d029934fc4b952f7",
+    b"31fcefac66d7de9c7ec7485fe4494902",
+    b"5493e99933b0a8117e08ec0f97cfc3d9",
+    b"6ee2a4ca67b054bbfd3315bf85230577",
+    b"473d06e8738db89854c066c47ae47740",
+    b"a426e5e423bf4885294da481feaef723",
+    b"78017731cf65fab074d5208952512eb1",
+    b"9e25fc833f2290733e9344a5e83839eb",
+    b"568e495abe525a218a2214cd3e071d12",
+    b"4a29b54552d16b9a469c10528eff0aae",
+    b"c9d184ddd5a9f5e0cf8ce29a9abf691c",
+    b"2db479ae78bd50d8882a8a178a6132ad",
+    b"8ece5f042d5e447b5051b9eacb8d8f6f",
+    b"9c0b53b4b3c307e87eaee08678141f66",
+    b"abf248af69a6eae4bfd3eb2f129eeb94",
+    b"0664da1668574b88b935f3027358aef4",
+    b"aa4b9dc4bf337de90cd4fd3c467c6ab7",
+    b"ea5c7f471faf6bde2b1ad7d4686d2287",
+    b"2939b0183223fafc1723de4f52c43d35",
+    b"7c3956ca5eeafc3e363e9d556546eb68",
+    b"77c6077146f01c32b6b69d5f4ea9ffcf",
+    b"37a6986cb8847edf0925f0f1309b54de",
+    b"a705f0e69da9a8f907241a2e923c8cc8",
+    b"3dc47d1f29c448461e9e76ed904f6711",
+    b"0d62bf01e6fc0e1a0d3c4751c5d3692b",
+    b"8c03468bca7c669ee4fd5e084bbee7b5",
+    b"528a5bb93baf2c9c4473cce5d0d22bd9",
+    b"df6a301e95c95dad97ae0cc8c6913bd8",
+    b"801189902c857f39e73591285e70b6db",
+    b"e617346ac9c231bb3650ae34ccca0c5b",
+    b"27d93437efb721aa401821dcec5adf89",
+    b"89237d9ded9c5e78d8b1c9b166cc7342",
+    b"4a6d8091bf5e7d651189fa94a250b14c",
+    b"0e33f96055e7ae893ffc0e3dcf492902",
+    b"e61c432b720b19d18ec8d84bdc63151b",
+    b"f7e5aef549f782cf379055a608269b16",
+    b"438d030fd0b7a54fa837f2ad201a6403",
+    b"a590d3ee4fbf04e3247e0d27f286423f",
+    b"5fe2c1a172fe93c4b15cd37caef9f538",
+    b"2c97325cbd06b36eb2133dd08b3a017c",
+    b"92c814227a6bca949ff0659f002ad39e",
+    b"dce850110bd8328cfbd50841d6911d87",
+    b"67f14984c7da791248e32bb5922583da",
+    b"1938f2cf72d54ee97e94166fa91d2a36",
+    b"74481e9646ed49fe0f6224301604698e",
+    b"57fca5de98a9d6d8006438d0583d8a1d",
+    b"9fecde1cefdc1cbed4763674d9575359",
+    b"e3040c00eb28f15366ca73cbd872e740",
+    b"7697009a6a831dfecca91c5993670f7a",
+    b"5853542321f567a005d547a4f04759bd",
+    b"5150d1772f50834a503e069a973fbd7c"
+]
+
 
 def sip24_vectors():
     """Generate test vectors using data from the reference implementation's
@@ -118,12 +185,29 @@ def sip24_vectors():
     return vectors
 
 
+def sipx24_vectors():
+    """Generate test vectors using data from libsodium's tests"""
+    vectors = []
+    for i, expected in enumerate(XHASHES):
+        mesg = MESG[0:i]
+        vectors.append((mesg, KEY, expected))
+    return vectors
+
+
 @pytest.mark.parametrize(("inp", "key", "expected"),
                          sip24_vectors()
                          )
 def test_siphash24(inp, key, expected):
     rs = siphash24(inp, key)
     assert rs == hexlify(expected)
+
+
+@pytest.mark.parametrize(("inp", "key", "expected"),
+                         sipx24_vectors()
+                         )
+def test_siphashx24(inp, key, expected):
+    rs = siphashx24(inp, key)
+    assert rs == expected
 
 
 @pytest.mark.parametrize(("inp", "key", "expected"), [
@@ -136,3 +220,5 @@ def test_siphash24(inp, key, expected):
 def test_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphash24(inp, key)
+    with pytest.raises(ValueError):
+        siphashx24(inp, key)

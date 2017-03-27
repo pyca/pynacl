@@ -29,9 +29,12 @@ BLAKE2B_PERSONALBYTES = nacl.bindings.crypto_generichash_PERSONALBYTES
 SIPHASH_BYTES = nacl.bindings.crypto_shorthash_siphash24_BYTES
 SIPHASH_KEYBYTES = nacl.bindings.crypto_shorthash_siphash24_KEYBYTES
 
+SIPHASHX_BYTES = nacl.bindings.crypto_shorthash_siphashx24_BYTES
+SIPHASHX_KEYBYTES = nacl.bindings.crypto_shorthash_siphashx24_KEYBYTES
 
 _b2b_hash = nacl.bindings.crypto_generichash_blake2b_salt_personal
 _sip_hash = nacl.bindings.crypto_shorthash_siphash24
+_sip_hashx = nacl.bindings.crypto_shorthash_siphashx24
 
 
 def sha256(message, encoder=nacl.encoding.HexEncoder):
@@ -99,3 +102,20 @@ def siphash24(message, key=b'', encoder=nacl.encoding.HexEncoder):
 
 
 shorthash = siphash24
+
+
+def siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder):
+    """
+    Computes a keyed MAC of ``message`` using the 128 bit siphash-2-4
+    variant siphashx24
+
+    :param message: The message to hash.
+    :type message: bytes
+    :param key: the message authentication key for the siphash MAC construct
+    :type key: bytes(:py:data:`.SIPHASHX_KEYBYTES`)
+    :param encoder: A class that is able to encode the hashed message.
+    :return: The hashed message.
+    :rtype: bytes(:py:data:`.SIPHASHX_BYTES`)
+    """
+    digest = _sip_hashx(message, key)
+    return encoder.encode(digest)
