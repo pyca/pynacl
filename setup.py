@@ -177,7 +177,7 @@ class build_ext(_build_ext):
             self.include_dirs.append(
                 os.path.join(build_clib.build_clib, "include"),
             )
-            self.library_dirs.append(
+            self.library_dirs.insert(0,
                 os.path.join(build_clib.build_clib, "lib"),
             )
 
