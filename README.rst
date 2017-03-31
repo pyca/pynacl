@@ -65,6 +65,11 @@ Features
 Changes
 -------
 
+* 1.1.2 - 2017-03-31:
+
+  * reorder link time library search path when using bundled
+    libsodium
+
 * 1.1.1 - 2017-03-15:
 
   * Fixed a circular import bug in ``nacl.utils``.
