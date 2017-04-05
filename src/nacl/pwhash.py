@@ -193,6 +193,8 @@ def kdf_argon2i(size, password, salt,
                      and :py:const:`.ARGON2I_MAX_MEMORY`
     :type memlimit: int
     :rtype: bytes
+
+    .. versionadded:: 1.2
     """
 
     return encoder.encode(
@@ -215,6 +217,8 @@ def argon2i_str(password,
     :param int opslimit:
     :param int memlimit:
     :rtype: bytes
+
+    .. versionadded:: 1.2
     """
 
     return nacl.bindings.crypto_pwhash_argon2i_str(password,
@@ -231,6 +235,8 @@ def verify_argon2i(password_hash, password):
     :param password: user provided password
     :type password: bytes
     :rtype: boolean
+
+    .. versionadded:: 1.2
     """
     return nacl.bindings.crypto_pwhash_argon2i_str_verify(password_hash,
                                                           password)
