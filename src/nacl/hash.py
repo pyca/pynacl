@@ -116,6 +116,8 @@ def siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder):
     :param encoder: A class that is able to encode the hashed message.
     :return: The hashed message.
     :rtype: bytes(:py:data:`.SIPHASHX_BYTES`)
+
+    .. versionadded:: 1.2
     """
     digest = _sip_hashx(message, key)
     return encoder.encode(digest)
