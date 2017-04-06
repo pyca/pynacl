@@ -64,6 +64,8 @@ nacl.hash
 
 .. function:: siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder)
 
+    .. versionadded:: 1.2
+
     Computes a keyed MAC of ``message`` using the extended output length
     variant of siphash-2-4
 
@@ -77,4 +79,3 @@ nacl.hash
     :return: The hashed message.
     :rtype: bytes(:py:data:`.SIPHASHX_BYTES`) long bytes sequence
 
-    .. versionadded:: 1.2
