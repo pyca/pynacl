@@ -60,3 +60,22 @@ nacl.hash
     :param encoder: A class that is able to encode the hashed message.
     :return: The hashed message.
     :rtype: bytes(:py:data:`.SIPHASH_BYTES`) long bytes sequence
+
+
+.. function:: siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder)
+
+    .. versionadded:: 1.2
+
+    Computes a keyed MAC of ``message`` using the extended output length
+    variant of siphash-2-4
+
+    :param message: The message to hash.
+    :type message: bytes
+    :param key: the message authentication key to be used
+                It must be a :py:data:`.SIPHASHX_KEYBYTES` long
+                bytes sequence
+    :type key: bytes(:py:data:`.SIPHASHX_KEYBYTES`)
+    :param encoder: A class that is able to encode the hashed message.
+    :return: The hashed message.
+    :rtype: bytes(:py:data:`.SIPHASHX_BYTES`) long bytes sequence
+

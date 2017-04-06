@@ -21,3 +21,10 @@ size_t crypto_shorthash_siphash24_keybytes();
 
 int crypto_shorthash_siphash24(unsigned char *out, const unsigned char *in,
                                unsigned long long inlen, const unsigned char *k);
+
+size_t crypto_shorthash_siphashx24_bytes();
+size_t crypto_shorthash_siphashx24_keybytes();
+
+int crypto_shorthash_siphashx24(unsigned char *out, const unsigned char *in,
+                                unsigned long long inlen, const unsigned char *k);
+
