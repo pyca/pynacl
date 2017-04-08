@@ -1,6 +1,8 @@
 include tox.ini
 include LICENSE
 include README.rst
+include CHANGELOG.rst
+include INSTALL.rst
 
 # libsodium files
 recursive-include src/libsodium *
