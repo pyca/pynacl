@@ -25,11 +25,11 @@ import subprocess
 import sys
 
 from distutils.command.build import build
-from distutils.command.build_clib import build_clib as _build_clib
-from distutils.command.build_ext import build_ext as _build_ext
 
 from setuptools import Distribution, setup
 
+from setuptools.command.build_clib import build_clib as _build_clib
+from setuptools.command.build_ext import build_ext as _build_ext
 from setuptools.command.install import install
 
 
