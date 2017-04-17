@@ -14,6 +14,11 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl.bindings.crypto_aead_aes256gcm import (
+    crypto_aead_aes256gcm_ABYTES, crypto_aead_aes256gcm_KEYBYTES,
+    crypto_aead_aes256gcm_NPUBBYTES, crypto_aead_aes256gcm_decrypt,
+    crypto_aead_aes256gcm_encrypt, crypto_aead_aes256gcm_is_available,
+)
 from nacl.bindings.crypto_box import (
     crypto_box, crypto_box_BEFORENMBYTES, crypto_box_BOXZEROBYTES,
     crypto_box_NONCEBYTES, crypto_box_PUBLICKEYBYTES,
@@ -79,6 +84,13 @@ from nacl.bindings.utils import sodium_memcmp
 
 
 __all__ = [
+    "crypto_aead_aes256gcm_ABYTES",
+    "crypto_aead_aes256gcm_decrypt",
+    "crypto_aead_aes256gcm_encrypt",
+    "crypto_aead_aes256gcm_is_available",
+    "crypto_aead_aes256gcm_KEYBYTES",
+    "crypto_aead_aes256gcm_NPUBBYTES",
+
     "crypto_box_SECRETKEYBYTES",
     "crypto_box_PUBLICKEYBYTES",
     "crypto_box_NONCEBYTES",
