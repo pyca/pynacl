@@ -2,7 +2,6 @@
 branch = True
 source =
     nacl
-    tests/
 
 [paths]
 source =
