@@ -1,0 +1,121 @@
+def configs = [
+    [
+        label: 'windows',
+        versions: ['py27', 'py33', 'py34', 'py35', 'py36'],
+    ],
+    [
+        label: 'windows64',
+        versions: ['py27', 'py33', 'py34', 'py35', 'py36'],
+    ],
+    [
+        label: 'sierra',
+        versions: ['py27', 'py34', 'py35', 'py36'],
+    ],
+]
+
+
+def build(version, label) {
+    try {
+        timeout(time: 30, unit: 'MINUTES') {
+            if (label.contains("windows")) {
+                def pythonPath = [
+                    py27: "C:\\Python27\\python.exe",
+                    py33: "C:\\Python33\\python.exe",
+                    py34: "C:\\Python34\\python.exe",
+                    py35: "C:\\Python35\\python.exe",
+                    py36: "C:\\Python36\\python.exe"
+                ]
+                if (version == "py35" || version == "py36") {
+                    libIncludePaths = [
+                        "windows": [
+                            "lib": "C:\\libsodium-1.0.12-msvc\\Win32\\Release\\v140\\static"
+                        ],
+                        "windows64": [
+                            "lib": "C:\\libsodium-1.0.12-msvc\\x64\\Release\\v140\\static"
+                        ]
+                    ]
+                } else {
+                    libIncludePaths = [
+                        "windows": [
+                            "lib": "C:\\libsodium-1.0.12-msvc\\Win32\\Release\\v100\\static"
+                        ],
+                        "windows64": [
+                            "lib": "C:\\libsodium-1.0.12-msvc\\x64\\Release\\v100\\static"
+                        ]
+                    ]
+                }
+                bat """
+                    wmic qfe
+                    @set PATH="C:\\Python27";"C:\\Python27\\Scripts";%PATH%
+                    @set PYTHON="${pythonPath[version]}"
+                    @set PYNACL_SODIUM_LIBRARY_NAME=sodium
+                    @set PYNACL_SODIUM_STATIC=1
+                    @set SODIUM_INSTALL=system
+
+                    @set INCLUDE="C:\\libsodium-1.0.12-msvc\\include";%INCLUDE%
+                    @set LIB="${libIncludePaths[label]['lib']}";%LIB%
+                    virtualenv -p %PYTHON% .release
+                    call .release\\Scripts\\activate
+                    pip install wheel virtualenv
+                    pip wheel pynacl --wheel-dir=wheelhouse --no-binary pynacl
+                    pip install -f wheelhouse pynacl --no-index
+                    python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
+                """
+            } else if (label.contains("sierra")) {
+                def pythonPath = [
+                    py27: "/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7",
+                    py34: "/Library/Frameworks/Python.framework/Versions/3.4/bin/python3.4",
+                    py35: "/Library/Frameworks/Python.framework/Versions/3.5/bin/python3.5",
+                    py36: "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3.6",
+                ]
+                ansiColor {
+                    sh """#!/usr/bin/env bash
+                        set -xe
+                        # output the list of things we've installed as a point in time check of how up
+                        # to date the builder is
+                        /usr/sbin/system_profiler SPInstallHistoryDataType
+
+                        # Jenkins logs in as a non-interactive shell, so we don't even have /usr/local/bin in PATH
+                        export PATH="/usr/local/bin:\${PATH}"
+                        export PATH="/Users/jenkins/.pyenv/shims:\${PATH}"
+
+                        printenv
+
+                        virtualenv .venv -p ${pythonPath[version]}
+                        source .venv/bin/activate
+                        pip install -U wheel # upgrade wheel to latest before we use it to build the wheel
+                        pip wheel pynacl --wheel-dir=wheelhouse --no-binary pynacl
+                        pip install -f wheelhouse pynacl --no-index
+                        python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
+                        lipo -info `find .venv -name '*.so'`
+                    """
+                }
+            }
+            archiveArtifacts artifacts: "wheelhouse/PyNaCl*.whl"
+        }
+    } finally {
+        deleteDir()
+    }
+
+}
+
+def builders = [:]
+for (config in configs) {
+    def label = config["label"]
+    def versions = config["versions"]
+
+    for (_version in versions) {
+        def version = _version
+
+        def combinedName = "${label}-${version}"
+        builders[combinedName] = {
+            node(label) {
+                stage(combinedName) {
+                    build(version, label)
+                }
+            }
+        }
+    }
+}
+
+parallel builders
