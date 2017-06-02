@@ -62,6 +62,45 @@ proposed password with the stored hash::
     >>>
 
 
+Future-proofing your password verification routine
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A very nice aspect of modular crypt format is the ``$identifier$``
+prefix which can be used to dispatch the correct hash verifier.
+This could help continued support for an hash format, even
+after choosing a different one as a default storage format
+for new passwords.
+
+To prepare yourself in exploiting this feature, you should simply
+remember to test the serialized password hash identifier before
+verifying a proposed password:
+
+.. code-block:: python
+
+    from nacl.pwhash import verify_scryptsalsa208sha256
+    def check_password(serialized, proposed):
+        if serialized.startswith(b'$7$'):
+            res = verify_scryptsalsa208sha256(serialized, proposed)
+        return res
+
+By doing so, if a future version of PyNaCl would get released
+with support for a new ``verify_safest_password_hash`` mechanism,
+you'll just have to import the new verifier and add an ``elif``
+clause to your check_password function:
+
+.. code-block:: python
+
+    from nacl.pwhash import (verify_scryptsalsa208sha256,
+                             verify_safest_password_hash,
+                             )
+    def check_password(serialized, proposed):
+        if serialized.startswith(b'$7$'):
+            res = verify_scryptsalsa208sha256(serialized, proposed)
+        elif serialized.startswith(b'$safest_hash_identifier$'):
+            res = verify_safest_password_hash(serialized, proposed)
+        return res
+
+
 Key derivation
 ~~~~~~~~~~~~~~
 
