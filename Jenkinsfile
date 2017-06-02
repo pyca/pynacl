@@ -18,14 +18,7 @@ def checkout_git(label) {
         git fetch origin +refs/pull/${env.CHANGE_ID}/merge:
         git checkout -qf FETCH_HEAD
         """
-        if (label.contains("windows")) {
-            bat script
-        } else {
-            sh """#!/bin/sh
-                set -xe
-                ${script}
-            """
-        }
+        bat script
     } else {
         checkout([
             $class: 'GitSCM',
@@ -41,17 +34,10 @@ def checkout_git(label) {
             ]]
         ])
     }
-    if (label.contains("windows")) {
-        bat """
-            cd pynacl
-            git rev-parse HEAD
-        """
-    } else {
-        sh """
-            cd pynacl
-            git rev-parse HEAD
-        """
-    }
+    bat """
+        cd pynacl
+        git rev-parse HEAD
+    """
 }
 def build(toxenv, label) {
     try {
@@ -88,6 +74,9 @@ def build(toxenv, label) {
                     cd pynacl
                     @set PATH="C:\\Python27";"C:\\Python27\\Scripts";%PATH%
                     @set PYTHON="${pythonPath[toxenv]}"
+                    @set PYNACL_SODIUM_LIBRARY_NAME=sodium
+                    @set PYNACL_SODIUM_STATIC=1
+                    @set SODIUM_INSTALL=system
 
                     @set INCLUDE="C:\\libsodium-1.0.12-msvc\\include";%INCLUDE%
                     @set LIB="${libIncludePaths[label]['lib']}";%LIB%
