@@ -108,14 +108,35 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         return not (self == other)
 
     @classmethod
-    def generate(cls):
+    def generate(cls, ext_e=b''):
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
+        :param ext_e: Optional external entropy provided by user. XORed with
+            system entropy. If empty, only nacl.utils.random() is used.
+
         :rtype: :class:`~nacl.public.PrivateKey`
         """
-        return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
 
+        if not isinstance(ext_e, bytes):
+            raise TypeError("External entropy provided must be bytes")
+
+        # If no external entropy is provided, create string of zero-bytes.
+        if not ext_e:
+            ext_e = str(bytearray(PrivateKey.SIZE))
+
+        # Verify that external entropy is the proper size.
+        if len(ext_e) != PrivateKey.SIZE:
+            raise ValueError(
+                "External entropy must be exactly %d bytes long"
+                % PrivateKey.SIZE)
+
+        nacl_e = random(PrivateKey.SIZE)
+
+        # XOR nacl.utils.random with ext. entropy / string of zero-bytes.
+        final = ''.join(chr(ord(n) ^ ord(e)) for n, e in zip(nacl_e, ext_e))
+
+        return cls(final, encoder=encoding.RawEncoder)
 
 class Box(encoding.Encodable, StringFixer, object):
     """
