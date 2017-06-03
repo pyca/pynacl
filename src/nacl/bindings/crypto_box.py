@@ -28,6 +28,7 @@ crypto_box_NONCEBYTES = lib.crypto_box_noncebytes()
 crypto_box_ZEROBYTES = lib.crypto_box_zerobytes()
 crypto_box_BOXZEROBYTES = lib.crypto_box_boxzerobytes()
 crypto_box_BEFORENMBYTES = lib.crypto_box_beforenmbytes()
+crypto_box_SEALBYTES = lib.crypto_box_sealbytes()
 
 
 def crypto_box_keypair():
@@ -189,3 +190,81 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
            raising=exc.CryptoError)
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
+
+
+def crypto_box_seal(message, pk):
+    """
+    Encrypts and returns a message ``message`` using an ephemeral secret key
+    and the public key ``pk``.
+    The ephemeral public key, which is embedded in the sealed box, is also
+    used, in combination with ``pk``, to derive the nonce needed for the
+    underlyng box construct.
+
+    :param message: bytes
+    :param pk: bytes
+    :rtype: bytes
+    """
+    ensure(isinstance(message, bytes),
+           "input message must be bytes",
+           raising=TypeError)
+
+    ensure(isinstance(pk, bytes),
+           "public key must be bytes",
+           raising=TypeError)
+
+    if len(pk) != crypto_box_PUBLICKEYBYTES:
+        raise exc.ValueError("Invalid public key")
+
+    _mlen = len(message)
+    _clen = crypto_box_SEALBYTES + _mlen
+
+    ciphertext = ffi.new("unsigned char[]", _clen)
+
+    rc = lib.crypto_box_seal(ciphertext, message, _mlen, pk)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(ciphertext, _clen)[:]
+
+
+def crypto_box_seal_open(ciphertext, pk, sk):
+    """
+    Decrypts and returns an encrypted message ``ciphertext``, using the
+    recipent's secret key ``sk`` and the sender's ephemeral public key
+    embedded in the sealed box. The box contruct nonce is derived from
+    the recipient's public key ``pk`` and the sender's public key.
+
+    :param ciphertext: bytes
+    :param pk: bytes
+    :param sk: bytes
+    :rtype: bytes
+    """
+    ensure(isinstance(ciphertext, bytes),
+           "input ciphertext must be bytes",
+           raising=TypeError)
+
+    ensure(isinstance(pk, bytes),
+           "public key must be bytes",
+           raising=TypeError)
+
+    ensure(isinstance(sk, bytes),
+           "secret key must be bytes",
+           raising=TypeError)
+
+    if len(pk) != crypto_box_PUBLICKEYBYTES:
+        raise exc.ValueError("Invalid public key")
+
+    if len(sk) != crypto_box_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
+    _clen = len(ciphertext)
+    _mlen = _clen - crypto_box_SEALBYTES
+
+    plaintext = ffi.new("unsigned char[]", _mlen)
+
+    res = lib.crypto_box_seal_open(plaintext, ciphertext, _clen, pk, sk)
+    ensure(res == 0, "An error occurred trying to decrypt the message",
+           raising=exc.CryptoError)
+
+    return ffi.buffer(plaintext, _mlen)[:]
