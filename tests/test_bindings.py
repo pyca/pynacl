@@ -217,3 +217,30 @@ def test_sign_test_key_conversion():
                                     "cae6c22c3edaa48f857ae70de2baae50")
     assert tohex(curve25519_sk) == ("8052030376d47112be7f73ed7a019293"
                                     "dd12ad910b654455798b4667d73de166")
+
+
+def test_box_seal_wrong_lengths():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    with pytest.raises(ValueError):
+        c.crypto_box_seal(b"abc", A_pubkey[:-1])
+    with pytest.raises(ValueError):
+        c.crypto_box_seal_open(
+            b"abc", b"", A_secretkey)
+    with pytest.raises(ValueError):
+        c.crypto_box_seal_open(
+            b"abc", A_pubkey, A_secretkey[:-1])
+
+
+def test_box_seal_wrong_types():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    with pytest.raises(TypeError):
+        c.crypto_box_seal(b"abc", dict())
+    with pytest.raises(TypeError):
+        c.crypto_box_seal_open(
+            b"abc", None, A_secretkey)
+    with pytest.raises(TypeError):
+        c.crypto_box_seal_open(
+            b"abc", A_pubkey, None)
+    with pytest.raises(TypeError):
+        c.crypto_box_seal_open(
+            None, A_pubkey, A_secretkey)
