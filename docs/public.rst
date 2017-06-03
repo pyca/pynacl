@@ -106,10 +106,16 @@ nacl.public.SealedBox
 ~~~~~~~~~~~~~~~~~~~~~
 
 The :class:`~nacl.public.SealedBox` class encrypts messages addressed
-to a specified key-pair by using ephemeral sender's keypairs.
+to a specified key-pair by using ephemeral sender's keypairs, which
+will be discarded just after encrypting a single plaintext message.
 
 This kind of construction allows anonymously sending messages, which
 only the recipient can decrypt.
+
+.. warning:: By design, the sender will not be able to decrypt the
+    ciphertext he just created, and the recipient will have no means
+    to trace the ciphertext to a known author, since the sending
+    keypair itself is not bound to any sender's identity.
 
 This is how the system works:
 
