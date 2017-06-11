@@ -183,6 +183,40 @@ user must take care to store (and retrieve) both a reference to the kdf
 used to derive the secret key, and all the derivation parameters, which
 are needed to later generate the same secret key from the password.
 
+Module level constants for operation and memory cost tweaking
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To help in selecting the correct values for the tweaking parameters for both
+the **scrypt** and the **argon2i** constructions, the :py:mod:`nacl.pwhash` provides
+suggested values for the `opslimit` and `memlimit` parameters, which are belived
+to be valid as of CPU/ASIC speeds current in year 2017.
+
+The provided constants are:
+
+for scrypt:
+
+    * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_SENSITIVE`
+    * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_SENSITIVE`
+
+for argon2:
+
+    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_MODERATE`
+    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE`
+    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_SENSITIVE`
+    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_SENSITIVE`
+
+In general, the _INTERACTIVE values are recommended in the case of hashes stored
+for interactive password checking, and lead to a sub-second password verification
+time, with a memory consumption in the tens of megabytes range, while the _SENSITIVE
+values are meant to store hashes for password protecting sensitive data, and lead to
+hashing times exceeding one second, with memory consumption in the hundred of megabytes range.
+The _MODERATE values, suggested for argon2i are meant to run the construct at a runtime
+and memory cost intermediate between _INTERACTIVE and _SENSITIVE.
+
 
 .. [SD2012] A nice overview of password hashing history is available
    in Solar Designer's presentation
@@ -193,4 +227,3 @@ are needed to later generate the same secret key from the password.
    `Password Hashing Competition <https://password-hashing.net/>`_
    site, along to the special recognition shortlist and the original
    call for submissions.
-
