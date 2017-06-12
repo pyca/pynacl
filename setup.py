@@ -146,6 +146,9 @@ class build_clib(_build_clib):
                 "src/libsodium/test/default/wintest.bat"]:
             os.chmod(here(filename), 0o755)
 
+        if not which("make"):
+            raise Exception("ERROR: The 'make' utility is missing from PATH")
+
         # Locate our configure script
         configure = abshere("src/libsodium/configure")
 
