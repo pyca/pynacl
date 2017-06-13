@@ -109,13 +109,16 @@ The :class:`~nacl.public.SealedBox` class encrypts messages addressed
 to a specified key-pair by using ephemeral sender's keypairs, which
 will be discarded just after encrypting a single plaintext message.
 
-This kind of construction allows anonymously sending messages, which
-only the recipient can decrypt.
+This kind of construction allows sending messages, which only the recipient
+can decrypt without providing any kind of cryptographic proof of sender's
+authorship.
 
-.. warning:: By design, the sender will not be able to decrypt the
-    ciphertext he just created, and the recipient will have no means
-    to trace the ciphertext to a known author, since the sending
-    keypair itself is not bound to any sender's identity.
+.. warning:: By design, the recipient will have no means to trace
+    the ciphertext to a known author, since the sending
+    keypair itself is not bound to any sender's identity, and
+    the sender herself will not be able to decrypt the ciphertext
+    she just created, since the private part of the key cannot be
+    recovered after use.
 
 This is how the system works:
 
@@ -255,13 +258,14 @@ Reference
     .. method:: encrypt(plaintext, encoder)
 
         Encrypt the message using a Box constructed from an ephemeral
-        key-pair and the receiver key, and encrypt the message.
+        key-pair and the receiver key.
 
         The public part of the ephemeral key-pair will be enclosed in the
         returned ciphertext.
 
-        The ephemeral key-pair will be scrubbed before returning the ciphertext,
-        therefore, the sender will not be able to decrypt the message.
+        The private part of the ephemeral key-pair will be scrubbed before
+        returning the ciphertext, therefore, the sender will not be able
+        to decrypt the message.
 
         :param bytes plaintext: The plaintext message to encrypt.
         :param encoder:  A class that is able to decode the ciphertext.
@@ -274,7 +278,7 @@ Reference
         Decrypt the message using a Box constructed from the receiver key
         and the ephemeral key enclosed in the ciphertext.
 
-        :param bytes plaintext: The plaintext message to encrypt.
+        :param bytes ciphertext: The ciphertext message to decrypt.
         :param encoder:  A class that is able to decode the ciphertext.
 
-        :return bytes: The encrypted ciphertext
+        :return bytes: The decrypted message
