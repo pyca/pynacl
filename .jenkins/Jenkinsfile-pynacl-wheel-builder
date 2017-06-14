@@ -122,11 +122,7 @@ def build(version, label, imageName) {
 
                     $linux32 /opt/python/$version/bin/pip install cffi six
                     $linux32 /opt/python/$version/bin/pip wheel --no-binary pynacl --no-deps pynacl -w tmpwheelhouse/
-
-                    for whl in tmpwheelhouse/PyNaCl*.whl; do
-                        $linux32 auditwheel repair "\$whl" -w wheelhouse/
-                    done
-
+                    $linux32 auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
                     $linux32 /opt/python/$version/bin/pip install pynacl --no-index -f wheelhouse/
                     $linux32 /opt/python/$version/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
                 """
