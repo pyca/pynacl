@@ -11,10 +11,26 @@ def configs = [
         label: 'sierra',
         versions: ['py27', 'py34', 'py35', 'py36'],
     ],
+    [
+        label: 'docker',
+        imageName: 'quay.io/pypa/manylinux1_x86_64',
+        versions: [
+            'cp27-cp27m', 'cp27-cp27mu', 'cp33-cp33m',
+            'cp34-cp34m', 'cp35-cp35m', 'cp36-cp36m'
+        ],
+    ],
+    [
+        label: 'docker',
+        imageName: 'quay.io/pypa/manylinux1_i686',
+        versions: [
+            'cp27-cp27m', 'cp27-cp27mu', 'cp33-cp33m',
+            'cp34-cp34m', 'cp35-cp35m', 'cp36-cp36m'
+        ],
+    ],
 ]
 
 
-def build(version, label) {
+def build(version, label, imageName) {
     try {
         timeout(time: 30, unit: 'MINUTES') {
             if (label.contains("windows")) {
@@ -90,8 +106,32 @@ def build(version, label) {
                         lipo -info `find .venv -name '*.so'`
                     """
                 }
+            } else if (label.contains("docker")) {
+                linux32 = ""
+                if (imageName.contains("i686")) {
+                    linux32 = "linux32"
+                }
+                sh """#!/usr/bin/env bash
+                    set -x -e
+                    # Because we are doing this as root in the container, but we write to a mounted dir that is outside the container
+                    # we need to make sure we set these files writable such that the jenkins user can delete them afterwards
+                    mkdir -p tmpwheelhouse
+                    mkdir -p wheelhouse
+                    chmod -R 777 tmpwheelhouse
+                    chmod -R 777 wheelhouse
+
+                    $linux32 /opt/python/$version/bin/pip install cffi six
+                    $linux32 /opt/python/$version/bin/pip wheel --no-binary pynacl --no-deps pynacl -w tmpwheelhouse/
+
+                    for whl in tmpwheelhouse/PyNaCl*.whl; do
+                        $linux32 auditwheel repair "\$whl" -w wheelhouse/
+                    done
+
+                    $linux32 /opt/python/$version/bin/pip install pynacl --no-index -f wheelhouse/
+                    $linux32 /opt/python/$version/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
+                """
             }
-            archiveArtifacts artifacts: "wheelhouse/PyNaCl*.whl"
+            archiveArtifacts artifacts: "**/wheelhouse/PyNaCl*.whl"
         }
     } finally {
         deleteDir()
@@ -107,11 +147,25 @@ for (config in configs) {
     for (_version in versions) {
         def version = _version
 
-        def combinedName = "${label}-${version}"
-        builders[combinedName] = {
-            node(label) {
-                stage(combinedName) {
-                    build(version, label)
+        if (label.contains("docker")) {
+            def imageName = config["imageName"]
+            def combinedName = "${imageName}-${version}"
+            builders[combinedName] = {
+                node(label) {
+                    stage(combinedName) {
+                        docker.image(imageName).inside("-u root") {
+                            build(version, label, imageName)
+                        }
+                    }
+                }
+            }
+        } else {
+            def combinedName = "${label}-${version}"
+            builders[combinedName] = {
+                node(label) {
+                    stage(combinedName) {
+                        build(version, label, "")
+                    }
                 }
             }
         }
