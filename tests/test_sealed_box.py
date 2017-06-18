@@ -121,3 +121,20 @@ def test_wrong_types():
                      SealedBox, priv.public_key.encode())
     with pytest.raises(TypeError):
         SealedBox(priv, priv.public_key)
+
+
+@pytest.mark.parametrize(
+    (
+        "_privalice", "pubalice", "_plaintext", "encrypted"
+    ),
+    VECTORS,
+)
+def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
+                                              _plaintext, encrypted):
+    pubalice = PublicKey(pubalice, encoder=HexEncoder)
+    box = SealedBox(pubalice)
+    with pytest.raises(TypeError):
+        box.decrypt(
+            encrypted,
+            encoder=HexEncoder,
+        )
