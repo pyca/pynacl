@@ -12,7 +12,7 @@ if [[ $SODIUM_INSTALL == 'system' ]]; then
     tar zxvf LATEST.tar.gz
     cd libsodium-*
     ./configure
-    make
+    make -j2
     make check
     sudo make install
     sudo ldconfig
