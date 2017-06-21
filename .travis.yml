@@ -15,6 +15,14 @@ matrix:
     - env: TOXENV=py35 SODIUM_INSTALL=bundled CC=gcc
     - env: TOXENV=py36 SODIUM_INSTALL=bundled CC=gcc
     - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=gcc
+    - env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=py33 SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=py34 SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
+    - env: TOXENV=docs
+    - env: TOXENV=meta
     - env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
       sudo: required
     - env: TOXENV=py33 SODIUM_INSTALL=system CC=gcc
@@ -27,12 +35,6 @@ matrix:
       sudo: required
     - env: TOXENV=pypy SODIUM_INSTALL=system CC=gcc
       sudo: required
-    - env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
-    - env: TOXENV=py33 SODIUM_INSTALL=bundled CC=clang
-    - env: TOXENV=py34 SODIUM_INSTALL=bundled CC=clang
-    - env: TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
-    - env: TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
-    - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
     - env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
       sudo: required
     - env: TOXENV=py33 SODIUM_INSTALL=system CC=clang
@@ -45,8 +47,6 @@ matrix:
       sudo: required
     - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
       sudo: required
-    - env: TOXENV=docs
-    - env: TOXENV=meta
 
 install: .travis/install.sh
 
