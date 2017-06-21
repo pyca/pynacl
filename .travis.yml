@@ -2,37 +2,64 @@ language: python
 python: 2.7
 group: edge
 dist: trusty
-sudo: required
+
 env:
   global:
     - LIBSODIUM_MAKE_ARGS=-j2
-  matrix:
-    - TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=py33 SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=py34 SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=py35 SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=py36 SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=pypy SODIUM_INSTALL=bundled CC=gcc
-    - TOXENV=py27 SODIUM_INSTALL=system CC=gcc
-    - TOXENV=py33 SODIUM_INSTALL=system CC=gcc
-    - TOXENV=py34 SODIUM_INSTALL=system CC=gcc
-    - TOXENV=py35 SODIUM_INSTALL=system CC=gcc
-    - TOXENV=py36 SODIUM_INSTALL=system CC=gcc
-    - TOXENV=pypy SODIUM_INSTALL=system CC=gcc
-    - TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=py33 SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=py34 SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
-    - TOXENV=py27 SODIUM_INSTALL=system CC=clang
-    - TOXENV=py33 SODIUM_INSTALL=system CC=clang
-    - TOXENV=py34 SODIUM_INSTALL=system CC=clang
-    - TOXENV=py35 SODIUM_INSTALL=system CC=clang
-    - TOXENV=py36 SODIUM_INSTALL=system CC=clang
-    - TOXENV=pypy SODIUM_INSTALL=system CC=clang
-    - TOXENV=docs
-    - TOXENV=meta
+matrix:
+  include:
+    - env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=py33 SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=py34 SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=py35 SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=py36 SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=gcc
+      sudo: false
+    - env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=py33 SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=py34 SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=py35 SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=py36 SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=pypy SODIUM_INSTALL=system CC=gcc
+      sudo: required
+    - env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=py33 SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=py34 SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
+      sudo: false
+    - env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=py33 SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=py34 SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=py35 SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=py36 SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
+      sudo: required
+    - env: TOXENV=docs
+      sudo: false
+    - env: TOXENV=meta
+      sudo: false
 
 install: .travis/install.sh
 
