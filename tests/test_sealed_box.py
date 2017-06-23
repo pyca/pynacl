@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+import os
 
 import pytest
 
@@ -22,23 +23,26 @@ from nacl.encoding import HexEncoder
 from nacl.public import PrivateKey, PublicKey, SealedBox
 
 
-VECTORS = [
-    # privalice, pubalice, plaintext, encrypted
-    (
-        b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
-        b"8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a",
-        (b"be075fc53c81f2d5cf141316ebeb0c7b5228c52a4c62cbd44b66849b64244ffce5e"
-         b"cbaaf33bd751a1ac728d45e6c61296cdc3c01233561f41db66cce314adb310e3be8"
-         b"250c46f06dceea3a7fa1348057e2f6556ad6b1318a024a838f21af1fde048977eb4"
-         b"8f59ffd4924ca1c60902e52f0a089bc76897040e082f937763848645e0705"),
-        (b"199c808806a62c1be56951023ad3396b0ce0ef2c5b9ca688ac96d2d06ca43f65d31"
-         b"4400cc9bbefb23dd26f824c9cb553f81e8c894ea9a553f4d777c77b66d5a6925da3"
-         b"f5961c5f7147172db5597ac14210066ee3ee13e6230a9a9610e9cddbf24094f54fb"
-         b"bf6694c08a436cec39ff5a373656d9584f4df9dd8c817e2e597540628d0ee21a652"
-         b"4a3fcf3eabdc0968390bd260a47366ead7f71cc2e774d411d96f3497c7e10291937"
-         b"bc16dc46a111686b85a8c86"),
-    ),
-]
+def _read_crypto_test_vectors(fname, maxels=0):
+    vectors = []
+    path = os.path.join(os.path.dirname(__file__), "data", fname)
+    with open(path, "rb") as fp:
+        for line in fp:
+            line = line.rstrip()
+            if line[0] == b'#'[0] or not line:
+                continue
+            splt = [x for x in line.split(b'\t')]
+            if maxels:
+                splt = splt[:maxels]
+            vectors.append(tuple(splt))
+    return vectors
+
+
+def sealbox_vectors():
+    # Fmt: <recipient sk><tab><recipient pk><tab><plaintext><tab><ciphertext>
+    # [<tab> ...]
+    DATA = "sealed_box_ref.txt"
+    return _read_crypto_test_vectors(DATA, maxels=4)
 
 
 def test_generate_private_key():
@@ -62,7 +66,7 @@ def test_sealed_box_creation():
     (
         "privalice", "pubalice", "plaintext", "_encrypted"
     ),
-    VECTORS,
+    sealbox_vectors()
 )
 def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
@@ -90,7 +94,7 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     (
         "privalice", "pubalice", "plaintext", "encrypted"
     ),
-    VECTORS,
+    sealbox_vectors()
 )
 def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
@@ -127,7 +131,7 @@ def test_wrong_types():
     (
         "_privalice", "pubalice", "_plaintext", "encrypted"
     ),
-    VECTORS,
+    sealbox_vectors()
 )
 def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
                                               _plaintext, encrypted):
