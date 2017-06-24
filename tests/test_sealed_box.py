@@ -15,34 +15,20 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-import os
 
 import pytest
 
+from utils import read_crypto_test_vectors
+
 from nacl.encoding import HexEncoder
 from nacl.public import PrivateKey, PublicKey, SealedBox
-
-
-def _read_crypto_test_vectors(fname, maxels=0):
-    vectors = []
-    path = os.path.join(os.path.dirname(__file__), "data", fname)
-    with open(path, "rb") as fp:
-        for line in fp:
-            line = line.rstrip()
-            if line[0] == b'#'[0] or not line:
-                continue
-            splt = [x for x in line.split(b'\t')]
-            if maxels:
-                splt = splt[:maxels]
-            vectors.append(tuple(splt))
-    return vectors
 
 
 def sealbox_vectors():
     # Fmt: <recipient sk><tab><recipient pk><tab><plaintext><tab><ciphertext>
     # [<tab> ...]
     DATA = "sealed_box_ref.txt"
-    return _read_crypto_test_vectors(DATA, maxels=4)
+    return read_crypto_test_vectors(DATA, maxels=4)
 
 
 def test_generate_private_key():

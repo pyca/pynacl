@@ -20,6 +20,8 @@ import os
 
 import pytest
 
+from utils import read_crypto_test_vectors
+
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.hash
@@ -33,30 +35,17 @@ OVERLONG_PARAMS_VECTORS = [
 ]
 
 
-def _read_crypto_test_vectors(fname):
-    vectors = []
-    path = os.path.join(os.path.dirname(__file__), "data", fname)
-    with open(path, "rb") as fp:
-        for line in fp:
-            line = line.rstrip()
-            if line[0] == b'#'[0]:
-                continue
-            splt = [x for x in line.split(b'\t')]
-            vectors.append(tuple(splt))
-    return vectors
-
-
 def generichash_vectors():
     # Format: <message> <tab> <key> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-nosalt-nopersonalization.txt"
-    return _read_crypto_test_vectors(DATA)
+    return read_crypto_test_vectors(DATA)
 
 
 def blake2_salt_pers_vectors():
     # Format: <message> <tab> <key> <tab> <salt> <tab>
     # <personalization> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-salt-personalization.txt"
-    return _read_crypto_test_vectors(DATA)
+    return read_crypto_test_vectors(DATA)
 
 
 def blake2_reference_vectors():
