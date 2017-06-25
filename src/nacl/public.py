@@ -287,10 +287,9 @@ class SealedBox(encoding.Encodable, StringFixer, object):
     def encrypt(self, plaintext, encoder=encoding.RawEncoder):
         """
         Encrypts the plaintext message using a random-generated ephemeral
-        keypair and returns the ciphertext encoded with the encoder.
-
-        The public part of the ephemeral key-pair will be enclosed in the
-        returned ciphertext.
+        keypair and returns a "composed ciphertext", containing both
+        the public part of the keypair and the ciphertext proper,
+        encoded with the encoder.
 
         The private part of the ephemeral key-pair will be scrubbed before
         returning the ciphertext, therefore, the sender will not be able to
