@@ -273,7 +273,7 @@ def crypto_pwhash_argon2i(outlen, passwd, salt, opslimit, memlimit, alg):
     given as input.
 
     :param outlen: the length of the derived key
-    :type outlen: output key length
+    :type outlen: int
     :param passwd: The input password
     :type passwd: bytes
     :param opslimit: computational cost
