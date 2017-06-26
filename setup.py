@@ -188,12 +188,17 @@ class build_ext(_build_ext):
         return _build_ext.run(self)
 
 
+README = open("README.rst").read()
+INSTALL = open("INSTALL.rst").read()
+CHANGELOG = open("CHANGELOG.rst").read()
+
+
 setup(
     name=nacl.__title__,
     version=nacl.__version__,
 
     description=nacl.__summary__,
-    long_description=open("README.rst").read(),
+    long_description='\n'.join((README, INSTALL, CHANGELOG)),
     url=nacl.__uri__,
     license=nacl.__license__,
 
