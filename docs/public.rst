@@ -29,8 +29,11 @@ from Bob, it's a forgery.
 This bidirectional guarantee around identity is known as mutual authentication.
 
 
-Example
--------
+Examples
+--------
+
+nacl.public.Box
+~~~~~~~~~~~~~~~
 
 The :class:`~nacl.public.Box` class uses the given public and private (secret)
 keys to derive a shared key, which is used with the nonce given to encrypt the
@@ -98,6 +101,55 @@ Finally, the message is decrypted (regardless of how the nonce was generated):
     #   tampered with or there was otherwise an error.
     plaintext = alice_box.decrypt(encrypted)
 
+
+nacl.public.SealedBox
+~~~~~~~~~~~~~~~~~~~~~
+
+The :class:`~nacl.public.SealedBox` class encrypts messages addressed
+to a specified key-pair by using ephemeral sender's keypairs, which
+will be discarded just after encrypting a single plaintext message.
+
+This kind of construction allows sending messages, which only the recipient
+can decrypt without providing any kind of cryptographic proof of sender's
+authorship.
+
+.. warning:: By design, the recipient will have no means to trace
+    the ciphertext to a known author, since the sending
+    keypair itself is not bound to any sender's identity, and
+    the sender herself will not be able to decrypt the ciphertext
+    she just created, since the private part of the key cannot be
+    recovered after use.
+
+This is how the system works:
+
+.. code-block:: python
+
+    import nacl.utils
+    from nacl.public import PrivateKey, SealedBox
+
+    # Generate Bob's private key, as we've done in the Box example
+    skbob = PrivateKey.generate()
+    pkbob = skbob.public_key
+
+    # Alice wishes to send a encrypted message to Bob,
+    # but prefers the message to be untraceable
+    sealed_box = SealedBox(pkbob)
+
+    # This is Alice's message
+    message = b"Kill all kittens"
+
+    # Encrypt the message, it will carry the ephemeral key public part
+    # to let Bob decrypt it
+    encrypted = sealed_box.encrypt(message)
+
+Now, Bob wants to read the secret message he just received; therefore
+he must create a SealedBox using his own private key:
+
+.. code-block:: python
+
+    unseal_box = SealedBox(skbob)
+    # decrypt the received message
+    plaintext = unseal_box.decrypt(encrypted)
 
 
 Reference
@@ -197,3 +249,36 @@ Reference
             your cipher is 32 bytes.
 
         :return bytes: The shared secret.
+
+.. class:: SealedBox(receiver_key)
+
+    The SealedBox class can box and unbox messages sent to a receiver key
+    using an ephemeral sending keypair.
+
+    .. method:: encrypt(plaintext, encoder)
+
+        Encrypt the message using a Box constructed from an ephemeral
+        key-pair and the receiver key.
+
+        The public part of the ephemeral key-pair will be enclosed in the
+        returned ciphertext.
+
+        The private part of the ephemeral key-pair will be scrubbed before
+        returning the ciphertext, therefore, the sender will not be able
+        to decrypt the message.
+
+        :param bytes plaintext: The plaintext message to encrypt.
+        :param encoder:  A class that is able to decode the ciphertext.
+
+        :return bytes: The public part of the ephemeral keypair,
+                       followed by the encrypted ciphertext
+
+    .. method:: decrypt(ciphertext, encoder)
+
+        Decrypt the message using a Box constructed from the receiver key
+        and the ephemeral key enclosed in the ciphertext.
+
+        :param bytes ciphertext: The ciphertext message to decrypt.
+        :param encoder:  A class that is able to decode the ciphertext.
+
+        :return bytes: The decrypted message
