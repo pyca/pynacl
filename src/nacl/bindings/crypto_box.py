@@ -198,7 +198,7 @@ def crypto_box_seal(message, pk):
     and the public key ``pk``.
     The ephemeral public key, which is embedded in the sealed box, is also
     used, in combination with ``pk``, to derive the nonce needed for the
-    underlyng box construct.
+    underlying box construct.
 
     :param message: bytes
     :param pk: bytes
