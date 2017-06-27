@@ -16,8 +16,18 @@ and *tunable* mechanisms, pioneered by the ``scrypt`` mechanism [SD2012]_,
 and followed-on by the schemes submitted to the **Password Hashing
 Competition** [PHC]_.
 
-The :py:mod:`nacl.pwhash` module exposes both the **PHC** recommended
-``argon2`` mechanism and the ``scrypt`` one.
+The :py:mod:`nacl.pwhash` module exposes both one of the **PHC** recommended
+``argon2`` mechanisms and the ``scrypt`` one.
+
+While some sources suggest to give preference to data dependent password
+hashing mechanisms, the only mechanism of the ``argon2`` family being
+implemented in libsodium as of version ``1.0.12`` is the data-independent
+``argon2i`` one.
+
+If you think in your use-case the risk of potential timing-attacks stemming
+from data-dependency is less than the potential time/memory trade-offs coming
+out of data-independency, you should consider staying with ``scrypt``
+password hashing instead of jumping to ``argon2i``
 
 
 Password storage and verification
