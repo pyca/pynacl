@@ -176,12 +176,12 @@ the decryption would fail and an exception would be raised::
         ...
     nacl.exceptions.CryptoError: Decryption failed. Ciphertext failed ...
 
-
-Contrary to the hashed password storage case, where a serialization
-format is well defined, in the raw key derivation case, the library
+Contrary to the hashed password storage case where a serialization
+format is well-defined, in the raw key derivation case the library
 user must take care to store (and retrieve) both a reference to the kdf
-used to derive the secret key, and all the derivation parameters, which
-are needed to later generate the same secret key from the password.
+used to derive the secret key and all the derivation parameters.
+These parameters are needed to later generate the same secret key
+from the password.
 
 Module level constants for operation and memory cost tweaking
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
