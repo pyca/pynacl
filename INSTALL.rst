@@ -1,8 +1,19 @@
 Installation
 ============
 
-Linux
------
+Binary wheel install
+--------------------
+
+PyNaCl ships as a binary wheel on OS X, Windows and Linux ``manylinux1`` [#many]_ ,
+so all dependencies are included. Make sure you have an up-to-date pip
+and run:
+
+.. code-block:: console
+
+    $ pip install pynacl
+
+Linux source build
+------------------
 
 PyNaCl relies on `libsodium`_, a portable C library. A copy is bundled
 with PyNaCl so to install you can run:
@@ -20,12 +31,6 @@ the bundled copy during install by running:
 
 .. _libsodium: https://github.com/jedisct1/libsodium
 
-Mac OS X & Windows
-------------------
-
-PyNaCl ships as a binary wheel on OS X and Windows so all dependencies
-are included. Make sure you have an up-to-date pip and run:
-
-.. code-block:: console
-
-    $ pip install pynacl
+.. [#many] `manylinux1 wheels <https://www.python.org/dev/peps/pep-0513/>`_
+    are built on a baseline linux environment based on Centos 5.11
+    and should work on most x86 and x86_64 glibc based linux environments.
