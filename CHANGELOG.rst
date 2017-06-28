@@ -9,6 +9,7 @@ Changelog
 * Added support for ``SealedBox`` construction.
 * Infrastructure: add jenkins support for automatic build of
   ``manylinux1`` binary wheels
+* Added support for ``argon2i`` password hashing construct
 
 1.1.2 - 2017-03-31
 ------------------
