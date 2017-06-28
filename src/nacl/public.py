@@ -264,6 +264,8 @@ class SealedBox(encoding.Encodable, StringFixer, object):
         messages and derive nonces
     :param private_key: :class:`~nacl.public.PrivateKey` used to decrypt
         messages
+
+    .. versionadded:: 1.2
     """
 
     def __init__(self, recipient_key):

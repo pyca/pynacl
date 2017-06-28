@@ -203,6 +203,8 @@ def crypto_box_seal(message, pk):
     :param message: bytes
     :param pk: bytes
     :rtype: bytes
+
+    .. versionadded:: 1.2
     """
     ensure(isinstance(message, bytes),
            "input message must be bytes",
@@ -239,6 +241,8 @@ def crypto_box_seal_open(ciphertext, pk, sk):
     :param pk: bytes
     :param sk: bytes
     :rtype: bytes
+
+    .. versionadded:: 1.2
     """
     ensure(isinstance(ciphertext, bytes),
            "input ciphertext must be bytes",
