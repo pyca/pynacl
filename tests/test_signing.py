@@ -15,12 +15,10 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-import codecs
-import os
 
 import pytest
 
-from utils import assert_equal, assert_not_equal
+from utils import assert_equal, assert_not_equal, read_crypto_test_vectors
 
 from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
 from nacl.encoding import HexEncoder
@@ -34,23 +32,19 @@ def tohex(b):
 
 def ed25519_known_answers():
     # Known answers taken from: http://ed25519.cr.yp.to/python/sign.input
-    answers = []
-
-    path = os.path.join(os.path.dirname(__file__), "data", "ed25519")
-    with codecs.open(path, "r", encoding="utf-8") as fp:
-        for line in fp:
-            x = line.split(":")
-            answers.append({
-                "seed": x[0][0:64].encode("ascii"),
-                "public_key": x[1].encode("ascii"),
-                "message": x[2].encode("ascii"),
-                "signed": x[3].encode("ascii"),
-                "signature": binascii.hexlify(
-                    binascii.unhexlify(x[3].encode("ascii"))[:64],
-                ),
-            })
-
-    return answers
+    # hex-encoded fields on each input line: sk||pk, pk, msg, signature||msg
+    # known answer fields: sk, pk, msg, signature, signed
+    DATA = "ed25519"
+    lines = read_crypto_test_vectors(DATA, delimiter=b':')
+    answ = [(
+             x[0][:64],   # secret key
+             x[1],        # public key
+             x[2],        # message
+             x[3][:128],  # signature
+             x[3],        # signed message
+             )
+            for x in lines]
+    return answ
 
 
 class TestSigningKey:
@@ -93,13 +87,11 @@ class TestSigningKey:
         SigningKey(seed, encoder=HexEncoder)
 
     @pytest.mark.parametrize(
-        ("seed", "message", "signature", "expected"),
-        [
-            (x["seed"], x["message"], x["signature"], x["signed"])
-            for x in ed25519_known_answers()
-        ],
+        ("seed", "_public_key", "message", "signature", "expected"),
+        ed25519_known_answers()
     )
-    def test_message_signing(self, seed, message, signature, expected):
+    def test_message_signing(self, seed, _public_key,
+                             message, signature, expected):
         signing_key = SigningKey(
             seed,
             encoder=HexEncoder,
@@ -145,14 +137,11 @@ class TestVerifyKey:
         assert_not_equal(k1, k2)
 
     @pytest.mark.parametrize(
-        ("public_key", "signed", "message", "signature"),
-        [
-            (x["public_key"], x["signed"], x["message"], x["signature"])
-            for x in ed25519_known_answers()
-        ]
+        ("_seed", "public_key", "message", "signature", "signed"),
+        ed25519_known_answers()
     )
     def test_valid_signed_message(
-            self, public_key, signed, message, signature):
+            self, _seed, public_key, message, signature, signed):
         key = VerifyKey(
             public_key,
             encoder=HexEncoder,
