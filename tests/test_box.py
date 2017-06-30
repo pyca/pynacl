@@ -21,6 +21,7 @@ import pytest
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import Box, PrivateKey, PublicKey
+from nacl.utils import random
 
 
 VECTORS = [
@@ -46,6 +47,21 @@ VECTORS = [
 
 def test_generate_private_key():
     PrivateKey.generate()
+
+
+def test_generate_private_key_from_seed():
+    PrivateKey.from_seed(random(PrivateKey.SEED_SIZE))
+
+
+def test_generate_private_key_from_reference_seed():
+
+    from box_secret_from_seed_ref import test_seed, test_pk, test_sk
+
+    prvt = PrivateKey.from_seed(test_seed, encoder=HexEncoder)
+    sk = binascii.unhexlify(test_sk)
+    pk = binascii.unhexlify(test_pk)
+    assert bytes(prvt) == sk
+    assert bytes(prvt.public_key) == pk
 
 
 def test_box_creation():
@@ -275,3 +291,6 @@ def test_wrong_types():
                      Box, priv, priv.public_key.encode())
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
                      Box, priv.encode(), priv.public_key)
+
+    check_type_error("seed must be a 32 bytes long",
+                     PrivateKey.from_seed, b"1")

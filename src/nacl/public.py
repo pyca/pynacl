@@ -73,9 +73,12 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
     :param encoder: The encoder class used to decode the given keys
 
     :cvar SIZE: The size that the private key is required to be
+    :cvar SEED_SIZE: The size that the seed used to generate the
+                     private key is required to be
     """
 
     SIZE = nacl.bindings.crypto_box_SECRETKEYBYTES
+    SEED_SIZE = nacl.bindings.crypto_box_SEEDBYTES
 
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
@@ -93,6 +96,24 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
         self._private_key = private_key
         self.public_key = PublicKey(raw_public_key)
+
+    @classmethod
+    def from_seed(cls, seed, encoder=encoding.RawEncoder):
+        # decode the seed
+        seed = encoder.decode(seed)
+        # Verify the given seed type and size are correct
+        if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
+            raise exc.TypeError(("PrivateKey seed must be a {0} bytes long "
+                                 "binary sequence").format(
+                                                           cls.SEED_SIZE)
+                                )
+        # generate a raw keypair from the given seed
+        raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
+        # create a PrivateKey instance from the raw keypair
+        prvk = super(cls.__class__, cls).__new__(cls)
+        prvk._private_key = raw_sk
+        prvk.public_key = PublicKey(raw_pk)
+        return prvk
 
     def __bytes__(self):
         return self._private_key
