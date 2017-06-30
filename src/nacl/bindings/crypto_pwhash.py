@@ -356,9 +356,9 @@ def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
     :return: serialized derived key and parameters
     :rtype: bytes
     """
-    ensure(isinstance(opslimit, int),
+    ensure(isinstance(opslimit, integer_types),
            raising=TypeError)
-    ensure(isinstance(memlimit, int),
+    ensure(isinstance(memlimit, integer_types),
            raising=TypeError)
     ensure(isinstance(passwd, bytes),
            raising=TypeError)
