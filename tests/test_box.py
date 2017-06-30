@@ -242,7 +242,7 @@ def test_box_failed_decryption(
 def test_box_wrong_length():
     with pytest.raises(ValueError):
         PublicKey(b"")
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         PrivateKey(b"")
 
     pub = PublicKey(
@@ -269,11 +269,14 @@ def check_type_error(expected, f, *args):
 def test_wrong_types():
     priv = PrivateKey.generate()
 
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, 12)
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, priv)
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, priv.public_key)
 
     check_type_error("PublicKey must be created from 32 bytes",

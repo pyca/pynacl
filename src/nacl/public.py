@@ -83,14 +83,12 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
     def __init__(self, private_key, encoder=encoding.RawEncoder):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
-        if not isinstance(private_key, bytes):
-            raise exc.TypeError(
-                "PrivateKey must be created from a 32 byte seed")
-
-        # Verify that our seed is the proper size
-        if len(private_key) != self.SIZE:
-            raise exc.ValueError(
-                "The secret key must be exactly %d bytes long" % self.SIZE)
+        # verify the given secret key type and size are correct
+        if not (isinstance(private_key, bytes)
+                and len(private_key) == self.SIZE):
+            raise exc.TypeError(("PrivateKey must be created from a {0} "
+                                 "bytes long raw secret key").format(self.SIZE)
+                                )
 
         raw_public_key = nacl.bindings.crypto_scalarmult_base(private_key)
 
