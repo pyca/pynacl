@@ -244,3 +244,49 @@ def test_box_seal_wrong_types():
     with pytest.raises(TypeError):
         c.crypto_box_seal_open(
             None, A_pubkey, A_secretkey)
+
+
+def test_box_seed_keypair_reference():
+    # reference seed taken from libsodium's
+    # libsodium/test/default/box_seed.c
+    test_seed = (
+        b"77076d0a7318a57d"
+        b"3c16c17251b26645"
+        b"df4c2f87ebc0992a"
+        b"b177fba51db92c2a"
+    )
+    # reference public and secret keys taken
+    # splitting the expected test output from
+    # libsodium/test/default/box_seed.exp
+    test_pk = (
+        b"ed7749b4d989f695"
+        b"7f3bfde6c56767e9"
+        b"88e21c9f8784d91d"
+        b"610011cd553f9b06"
+    )
+
+    test_sk = (
+        b"accd44eb8e93319c"
+        b"0570bc11005c0e01"
+        b"89d34ff02f6c1777"
+        b"3411ad191293c98f"
+    )
+    seed = unhexlify(test_seed)
+    pk, sk = c.crypto_box_seed_keypair(seed)
+    assert pk == unhexlify(test_pk)
+    assert sk == unhexlify(test_sk)
+
+
+def test_box_seed_keypair_random():
+    seed = c.randombytes(c.crypto_box_SEEDBYTES)
+    pk, sk = c.crypto_box_seed_keypair(seed)
+    ppk = c.crypto_scalarmult_base(sk)
+    assert pk == ppk
+
+
+def test_box_seed_keypair_short_seed():
+    seed = c.randombytes(c.crypto_box_SEEDBYTES - 1)
+    with pytest.raises(ValueError):
+        c.crypto_box_seed_keypair(seed)
+    with pytest.raises(CryptoError):
+        c.crypto_box_seed_keypair(seed)
