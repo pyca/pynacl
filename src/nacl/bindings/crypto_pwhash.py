@@ -185,11 +185,11 @@ def crypto_pwhash_scryptsalsa208sha256_ll(passwd, salt, n, r, p, dklen=64,
                        operations
     :rtype: bytes
     """
-    ensure(isinstance(n, int),
+    ensure(isinstance(n, integer_types),
            raising=TypeError)
-    ensure(isinstance(r, int),
+    ensure(isinstance(r, integer_types),
            raising=TypeError)
-    ensure(isinstance(p, int),
+    ensure(isinstance(p, integer_types),
            raising=TypeError)
 
     ensure(isinstance(passwd, bytes),
@@ -356,9 +356,9 @@ def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
     :return: serialized derived key and parameters
     :rtype: bytes
     """
-    ensure(isinstance(opslimit, int),
+    ensure(isinstance(opslimit, integer_types),
            raising=TypeError)
-    ensure(isinstance(memlimit, int),
+    ensure(isinstance(memlimit, integer_types),
            raising=TypeError)
     ensure(isinstance(passwd, bytes),
            raising=TypeError)
