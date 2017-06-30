@@ -107,11 +107,8 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
                                 )
         # generate a raw keypair from the given seed
         raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
-        # create a PrivateKey instance from the raw keypair
-        prvk = super(cls.__class__, cls).__new__(cls)
-        prvk._private_key = raw_sk
-        prvk.public_key = PublicKey(raw_pk)
-        return prvk
+        # construct a instance from the raw secret key
+        return cls(raw_sk)
 
     def __bytes__(self):
         return self._private_key
