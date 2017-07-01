@@ -97,6 +97,21 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
     @classmethod
     def from_seed(cls, seed, encoder=encoding.RawEncoder):
+        """
+        Generate a PrivateKey using a deterministic construction
+        starting from a caller-provided seed
+
+        .. warning:: The seed **must** be high-entropy; therefore,
+            its generator **must** be a cryptographic quality
+            random function like, for example, :func:`~nacl.utils.random`.
+
+        .. warning:: The seed **must** be protected and remain secret.
+            Anyone who knows the seed is really in possession of
+            the corresponding PrivateKey.
+
+        :param seed: The seed used to generate the private key
+        :rtype: :class:`~nacl.public.PrivateKey`
+        """
         # decode the seed
         seed = encoder.decode(seed)
         # Verify the given seed type and size are correct
