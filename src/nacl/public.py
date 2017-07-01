@@ -92,17 +92,18 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
 
         self._private_key = private_key
         self.public_key = PublicKey(raw_public_key)
+        self._hashbytes = b'p:' + bytes(self.public_key)
 
     def __bytes__(self):
         return self._private_key
 
     def __hash__(self):
-        return hash(bytes(self))
+        return hash(self._hashbytes)
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
+        return self.public_key == other.public_key
 
     def __ne__(self, other):
         return not (self == other)
