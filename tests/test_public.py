@@ -20,6 +20,7 @@ from utils import assert_equal, assert_not_equal
 
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
 from nacl.public import Box, PrivateKey, PublicKey
+from nacl.utils import random
 
 
 class TestPublicKey:
@@ -57,6 +58,10 @@ class TestPrivateKey:
         k2 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         assert_equal(k1, k1)
         assert_equal(k1, k2)
+
+    def test_sk_and_pk_hashes_are_different(self):
+        sk = PrivateKey(random(crypto_box_SECRETKEYBYTES))
+        assert hash(sk) != hash(sk.public_key)
 
     @pytest.mark.parametrize('k2', [
         b"\x00" * crypto_box_SECRETKEYBYTES,
