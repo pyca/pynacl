@@ -59,6 +59,21 @@ class TestPrivateKey:
         assert_equal(k1, k1)
         assert_equal(k1, k2)
 
+    def _gen_equivalent_raw_keys_couple(self):
+        rwk1 = bytearray(random(crypto_box_SECRETKEYBYTES))
+        rwk2 = bytearray(rwk1)
+        # mask rwk1 bits
+        rwk1[0] &= 248
+        rwk1[31] &= 127
+        rwk1[31] |= 64
+        # set rwk2 bits
+        rwk2[0] |= 7
+        rwk2[31] |= 128
+        rwk2[31] &= 191
+        sk1 = PrivateKey(bytes(rwk1))
+        sk2 = PrivateKey(bytes(rwk2))
+        return sk1, sk2
+
     def test_sk_and_pk_hashes_are_different(self):
         sk = PrivateKey(random(crypto_box_SECRETKEYBYTES))
         assert hash(sk) != hash(sk.public_key)
@@ -113,3 +128,19 @@ class TestPrivateKey:
         box_BA = Box(bobs, alicesP)
 
         assert box_AB.shared_key() == box_BA.shared_key()
+
+    def test_equivalent_keys_shared_key_getter(self):
+        alices = PrivateKey.generate()
+        alicesP = alices.public_key
+        bobs, bobsprime = self._gen_equivalent_raw_keys_couple()
+        bobsP, bobsprimeP = bobs.public_key, bobsprime.public_key
+
+        assert bobsP == bobsprimeP
+
+        box_AB = Box(alices, bobsP)
+
+        box_BA = Box(bobs, alicesP)
+        box_BprimeA = Box(bobsprime, alicesP)
+
+        assert box_AB.shared_key() == box_BA.shared_key()
+        assert box_BprimeA.shared_key() == box_BA.shared_key()
