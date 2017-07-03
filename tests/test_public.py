@@ -74,6 +74,16 @@ class TestPrivateKey:
         sk2 = PrivateKey(bytes(rwk2))
         return sk1, sk2
 
+    def test_equivalent_keys_have_equal_hashes(self):
+        k1, k2 = self._gen_equivalent_raw_keys_couple()
+        assert bytes(k1) != bytes(k2)
+        assert hash(k1) == hash(k2)
+
+    def test_equivalent_keys_compare_as_equal(self):
+        k1, k2 = self._gen_equivalent_raw_keys_couple()
+        assert bytes(k1) != bytes(k2)
+        assert k1 == k2
+
     def test_sk_and_pk_hashes_are_different(self):
         sk = PrivateKey(random(crypto_box_SECRETKEYBYTES))
         assert hash(sk) != hash(sk.public_key)
