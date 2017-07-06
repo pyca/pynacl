@@ -57,6 +57,15 @@ def crypto_box_seed_keypair(seed):
     Returns a (public, secret) keypair deterministically generated
     from an input ``seed``.
 
+    .. warning:: The seed **must** be high-entropy; therefore,
+        its generator **must** be a cryptographic quality
+        random function like, for example, :func:`~nacl.utils.random`.
+
+    .. warning:: The seed **must** be protected and remain secret.
+        Anyone who knows the seed is really in possession of
+        the corresponding PrivateKey.
+
+
     :param seed: bytes
     :rtype: (bytes(public_key), bytes(secret_key))
     """
