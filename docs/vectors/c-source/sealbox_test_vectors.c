@@ -137,8 +137,8 @@ int main (int argc, char **argv) {
         int minmsgl = 128;
         int maxmsgl = 128;
         if (argc == 3) {
-            minmsgl = atoi (argv[2]) / 2;
-            maxmsgl = atoi (argv[2]);
+            minmsgl = atoi (argv[2]);
+            maxmsgl = atoi (argv[2]) * 2;
         } else if (argc == 4) {
             minmsgl = atoi (argv[2]);
             maxmsgl = atoi (argv[3]);
