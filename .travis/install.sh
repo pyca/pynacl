@@ -18,6 +18,8 @@ if [[ $SODIUM_INSTALL == 'system' ]]; then
     sudo ldconfig
 fi
 
+pip install -U tox coverage
+
 if [[ "${TOXENV}" == "pypy" ]]; then
     rm -rf ~/.pyenv
     git clone https://github.com/yyuu/pyenv.git ~/.pyenv
@@ -27,17 +29,6 @@ if [[ "${TOXENV}" == "pypy" ]]; then
     eval "$(pyenv init -)"
     pyenv install pypy-5.3.1
     pyenv global pypy-5.3.1
-fi
-
-if [[ "${TOXENV}" == "py26" ]]; then
-    rm -rf ~/.pyenv
-    git clone https://github.com/yyuu/pyenv.git ~/.pyenv
-    git -C  ~/.pyenv reset --hard ${PYENV_COMMIT:-HEAD}
-    PYENV_ROOT="$HOME/.pyenv"
-    PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-    pyenv install 2.6.9
-    pyenv global 2.6.9
 fi
 
 if [[ "${TOXENV}" == "py33" ]]; then
@@ -62,4 +53,3 @@ if [[ "${TOXENV}" == "py36" ]]; then
     pyenv global 3.6.0
 fi
 
-pip install -U tox coverage
