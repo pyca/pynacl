@@ -71,7 +71,7 @@ def crypto_secretbox_open(ciphertext, nonce, key):
     plaintext = ffi.new("unsigned char[]", len(padded))
 
     res = lib.crypto_secretbox_open(
-               plaintext, padded, len(padded), nonce, key)
+        plaintext, padded, len(padded), nonce, key)
     ensure(res == 0, "Decryption failed. Ciphertext failed verification",
            raising=exc.CryptoError)
 

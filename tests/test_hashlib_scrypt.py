@@ -86,5 +86,5 @@ RFC_7914_VECTORS = [
 def test_hashlib_scrypt_api(password, salt, n, r, p, dklen, expected):
     _exp = unhexlify(expected.replace(b" ", b""))
     dgst = nacl.hashlib.scrypt(password, salt=salt, n=n, r=r, p=p,
-                               dklen=dklen, maxmem=2*(1024 ** 3))
+                               dklen=dklen, maxmem=2 * (1024 ** 3))
     assert _exp == dgst

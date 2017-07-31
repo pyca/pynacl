@@ -55,7 +55,7 @@ crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 
 crypto_pwhash_argon2i_MEMLIMIT_MIN = \
-    max(lib.crypto_pwhash_argon2i_memlimit_min(), 8*1024)
+    max(lib.crypto_pwhash_argon2i_memlimit_min(), 8 * 1024)
 # Workaround for jedisct1/libsodium#516
 # fixed in libsodium version 1.0.13
 crypto_pwhash_argon2i_MEMLIMIT_MAX = \
@@ -101,17 +101,17 @@ def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
     ensure(p != 0, 'Invalid parallelization factor',
            raising=exc.ValueError)
 
-    ensure((n & (n-1)) == 0, 'Cost factor must be a power of 2',
+    ensure((n & (n - 1)) == 0, 'Cost factor must be a power of 2',
            raising=exc.ValueError)
 
     ensure(n > 1, 'Cost factor must be at least 2',
            raising=exc.ValueError)
 
-    ensure(p <= SCRYPT_PR_MAX / r, 'p*r is greater than {0}'.format(
-                                                                SCRYPT_PR_MAX),
+    ensure(p <= SCRYPT_PR_MAX / r,
+           'p*r is greater than {0}'.format(SCRYPT_PR_MAX),
            raising=exc.ValueError)
 
-    ensure(n < (1 << (16*r)),
+    ensure(n < (1 << (16 * r)),
            raising=exc.ValueError)
 
     Blen = p * 128 * r
@@ -297,39 +297,34 @@ def crypto_pwhash_argon2i(outlen, passwd, salt, opslimit, memlimit, alg):
            raising=exc.TypeError)
 
     if len(salt) != crypto_pwhash_argon2i_SALTBYTES:
-        raise exc.ValueError(("salt must be exactly {0} "
-                              "bytes long").format(
-                                              crypto_pwhash_argon2i_SALTBYTES))
+        raise exc.ValueError("salt must be exactly {0} bytes long".format(
+            crypto_pwhash_argon2i_SALTBYTES))
 
     if outlen < crypto_pwhash_argon2i_BYTES_MIN:
-        raise exc.ValueError(('derived key must be '
-                              'at least {0} bytes long').format(
-                                             crypto_pwhash_argon2i_BYTES_MIN))
+        raise exc.ValueError(
+            'derived key must be at least {0} bytes long'.format(
+                crypto_pwhash_argon2i_BYTES_MIN))
 
     elif outlen > crypto_pwhash_argon2i_BYTES_MAX:
-        raise exc.ValueError(('derived key must be '
-                              'at most {0} bytes long').format(
-                                             crypto_pwhash_argon2i_BYTES_MAX))
+        raise exc.ValueError(
+            'derived key must be at most {0} bytes long'.format(
+                crypto_pwhash_argon2i_BYTES_MAX))
 
     if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
-        raise exc.ValueError(('memlimit must be '
-                              'at least {0} bytes').format(
-                                           crypto_pwhash_argon2i_MEMLIMIT_MIN))
+        raise exc.ValueError('memlimit must be at least {0} bytes'.format(
+            crypto_pwhash_argon2i_MEMLIMIT_MIN))
 
     elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
-        raise exc.ValueError(('memlimit must be '
-                              'at most {0} bytes').format(
-                                           crypto_pwhash_argon2i_MEMLIMIT_MAX))
+        raise exc.ValueError('memlimit must be at most {0} bytes'.format(
+            crypto_pwhash_argon2i_MEMLIMIT_MAX))
 
     if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
-        raise exc.ValueError(('opslimit must be '
-                              'at least {0}').format(
-                                           crypto_pwhash_argon2i_OPSLIMIT_MIN))
+        raise exc.ValueError('opslimit must be at least {0}'.format(
+            crypto_pwhash_argon2i_OPSLIMIT_MIN))
 
     elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
-        raise exc.ValueError(('opslimit must be '
-                              'at most {0}').format(
-                                           crypto_pwhash_argon2i_OPSLIMIT_MAX))
+        raise exc.ValueError('opslimit must be at most {0}'.format(
+            crypto_pwhash_argon2i_OPSLIMIT_MAX))
 
     outbuf = ffi.new("unsigned char[]", outlen)
 

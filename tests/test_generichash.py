@@ -28,10 +28,10 @@ import nacl.hash
 import nacl.hashlib
 
 OVERLONG_PARAMS_VECTORS = [
-    (b'key', 65*b'\xaa', 16*b'\xaa', 16*b'\x55', 64, b'will raise'),
-    (b'salt', b'key', 17*b'\xaa', 16*b'\x55', 64, b'will raise'),
-    (b'personal', b'key', 16*b'\xaa', 17*b'\x55', 64, b'will raise'),
-    (b'digest_size', b'key', 16*b'\xaa', 16*b'\x55', 65, b'will raise'),
+    (b'key', 65 * b'\xaa', 16 * b'\xaa', 16 * b'\x55', 64, b'will raise'),
+    (b'salt', b'key', 17 * b'\xaa', 16 * b'\x55', 64, b'will raise'),
+    (b'personal', b'key', 16 * b'\xaa', 17 * b'\x55', 64, b'will raise'),
+    (b'digest_size', b'key', 16 * b'\xaa', 16 * b'\x55', 65, b'will raise'),
 ]
 
 

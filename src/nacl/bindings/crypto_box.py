@@ -185,7 +185,7 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     plaintext = ffi.new("unsigned char[]", len(padded))
 
     res = lib.crypto_box_open_afternm(
-                plaintext, padded, len(padded), nonce, k)
+        plaintext, padded, len(padded), nonce, k)
     ensure(res == 0, "An error occurred trying to decrypt the message",
            raising=exc.CryptoError)
 

@@ -112,4 +112,4 @@ def scrypt(password, salt='', n=2**20, r=8, p=1,
     in cpython version 3.6
     """
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
-            password, salt, n, r, p, maxmem=maxmem, dklen=dklen)
+        password, salt, n, r, p, maxmem=maxmem, dklen=dklen)
