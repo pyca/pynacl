@@ -33,9 +33,9 @@ import nacl.pwhash
 
 _all_unicode = u''.join(unichr(i) for i in range(sys.maxunicode))
 PASSWD_CHARS = u''.join(c for c in _all_unicode
-                        if (ud.category(c).startswith('L')
-                            or ud.category(c).startswith('N')
-                            or ud.category(c) == 'Zs'
+                        if (ud.category(c).startswith('L') or
+                            ud.category(c).startswith('N') or
+                            ud.category(c) == 'Zs'
                             )
                         )
 # Select Letters, number representations and spacing characters
@@ -86,9 +86,9 @@ def gen_argon2i_str_params(n,
     return rn
 
 
-@pytest.mark.parametrize(("size", "password", "salt",
-                          "opslimit", "memlimit",
-                          "expected"), [
+@pytest.mark.parametrize(
+    ("size", "password", "salt", "opslimit", "memlimit", "expected"),
+    [
         (
             32,
             b"The quick brown fox jumps over the lazy dog.",
@@ -143,8 +143,9 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
         )
 
 
-@pytest.mark.parametrize(("size", "password", "salt",
-                          "opslimit", "memlimit"), [
+@pytest.mark.parametrize(
+    ("size", "password", "salt", "opslimit", "memlimit"),
+    [
         (
             32,
             b"The quick brown fox jumps over the lazy dog.",
@@ -161,7 +162,9 @@ def test_wrong_salt_length(size, password, salt,
                                              opslimit, memlimit)
 
 
-@pytest.mark.parametrize(("passwd_hash", "password"), [
+@pytest.mark.parametrize(
+    ("passwd_hash", "password"),
+    [
         (
             b"Too short (and wrong) hash",
             b"a password",
@@ -174,8 +177,9 @@ def test_wrong_hash_length(passwd_hash, password):
                                                 password)
 
 
-@pytest.mark.parametrize(("size", "password", "salt",
-                          "opslimit", "memlimit"), [
+@pytest.mark.parametrize(
+    ("size", "password", "salt", "opslimit", "memlimit"),
+    [
         (
             32,
             b"The quick brown fox jumps over the lazy dog.",
@@ -192,8 +196,9 @@ def test_kdf_wrong_salt_length(size, password, salt,
                                              opslimit, memlimit)
 
 
-@pytest.mark.parametrize(("opslimit", "memlimit",
-                          "n", "r", "p"), [
+@pytest.mark.parametrize(
+    ("opslimit", "memlimit", "n", "r", "p"),
+    [
         (
             32768,
             2 * (2 ** 20),
@@ -239,7 +244,9 @@ def test_variable_limits(opslimit, memlimit, n, r, p):
     assert rp == p
 
 
-@pytest.mark.parametrize(("passwd_hash", "password"), [
+@pytest.mark.parametrize(
+    ("passwd_hash", "password"),
+    [
         (
             b"Too short (and wrong) hash",
             b"another password",
@@ -304,25 +311,25 @@ def test_argon2i_kdf(dk_size, password, salt, iters, mem_kb, pwhash):
     assert dk == ref
 
 
-@pytest.mark.parametrize(("dk_size", "password", "salt",
-                          "iters", "mem_kb"),
-                         [
-                            #  wrong salt length:
-                            (20, "aPassword", 3 * "salt", 3, 256),
-                            #  too short output:
-                            (15, "aPassword", 4 * "salt", 4, 256),
-                            #  too long output:
-                            (0xFFFFFFFF + 1, "aPassword", 4 * "salt", 4, 256),
-                            #  too low iteration count:
-                            (20, "aPassword", 4 * "salt", 1, 256),
-                            #  too high interation count:
-                            (20, "aPassword", 4 * "salt", 0xFFFFFFFF + 1, 256),
-                            #  too low memory usage:
-                            (20, "aPassword", 4 * "salt", 4, 2),
-                            #  too high memory usage:
-                            (20, "aPassword", 4 * "salt", 4, 0xFFFFFFFF + 1),
-                          ]
-                         )
+@pytest.mark.parametrize(
+    ("dk_size", "password", "salt", "iters", "mem_kb"),
+    [
+        #  wrong salt length:
+        (20, "aPassword", 3 * "salt", 3, 256),
+        #  too short output:
+        (15, "aPassword", 4 * "salt", 4, 256),
+        #  too long output:
+        (0xFFFFFFFF + 1, "aPassword", 4 * "salt", 4, 256),
+        #  too low iteration count:
+        (20, "aPassword", 4 * "salt", 1, 256),
+        #  too high interation count:
+        (20, "aPassword", 4 * "salt", 0xFFFFFFFF + 1, 256),
+        #  too low memory usage:
+        (20, "aPassword", 4 * "salt", 4, 2),
+        #  too high memory usage:
+        (20, "aPassword", 4 * "salt", 4, 0xFFFFFFFF + 1),
+    ]
+)
 def test_argon2i_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.kdf_argon2i(dk_size, password.encode('utf-8'),

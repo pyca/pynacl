@@ -41,7 +41,8 @@ class PublicKey(encoding.Encodable, StringFixer, object):
         if len(self._public_key) != self.SIZE:
             raise exc.ValueError(
                 "The public key must be exactly {0} bytes long".format(
-                                                                    self.SIZE)
+                    self.SIZE
+                )
             )
 
     def __bytes__(self):
@@ -272,13 +273,13 @@ class SealedBox(encoding.Encodable, StringFixer, object):
 
         if isinstance(recipient_key, PublicKey):
             self._public_key = recipient_key.encode(
-                                                encoder=encoding.RawEncoder)
+                encoder=encoding.RawEncoder)
             self._private_key = None
         elif isinstance(recipient_key, PrivateKey):
             self._private_key = recipient_key.encode(
-                                                encoder=encoding.RawEncoder)
+                encoder=encoding.RawEncoder)
             self._public_key = recipient_key.public_key.encode(
-                                                encoder=encoding.RawEncoder)
+                encoder=encoding.RawEncoder)
         else:
             raise exc.TypeError("SealedBox must be created from "
                                 "a PublicKey or a PrivateKey")

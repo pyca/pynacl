@@ -90,13 +90,14 @@ def kdf_scryptsalsa208sha256(size, password, salt,
     :param int memlimit:
     :rtype: bytes
     """
-    ensure(len(salt) == SCRYPT_SALTBYTES,
-           "The salt must be exactly %s, not %s bytes long" % (
-                SCRYPT_SALTBYTES,
-                len(salt)
-            ),
-           raising=exc.ValueError
-           )
+    ensure(
+        len(salt) == SCRYPT_SALTBYTES,
+        "The salt must be exactly %s, not %s bytes long" % (
+            SCRYPT_SALTBYTES,
+            len(salt)
+        ),
+        raising=exc.ValueError
+    )
 
     n_log2, r, p = nacl.bindings.nacl_bindings_pick_scrypt_params(opslimit,
                                                                   memlimit)
