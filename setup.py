@@ -211,9 +211,9 @@ setup(
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={
-        "tests": ["pytest!=3.2.0"],
+        "tests": ["pytest>=3.2.1"],
     },
-    tests_require=["pytest!=3.2.0"],
+    tests_require=["pytest>=3.2.1"],
 
     package_dir={"": "src"},
     packages=[
