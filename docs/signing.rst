@@ -197,7 +197,7 @@ Algorithm
 ~~~~~~~~~
 
 * **Public Keys:** `Curve25519 high-speed elliptic curve cryptography <https://cr.yp.to/ecdh.html>`_
-* **Signatures:** `Ed25519 digital signature system <https://cr.yp.to/ecdh.html>`_
+* **Signatures:** `Ed25519 digital signature system <https://ed25519.cr.yp.to/>`_
 
 .. image:: _static/ed25519.png
 
