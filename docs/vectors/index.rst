@@ -18,7 +18,7 @@ Box construction
 
 The reference vector for testing the :py:class:`nacl.public.Box`
 implementation come from libsodium's test/default/box.c and
-test/default/box2.c and the corresopnding expected outputs
+test/default/box2.c and the corresponding expected outputs
 in test/default/box.exp and test/default/box2.exp
 
 SecretBox construction
@@ -41,3 +41,4 @@ generated.
     :glob:
 
     *_vectors
+    bundled_library_build

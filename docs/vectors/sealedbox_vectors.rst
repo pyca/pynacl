@@ -14,10 +14,15 @@ In a unix-like programming environment you shoud then execute:
 
 .. code-block:: bash
 
-    $ cc -o sealbox_test_vectors -l sodium sealbox_test_vectors.c
+    $ cc -o sealbox_test_vectors sealbox_test_vectors.c -lsodium -lc
 
-The utility program can both generate list of vectors on standard
-output and check consistency of vectors pulled from standard input.
+If you prefer using a locally compiled installation of the bundled sources,
+refer to :ref:`building-a-local-library` and then run:
+
+.. code-block:: bash
+
+    $ cc -o sealbox_test_vectors sealbox_test_vectors.c \
+      ${SODIUMINCL} ${SUDIUMLIB} -lsodium -lc
 
 Vector generation
 """""""""""""""""
@@ -25,15 +30,15 @@ Vector generation
 When called with one or more command line arguments, ``sealbox_test_vectors``
 will generate the number of hex-encoded vectors requested as first argument,
 with the optional second and third arguments influencing the length of the
-generated messages:
+randomly generated messages:
 
 .. code-block:: bash
 
     $ ./sealbox_test_vectors 1
-    XXXX...        XXXX...        XXXX...        XXXX...
+    XXXX...        XXXX...        <len>:XXXX...        <len>:XXXX...
 
 The second argument, if present, sets both a minimum and a maximum length
-on generated messages overriding the default 128 bytes values
+on generated messages, overriding the default 128 bytes values
 respectively with the supplied value and with twice the supplied value.
 
 The third argument, if present, sets the maximum length of generated
@@ -45,7 +50,7 @@ Vector test
 When called without command line arguments, ``sealbox_test_vectors``
 will parse and hex-decode the lines given as standard input and
 check if decoding the encrypted message will return the original
-message. A "OK"/"KO" tag will be appended to the input line to
+message. A "OK"/"FAIL" tag will be appended to the input line to
 signify success/failure of the test.
 
 To check correct "round-trip" behavior, you can run ``sealbox_test_vectors``
@@ -54,10 +59,10 @@ as a test vector generator against itself:
 .. code-block:: bash
 
     $ ./sealbox_test_vectors 1 | ./sealbox_test_vectors
-    XXXX...	XXXX...	XXXX...	XXXX...	OK
+    XXXX...	XXXX... <len>:XXXX...	<len>:XXXX...	OK
 
 If you want to check the vectors distributed with PyNaCl's sources,
-if you set the environment variable ``PYNACL_BASE`` to the directory
+after setting the environment variable ``PYNACL_BASE`` to the directory
 where the unpacked source for PyNaCl has been extracted/cloned,
 you could run:
 
