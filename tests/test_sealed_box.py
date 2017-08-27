@@ -25,8 +25,8 @@ from nacl.public import PrivateKey, PublicKey, SealedBox
 
 
 def sealbox_vectors():
-    # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext><tab><cr_len>:<ciphertext>
-    # [<tab> ...]
+    # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext>
+    # <tab><cr_len>:<ciphertext>[<tab> ...]
     DATA = "sealed_box_ref.txt"
     return read_crypto_test_vectors(DATA, maxels=4, delimiter=b'\t')
 
