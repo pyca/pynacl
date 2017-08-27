@@ -25,7 +25,7 @@ from nacl.public import PrivateKey, PublicKey, SealedBox
 
 
 def sealbox_vectors():
-    # Fmt: <recipient sk><tab><recipient pk><tab><plaintext><tab><ciphertext>
+    # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext><tab><cr_len>:<ciphertext>
     # [<tab> ...]
     DATA = "sealed_box_ref.txt"
     return read_crypto_test_vectors(DATA, maxels=4, delimiter=b'\t')
@@ -58,13 +58,17 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
+    pt_len, ptext = plaintext.split(b':')
+    enc_len, ref_encrypted = _encrypted.split(b':')
+
     box = SealedBox(pubalice)
     encrypted = box.encrypt(
-        binascii.unhexlify(plaintext),
+        binascii.unhexlify(ptext),
         encoder=HexEncoder,
     )
 
-    assert encrypted != _encrypted
+    assert len(encrypted) == 2 * int(enc_len)
+    assert encrypted != ref_encrypted
     # since SealedBox.encrypt uses an ephemeral sender's keypair
 
     box2 = SealedBox(privalice)
@@ -72,7 +76,7 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
         encrypted,
         encoder=HexEncoder,
     )
-    assert binascii.hexlify(decrypted) == plaintext
+    assert binascii.hexlify(decrypted) == ptext
     assert bytes(box) == bytes(box2)
 
 
@@ -86,12 +90,15 @@ def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
+    pt_len, ptext = plaintext.split(b':')
+    enc_len, ref_encrypted = encrypted.split(b':')
+
     box = SealedBox(privalice)
     decrypted = box.decrypt(
-        encrypted,
+        ref_encrypted,
         encoder=HexEncoder,
     )
-    assert binascii.hexlify(decrypted) == plaintext
+    assert binascii.hexlify(decrypted) == ptext
 
 
 def check_type_error(expected, f, *args):
@@ -122,9 +129,10 @@ def test_wrong_types():
 def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
                                               _plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
+    enc_len, ref_encrypted = encrypted.split(b':')
     box = SealedBox(pubalice)
     with pytest.raises(TypeError):
         box.decrypt(
-            encrypted,
+            ref_encrypted,
             encoder=HexEncoder,
         )
