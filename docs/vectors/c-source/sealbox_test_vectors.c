@@ -24,31 +24,30 @@
 #include <string.h>
 #include <sodium.h>
 
-int checkone (char *hxsecret, char *hxpub, char *hxplaintext, char *hxencrypted) {
+int checkone (char *hxsecret, char *hxpub, size_t ptlen, char *hxplaintext,
+	      size_t crlen, char *hxencrypted) {
 
     int pklen = crypto_box_PUBLICKEYBYTES;
     int sklen = crypto_box_SECRETKEYBYTES;
-    int txtlen = strlen (hxplaintext) / 2;
-    int encrlen = strlen (hxencrypted) / 2;
 
     char *skr = sodium_malloc (sklen);
     char *pub = sodium_malloc (pklen);
-    char *txt = sodium_malloc (txtlen);
-    char *crpt = sodium_malloc (encrlen);
-    char *outp = sodium_malloc (txtlen);
+    char *txt = sodium_malloc (ptlen);
+    char *crpt = sodium_malloc (crlen);
+    char *outp = sodium_malloc (ptlen);
 
     int rs = sodium_hex2bin (skr, sklen, hxsecret, 2 * sklen,
                              NULL, NULL, NULL);
     rs |= sodium_hex2bin (pub, pklen, hxpub, 2 * pklen, NULL, NULL, NULL);
-    rs |= sodium_hex2bin (txt, txtlen, hxplaintext, strlen (hxplaintext),
+    rs |= sodium_hex2bin (txt, ptlen, hxplaintext, strlen (hxplaintext),
                           NULL, NULL, NULL);
-    rs |= sodium_hex2bin (crpt, encrlen, hxencrypted, strlen (hxencrypted),
+    rs |= sodium_hex2bin (crpt, crlen, hxencrypted, strlen (hxencrypted),
                           NULL, NULL, NULL);
 
     if (rs == 0)
-        rs = crypto_box_seal_open (outp, crpt, encrlen, pub, skr);
+        rs = crypto_box_seal_open (outp, crpt, crlen, pub, skr);
     if (rs == 0)
-        rs = sodium_memcmp (outp, txt, txtlen);
+        rs = sodium_memcmp (outp, txt, ptlen);
 
     sodium_free (crpt);
     sodium_free (txt);
@@ -62,8 +61,8 @@ void gentestline (int minmsglen, int maxmsglen) {
 
     int pklen = crypto_box_PUBLICKEYBYTES;
     int sklen = crypto_box_SECRETKEYBYTES;
-    int txtlen = minmsglen + randombytes_uniform (maxmsglen - minmsglen + 1);
-    int encrlen = txtlen + crypto_box_SEALBYTES;
+    size_t txtlen = minmsglen + randombytes_uniform (maxmsglen - minmsglen + 1);
+    size_t encrlen = txtlen + crypto_box_SEALBYTES;
 
     char *skr = sodium_malloc (sklen);
     char *pub = sodium_malloc (pklen);
@@ -85,7 +84,7 @@ void gentestline (int minmsglen, int maxmsglen) {
     sodium_bin2hex (htxt, txtlen * 2 + 1, txt, txtlen);
     sodium_bin2hex (hkrp, encrlen * 2 + 1, crpt, encrlen);
 
-    printf ("%s\t%s\t%s\t%s\n", hskr, hpub, htxt, hkrp);
+    printf ("%s\t%s\t%zu:%s\t%zu:%s\n", hskr, hpub, txtlen, htxt, encrlen, hkrp);
 }
 
 int main (int argc, char **argv) {
@@ -114,6 +113,10 @@ int main (int argc, char **argv) {
         char hxpub[2 * crypto_box_PUBLICKEYBYTES + 1];
         char hxplaintext[2048 + 1];
         char hxencrypted[2048 + 2 * crypto_box_SEALBYTES + 1];
+        char cmpplaintext[5 + 2048 + 1];
+        char cmpencrypted[5 + 2048 + 2 * crypto_box_SEALBYTES + 1];
+        size_t ptlen = 0;
+        size_t crlen = 0;
 
         while (lln = getline (&line, &lsz, stdin) > 0) {
             if (lln > 0) {
@@ -123,11 +126,19 @@ int main (int argc, char **argv) {
                     continue;
 
                 sscanf (line, "%s%s%s%s",
-                        hxsecret, hxpub, hxplaintext, hxencrypted);
-                res = checkone (hxsecret, hxpub, hxplaintext, hxencrypted);
-                char *rsstr = (res == 0) ? "OK" : "KO";
-                printf ("%s\t%s\t%s\t%s\t%s\n",
-                        hxsecret, hxpub, hxplaintext, hxencrypted, rsstr);
+                        hxsecret, hxpub, cmpplaintext, cmpencrypted);
+                sscanf (cmpplaintext, "%zu:%s",
+                        &ptlen, hxplaintext);
+                sscanf (cmpencrypted, "%zu:%s",
+                        &crlen, hxencrypted);
+                if (ptlen == 0)
+                        memset(hxplaintext, 0, sizeof(hxplaintext));
+                if (crlen == 0)
+                        memset(hxencrypted, 0, sizeof(hxencrypted));
+                res = checkone (hxsecret, hxpub, ptlen, hxplaintext, crlen, hxencrypted);
+                char *rsstr = (res == 0) ? "OK" : "FAIL";
+                printf ("%s\t%s\t%zu:%s\t%zu:%s\t%s\n",
+                        hxsecret, hxpub, ptlen, hxplaintext, crlen, hxencrypted, rsstr);
             }
             free (line);
             line = NULL;
