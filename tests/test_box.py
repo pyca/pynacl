@@ -18,6 +18,8 @@ import binascii
 
 import pytest
 
+from test_bindings import _box_from_seed_vectors
+
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import Box, PrivateKey, PublicKey
@@ -49,17 +51,20 @@ def test_generate_private_key():
     PrivateKey.generate()
 
 
-def test_generate_private_key_from_seed():
+def test_generate_private_key_from_random_seed():
     PrivateKey.from_seed(random(PrivateKey.SEED_SIZE))
 
 
-def test_generate_private_key_from_reference_seed():
-
-    from box_secret_from_seed_ref import test_seed, test_pk, test_sk
-
-    prvt = PrivateKey.from_seed(test_seed, encoder=HexEncoder)
-    sk = binascii.unhexlify(test_sk)
-    pk = binascii.unhexlify(test_pk)
+@pytest.mark.parametrize(
+    (
+        "seed", "public_key", "secret_key"
+    ),
+    _box_from_seed_vectors()
+)
+def test_generate_private_key_from_seed(seed, public_key, secret_key):
+    prvt = PrivateKey.from_seed(seed, encoder=HexEncoder)
+    sk = binascii.unhexlify(secret_key)
+    pk = binascii.unhexlify(public_key)
     assert bytes(prvt) == sk
     assert bytes(prvt.public_key) == pk
 

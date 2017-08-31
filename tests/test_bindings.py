@@ -19,6 +19,8 @@ from binascii import hexlify, unhexlify
 
 import pytest
 
+from utils import read_crypto_test_vectors
+
 from nacl import bindings as c
 from nacl.exceptions import CryptoError
 
@@ -246,14 +248,28 @@ def test_box_seal_wrong_types():
             None, A_pubkey, A_secretkey)
 
 
-def test_box_seed_keypair_reference():
+def _box_from_seed_vectors():
+    # Fmt: <seed> <tab> <public_key> || <secret_key>
+    DATA = "box_from_seed.txt"
+    lines = read_crypto_test_vectors(DATA, maxels=2)
+    return [(x[0],       # seed
+             x[1][:64],  # derived public key
+             x[1][64:],  # derived secret key
+             )
+            for x in lines]
 
-    from box_secret_from_seed_ref import test_seed, test_pk, test_sk
 
-    seed = unhexlify(test_seed)
+@pytest.mark.parametrize(
+    (
+        "seed", "public_key", "secret_key"
+    ),
+    _box_from_seed_vectors()
+)
+def test_box_seed_keypair_reference(seed, public_key, secret_key):
+    seed = unhexlify(seed)
     pk, sk = c.crypto_box_seed_keypair(seed)
-    assert pk == unhexlify(test_pk)
-    assert sk == unhexlify(test_sk)
+    assert pk == unhexlify(public_key)
+    assert sk == unhexlify(secret_key)
 
 
 def test_box_seed_keypair_random():

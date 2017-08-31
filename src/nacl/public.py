@@ -84,8 +84,8 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
         # verify the given secret key type and size are correct
-        if not (isinstance(private_key, bytes)
-                and len(private_key) == self.SIZE):
+        if not (isinstance(private_key, bytes) and
+                len(private_key) == self.SIZE):
             raise exc.TypeError(("PrivateKey must be created from a {0} "
                                  "bytes long raw secret key").format(self.SIZE)
                                 )
@@ -117,8 +117,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         # Verify the given seed type and size are correct
         if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
             raise exc.TypeError(("PrivateKey seed must be a {0} bytes long "
-                                 "binary sequence").format(
-                                                           cls.SEED_SIZE)
+                                 "binary sequence").format(cls.SEED_SIZE)
                                 )
         # generate a raw keypair from the given seed
         raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
