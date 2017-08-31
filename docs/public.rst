@@ -282,3 +282,8 @@ Reference
         :param encoder:  A class that is able to decode the ciphertext.
 
         :return bytes: The decrypted message
+
+Algorithm
+~~~~~~~~~
+
+* **Public Keys:** `Curve25519 high-speed elliptic curve cryptography <https://cr.yp.to/ecdh.html>`_
