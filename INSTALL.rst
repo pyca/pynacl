@@ -22,8 +22,8 @@ with PyNaCl so to install you can run:
 
     $ pip install pynacl
 
-If you'd prefer to use one provided by your distribution you can disable
-the bundled copy during install by running:
+If you'd prefer to use the version of ``libsodium`` provided by your
+distribution, you can disable the bundled copy during install by running:
 
 .. code-block:: console
 
