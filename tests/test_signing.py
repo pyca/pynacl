@@ -36,15 +36,13 @@ def ed25519_known_answers():
     # known answer fields: sk, pk, msg, signature, signed
     DATA = "ed25519"
     lines = read_crypto_test_vectors(DATA, delimiter=b':')
-    answ = [(
-             x[0][:64],   # secret key
+    return [(x[0][:64],   # secret key
              x[1],        # public key
              x[2],        # message
              x[3][:128],  # signature
              x[3],        # signed message
              )
             for x in lines]
-    return answ
 
 
 class TestSigningKey:
