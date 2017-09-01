@@ -51,7 +51,7 @@ class StringFixer(object):
 
     def __str__(self):
         if six.PY3:
-            return self.__unicode__()
+            return str(self.__bytes__())
         else:
             return self.__bytes__()
 

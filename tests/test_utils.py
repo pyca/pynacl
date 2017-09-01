@@ -14,6 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import nacl.secret
 import nacl.utils
 
 
@@ -23,3 +24,7 @@ def test_random_bytes_produces():
 
 def test_random_bytes_produces_different_bytes():
     assert nacl.utils.random(16) != nacl.utils.random(16)
+
+
+def test_string_fixer():
+    assert str(nacl.secret.SecretBox(b"\x00" * 32)) == str(b"\x00" * 32)
