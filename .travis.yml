@@ -6,6 +6,8 @@ sudo: required
 
 matrix:
     include:
+        - python: 2.6
+          env: TOXENV=py26 SODIUM_INSTALL=bundled CC=gcc
         - python: 2.7
           env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
         - python: 3.3
@@ -52,6 +54,9 @@ matrix:
         - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
         - env: TOXENV=docs
         - env: TOXENV=meta
+    allow_failures:
+        - python: 2.6
+          env: TOXENV=py26 SODIUM_INSTALL=bundled CC=gcc
 
 install: .travis/install.sh
 
