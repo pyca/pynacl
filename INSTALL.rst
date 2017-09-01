@@ -29,6 +29,9 @@ distribution, you can disable the bundled copy during install by running:
 
     $ SODIUM_INSTALL=system pip install pynacl
 
+.. warning:: Usage of the legacy ``easy_install`` command provided by setuptools
+   is generally discouraged, and is completely unsupported in PyNaCl's case.
+
 .. _libsodium: https://github.com/jedisct1/libsodium
 
 .. [#many] `manylinux1 wheels <https://www.python.org/dev/peps/pep-0513/>`_
