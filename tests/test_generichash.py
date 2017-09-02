@@ -38,14 +38,14 @@ OVERLONG_PARAMS_VECTORS = [
 def generichash_vectors():
     # Format: <message> <tab> <key> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-nosalt-nopersonalization.txt"
-    return read_crypto_test_vectors(DATA)
+    return read_crypto_test_vectors(DATA, delimiter=b'\t')
 
 
 def blake2_salt_pers_vectors():
     # Format: <message> <tab> <key> <tab> <salt> <tab>
     # <personalization> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-salt-personalization.txt"
-    return read_crypto_test_vectors(DATA)
+    return read_crypto_test_vectors(DATA, delimiter=b'\t')
 
 
 def blake2_reference_vectors():

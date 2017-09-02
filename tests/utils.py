@@ -27,7 +27,8 @@ def assert_not_equal(x, y):
     assert not (x == y)
 
 
-def read_crypto_test_vectors(fname, maxels=0, delimiter=b'\t'):
+def read_crypto_test_vectors(fname, maxels=0, delimiter=None):
+    assert delimiter is not None and isinstance(delimiter, bytes)
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
     with open(path, "rb") as fp:
