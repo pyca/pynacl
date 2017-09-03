@@ -251,7 +251,7 @@ def test_box_seal_wrong_types():
 def _box_from_seed_vectors():
     # Fmt: <seed> <tab> <public_key> || <secret_key>
     DATA = "box_from_seed.txt"
-    lines = read_crypto_test_vectors(DATA, maxels=2)
+    lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b'\t')
     return [(x[0],       # seed
              x[1][:64],  # derived public key
              x[1][64:],  # derived secret key
