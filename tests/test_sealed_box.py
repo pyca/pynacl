@@ -27,8 +27,20 @@ from nacl.public import PrivateKey, PublicKey, SealedBox
 def sealbox_vectors():
     # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext>
     # <tab><cr_len>:<ciphertext>[<tab> ...]
+
+    def splitlen(x):
+        ln, dta = x.split(b':')
+        assert len(dta) == 2 * int(ln)
+        return dta
+
     DATA = "sealed_box_ref.txt"
-    return read_crypto_test_vectors(DATA, maxels=4, delimiter=b'\t')
+    return [(x[0],
+             x[1],
+             splitlen(x[2]),
+             splitlen(x[3])
+             )
+            for x in read_crypto_test_vectors(DATA,
+                                              maxels=4, delimiter=b'\t')]
 
 
 def test_generate_private_key():
@@ -58,17 +70,13 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
-    pt_len, ptext = plaintext.split(b':')
-    enc_len, ref_encrypted = _encrypted.split(b':')
-
     box = SealedBox(pubalice)
     encrypted = box.encrypt(
-        binascii.unhexlify(ptext),
+        binascii.unhexlify(plaintext),
         encoder=HexEncoder,
     )
 
-    assert len(encrypted) == 2 * int(enc_len)
-    assert encrypted != ref_encrypted
+    assert encrypted != _encrypted
     # since SealedBox.encrypt uses an ephemeral sender's keypair
 
     box2 = SealedBox(privalice)
@@ -76,7 +84,7 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
         encrypted,
         encoder=HexEncoder,
     )
-    assert binascii.hexlify(decrypted) == ptext
+    assert binascii.hexlify(decrypted) == plaintext
     assert bytes(box) == bytes(box2)
 
 
@@ -90,15 +98,12 @@ def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
-    pt_len, ptext = plaintext.split(b':')
-    enc_len, ref_encrypted = encrypted.split(b':')
-
     box = SealedBox(privalice)
     decrypted = box.decrypt(
-        ref_encrypted,
+        encrypted,
         encoder=HexEncoder,
     )
-    assert binascii.hexlify(decrypted) == ptext
+    assert binascii.hexlify(decrypted) == plaintext
 
 
 def check_type_error(expected, f, *args):
@@ -129,10 +134,10 @@ def test_wrong_types():
 def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
                                               _plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
-    enc_len, ref_encrypted = encrypted.split(b':')
+
     box = SealedBox(pubalice)
     with pytest.raises(TypeError):
         box.decrypt(
-            ref_encrypted,
+            encrypted,
             encoder=HexEncoder,
         )
