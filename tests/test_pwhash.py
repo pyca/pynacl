@@ -96,10 +96,10 @@ def random_utf8_password_gen(minlen=5, maxlen=20):
 
 
 def gen_argon2i_str_params(n,
-                           min_ops=nacl.pwhash.ARGON2I_OPSLIMIT_INTERACTIVE,
-                           max_ops=nacl.pwhash.ARGON2I_OPSLIMIT_MODERATE,
-                           min_mem=nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE,
-                           max_mem=nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE):
+                           min_ops=nacl.pwhash.ARGON2I.OPSLIMIT_INTERACTIVE,
+                           max_ops=nacl.pwhash.ARGON2I.OPSLIMIT_MODERATE,
+                           min_mem=nacl.pwhash.ARGON2I.MEMLIMIT_INTERACTIVE,
+                           max_mem=nacl.pwhash.ARGON2I.MEMLIMIT_MODERATE):
     rng = random.SystemRandom()
     pwgen = random_utf8_password_gen()
     rn = [(next(pwgen),
@@ -110,10 +110,10 @@ def gen_argon2i_str_params(n,
 
 
 def gen_argon2id_str_params(n,
-                            min_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_INTERACTIVE,
-                            max_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_MODERATE,
-                            min_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_INTERACTIVE,
-                            max_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_MODERATE):
+                            min_ops=nacl.pwhash.ARGON2ID.OPSLIMIT_INTERACTIVE,
+                            max_ops=nacl.pwhash.ARGON2ID.OPSLIMIT_MODERATE,
+                            min_mem=nacl.pwhash.ARGON2ID.MEMLIMIT_INTERACTIVE,
+                            max_mem=nacl.pwhash.ARGON2ID.MEMLIMIT_MODERATE):
     rng = random.SystemRandom()
     pwgen = random_utf8_password_gen()
     rn = [(next(pwgen),

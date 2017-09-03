@@ -18,16 +18,19 @@ import binascii
 
 import nacl.bindings
 
-from nacl.utils import bytes_as_string
+from nacl.utils import Constants, bytes_as_string
 
-BYTES = nacl.bindings.crypto_generichash_BYTES
-BYTES_MIN = nacl.bindings.crypto_generichash_BYTES_MIN
-BYTES_MAX = nacl.bindings.crypto_generichash_BYTES_MAX
-KEYBYTES = nacl.bindings.crypto_generichash_KEYBYTES
-KEYBYTES_MIN = nacl.bindings.crypto_generichash_KEYBYTES_MIN
-KEYBYTES_MAX = nacl.bindings.crypto_generichash_KEYBYTES_MAX
-SALTBYTES = nacl.bindings.crypto_generichash_SALTBYTES
-PERSONALBYTES = nacl.bindings.crypto_generichash_PERSONALBYTES
+
+class BLAKE2B(Constants):
+    BYTES = nacl.bindings.crypto_generichash_BYTES
+    BYTES_MIN = nacl.bindings.crypto_generichash_BYTES_MIN
+    BYTES_MAX = nacl.bindings.crypto_generichash_BYTES_MAX
+    KEYBYTES = nacl.bindings.crypto_generichash_KEYBYTES
+    KEYBYTES_MIN = nacl.bindings.crypto_generichash_KEYBYTES_MIN
+    KEYBYTES_MAX = nacl.bindings.crypto_generichash_KEYBYTES_MAX
+    SALTBYTES = nacl.bindings.crypto_generichash_SALTBYTES
+    PERSONALBYTES = nacl.bindings.crypto_generichash_PERSONALBYTES
+
 
 _b2b_init = nacl.bindings.crypto_generichash_blake2b_init
 _b2b_final = nacl.bindings.crypto_generichash_blake2b_final
@@ -39,12 +42,12 @@ class blake2b(object):
     """
     :py:mod:`hashlib` API compatible blake2b algorithm implementation
     """
-    MAX_DIGEST_SIZE = BYTES
-    MAX_KEY_SIZE = KEYBYTES_MAX
-    PERSON_SIZE = PERSONALBYTES
-    SALT_SIZE = SALTBYTES
+    MAX_DIGEST_SIZE = BLAKE2B.BYTES
+    MAX_KEY_SIZE = BLAKE2B.KEYBYTES_MAX
+    PERSON_SIZE = BLAKE2B.PERSONALBYTES
+    SALT_SIZE = BLAKE2B.SALTBYTES
 
-    def __init__(self, data=b'', digest_size=BYTES, key=b'',
+    def __init__(self, data=b'', digest_size=BLAKE2B.BYTES, key=b'',
                  salt=b'', person=b''):
         """
         :py:class:`.blake2b` algorithm initializer
@@ -52,18 +55,19 @@ class blake2b(object):
         :param data:
         :type data: bytes
         :param int digest_size: the requested digest size; must be
-                                at most :py:attr:`.MAX_DIGEST_SIZE`;
+                                at most :py:attr:`.BLAKE2B.MAX_DIGEST_SIZE`;
                                 the default digest size is :py:data:`.BYTES`
         :param key: the key to be set for keyed MAC/PRF usage; if set,
-                    the key must be at most :py:data:`.KEYBYTES_MAX` long
+                    the key must be at most
+                    :py:data:`.BLAKE2B.KEYBYTES_MAX` long
         :type key: bytes
         :param salt: an initialization salt at most
-                     :py:attr:`.SALT_SIZE` long; it will be zero-padded
+                     :py:attr:`.BLAKE2B.SALT_SIZE` long; it will be zero-padded
                      if needed
         :type salt: bytes
         :param person: a personalization string at most
-                       :py:attr:`.PERSONAL_SIZE` long; it will be zero-padded
-                       if needed
+                       :py:attr:`.BLAKE2B.PERSONAL_SIZE` long; it will be
+                       zero-padded if needed
         :type person: bytes
         """
 

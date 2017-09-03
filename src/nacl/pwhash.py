@@ -20,75 +20,90 @@ import nacl.exceptions as exc
 
 from nacl.exceptions import ensure
 
+from nacl.utils import Constants
+
+
 _strbytes_plus_one = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
-SCRYPT_SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
-SCRYPT_PWHASH_SIZE = _strbytes_plus_one - 1
-SCRYPT_OPSLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
-SCRYPT_MEMLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
-SCRYPT_OPSLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
-SCRYPT_MEMLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
+
+class SCRYPT(Constants):
+    """
+    Constants needed for scrypt password hasher usage
+    """
+    SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
+    PWHASH_SIZE = _strbytes_plus_one - 1
+    OPSLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
+    MEMLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
+    OPSLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
+    MEMLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
+
+
+SCRYPT_SALTBYTES = SCRYPT.SALTBYTES
+SCRYPT_PWHASH_SIZE = SCRYPT.PWHASH_SIZE
+SCRYPT_OPSLIMIT_INTERACTIVE = SCRYPT.OPSLIMIT_INTERACTIVE
+SCRYPT_MEMLIMIT_INTERACTIVE = SCRYPT.MEMLIMIT_INTERACTIVE
+SCRYPT_OPSLIMIT_SENSITIVE = SCRYPT.OPSLIMIT_SENSITIVE
+SCRYPT_MEMLIMIT_SENSITIVE = SCRYPT.MEMLIMIT_SENSITIVE
+
 
 _argon2_strbytes_plus_one = nacl.bindings.crypto_pwhash_STRBYTES
-ARGON2_PWHASH_SIZE = _argon2_strbytes_plus_one - 1
-ARGON2_SALTBYTES = nacl.bindings.crypto_pwhash_SALTBYTES
-ARGON2_BYTES_MAX = nacl.bindings.crypto_pwhash_BYTES_MAX
-ARGON2_BYTES_MIN = nacl.bindings.crypto_pwhash_BYTES_MIN
 
-ARGON2I_MEMLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
-ARGON2I_MEMLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN
-ARGON2I_OPSLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MAX
-ARGON2I_OPSLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MIN
-ARGON2I_OPSLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE
-ARGON2I_MEMLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE
-ARGON2I_OPSLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MODERATE
-ARGON2I_MEMLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MODERATE
-ARGON2I_OPSLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE
-ARGON2I_MEMLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE
 
-ARGON2ID_MEMLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MIN
-ARGON2ID_MEMLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MAX
-ARGON2ID_OPSLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MIN
-ARGON2ID_OPSLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MAX
-ARGON2ID_OPSLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_INTERACTIVE
-ARGON2ID_MEMLIMIT_INTERACTIVE = \
-    nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE
-ARGON2ID_OPSLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MODERATE
-ARGON2ID_MEMLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MODERATE
-ARGON2ID_OPSLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE
-ARGON2ID_MEMLIMIT_SENSITIVE = \
-    nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE
+class ARGON2I(Constants):
+    PWHASH_SIZE = _argon2_strbytes_plus_one - 1
+    SALTBYTES = nacl.bindings.crypto_pwhash_SALTBYTES
+    BYTES_MAX = nacl.bindings.crypto_pwhash_BYTES_MAX
+    BYTES_MIN = nacl.bindings.crypto_pwhash_BYTES_MIN
+    MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
+    MEMLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN
+    OPSLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MAX
+    OPSLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MIN
+    OPSLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE
+    MEMLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE
+    OPSLIMIT_MODERATE = \
+        nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MODERATE
+    MEMLIMIT_MODERATE = \
+        nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MODERATE
+    OPSLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE
+    MEMLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE
+    ALG = nacl.bindings.crypto_pwhash_ALG_ARGON2I13
 
-ALG_ARGON2I13 = nacl.bindings.crypto_pwhash_ALG_ARGON2I13
-ALG_ARGON2ID13 = nacl.bindings.crypto_pwhash_ALG_ARGON2ID13
-ALG_ARGON2_DEFAULT = nacl.bindings.crypto_pwhash_ALG_DEFAULT
+
+class ARGON2ID(Constants):
+    PWHASH_SIZE = _argon2_strbytes_plus_one - 1
+    SALTBYTES = nacl.bindings.crypto_pwhash_SALTBYTES
+    BYTES_MAX = nacl.bindings.crypto_pwhash_BYTES_MAX
+    BYTES_MIN = nacl.bindings.crypto_pwhash_BYTES_MIN
+    MEMLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MIN
+    MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MAX
+    OPSLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MIN
+    OPSLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MAX
+    OPSLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_INTERACTIVE
+    MEMLIMIT_INTERACTIVE = \
+        nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE
+    OPSLIMIT_MODERATE = \
+        nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_MODERATE
+    MEMLIMIT_MODERATE = \
+        nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_MODERATE
+    OPSLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE
+    MEMLIMIT_SENSITIVE = \
+        nacl.bindings.crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE
+    ALG = nacl.bindings.crypto_pwhash_ALG_ARGON2ID13
 
 
 def kdf_scryptsalsa208sha256(size, password, salt,
-                             opslimit=SCRYPT_OPSLIMIT_SENSITIVE,
-                             memlimit=SCRYPT_MEMLIMIT_SENSITIVE,
+                             opslimit=SCRYPT.OPSLIMIT_SENSITIVE,
+                             memlimit=SCRYPT.MEMLIMIT_SENSITIVE,
                              encoder=nacl.encoding.RawEncoder):
     """
     Makes a key defined from ``password`` and ``salt`` that is
@@ -96,10 +111,10 @@ def kdf_scryptsalsa208sha256(size, password, salt,
 
     the enclosing module provides the constants
 
-        - :py:const:`.SCRYPT_OPSLIMIT_INTERACTIVE`
-        - :py:const:`.SCRYPT_MEMLIMIT_INTERACTIVE`
-        - :py:const:`.SCRYPT_OPSLIMIT_SENSITIVE`
-        - :py:const:`.SCRYPT_MEMLIMIT_SENSITIVE`
+        - :py:const:`.SCRYPT.OPSLIMIT_INTERACTIVE`
+        - :py:const:`.SCRYPT.MEMLIMIT_INTERACTIVE`
+        - :py:const:`.SCRYPT.OPSLIMIT_SENSITIVE`
+        - :py:const:`.SCRYPT.MEMLIMIT_SENSITIVE`
 
     as a guidance for correct settings respectively for the
     interactive login and the long term key protecting sensitive data
@@ -113,9 +128,9 @@ def kdf_scryptsalsa208sha256(size, password, salt,
     :rtype: bytes
     """
     ensure(
-        len(salt) == SCRYPT_SALTBYTES,
+        len(salt) == SCRYPT.SALTBYTES,
         "The salt must be exactly %s, not %s bytes long" % (
-            SCRYPT_SALTBYTES,
+            SCRYPT.SALTBYTES,
             len(salt)
         ),
         raising=exc.ValueError
@@ -132,8 +147,8 @@ def kdf_scryptsalsa208sha256(size, password, salt,
 
 
 def scryptsalsa208sha256_str(password,
-                             opslimit=SCRYPT_OPSLIMIT_INTERACTIVE,
-                             memlimit=SCRYPT_MEMLIMIT_INTERACTIVE):
+                             opslimit=SCRYPT.OPSLIMIT_INTERACTIVE,
+                             memlimit=SCRYPT.MEMLIMIT_INTERACTIVE):
     """
     Hashes a password with a random salt, returning an ascii string
     that has all the needed info to check against a future password
@@ -162,7 +177,7 @@ def verify_scryptsalsa208sha256(password_hash, password):
     :rtype: boolean
     """
 
-    ensure(len(password_hash) == SCRYPT_PWHASH_SIZE,
+    ensure(len(password_hash) == SCRYPT.PWHASH_SIZE,
            "The password hash must be exactly %s bytes long" %
            nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
            raising=exc.ValueError)
@@ -173,8 +188,8 @@ def verify_scryptsalsa208sha256(password_hash, password):
 
 
 def kdf_argon2i(size, password, salt,
-                opslimit=ARGON2I_OPSLIMIT_SENSITIVE,
-                memlimit=ARGON2I_MEMLIMIT_SENSITIVE,
+                opslimit=ARGON2I.OPSLIMIT_SENSITIVE,
+                memlimit=ARGON2I.MEMLIMIT_SENSITIVE,
                 encoder=nacl.encoding.RawEncoder):
     """
     Derive a ``size`` bytes long key from a caller-supplied
@@ -183,36 +198,36 @@ def kdf_argon2i(size, password, salt,
 
     the enclosing module provides the constants
 
-        - :py:const:`.ARGON2I_OPSLIMIT_INTERACTIVE`
-        - :py:const:`.ARGON2I_MEMLIMIT_INTERACTIVE`
-        - :py:const:`.ARGON2I_OPSLIMIT_MODERATE`
-        - :py:const:`.ARGON2I_MEMLIMIT_MODERATE`
-        - :py:const:`.ARGON2I_OPSLIMIT_SENSITIVE`
-        - :py:const:`.ARGON2I_MEMLIMIT_SENSITIVE`
+        - :py:const:`.ARGON2I.OPSLIMIT_INTERACTIVE`
+        - :py:const:`.ARGON2I.MEMLIMIT_INTERACTIVE`
+        - :py:const:`.ARGON2I.OPSLIMIT_MODERATE`
+        - :py:const:`.ARGON2I.MEMLIMIT_MODERATE`
+        - :py:const:`.ARGON2I.OPSLIMIT_SENSITIVE`
+        - :py:const:`.ARGON2I.MEMLIMIT_SENSITIVE`
 
     as a guidance for correct settings.
 
     :param size: derived key size, must be comprised
-                 between :py:const:`.ARGON2I_BYTES_MIN`
-                 and :py:const:`.ARGON2I_BYTES_MAX`
+                 between :py:const:`.ARGON2I.BYTES_MIN`
+                 and :py:const:`.ARGON2I.BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
-                     it maximum length is :py:const:`.ARGON2I_PASSWD_MAX`
+                     it maximum length is :py:const:`.ARGON2I.PASSWD_MAX`
     :type password: bytes
     :param salt: **RANDOM** salt used in the key derivation procedure;
-                 its length must be exactly :py:const:`.ARGON2I_SALTBYTES`
+                 its length must be exactly :py:const:`.ARGON2I.SALTBYTES`
     :type salt: bytes
     :param opslimit: the time component (operation count)
                      of the key derivation procedure's computational cost;
                      it must be comprised between
-                     :py:const:`.ARGON2I_MIN_TIME`
-                     and :py:const:`.ARGON2I_MAX_TIME`
+                     :py:const:`.ARGON2I.MIN_TIME`
+                     and :py:const:`.ARGON2I.MAX_TIME`
     :type opslimit: int
     :param memlimit: the memory occupation component
                      of the key derivation procedure's computational cost;
                      it must be comprised between
-                     :py:const:`.ARGON2I_MIN_MEMORY`
-                     and :py:const:`.ARGON2I_MAX_MEMORY`
+                     :py:const:`.ARGON2I.MIN_MEMORY`
+                     and :py:const:`.ARGON2I.MAX_MEMORY`
     :type memlimit: int
     :rtype: bytes
 
@@ -222,13 +237,13 @@ def kdf_argon2i(size, password, salt,
     return encoder.encode(
         nacl.bindings.crypto_pwhash_alg(size, password, salt,
                                         opslimit, memlimit,
-                                        ALG_ARGON2I13)
+                                        ARGON2I.ALG)
     )
 
 
 def kdf_argon2id(size, password, salt,
-                 opslimit=ARGON2ID_OPSLIMIT_SENSITIVE,
-                 memlimit=ARGON2ID_MEMLIMIT_SENSITIVE,
+                 opslimit=ARGON2ID.OPSLIMIT_SENSITIVE,
+                 memlimit=ARGON2ID.MEMLIMIT_SENSITIVE,
                  encoder=nacl.encoding.RawEncoder):
     """
     Derive a ``size`` bytes long key from a caller-supplied
@@ -237,36 +252,36 @@ def kdf_argon2id(size, password, salt,
 
     the enclosing module provides the constants
 
-        - :py:const:`.ARGON2ID_OPSLIMIT_INTERACTIVE`
-        - :py:const:`.ARGON2ID_MEMLIMIT_INTERACTIVE`
-        - :py:const:`.ARGON2ID_OPSLIMIT_MODERATE`
-        - :py:const:`.ARGON2ID_MEMLIMIT_MODERATE`
-        - :py:const:`.ARGON2ID_OPSLIMIT_SENSITIVE`
-        - :py:const:`.ARGON2ID_MEMLIMIT_SENSITIVE`
+        - :py:const:`.ARGON2ID.OPSLIMIT_INTERACTIVE`
+        - :py:const:`.ARGON2ID.MEMLIMIT_INTERACTIVE`
+        - :py:const:`.ARGON2ID.OPSLIMIT_MODERATE`
+        - :py:const:`.ARGON2ID.MEMLIMIT_MODERATE`
+        - :py:const:`.ARGON2ID.OPSLIMIT_SENSITIVE`
+        - :py:const:`.ARGON2ID.MEMLIMIT_SENSITIVE`
 
     as a guidance for correct settings.
 
     :param size: derived key size, must be comprised
-                 between :py:const:`.ARGON2ID_BYTES_MIN`
-                 and :py:const:`.ARGON2ID_BYTES_MAX`
+                 between :py:const:`.ARGON2ID.BYTES_MIN`
+                 and :py:const:`.ARGON2ID.BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
-                     it maximum length is :py:const:`.ARGON2ID_PASSWD_MAX`
+                     it maximum length is :py:const:`.ARGON2ID.PASSWD_MAX`
     :type password: bytes
     :param salt: **RANDOM** salt used in the key derivation procedure;
-                 its length must be exactly :py:const:`.ARGON2ID_SALTBYTES`
+                 its length must be exactly :py:const:`.ARGON2ID.SALTBYTES`
     :type salt: bytes
     :param opslimit: the time component (operation count)
                      of the key derivation procedure's computational cost;
                      it must be comprised between
-                     :py:const:`.ARGON2ID_MIN_TIME`
-                     and :py:const:`.ARGON2ID_MAX_TIME`
+                     :py:const:`.ARGON2ID.MIN_TIME`
+                     and :py:const:`.ARGON2ID.MAX_TIME`
     :type opslimit: int
     :param memlimit: the memory occupation component
                      of the key derivation procedure's computational cost;
                      it must be comprised between
-                     :py:const:`.ARGON2ID_MIN_MEMORY`
-                     and :py:const:`.ARGON2ID_MAX_MEMORY`
+                     :py:const:`.ARGON2ID.MIN_MEMORY`
+                     and :py:const:`.ARGON2ID.MAX_MEMORY`
     :type memlimit: int
     :rtype: bytes
 
@@ -276,13 +291,13 @@ def kdf_argon2id(size, password, salt,
     return encoder.encode(
         nacl.bindings.crypto_pwhash_alg(size, password, salt,
                                         opslimit, memlimit,
-                                        ALG_ARGON2ID13)
+                                        ARGON2ID.ALG)
     )
 
 
 def argon2i_str(password,
-                opslimit=ARGON2I_OPSLIMIT_INTERACTIVE,
-                memlimit=ARGON2I_MEMLIMIT_INTERACTIVE):
+                opslimit=ARGON2I.OPSLIMIT_INTERACTIVE,
+                memlimit=ARGON2I.MEMLIMIT_INTERACTIVE):
     """
     Hashes a password with a random salt, returning an ascii string
     that has all the needed info to check against a future password
@@ -300,12 +315,12 @@ def argon2i_str(password,
     return nacl.bindings.crypto_pwhash_str_alg(password,
                                                opslimit,
                                                memlimit,
-                                               ALG_ARGON2I13)
+                                               ARGON2I.ALG)
 
 
 def argon2id_str(password,
-                 opslimit=ARGON2ID_OPSLIMIT_INTERACTIVE,
-                 memlimit=ARGON2ID_MEMLIMIT_INTERACTIVE):
+                 opslimit=ARGON2ID.OPSLIMIT_INTERACTIVE,
+                 memlimit=ARGON2ID.MEMLIMIT_INTERACTIVE):
     """
     Hashes a password with a random salt, returning an ascii string
     that has all the needed info to check against a future password
@@ -324,7 +339,7 @@ def argon2id_str(password,
     return nacl.bindings.crypto_pwhash_str_alg(password,
                                                opslimit,
                                                memlimit,
-                                               ALG_ARGON2ID13)
+                                               ARGON2ID.ALG)
 
 
 def verify_argon2(password_hash, password):
