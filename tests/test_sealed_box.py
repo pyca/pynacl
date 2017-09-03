@@ -28,7 +28,7 @@ def sealbox_vectors():
     # Fmt: <recipient sk><tab><recipient pk><tab><plaintext><tab><ciphertext>
     # [<tab> ...]
     DATA = "sealed_box_ref.txt"
-    return read_crypto_test_vectors(DATA, maxels=4)
+    return read_crypto_test_vectors(DATA, maxels=4, delimiter=b'\t')
 
 
 def test_generate_private_key():
