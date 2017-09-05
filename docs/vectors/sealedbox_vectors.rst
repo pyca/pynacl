@@ -10,7 +10,7 @@ To build the ``sealbox_test_vectors`` you need a ``C`` language compiler,
 a prebuilt libsodium library more recent than version 1.0.3 and the
 corresponding include headers.
 
-In a unix-like programming environment you shoud then execute:
+In a UNIX-like programming environment you should then execute:
 
 .. code-block:: bash
 
@@ -22,7 +22,7 @@ refer to :ref:`building-a-local-library` and then run:
 .. code-block:: bash
 
     $ cc -o sealbox_test_vectors sealbox_test_vectors.c \
-      ${SODIUMINCL} ${SUDIUMLIB} -lsodium -lc
+      ${SODIUMINCL} ${SODIUMLIB} -lsodium -lc
 
 Vector generation
 """""""""""""""""

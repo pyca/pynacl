@@ -4,15 +4,15 @@ Building the bundled library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you would avoid a system-wide installation of libsodium's development
-files just for compiling a running the tests, you can instead install
-the library and header files inside pynacl's sources.
+files just for compiling and running the tests, you can instead install
+the library and header files inside PyNaCl's sources.
 
 
 Linux systems
 """""""""""""
 
-On linux (and presumably other unix-like systems), after entering the
-pynacl source directory you must execute the following commands:
+On Linux (and presumably other UNIX-like systems), after entering the
+PyNaCl source directory you must execute the following commands:
 
 .. code-block:: bash
 
@@ -45,8 +45,8 @@ If you now define and export the
 
     $ SODIUMINCL="-I${PWD}/build/libsodium/include"
     $ export SODIUMINCL
-    $ SUDIUMLIB="-L${PWD}/build/libsodium/lib"
-    $ export SUDIUMLIB
+    $ SODIUMLIB="-L${PWD}/build/libsodium/lib"
+    $ export SODIUMLIB
 
 environment variables, you can instruct the compiler to use the
 just-installed library by simply dereferencing the path flags
@@ -54,5 +54,5 @@ on the c compier command line
 
 .. code-block:: bash
 
-    $ cc ${SODIUMINCL} ${SUDIUMLIB}
+    $ cc ${SODIUMINCL} ${SODIUMLIB}
 
