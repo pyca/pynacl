@@ -18,9 +18,12 @@ import binascii
 
 import pytest
 
+from test_bindings import _box_from_seed_vectors
+
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import Box, PrivateKey, PublicKey
+from nacl.utils import random
 
 
 VECTORS = [
@@ -46,6 +49,24 @@ VECTORS = [
 
 def test_generate_private_key():
     PrivateKey.generate()
+
+
+def test_generate_private_key_from_random_seed():
+    PrivateKey.from_seed(random(PrivateKey.SEED_SIZE))
+
+
+@pytest.mark.parametrize(
+    (
+        "seed", "public_key", "secret_key"
+    ),
+    _box_from_seed_vectors()
+)
+def test_generate_private_key_from_seed(seed, public_key, secret_key):
+    prvt = PrivateKey.from_seed(seed, encoder=HexEncoder)
+    sk = binascii.unhexlify(secret_key)
+    pk = binascii.unhexlify(public_key)
+    assert bytes(prvt) == sk
+    assert bytes(prvt.public_key) == pk
 
 
 def test_box_creation():
@@ -226,7 +247,7 @@ def test_box_failed_decryption(
 def test_box_wrong_length():
     with pytest.raises(ValueError):
         PublicKey(b"")
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         PrivateKey(b"")
 
     pub = PublicKey(
@@ -253,11 +274,14 @@ def check_type_error(expected, f, *args):
 def test_wrong_types():
     priv = PrivateKey.generate()
 
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, 12)
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, priv)
-    check_type_error("PrivateKey must be created from a 32 byte seed",
+    check_type_error(("PrivateKey must be created from a 32 bytes long "
+                      "raw secret key"),
                      PrivateKey, priv.public_key)
 
     check_type_error("PublicKey must be created from 32 bytes",
@@ -275,3 +299,6 @@ def test_wrong_types():
                      Box, priv, priv.public_key.encode())
     check_type_error("Box must be created from a PrivateKey and a PublicKey",
                      Box, priv.encode(), priv.public_key)
+
+    check_type_error("seed must be a 32 bytes long",
+                     PrivateKey.from_seed, b"1")

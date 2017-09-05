@@ -15,6 +15,7 @@
 
 size_t crypto_box_secretkeybytes();
 size_t crypto_box_publickeybytes();
+size_t crypto_box_seedbytes();
 size_t crypto_box_zerobytes();
 size_t crypto_box_boxzerobytes();
 size_t crypto_box_noncebytes();
@@ -23,6 +24,9 @@ size_t crypto_box_sealbytes();
 
 
 int crypto_box_keypair(unsigned char *pk, unsigned char *sk);
+
+int crypto_box_seed_keypair(unsigned char *pk, unsigned char *sk,
+                            const unsigned char *seed);
 
 int crypto_box(unsigned char *c,        const unsigned char *m,
                unsigned long long mlen, const unsigned char *n,
