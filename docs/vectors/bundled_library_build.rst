@@ -3,9 +3,9 @@
 Building the bundled library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you would avoid a system-wide installation of libsodium's development
-files just for compiling and running the tests, you can instead install
-the library and header files inside PyNaCl's sources.
+If you you want to avoid a system-wide installation of libsodium's
+development files just for compiling and running the tests, you can
+instead install the library and header files inside PyNaCl's sources.
 
 
 Linux systems
