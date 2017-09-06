@@ -5,11 +5,12 @@ Changelog
 ------------------
 
 * Update ``libsodium`` to 1.0.12.
-* Added support for 128 bit ``siphashx24`` variant of ``siphash24``.
-* Added support for ``SealedBox`` construction.
 * Infrastructure: add jenkins support for automatic build of
   ``manylinux1`` binary wheels
+* Added support for ``SealedBox`` construction.
 * Added support for ``argon2i`` password hashing construct
+* Added support for 128 bit ``siphashx24`` variant of ``siphash24``.
+* Added support for ``from_seed`` APIs for X25519 keypair generation.
 
 1.1.2 - 2017-03-31
 ------------------
