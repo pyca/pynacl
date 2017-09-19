@@ -116,6 +116,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
             nonce = ciphertext[:self.NONCE_SIZE]
             ciphertext = ciphertext[self.NONCE_SIZE:]
 
+	# Decode our nonce
+        nonce = encoder.decode(nonce)
+
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
