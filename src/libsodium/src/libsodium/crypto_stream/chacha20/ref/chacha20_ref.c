@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "core.h"
 #include "crypto_stream_chacha20.h"
 #include "private/common.h"
 #include "utils.h"
@@ -84,15 +85,15 @@ chacha20_encrypt_bytes(chacha_ctx *ctx, const uint8_t *m, uint8_t *c,
         x15;
     uint32_t j0, j1, j2, j3, j4, j5, j6, j7, j8, j9, j10, j11, j12, j13, j14,
         j15;
-    uint8_t *    ctarget = NULL;
+    uint8_t     *ctarget = NULL;
     uint8_t      tmp[64];
     unsigned int i;
 
     if (!bytes) {
         return; /* LCOV_EXCL_LINE */
     }
-    if (bytes > 64ULL * (1ULL << 32) - 64ULL) {
-        abort();
+    if (bytes > crypto_stream_chacha20_MESSAGEBYTES_MAX) {
+        sodium_misuse();
     }
     j0  = ctx->input[0];
     j1  = ctx->input[1];

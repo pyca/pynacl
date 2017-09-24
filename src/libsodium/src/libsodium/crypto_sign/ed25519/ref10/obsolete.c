@@ -28,8 +28,8 @@ crypto_sign_edwards25519sha512batch_keypair(unsigned char *pk,
 }
 
 int
-crypto_sign_edwards25519sha512batch(unsigned char *      sm,
-                                    unsigned long long * smlen_p,
+crypto_sign_edwards25519sha512batch(unsigned char       *sm,
+                                    unsigned long long  *smlen_p,
                                     const unsigned char *m,
                                     unsigned long long   mlen,
                                     const unsigned char *sk)
@@ -66,8 +66,8 @@ crypto_sign_edwards25519sha512batch(unsigned char *      sm,
 }
 
 int
-crypto_sign_edwards25519sha512batch_open(unsigned char *      m,
-                                         unsigned long long * mlen_p,
+crypto_sign_edwards25519sha512batch_open(unsigned char       *m,
+                                         unsigned long long  *mlen_p,
                                          const unsigned char *sm,
                                          unsigned long long   smlen,
                                          const unsigned char *pk)
@@ -83,7 +83,7 @@ crypto_sign_edwards25519sha512batch_open(unsigned char *      m,
     ge_p3              cs3;
 
     *mlen_p = 0;
-    if (smlen < 64 || smlen > SIZE_MAX) {
+    if (smlen < 64 || smlen - 64 > crypto_sign_edwards25519sha512batch_MESSAGEBYTES_MAX) {
         return -1;
     }
     mlen = smlen - 64;

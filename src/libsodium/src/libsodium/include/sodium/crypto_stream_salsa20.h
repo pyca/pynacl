@@ -28,6 +28,10 @@ size_t crypto_stream_salsa20_keybytes(void);
 SODIUM_EXPORT
 size_t crypto_stream_salsa20_noncebytes(void);
 
+#define crypto_stream_salsa20_MESSAGEBYTES_MAX SODIUM_SIZE_MAX
+SODIUM_EXPORT
+size_t crypto_stream_salsa20_messagebytes_max(void);
+
 SODIUM_EXPORT
 int crypto_stream_salsa20(unsigned char *c, unsigned long long clen,
                           const unsigned char *n, const unsigned char *k);
@@ -45,10 +49,6 @@ int crypto_stream_salsa20_xor_ic(unsigned char *c, const unsigned char *m,
 
 SODIUM_EXPORT
 void crypto_stream_salsa20_keygen(unsigned char k[crypto_stream_salsa20_KEYBYTES]);
-
-/* ------------------------------------------------------------------------- */
-
-int _crypto_stream_salsa20_pick_best_implementation(void);
 
 #ifdef __cplusplus
 }

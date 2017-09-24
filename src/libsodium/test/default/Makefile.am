@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	box_seal.exp \
 	box_seed.exp \
 	chacha20.exp \
+	codecs.exp \
 	core1.exp \
 	core2.exp \
 	core3.exp \
@@ -37,10 +38,13 @@ EXTRA_DIST = \
 	kdf.exp \
 	keygen.exp \
 	kx.exp \
+	metamorphic.exp \
+	misuse.exp \
 	onetimeauth.exp \
 	onetimeauth2.exp \
 	onetimeauth7.exp \
 	pwhash.exp \
+	pwhash_argon2id.exp \
 	pwhash_scrypt.exp \
 	pwhash_scrypt_ll.exp \
 	randombytes.exp \
@@ -55,6 +59,7 @@ EXTRA_DIST = \
 	secretbox8.exp \
 	secretbox_easy.exp \
 	secretbox_easy2.exp \
+	secretstream.exp \
 	shorthash.exp \
 	sign.exp \
 	siphashx24.exp \
@@ -89,6 +94,7 @@ DISTCLEANFILES = \
 	box_seal.res \
 	box_seed.res \
 	chacha20.res \
+	codecs.res \
 	core1.res \
 	core2.res \
 	core3.res \
@@ -105,10 +111,13 @@ DISTCLEANFILES = \
 	kdf.res \
 	keygen.res \
 	kx.res \
+	metamorphic.res \
+	misuse.res \
 	onetimeauth.res \
 	onetimeauth2.res \
 	onetimeauth7.res \
 	pwhash.res \
+	pwhash_argon2id.res \
 	pwhash_scrypt.res \
 	pwhash_scrypt_ll.res \
 	randombytes.res \
@@ -123,6 +132,7 @@ DISTCLEANFILES = \
 	secretbox8.res \
 	secretbox_easy.res \
 	secretbox_easy2.res \
+	secretstream.res \
 	shorthash.res \
 	sign.res \
 	siphashx24.res \
@@ -158,6 +168,7 @@ CLEANFILES = \
 	box_seal.final \
 	box_seed.final \
 	chacha20.final \
+	codecs.final \
 	core1.final \
 	core2.final \
 	core3.final \
@@ -174,10 +185,13 @@ CLEANFILES = \
 	kdf.final \
 	keygen.final \
 	kx.final \
+	metamorphic.final \
+	misuse.final \
 	onetimeauth.final \
 	onetimeauth2.final \
 	onetimeauth7.final \
 	pwhash.final \
+	pwhash_argon2id.final \
 	pwhash_scrypt.final \
 	pwhash_scrypt_ll.final \
 	randombytes.final \
@@ -192,6 +206,7 @@ CLEANFILES = \
 	secretbox8.final \
 	secretbox_easy.final \
 	secretbox_easy2.final \
+	secretstream.final \
 	shorthash.final \
 	sign.final \
 	siphashx24.final \
@@ -222,6 +237,7 @@ CLEANFILES = \
 	box_seal.nexe \
 	box_seed.nexe \
 	chacha20.nexe \
+	codecs.nexe \
 	core1.nexe \
 	core2.nexe \
 	core3.nexe \
@@ -238,10 +254,13 @@ CLEANFILES = \
 	kdf.nexe \
 	keygen.nexe \
 	kx.nexe \
+	metamorphic.nexe \
+	misuse.nexe \
 	onetimeauth.nexe \
 	onetimeauth2.nexe \
 	onetimeauth7.nexe \
 	pwhash.nexe \
+	pwhash_argon2id.nexe \
 	pwhash_scrypt.nexe \
 	pwhash_scrypt_ll.nexe \
 	randombytes.nexe \
@@ -256,6 +275,7 @@ CLEANFILES = \
 	secretbox8.nexe \
 	secretbox_easy.nexe \
 	secretbox_easy2.nexe \
+	secretstream.nexe \
 	shorthash.nexe \
 	sign.nexe \
 	siphashx24.nexe \
@@ -299,6 +319,7 @@ TESTS_TARGETS = \
 	box_seal \
 	box_seed \
 	chacha20 \
+	codecs \
 	core1 \
 	core2 \
 	core3 \
@@ -314,12 +335,13 @@ TESTS_TARGETS = \
 	kdf \
 	keygen \
 	kx \
+	metamorphic \
+	misuse \
 	onetimeauth \
 	onetimeauth2 \
 	onetimeauth7 \
 	pwhash \
-	pwhash_scrypt \
-	pwhash_scrypt_ll \
+	pwhash_argon2id \
 	randombytes \
 	scalarmult \
 	scalarmult2 \
@@ -332,6 +354,7 @@ TESTS_TARGETS = \
 	secretbox8 \
 	secretbox_easy \
 	secretbox_easy2 \
+	secretstream \
 	shorthash \
 	sign \
 	sodium_core \
@@ -412,6 +435,9 @@ box_seed_LDADD            = $(TESTS_LDADD)
 chacha20_SOURCE           = cmptest.h chacha20.c
 chacha20_LDADD            = $(TESTS_LDADD)
 
+codecs_SOURCE             = cmptest.h codecs.c
+codecs_LDADD              = $(TESTS_LDADD)
+
 core1_SOURCE              = cmptest.h core1.c
 core1_LDADD               = $(TESTS_LDADD)
 
@@ -457,6 +483,12 @@ keygen_LDADD              = $(TESTS_LDADD)
 kx_SOURCE                 = cmptest.h kx.c
 kx_LDADD                  = $(TESTS_LDADD)
 
+metamorphic_SOURCE        = cmptest.h metamorphic.c
+metamorphic_LDADD         = $(TESTS_LDADD)
+
+misuse_SOURCE             = cmptest.h misuse.c
+misuse_LDADD              = $(TESTS_LDADD)
+
 onetimeauth_SOURCE        = cmptest.h onetimeauth.c
 onetimeauth_LDADD         = $(TESTS_LDADD)
 
@@ -468,6 +500,9 @@ onetimeauth7_LDADD        = $(TESTS_LDADD)
 
 pwhash_SOURCE             = cmptest.h pwhash.c
 pwhash_LDADD              = $(TESTS_LDADD)
+
+pwhash_argon2id_SOURCE    = cmptest.h pwhash_argon2id.c
+pwhash_argon2id_LDADD     = $(TESTS_LDADD)
 
 pwhash_scrypt_SOURCE      = cmptest.h pwhash_scrypt.c
 pwhash_scrypt_LDADD       = $(TESTS_LDADD)
@@ -510,6 +545,9 @@ secretbox_easy_LDADD      = $(TESTS_LDADD)
 
 secretbox_easy2_SOURCE    = cmptest.h secretbox_easy2.c
 secretbox_easy2_LDADD     = $(TESTS_LDADD)
+
+secretstream_SOURCE       = cmptest.h secretstream.c
+secretstream_LDADD        = $(TESTS_LDADD)
 
 shorthash_SOURCE          = cmptest.h shorthash.c
 shorthash_LDADD           = $(TESTS_LDADD)
@@ -555,6 +593,8 @@ xchacha20_LDADD           = $(TESTS_LDADD)
 
 if !MINIMAL
 TESTS_TARGETS += \
+	pwhash_scrypt \
+	pwhash_scrypt_ll \
 	siphashx24 \
 	xchacha20
 endif
