@@ -25,10 +25,22 @@ from nacl.public import PrivateKey, PublicKey, SealedBox
 
 
 def sealbox_vectors():
-    # Fmt: <recipient sk><tab><recipient pk><tab><plaintext><tab><ciphertext>
-    # [<tab> ...]
+    # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext>
+    # <tab><cr_len>:<ciphertext>[<tab> ...]
+
+    def splitlen(x):
+        ln, dta = x.split(b':')
+        assert len(dta) == 2 * int(ln)
+        return dta
+
     DATA = "sealed_box_ref.txt"
-    return read_crypto_test_vectors(DATA, maxels=4, delimiter=b'\t')
+    return [(x[0],
+             x[1],
+             splitlen(x[2]),
+             splitlen(x[3])
+             )
+            for x in read_crypto_test_vectors(DATA,
+                                              maxels=4, delimiter=b'\t')]
 
 
 def test_generate_private_key():
@@ -122,6 +134,7 @@ def test_wrong_types():
 def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
                                               _plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
+
     box = SealedBox(pubalice)
     with pytest.raises(TypeError):
         box.decrypt(

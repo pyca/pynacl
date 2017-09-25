@@ -37,6 +37,7 @@ Support Features
 
     install
     doing-a-release
+    vectors/index
     changelog
 
 Indices and tables
