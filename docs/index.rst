@@ -32,7 +32,7 @@ Support Features
     api/hashlib
 
 .. toctree::
-    :caption: the pynacl open source project
+    :caption: The PyNaCl open source project
     :maxdepth: 2
 
     install
