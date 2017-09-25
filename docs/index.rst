@@ -1,5 +1,4 @@
-PyNaCl: Python binding to the Networking and Cryptography (NaCl) library
-========================================================================
+.. include:: ../README.rst
 
 Contents
 --------

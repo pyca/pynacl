@@ -1,5 +1,6 @@
-PyNaCl
-======
+===============================================
+PyNaCl: Python binding to the libsodium library
+===============================================
 
 .. image:: https://img.shields.io/pypi/v/pynacl.svg
     :target: https://pypi.python.org/pypi/PyNaCl/
