@@ -326,6 +326,7 @@
     <ClCompile Include="src\libsodium\crypto_box\crypto_box_easy.c" />
     <ClCompile Include="src\libsodium\crypto_box\crypto_box_seal.c" />
     <ClCompile Include="src\libsodium\crypto_box\curve25519xchacha20poly1305\box_curve25519xchacha20poly1305.c" />
+    <ClCompile Include="src\libsodium\crypto_box\curve25519xchacha20poly1305\box_seal_curve25519xchacha20poly1305.c" />
     <ClCompile Include="src\libsodium\crypto_box\curve25519xsalsa20poly1305\box_curve25519xsalsa20poly1305.c" />
     <ClCompile Include="src\libsodium\crypto_core\curve25519\ref10\curve25519_ref10.c" />
     <ClCompile Include="src\libsodium\crypto_core\hchacha20\core_hchacha20.c" />
@@ -355,11 +356,14 @@
     <ClCompile Include="src\libsodium\crypto_pwhash\crypto_pwhash.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-core.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-encoding.c" />
+    <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-fill-block-avx2.c" />
+    <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-fill-block-avx512f.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-fill-block-ref.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2-fill-block-ssse3.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\argon2.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\blake2b-long.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\argon2\pwhash_argon2i.c" />
+    <ClCompile Include="src\libsodium\crypto_pwhash\argon2\pwhash_argon2id.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\scryptsalsa208sha256\crypto_scrypt-common.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\scryptsalsa208sha256\pbkdf2-sha256.c" />
     <ClCompile Include="src\libsodium\crypto_pwhash\scryptsalsa208sha256\pwhash_scryptsalsa208sha256.c" />
@@ -377,6 +381,7 @@
     <ClCompile Include="src\libsodium\crypto_secretbox\crypto_secretbox_easy.c" />
     <ClCompile Include="src\libsodium\crypto_secretbox\xchacha20poly1305\secretbox_xchacha20poly1305.c" />
     <ClCompile Include="src\libsodium\crypto_secretbox\xsalsa20poly1305\secretbox_xsalsa20poly1305.c" />
+    <ClCompile Include="src\libsodium\crypto_secretstream\xchacha20poly1305\secretstream_xchacha20poly1305.c" />
     <ClCompile Include="src\libsodium\crypto_shorthash\crypto_shorthash.c" />
     <ClCompile Include="src\libsodium\crypto_shorthash\siphash24\shorthash_siphash24.c" />
     <ClCompile Include="src\libsodium\crypto_shorthash\siphash24\shorthash_siphashx24.c" />
@@ -416,6 +421,7 @@
     <ClCompile Include="src\libsodium\randombytes\nativeclient\randombytes_nativeclient.c" />
     <ClCompile Include="src\libsodium\randombytes\salsa20\randombytes_salsa20_random.c" />
     <ClCompile Include="src\libsodium\randombytes\sysrandom\randombytes_sysrandom.c" />
+    <ClCompile Include="src\libsodium\sodium\codecs.c" />
     <ClCompile Include="src\libsodium\sodium\core.c" />
     <ClCompile Include="src\libsodium\sodium\runtime.c" />
     <ClCompile Include="src\libsodium\sodium\utils.c" />
@@ -440,6 +446,8 @@
     <ClInclude Include="src\libsodium\crypto_pwhash\argon2\argon2-encoding.h" />
     <ClInclude Include="src\libsodium\crypto_pwhash\argon2\argon2.h" />
     <ClInclude Include="src\libsodium\crypto_pwhash\argon2\blake2b-long.h" />
+    <ClInclude Include="src\libsodium\crypto_pwhash\argon2\blamka-round-avx2.h" />
+    <ClInclude Include="src\libsodium\crypto_pwhash\argon2\blamka-round-avx512f.h" />
     <ClInclude Include="src\libsodium\crypto_pwhash\argon2\blamka-round-ref.h" />
     <ClInclude Include="src\libsodium\crypto_pwhash\argon2\blamka-round-ssse3.h" />
     <ClInclude Include="src\libsodium\crypto_pwhash\scryptsalsa208sha256\crypto_scrypt.h" />
@@ -507,12 +515,14 @@
     <ClInclude Include="src\libsodium\include\sodium\crypto_onetimeauth_poly1305.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_pwhash.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_pwhash_argon2i.h" />
+    <ClInclude Include="src\libsodium\include\sodium\crypto_pwhash_argon2id.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_pwhash_scryptsalsa208sha256.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_scalarmult.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_scalarmult_curve25519.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_secretbox.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_secretbox_xchacha20poly1305.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_secretbox_xsalsa20poly1305.h" />
+    <ClInclude Include="src\libsodium\include\sodium\crypto_secretstream_xchacha20poly1305.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_shorthash.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_shorthash_siphash24.h" />
     <ClInclude Include="src\libsodium\include\sodium\crypto_sign.h" />
@@ -536,10 +546,17 @@
     <ClInclude Include="src\libsodium\include\sodium\randombytes_sysrandom.h" />
     <ClInclude Include="src\libsodium\include\sodium\runtime.h" />
     <ClInclude Include="src\libsodium\include\sodium\utils.h" />
+    <ClInclude Include="src\libsodium\include\sodium\version.h" />
     <ClInclude Include="src\libsodium\include\sodium\private\common.h" />
     <ClInclude Include="src\libsodium\include\sodium\private\curve25519_ref10.h" />
+    <ClInclude Include="src\libsodium\include\sodium\private\implementations.h" />
     <ClInclude Include="src\libsodium\include\sodium\private\mutex.h" />
     <ClInclude Include="src\libsodium\include\sodium\private\sse2_64_32.h" />
+    <ClInclude Include="builds\msvc\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="builds\msvc\resource.rc">
+    </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
