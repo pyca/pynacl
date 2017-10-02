@@ -4,7 +4,7 @@ Changelog
 1.2.0 (UNRELEASED)
 ------------------
 
-* Update ``libsodium`` to 1.0.12.
+* Update ``libsodium`` to 1.0.15.
 * Infrastructure: add jenkins support for automatic build of
   ``manylinux1`` binary wheels
 * Added support for ``SealedBox`` construction.
