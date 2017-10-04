@@ -124,8 +124,6 @@ if __name__ == '__main__':
     p.add_argument('-n', '--count', dest='n', type=int, default=10)
     p.add_argument('-w', '--output', dest='outfile',
                    default=sys.stdout, type=argparse.FileType('w'))
-    # p.add_argument('-r', '--input', dest='infile',
-    #                default=sys.stdin, type=argparse.FileType('r'))
 
     args = p.parse_args()
 
