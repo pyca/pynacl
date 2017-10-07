@@ -48,41 +48,97 @@ int crypto_pwhash_scryptsalsa208sha256_str_verify(const char str[102],
                                                    unsigned long long passwdlen);
 
 /*
- *  argon2i bindings
+ *  argon2 bindings
  */
 
-size_t crypto_pwhash_argon2i_strbytes(void);
-size_t crypto_pwhash_argon2i_saltbytes(void);
-size_t crypto_pwhash_argon2i_bytes_min(void);
-size_t crypto_pwhash_argon2i_bytes_max(void);
-size_t crypto_pwhash_argon2i_passwd_min(void);
-size_t crypto_pwhash_argon2i_passwd_max(void);
-size_t crypto_pwhash_argon2i_memlimit_min(void);
-size_t crypto_pwhash_argon2i_memlimit_max(void);
+/*
+ *  general argon2 limits
+ */
+
+size_t crypto_pwhash_strbytes(void);
+size_t crypto_pwhash_saltbytes(void);
+size_t crypto_pwhash_bytes_min(void);
+size_t crypto_pwhash_bytes_max(void);
+size_t crypto_pwhash_passwd_min(void);
+size_t crypto_pwhash_passwd_max(void);
+
+/*
+ *  available algorithms identifiers
+ */
+
+int crypto_pwhash_alg_default(void);
+int crypto_pwhash_alg_argon2i13(void);
+int crypto_pwhash_alg_argon2id13(void);
+
+/*
+ *  argon2i recommended limits
+ */
+
 size_t crypto_pwhash_argon2i_memlimit_interactive(void);
 size_t crypto_pwhash_argon2i_memlimit_moderate(void);
 size_t crypto_pwhash_argon2i_memlimit_sensitive(void);
+size_t crypto_pwhash_argon2i_memlimit_min(void);
+size_t crypto_pwhash_argon2i_memlimit_max(void);
 size_t crypto_pwhash_argon2i_opslimit_min(void);
 size_t crypto_pwhash_argon2i_opslimit_max(void);
 size_t crypto_pwhash_argon2i_opslimit_interactive(void);
 size_t crypto_pwhash_argon2i_opslimit_moderate(void);
 size_t crypto_pwhash_argon2i_opslimit_sensitive(void);
-int crypto_pwhash_argon2i_alg_argon2i13(void);
 
-int crypto_pwhash_argon2i(unsigned char * const out,
-                          unsigned long long outlen,
+/*
+ *  argon2id recommended limits
+ */
+
+size_t crypto_pwhash_argon2id_memlimit_interactive(void);
+size_t crypto_pwhash_argon2id_memlimit_moderate(void);
+size_t crypto_pwhash_argon2id_memlimit_sensitive(void);
+size_t crypto_pwhash_argon2id_memlimit_min(void);
+size_t crypto_pwhash_argon2id_memlimit_max(void);
+size_t crypto_pwhash_argon2id_opslimit_min(void);
+size_t crypto_pwhash_argon2id_opslimit_max(void);
+size_t crypto_pwhash_argon2id_opslimit_interactive(void);
+size_t crypto_pwhash_argon2id_opslimit_moderate(void);
+size_t crypto_pwhash_argon2id_opslimit_sensitive(void);
+
+/*
+ *  libsodium's default argon2 algorithm recommended limits
+ */
+
+size_t crypto_pwhash_memlimit_interactive(void);
+size_t crypto_pwhash_memlimit_moderate(void);
+size_t crypto_pwhash_memlimit_sensitive(void);
+size_t crypto_pwhash_memlimit_min(void);
+size_t crypto_pwhash_memlimit_max(void);
+size_t crypto_pwhash_opslimit_min(void);
+size_t crypto_pwhash_opslimit_max(void);
+size_t crypto_pwhash_opslimit_interactive(void);
+size_t crypto_pwhash_opslimit_moderate(void);
+size_t crypto_pwhash_opslimit_sensitive(void);
+
+/*
+ *  crypto_pwhash raw constructs
+ */
+
+int crypto_pwhash(unsigned char * const out, unsigned long long outlen,
+		  const char * const passwd, unsigned long long passwdlen,
+		  const unsigned char * const salt,
+		  unsigned long long opslimit, size_t memlimit, int alg);
+
+/*
+ *  #define crypto_pwhash_argon2i_STRBYTES 128U
+ *  #define crypto_pwhash_STRBYTES crypto_pwhash_argon2i_STRBYTES
+ */
+
+int crypto_pwhash_str_alg(char out[128],
                           const char * const passwd,
                           unsigned long long passwdlen,
-                          const unsigned char * const salt,
-                          unsigned long long opslimit, size_t memlimit,
+                          unsigned long long opslimit,
+                          size_t memlimit,
                           int alg);
 
-/* #define crypto_pwhash_argon2i_STRBYTES 128U */
-int crypto_pwhash_argon2i_str(char out[128],
-                              const char * const passwd,
-                              unsigned long long passwdlen,
-                              unsigned long long opslimit, size_t memlimit);
+int crypto_pwhash_str_verify(const char str[128],
+                             const char * const passwd,
+                             unsigned long long passwdlen);
 
-int crypto_pwhash_argon2i_str_verify(const char str[128],
-                                     const char * const passwd,
-                                     unsigned long long passwdlen);
+int crypto_pwhash_str_needs_rehash(const char str[128],
+                                   unsigned long long opslimit, size_t memlimit);
