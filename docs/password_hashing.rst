@@ -12,22 +12,22 @@ which is stored along with the hash, and allows verifying a proposed
 password while avoiding clear-text storage.
 
 The latest developments in password hashing have been *memory-hard*
-and *tunable* mechanisms, pioneered by the ``scrypt`` mechanism [SD2012]_,
+and *tunable* mechanisms, pioneered by ``scrypt`` [SD2012]_,
 and followed-on by the schemes submitted to the **Password Hashing
 Competition** [PHC]_.
 
-The :py:mod:`nacl.pwhash` module exposes both one of the **PHC** recommended
-``argon2`` mechanisms and the ``scrypt`` one.
+The :py:mod:`nacl.pwhash` module exposes both the **PHC** recommended
+partially data dependent ``argon2id`` and the data independent ``argon2i``
+mechanisms alongside to the ``scrypt`` one.
 
-While some sources suggest to give preference to data dependent password
-hashing mechanisms, the only mechanism of the ``argon2`` family being
-implemented in libsodium as of version ``1.0.12`` is the data-independent
-``argon2i`` one.
+In the case of password storage, it's usually suggested to give preference to
+data dependent mechanisms, therefore the default mechanism suggested by
+``libsodium`` since version 1.0.15 is the ``argon2id`` one.
 
 If you think in your use-case the risk of potential timing-attacks stemming
-from data-dependency is less than the potential time/memory trade-offs coming
-out of data-independency, you should consider staying with ``scrypt``
-password hashing instead of jumping to ``argon2i``
+from data-dependency is greater than the potential time/memory trade-offs
+stemming out of data-independency, you should prefer ``argon2i`` to
+``argon2id`` or ``scrypt``
 
 
 Password storage and verification
@@ -100,10 +100,11 @@ verifying a proposed password:
     from nacl.exceptions import ValueError
     from nacl.pwhash import (verify_argon2i, verify_scryptsalsa208sha256)
     def check_password(serialized, proposed):
-        if serialized.startswith(b'$argon2i$'):
-            res = verify_argon2i(serialized, proposed)
-        elif serialized.startswith(b'$7$'):
+        if serialized.startswith(b'$7$'):
             res = verify_scryptsalsa208sha256(serialized, proposed)
+        if serialized.startswith(b'$argon2i$')
+                or serialized.startswith(b'$argon2id$'):
+            res = verify_argon2(serialized, proposed)
         else:
             raise ValueError('Unknown serialization format')
         return res
@@ -203,14 +204,14 @@ are belived to be valid as of CPU/ASIC speeds current in year 2017.
 
 The provided constants are:
 
-for scrypt:
+for ``scrypt``:
 
     * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_INTERACTIVE`
     * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_INTERACTIVE`
     * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_SENSITIVE`
     * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_SENSITIVE`
 
-for argon2:
+for ``argon2``:
 
     * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_INTERACTIVE`
     * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE`
@@ -218,6 +219,12 @@ for argon2:
     * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE`
     * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_SENSITIVE`
     * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_SENSITIVE`
+    * :py:const:`nacl.pwhash.ARGON2ID_OPSLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.ARGON2ID_MEMLIMIT_INTERACTIVE`
+    * :py:const:`nacl.pwhash.ARGON2ID_OPSLIMIT_MODERATE`
+    * :py:const:`nacl.pwhash.ARGON2ID_MEMLIMIT_MODERATE`
+    * :py:const:`nacl.pwhash.ARGON2ID_OPSLIMIT_SENSITIVE`
+    * :py:const:`nacl.pwhash.ARGON2ID_MEMLIMIT_SENSITIVE`
 
 In general, the _INTERACTIVE values are recommended in the case of hashes
 stored for interactive password checking, and lead to a sub-second password
@@ -225,8 +232,8 @@ verification time, with a memory consumption in the tens of megabytes range,
 while the _SENSITIVE values are meant to store hashes for password protecting
 sensitive data, and lead to hashing times exceeding one second, with memory
 consumption in the hundred of megabytes range. The _MODERATE values, suggested
-for argon2i are meant to run the construct at a runtime and memory cost
-intermediate between _INTERACTIVE and _SENSITIVE.
+for ``argon2`` mechanisms are meant to run the construct at a runtime and
+memory cost intermediate between _INTERACTIVE and _SENSITIVE.
 
 
 .. [SD2012] A nice overview of password hashing history is available
