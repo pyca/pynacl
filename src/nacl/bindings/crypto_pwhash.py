@@ -297,7 +297,7 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
             raise exc.ValueError('opslimit must be at most {0}'.format(
                 crypto_pwhash_argon2i_OPSLIMIT_MAX))
 
-    elif (alg == crypto_pwhash_ALG_ARGON2ID13):
+    elif (alg == crypto_pwhash_ALG_ARGON2ID13):  # pragma: no branch
         if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
             raise exc.ValueError('memlimit must be at least {0} bytes'.format(
                                  crypto_pwhash_argon2id_MEMLIMIT_MIN))
