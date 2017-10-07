@@ -35,12 +35,26 @@ crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = \
 crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
 
-crypto_pwhash_argon2i_ALG_ARGON2I13 = \
-    lib.crypto_pwhash_argon2i_alg_argon2i13()
-crypto_pwhash_argon2i_SALTBYTES = \
-    lib.crypto_pwhash_argon2i_saltbytes()
-crypto_pwhash_argon2i_STRBYTES = \
-    lib.crypto_pwhash_argon2i_strbytes()
+crypto_pwhash_ALG_ARGON2I13 = lib.crypto_pwhash_alg_argon2i13()
+crypto_pwhash_ALG_ARGON2ID13 = lib.crypto_pwhash_alg_argon2id13()
+crypto_pwhash_ALG_DEFAULT = lib.crypto_pwhash_alg_default()
+
+crypto_pwhash_SALTBYTES = lib.crypto_pwhash_saltbytes()
+crypto_pwhash_STRBYTES = lib.crypto_pwhash_strbytes()
+
+crypto_pwhash_PASSWD_MIN = lib.crypto_pwhash_passwd_min()
+crypto_pwhash_PASSWD_MAX = lib.crypto_pwhash_passwd_max()
+crypto_pwhash_BYTES_MIN = lib.crypto_pwhash_bytes_min()
+crypto_pwhash_BYTES_MAX = lib.crypto_pwhash_bytes_max()
+
+crypto_pwhash_argon2i_MEMLIMIT_MIN = \
+    lib.crypto_pwhash_argon2i_memlimit_min()
+crypto_pwhash_argon2i_MEMLIMIT_MAX = \
+    lib.crypto_pwhash_argon2i_memlimit_max()
+crypto_pwhash_argon2i_OPSLIMIT_MIN = \
+    lib.crypto_pwhash_argon2i_opslimit_min()
+crypto_pwhash_argon2i_OPSLIMIT_MAX = \
+    lib.crypto_pwhash_argon2i_opslimit_max()
 crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE = \
     lib.crypto_pwhash_argon2i_opslimit_interactive()
 crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE = \
@@ -54,26 +68,26 @@ crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE = \
 crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 
-crypto_pwhash_argon2i_MEMLIMIT_MIN = \
-    max(lib.crypto_pwhash_argon2i_memlimit_min(), 8 * 1024)
-# Workaround for jedisct1/libsodium#516
-# fixed in libsodium version 1.0.13
-crypto_pwhash_argon2i_MEMLIMIT_MAX = \
-    max(lib.crypto_pwhash_argon2i_memlimit_max(), 2147483648)
-# Workaround for jedisct1/libsodium#522
-# fixed in libsodium version 1.0.13
-crypto_pwhash_argon2i_OPSLIMIT_MIN = \
-    lib.crypto_pwhash_argon2i_opslimit_min()
-crypto_pwhash_argon2i_OPSLIMIT_MAX = \
-    lib.crypto_pwhash_argon2i_opslimit_max()
-crypto_pwhash_argon2i_PASSWD_MIN = \
-    lib.crypto_pwhash_argon2i_passwd_min()
-crypto_pwhash_argon2i_PASSWD_MAX = \
-    lib.crypto_pwhash_argon2i_passwd_max()
-crypto_pwhash_argon2i_BYTES_MIN = \
-    lib.crypto_pwhash_argon2i_bytes_min()
-crypto_pwhash_argon2i_BYTES_MAX = \
-    lib.crypto_pwhash_argon2i_bytes_max()
+crypto_pwhash_argon2id_MEMLIMIT_MIN = \
+    lib.crypto_pwhash_argon2id_memlimit_min()
+crypto_pwhash_argon2id_MEMLIMIT_MAX = \
+    lib.crypto_pwhash_argon2id_memlimit_max()
+crypto_pwhash_argon2id_OPSLIMIT_MIN = \
+    lib.crypto_pwhash_argon2id_opslimit_min()
+crypto_pwhash_argon2id_OPSLIMIT_MAX = \
+    lib.crypto_pwhash_argon2id_opslimit_max()
+crypto_pwhash_argon2id_OPSLIMIT_INTERACTIVE = \
+    lib.crypto_pwhash_argon2id_opslimit_interactive()
+crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE = \
+    lib.crypto_pwhash_argon2id_memlimit_interactive()
+crypto_pwhash_argon2id_OPSLIMIT_MODERATE = \
+    lib.crypto_pwhash_argon2id_opslimit_moderate()
+crypto_pwhash_argon2id_MEMLIMIT_MODERATE = \
+    lib.crypto_pwhash_argon2id_memlimit_moderate()
+crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE = \
+    lib.crypto_pwhash_argon2id_opslimit_sensitive()
+crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE = \
+    lib.crypto_pwhash_argon2id_memlimit_sensitive()
 
 SCRYPT_OPSLIMIT_INTERACTIVE = \
     crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
@@ -267,10 +281,41 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     return True
 
 
-def crypto_pwhash_argon2i(outlen, passwd, salt, opslimit, memlimit, alg):
+def _check_argon2_limits_alg(opslimit, memlimit, alg):
+
+    if (alg == crypto_pwhash_ALG_ARGON2I13):
+        if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
+            raise exc.ValueError('memlimit must be at least {0} bytes'.format(
+                                 crypto_pwhash_argon2i_MEMLIMIT_MIN))
+        elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
+            raise exc.ValueError('memlimit must be at most {0} bytes'.format(
+                                 crypto_pwhash_argon2i_MEMLIMIT_MAX))
+        if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
+            raise exc.ValueError('opslimit must be at least {0}'.format(
+                crypto_pwhash_argon2i_OPSLIMIT_MIN))
+        elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
+            raise exc.ValueError('opslimit must be at most {0}'.format(
+                crypto_pwhash_argon2i_OPSLIMIT_MAX))
+
+    elif (alg == crypto_pwhash_ALG_ARGON2ID13):
+        if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
+            raise exc.ValueError('memlimit must be at least {0} bytes'.format(
+                                 crypto_pwhash_argon2id_MEMLIMIT_MIN))
+        elif memlimit > crypto_pwhash_argon2id_MEMLIMIT_MAX:
+            raise exc.ValueError('memlimit must be at most {0} bytes'.format(
+                                 crypto_pwhash_argon2id_MEMLIMIT_MAX))
+        if opslimit < crypto_pwhash_argon2id_OPSLIMIT_MIN:
+            raise exc.ValueError('opslimit must be at least {0}'.format(
+                crypto_pwhash_argon2id_OPSLIMIT_MIN))
+        elif opslimit > crypto_pwhash_argon2id_OPSLIMIT_MAX:
+            raise exc.ValueError('opslimit must be at most {0}'.format(
+                crypto_pwhash_argon2id_OPSLIMIT_MAX))
+
+
+def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     """
     Derive a raw cryptographic key using the ``passwd`` and the ``salt``
-    given as input.
+    given as input to the ``alg`` algorithm.
 
     :param outlen: the length of the derived key
     :type outlen: int
@@ -296,51 +341,38 @@ def crypto_pwhash_argon2i(outlen, passwd, salt, opslimit, memlimit, alg):
     ensure(isinstance(passwd, bytes),
            raising=exc.TypeError)
 
-    if len(salt) != crypto_pwhash_argon2i_SALTBYTES:
+    if len(salt) != crypto_pwhash_SALTBYTES:
         raise exc.ValueError("salt must be exactly {0} bytes long".format(
-            crypto_pwhash_argon2i_SALTBYTES))
+            crypto_pwhash_SALTBYTES))
 
-    if outlen < crypto_pwhash_argon2i_BYTES_MIN:
+    if outlen < crypto_pwhash_BYTES_MIN:
         raise exc.ValueError(
             'derived key must be at least {0} bytes long'.format(
-                crypto_pwhash_argon2i_BYTES_MIN))
+                crypto_pwhash_BYTES_MIN))
 
-    elif outlen > crypto_pwhash_argon2i_BYTES_MAX:
+    elif outlen > crypto_pwhash_BYTES_MAX:
         raise exc.ValueError(
             'derived key must be at most {0} bytes long'.format(
-                crypto_pwhash_argon2i_BYTES_MAX))
+                crypto_pwhash_BYTES_MAX))
 
-    if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
-        raise exc.ValueError('memlimit must be at least {0} bytes'.format(
-            crypto_pwhash_argon2i_MEMLIMIT_MIN))
-
-    elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
-        raise exc.ValueError('memlimit must be at most {0} bytes'.format(
-            crypto_pwhash_argon2i_MEMLIMIT_MAX))
-
-    if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
-        raise exc.ValueError('opslimit must be at least {0}'.format(
-            crypto_pwhash_argon2i_OPSLIMIT_MIN))
-
-    elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
-        raise exc.ValueError('opslimit must be at most {0}'.format(
-            crypto_pwhash_argon2i_OPSLIMIT_MAX))
+    _check_argon2_limits_alg(opslimit, memlimit, alg)
 
     outbuf = ffi.new("unsigned char[]", outlen)
 
-    ret = lib.crypto_pwhash_argon2i(outbuf, outlen, passwd, len(passwd),
-                                    salt, opslimit, memlimit, alg)
+    ret = lib.crypto_pwhash(outbuf, outlen, passwd, len(passwd),
+                            salt, opslimit, memlimit, alg)
+
     ensure(ret == 0, 'Unexpected failure in key derivation',
            raising=exc.RuntimeError)
 
     return ffi.buffer(outbuf, outlen)[:]
 
 
-def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
+def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
     """
     Derive a cryptographic key using the ``passwd`` given as input
     and a random ``salt``, returning a string representation which
-    includes the salt and the tuning parameters.
+    includes the salt, the tuning parameters and the used algorithm.
 
     :param passwd: The input password
     :type passwd: bytes
@@ -348,6 +380,8 @@ def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
     :type opslimit: int
     :param memlimit: memory cost
     :type memlimit: int
+    :param alg: The algorithm to use
+    :type alg: int
     :return: serialized derived key and parameters
     :rtype: bytes
     """
@@ -358,10 +392,12 @@ def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
     ensure(isinstance(passwd, bytes),
            raising=TypeError)
 
+    _check_argon2_limits_alg(opslimit, memlimit, alg)
+
     outbuf = ffi.new("char[]", 128)
 
-    ret = lib.crypto_pwhash_argon2i_str(outbuf, passwd, len(passwd),
-                                        opslimit, memlimit)
+    ret = lib.crypto_pwhash_str_alg(outbuf, passwd, len(passwd),
+                                    opslimit, memlimit, alg)
 
     ensure(ret == 0, 'Unexpected failure in key derivation',
            raising=exc.RuntimeError)
@@ -369,11 +405,11 @@ def crypto_pwhash_argon2i_str(passwd, opslimit, memlimit):
     return ffi.string(outbuf)
 
 
-def crypto_pwhash_argon2i_str_verify(passwd_hash, passwd):
+def crypto_pwhash_str_verify(passwd_hash, passwd):
     """
-    int crypto_pwhash_argon2i_str_verify(const char str[128],
-                                         const char * const passwd,
-                                         unsigned long long passwdlen);
+    int crypto_pwhash_str_verify(const char str[128],
+                                 const char * const passwd,
+                                 unsigned long long passwdlen);
     Verifies the ``passwd`` against a given password hash.
 
     Returns True on success, raises InvalidkeyError on failure
@@ -392,11 +428,13 @@ def crypto_pwhash_argon2i_str_verify(passwd_hash, passwd):
            "Hash must be at most 127 bytes long",
            raising=exc.ValueError)
 
-    ret = lib.crypto_pwhash_argon2i_str_verify(passwd_hash,
-                                               passwd, len(passwd))
+    ret = lib.crypto_pwhash_str_verify(passwd_hash, passwd, len(passwd))
 
     ensure(ret == 0,
            "Wrong password",
            raising=exc.InvalidkeyError)
     # all went well, therefore:
     return True
+
+
+crypto_pwhash_argon2i_str_verify = crypto_pwhash_str_verify
