@@ -60,6 +60,29 @@ def argon2i_raw_ref():
     return vectors
 
 
+def argon2id_modular_crypt_ref():
+    DATA = "modular_crypt_argon2id_hashes.json"
+    path = os.path.join(os.path.dirname(__file__), "data", DATA)
+    jvectors = json.load(open(path))
+    vectors = [(x["pwhash"], x["passwd"])
+               for x in jvectors if (x["mode"] == "crypt" and
+                                     x["construct"] == "argon2id")
+               ]
+    return vectors
+
+
+def argon2id_raw_ref():
+    DATA = "raw_argon2id_hashes.json"
+    path = os.path.join(os.path.dirname(__file__), "data", DATA)
+    jvectors = json.load(open(path))
+    vectors = [(x["dgst_len"], x["passwd"], x["salt"], x["iters"],
+                x["maxmem"], x["pwhash"])
+               for x in jvectors if (x["mode"] == "raw" and
+                                     x["construct"] == "argon2id")
+               ]
+    return vectors
+
+
 def random_utf8_password_gen(minlen=5, maxlen=20):
     rng = random.SystemRandom()
 
@@ -77,6 +100,20 @@ def gen_argon2i_str_params(n,
                            max_ops=nacl.pwhash.ARGON2I_OPSLIMIT_MODERATE,
                            min_mem=nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE,
                            max_mem=nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE):
+    rng = random.SystemRandom()
+    pwgen = random_utf8_password_gen()
+    rn = [(next(pwgen),
+           rng.randint(min_ops, max_ops),
+           rng.randint(min_mem, max_mem))
+          for c in range(n)]
+    return rn
+
+
+def gen_argon2id_str_params(n,
+                            min_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_INTERACTIVE,
+                            max_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_MODERATE,
+                            min_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_INTERACTIVE,
+                            max_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_MODERATE):
     rng = random.SystemRandom()
     pwgen = random_utf8_password_gen()
     rn = [(next(pwgen),
@@ -260,21 +297,25 @@ def test_str_verify_wrong_hash_length(passwd_hash, password):
 
 
 @pytest.mark.parametrize(("password_hash", "password"),
-                         argon2i_modular_crypt_ref())
-def test_str_verify_argon2i_ref(password_hash, password):
+                         argon2i_modular_crypt_ref() +
+                         argon2id_modular_crypt_ref()
+                         )
+def test_str_verify_argon2_ref(password_hash, password):
     pw_hash = password_hash.encode('ascii')
     pw = password.encode('ascii')
-    res = nacl.pwhash.verify_argon2i(pw_hash, pw)
+    res = nacl.pwhash.verify_argon2(pw_hash, pw)
     assert res is True
 
 
 @pytest.mark.parametrize(("password_hash", "password"),
-                         argon2i_modular_crypt_ref())
-def test_str_verify_argon2i_ref_fail(password_hash, password):
+                         argon2i_modular_crypt_ref() +
+                         argon2id_modular_crypt_ref()
+                         )
+def test_str_verify_argon2_ref_fail(password_hash, password):
     pw_hash = password_hash.encode('ascii')
     pw = ('a' + password).encode('ascii')
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pwhash.verify_argon2i(pw_hash, pw)
+        nacl.pwhash.verify_argon2(pw_hash, pw)
 
 
 @pytest.mark.parametrize(("password", "ops", "mem"),
@@ -285,7 +326,19 @@ def test_str_verify_argon2i_ref_fail(password_hash, password):
                                                 max_mem=16 * 1024 * 1024))
 def test_argon2i_str_and_verify(password, ops, mem):
     pw_hash = nacl.pwhash.argon2i_str(password, opslimit=ops, memlimit=mem)
-    res = nacl.pwhash.verify_argon2i(pw_hash, password)
+    res = nacl.pwhash.verify_argon2(pw_hash, password)
+    assert res is True
+
+
+@pytest.mark.parametrize(("password", "ops", "mem"),
+                         gen_argon2id_str_params(10,
+                                                 min_ops=1,
+                                                 max_ops=4,
+                                                 min_mem=1024 * 1024,
+                                                 max_mem=16 * 1024 * 1024))
+def test_argon2id_str_and_verify(password, ops, mem):
+    pw_hash = nacl.pwhash.argon2id_str(password, opslimit=ops, memlimit=mem)
+    res = nacl.pwhash.verify_argon2(pw_hash, password)
     assert res is True
 
 
@@ -311,26 +364,56 @@ def test_argon2i_kdf(dk_size, password, salt, iters, mem_kb, pwhash):
     assert dk == ref
 
 
+@pytest.mark.parametrize(("dk_size", "password", "salt",
+                          "iters", "mem_kb", "pwhash"),
+                         argon2id_raw_ref())
+def test_argon2_kdf_alg_argon2id(dk_size, password, salt, iters, mem_kb,
+                                 pwhash):
+    dk = nacl.pwhash.kdf_argon2id(dk_size, password.encode('utf-8'),
+                                  salt.encode('utf-8'), iters, 1024 * mem_kb)
+    ref = binascii.unhexlify(pwhash)
+    assert dk == ref
+
+
+raising_argon2_parameters = [
+    #  wrong salt length:
+    (20, "aPassword", 3 * "salt", 3, 256),
+    #  too short output:
+    (15, "aPassword", 4 * "salt", 4, 256),
+    #  too long output:
+    (0xFFFFFFFF + 1, "aPassword", 4 * "salt", 4, 256),
+    #  too high interation count:
+    (20, "aPassword", 4 * "salt", 0xFFFFFFFF + 1, 256),
+    #  too low memory usage:
+    (20, "aPassword", 4 * "salt", 4, 2),
+    #  too high memory usage:
+    (20, "aPassword", 4 * "salt", 4, 0xFFFFFFFF + 1),
+]
+
+
 @pytest.mark.parametrize(
     ("dk_size", "password", "salt", "iters", "mem_kb"),
+    raising_argon2_parameters +
     [
-        #  wrong salt length:
-        (20, "aPassword", 3 * "salt", 3, 256),
-        #  too short output:
-        (15, "aPassword", 4 * "salt", 4, 256),
-        #  too long output:
-        (0xFFFFFFFF + 1, "aPassword", 4 * "salt", 4, 256),
         #  too low iteration count:
         (20, "aPassword", 4 * "salt", 1, 256),
-        #  too high interation count:
-        (20, "aPassword", 4 * "salt", 0xFFFFFFFF + 1, 256),
-        #  too low memory usage:
-        (20, "aPassword", 4 * "salt", 4, 2),
-        #  too high memory usage:
-        (20, "aPassword", 4 * "salt", 4, 0xFFFFFFFF + 1),
     ]
 )
 def test_argon2i_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.kdf_argon2i(dk_size, password.encode('utf-8'),
                                 salt.encode('utf-8'), iters, 1024 * mem_kb)
+
+
+@pytest.mark.parametrize(
+    ("dk_size", "password", "salt", "iters", "mem_kb"),
+    raising_argon2_parameters +
+    [
+        #  too low iteration count:
+        (20, "aPassword", 4 * "salt", 0, 256),
+    ]
+)
+def test_argon2id_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
+    with pytest.raises(exc.ValueError):
+        nacl.pwhash.kdf_argon2id(dk_size, password.encode('utf-8'),
+                                 salt.encode('utf-8'), iters, 1024 * mem_kb)
