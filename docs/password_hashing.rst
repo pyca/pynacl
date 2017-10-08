@@ -198,7 +198,7 @@ Module level constants for operation and memory cost tweaking
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To help in selecting the correct values for the tweaking parameters for both
-the **scrypt** and the **argon2i** constructions, the :py:mod:`nacl.pwhash`
+the **scrypt** and the **argon2** constructions, the :py:mod:`nacl.pwhash`
 provides suggested values for the `opslimit` and `memlimit` parameters, which
 are belived to be valid as of CPU/ASIC speeds current in year 2017.
 
