@@ -22,7 +22,7 @@ mechanisms alongside to the ``scrypt`` one.
 
 In the case of password storage, it's usually suggested to give preference to
 data dependent mechanisms, therefore the default mechanism suggested by
-``libsodium`` since version 1.0.15 is the ``argon2id`` one.
+``libsodium`` since version 1.0.15 is ``argon2id``.
 
 If you think in your use-case the risk of potential timing-attacks stemming
 from data-dependency is greater than the potential time/memory trade-offs
