@@ -297,7 +297,7 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
             raise exc.ValueError('opslimit must be at most {0}'.format(
                 crypto_pwhash_argon2i_OPSLIMIT_MAX))
 
-    elif (alg == crypto_pwhash_ALG_ARGON2ID13):  # pragma: no branch
+    elif (alg == crypto_pwhash_ALG_ARGON2ID13):
         if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
             raise exc.ValueError('memlimit must be at least {0} bytes'.format(
                                  crypto_pwhash_argon2id_MEMLIMIT_MIN))
@@ -310,6 +310,8 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
         elif opslimit > crypto_pwhash_argon2id_OPSLIMIT_MAX:
             raise exc.ValueError('opslimit must be at most {0}'.format(
                 crypto_pwhash_argon2id_OPSLIMIT_MAX))
+    else:
+        raise exc.TypeError('Unsupported algorithm')
 
 
 def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
