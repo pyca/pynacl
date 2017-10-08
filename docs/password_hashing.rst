@@ -12,22 +12,22 @@ which is stored along with the hash, and allows verifying a proposed
 password while avoiding clear-text storage.
 
 The latest developments in password hashing have been *memory-hard*
-and *tunable* mechanisms, pioneered by the ``scrypt`` mechanism [SD2012]_,
+and *tunable* mechanisms, pioneered by ``scrypt`` [SD2012]_,
 and followed-on by the schemes submitted to the **Password Hashing
 Competition** [PHC]_.
 
-The :py:mod:`nacl.pwhash` module exposes both one of the **PHC** recommended
-``argon2`` mechanisms and the ``scrypt`` one.
+The :py:mod:`nacl.pwhash` module exposes both the **PHC** recommended
+partially data dependent ``argon2id`` and the data independent ``argon2i``
+mechanisms alongside to the ``scrypt`` one.
 
-While some sources suggest to give preference to data dependent password
-hashing mechanisms, the only mechanism of the ``argon2`` family being
-implemented in libsodium as of version ``1.0.12`` is the data-independent
-``argon2i`` one.
+In the case of password storage, it's usually suggested to give preference to
+data dependent mechanisms, therefore the default mechanism suggested by
+``libsodium`` since version 1.0.15 is ``argon2id``.
 
 If you think in your use-case the risk of potential timing-attacks stemming
-from data-dependency is less than the potential time/memory trade-offs coming
-out of data-independency, you should consider staying with ``scrypt``
-password hashing instead of jumping to ``argon2i``
+from data-dependency is greater than the potential time/memory trade-offs
+stemming out of data-independency, you should prefer ``argon2i`` to
+``argon2id`` or ``scrypt``
 
 
 Password storage and verification
@@ -100,10 +100,11 @@ verifying a proposed password:
     from nacl.exceptions import ValueError
     from nacl.pwhash import (verify_argon2i, verify_scryptsalsa208sha256)
     def check_password(serialized, proposed):
-        if serialized.startswith(b'$argon2i$'):
-            res = verify_argon2i(serialized, proposed)
-        elif serialized.startswith(b'$7$'):
+        if serialized.startswith(b'$7$'):
             res = verify_scryptsalsa208sha256(serialized, proposed)
+        if serialized.startswith(b'$argon2i$')
+                or serialized.startswith(b'$argon2id$'):
+            res = verify_argon2(serialized, proposed)
         else:
             raise ValueError('Unknown serialization format')
         return res
@@ -134,15 +135,15 @@ the message along with the salt and key derivation parameters.
     message = b"This is a message for Bob's eyes only"
 
     kdf = pwhash.kdf_argon2i
-    salt = utils.random(pwhash.ARGON2I_SALTBYTES)
-    ops = pwhash.ARGON2I_OPSLIMIT_SENSITIVE
-    mem = pwhash.ARGON2I_MEMLIMIT_SENSITIVE
+    salt = utils.random(pwhash.ARGON2I.SALTBYTES)
+    ops = pwhash.ARGON2I.OPSLIMIT_SENSITIVE
+    mem = pwhash.ARGON2I.MEMLIMIT_SENSITIVE
 
     # or, if there is a need to use scrypt:
     # kdf = pwhash.kdf_scryptsalsa208sha256
-    # salt = utils.random(pwhash.SCRYPT_SALTBYTES)
-    # ops = pwhash.SCRYPT_OPSLIMIT_SENSITIVE
-    # mem = pwhash.SCRYPT_MEMLIMIT_SENSITIVE
+    # salt = utils.random(pwhash.SCRYPT.SALTBYTES)
+    # ops = pwhash.SCRYPT.OPSLIMIT_SENSITIVE
+    # mem = pwhash.SCRYPT.MEMLIMIT_SENSITIVE
 
     Alices_key = kdf(secret.SecretBox.KEY_SIZE, password, salt,
                      opslimit=ops, memlimit=mem)
@@ -170,10 +171,10 @@ the decryption would fail and an exception would be raised::
 
     >>> from nacl import pwhash, secret, utils
     >>>
-    >>> ops = pwhash.ARGON2I_OPSLIMIT_SENSITIVE
-    >>> mem = pwhash.ARGON2I_MEMLIMIT_SENSITIVE
+    >>> ops = pwhash.ARGON2I.OPSLIMIT_SENSITIVE
+    >>> mem = pwhash.ARGON2I.MEMLIMIT_SENSITIVE
     >>>
-    >>> salt = utils.random(pwhash.ARGON2I_SALTBYTES)
+    >>> salt = utils.random(pwhash.ARGON2I.SALTBYTES)
     >>>
     >>> guessed_pw = b'I think Alice shared this password with Bob'
     >>>
@@ -193,31 +194,98 @@ used to derive the secret key and all the derivation parameters.
 These parameters are needed to later generate the same secret key
 from the password.
 
-Module level constants for operation and memory cost tweaking
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Constants for construct operation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To help in selecting the correct values for the tweaking parameters for both
-the **scrypt** and the **argon2i** constructions, the :py:mod:`nacl.pwhash`
+the **scrypt** and the **argon2** constructions, the :py:mod:`nacl.pwhash`
 provides suggested values for the `opslimit` and `memlimit` parameters, which
 are belived to be valid as of CPU/ASIC speeds current in year 2017.
 
-The provided constants are:
+The constants are grouped inside classes named after the mechanism, which
+also provide constants describing limits for the input parameters values
+or sizes.
 
-for scrypt:
+for ``scrypt``:
 
-    * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_INTERACTIVE`
-    * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_INTERACTIVE`
-    * :py:const:`nacl.pwhash.SCRYPT_OPSLIMIT_SENSITIVE`
-    * :py:const:`nacl.pwhash.SCRYPT_MEMLIMIT_SENSITIVE`
+  .. py:class:: SCRYPT
 
-for argon2:
+     A class providing constants for the :py:func:`nacl.pwhash.scrypt`
+     construction
 
-    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_INTERACTIVE`
-    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE`
-    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_MODERATE`
-    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE`
-    * :py:const:`nacl.pwhash.ARGON2I_OPSLIMIT_SENSITIVE`
-    * :py:const:`nacl.pwhash.ARGON2I_MEMLIMIT_SENSITIVE`
+    .. py:attribute:: nacl.pwhash.SCRYPT.SALTBYTES
+
+    the fixed length of the salt byte sequence which must be provided
+    for :py:func:`nacl.pwhash.scrypt` operation
+
+    .. py:attribute:: nacl.pwhash.SCRYPT.PWHASH_SIZE
+
+    the fixed length of the modular crypt formatted scrypt hash
+
+    .. py:attribute:: nacl.pwhash.SCRYPT.OPSLIMIT_INTERACTIVE
+                      nacl.pwhash.SCRYPT.MEMLIMIT_INTERACTIVE
+
+    the recommended limits in the interactive authentication case
+
+
+    .. py:attribute:: nacl.pwhash.SCRYPT.OPSLIMIT_SENSITIVE
+                      nacl.pwhash.SCRYPT.MEMLIMIT_SENSITIVE
+
+    the recommended limits in the sensitive key generation case
+
+for argon2i:
+
+  .. py:class::  ARGON2I
+
+    .. py:attribute:: nacl.pwhash.ARGON2I.OPSLIMIT_INTERACTIVE
+                      nacl.pwhash.ARGON2I.MEMLIMIT_INTERACTIVE
+
+    the recommended limits in the interactive authentication case
+
+    .. py:attribute:: nacl.pwhash.ARGON2I.OPSLIMIT_SENSITIVE
+                      nacl.pwhash.ARGON2I.MEMLIMIT_SENSITIVE
+
+    the recommended limits in the sensitive key generation case
+
+    .. py:attribute:: nacl.pwhash.ARGON2I.OPSLIMIT_MODERATE
+                      nacl.pwhash.ARGON2I.MEMLIMIT_MODERATE
+
+    .. py:attribute:: nacl.pwhash.ARGON2I.PWHASH_SIZE
+    .. py:attribute:: nacl.pwhash.ARGON2I.SALTBYTES
+    .. py:attribute:: nacl.pwhash.ARGON2I.BYTES_MAX
+                      nacl.pwhash.ARGON2I.BYTES_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2I.MEMLIMIT_MAX
+                      nacl.pwhash.ARGON2I.MEMLIMIT_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2I.OPSLIMIT_MAX
+                      nacl.pwhash.ARGON2I.OPSLIMIT_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2I.ALG
+
+for argon2id:
+
+  .. py:class::  ARGON2ID
+
+    .. py:attribute:: nacl.pwhash.ARGON2ID.OPSLIMIT_INTERACTIVE
+                      nacl.pwhash.ARGON2ID.MEMLIMIT_INTERACTIVE
+
+    the recommended limits in the interactive authentication case
+
+    .. py:attribute:: nacl.pwhash.ARGON2ID.OPSLIMIT_SENSITIVE
+                      nacl.pwhash.ARGON2ID.MEMLIMIT_SENSITIVE
+
+    the recommended limits in the sensitive key generation case
+
+    .. py:attribute:: nacl.pwhash.ARGON2ID.OPSLIMIT_MODERATE
+                      nacl.pwhash.ARGON2ID.MEMLIMIT_MODERATE
+
+    .. py:attribute:: nacl.pwhash.ARGON2ID.PWHASH_SIZE
+    .. py:attribute:: nacl.pwhash.ARGON2ID.SALTBYTES
+    .. py:attribute:: nacl.pwhash.ARGON2ID.BYTES_MAX
+                      nacl.pwhash.ARGON2ID.BYTES_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2ID.MEMLIMIT_MAX
+                      nacl.pwhash.ARGON2ID.MEMLIMIT_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2ID.OPSLIMIT_MAX
+                      nacl.pwhash.ARGON2ID.OPSLIMIT_MIN
+    .. py:attribute:: nacl.pwhash.ARGON2ID.ALG
 
 In general, the _INTERACTIVE values are recommended in the case of hashes
 stored for interactive password checking, and lead to a sub-second password
@@ -225,8 +293,8 @@ verification time, with a memory consumption in the tens of megabytes range,
 while the _SENSITIVE values are meant to store hashes for password protecting
 sensitive data, and lead to hashing times exceeding one second, with memory
 consumption in the hundred of megabytes range. The _MODERATE values, suggested
-for argon2i are meant to run the construct at a runtime and memory cost
-intermediate between _INTERACTIVE and _SENSITIVE.
+for ``argon2`` mechanisms are meant to run the construct at a runtime and
+memory cost intermediate between _INTERACTIVE and _SENSITIVE.
 
 
 .. [SD2012] A nice overview of password hashing history is available

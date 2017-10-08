@@ -56,6 +56,18 @@ class StringFixer(object):
             return self.__bytes__()
 
 
+class Constants(object):
+    """
+    A container class to keep related constants together.
+    Neither `.Constants` nor its subclasses are meant to
+    be instantiated.
+    """
+    def __new__(cls):
+        raise NotImplementedError(("Constants container class {} "
+                                   "must not be instantiated."
+                                   ).format(cls.__name__))
+
+
 def bytes_as_string(bytes_in):
     if six.PY3:
         return bytes_in.decode('ascii')

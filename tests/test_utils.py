@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import pytest
+
 import nacl.secret
 import nacl.utils
 
@@ -28,3 +30,8 @@ def test_random_bytes_produces_different_bytes():
 
 def test_string_fixer():
     assert str(nacl.secret.SecretBox(b"\x00" * 32)) == str(b"\x00" * 32)
+
+
+def test_creation_of_constants_class_instances_must_fail():
+    with pytest.raises(NotImplementedError):
+        nacl.utils.Constants()
