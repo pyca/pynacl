@@ -417,3 +417,9 @@ def test_argon2id_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.kdf_argon2id(dk_size, password.encode('utf-8'),
                                  salt.encode('utf-8'), iters, 1024 * mem_kb)
+
+
+def test_check_limits_for_unknown_algorithm():
+    from nacl.bindings.crypto_pwhash import _check_argon2_limits_alg
+    with pytest.raises(exc.TypeError):
+        _check_argon2_limits_alg(4, 1024, -1)
