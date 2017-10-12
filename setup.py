@@ -39,6 +39,9 @@ except ImportError:
 
 requirements = ["six"]
 setup_requirements = []
+test_requirements = ["pytest>=3.2.1",
+                     "hypothesis>=1.11.4"]
+
 
 if platform.python_implementation() == "PyPy":
     if sys.pypy_version_info < (2, 6):
@@ -211,9 +214,9 @@ setup(
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={
-        "tests": ["pytest>=3.2.1"],
+        "tests": test_requirements,
     },
-    tests_require=["pytest>=3.2.1"],
+    tests_require=test_requirements,
 
     package_dir={"": "src"},
     packages=[
