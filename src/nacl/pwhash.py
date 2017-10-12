@@ -192,9 +192,9 @@ def kdf_argon2i(size, password, salt,
 
     as a guidance for correct settings.
 
-    :param size: derived key size, must be comprised
-                 between :py:const:`.ARGON2I_BYTES_MIN`
-                 and :py:const:`.ARGON2I_BYTES_MAX`
+    :param size: derived key size, must be between
+                 :py:const:`.ARGON2I_BYTES_MIN` and
+                 :py:const:`.ARGON2I_BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
                      it maximum length is :py:const:`.ARGON2I_PASSWD_MAX`
@@ -204,15 +204,15 @@ def kdf_argon2i(size, password, salt,
     :type salt: bytes
     :param opslimit: the time component (operation count)
                      of the key derivation procedure's computational cost;
-                     it must be comprised between
-                     :py:const:`.ARGON2I_MIN_TIME`
-                     and :py:const:`.ARGON2I_MAX_TIME`
+                     it must be between
+                     :py:const:`.ARGON2I_MIN_TIME` and
+                     :py:const:`.ARGON2I_MAX_TIME`
     :type opslimit: int
     :param memlimit: the memory occupation component
                      of the key derivation procedure's computational cost;
-                     it must be comprised between
-                     :py:const:`.ARGON2I_MIN_MEMORY`
-                     and :py:const:`.ARGON2I_MAX_MEMORY`
+                     it must be between
+                     :py:const:`.ARGON2I_MIN_MEMORY` and
+                     :py:const:`.ARGON2I_MAX_MEMORY`
     :type memlimit: int
     :rtype: bytes
 
@@ -246,27 +246,27 @@ def kdf_argon2id(size, password, salt,
 
     as a guidance for correct settings.
 
-    :param size: derived key size, must be comprised
-                 between :py:const:`.ARGON2ID_BYTES_MIN`
-                 and :py:const:`.ARGON2ID_BYTES_MAX`
+    :param size: derived key size, must be between
+                 :py:const:`.ARGON2ID_BYTES_MIN` and
+                 :py:const:`.ARGON2ID_BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
-                     it maximum length is :py:const:`.ARGON2ID_PASSWD_MAX`
+                     its maximum length is :py:const:`.ARGON2ID_PASSWD_MAX`
     :type password: bytes
     :param salt: **RANDOM** salt used in the key derivation procedure;
                  its length must be exactly :py:const:`.ARGON2ID_SALTBYTES`
     :type salt: bytes
     :param opslimit: the time component (operation count)
                      of the key derivation procedure's computational cost;
-                     it must be comprised between
-                     :py:const:`.ARGON2ID_MIN_TIME`
-                     and :py:const:`.ARGON2ID_MAX_TIME`
+                     it must be between
+                     :py:const:`.ARGON2ID_MIN_TIME` and
+                     :py:const:`.ARGON2ID_MAX_TIME`
     :type opslimit: int
     :param memlimit: the memory occupation component
                      of the key derivation procedure's computational cost;
-                     it must be comprised between
-                     :py:const:`.ARGON2ID_MIN_MEMORY`
-                     and :py:const:`.ARGON2ID_MAX_MEMORY`
+                     it must be between
+                     :py:const:`.ARGON2ID_MIN_MEMORY` and
+                     :py:const:`.ARGON2ID_MAX_MEMORY`
     :type memlimit: int
     :rtype: bytes
 
@@ -343,6 +343,3 @@ def verify_argon2(password_hash, password):
     """
     return nacl.bindings.crypto_pwhash_str_verify(password_hash,
                                                   password)
-
-
-verify_argon2i = verify_argon2
