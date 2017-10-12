@@ -17,9 +17,11 @@ from __future__ import absolute_import, division, print_function
 import binascii
 import json
 import os
-import random
 import sys
 import unicodedata as ud
+
+from hypothesis import given, settings
+from hypothesis.strategies import integers, text
 
 import pytest
 
@@ -81,46 +83,6 @@ def argon2id_raw_ref():
                                      x["construct"] == "argon2id")
                ]
     return vectors
-
-
-def random_utf8_password_gen(minlen=5, maxlen=20):
-    rng = random.SystemRandom()
-
-    def _genpsw(rng, lmin, lmax):
-        ln = rng.randint(lmin, lmax)
-        psw = u''.join(rng.choice(PASSWD_CHARS)
-                       for c in range(ln)).encode('utf8')
-        return psw
-    while True:
-        yield _genpsw(rng, minlen, maxlen)
-
-
-def gen_argon2i_str_params(n,
-                           min_ops=nacl.pwhash.ARGON2I_OPSLIMIT_INTERACTIVE,
-                           max_ops=nacl.pwhash.ARGON2I_OPSLIMIT_MODERATE,
-                           min_mem=nacl.pwhash.ARGON2I_MEMLIMIT_INTERACTIVE,
-                           max_mem=nacl.pwhash.ARGON2I_MEMLIMIT_MODERATE):
-    rng = random.SystemRandom()
-    pwgen = random_utf8_password_gen()
-    rn = [(next(pwgen),
-           rng.randint(min_ops, max_ops),
-           rng.randint(min_mem, max_mem))
-          for c in range(n)]
-    return rn
-
-
-def gen_argon2id_str_params(n,
-                            min_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_INTERACTIVE,
-                            max_ops=nacl.pwhash.ARGON2ID_OPSLIMIT_MODERATE,
-                            min_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_INTERACTIVE,
-                            max_mem=nacl.pwhash.ARGON2ID_MEMLIMIT_MODERATE):
-    rng = random.SystemRandom()
-    pwgen = random_utf8_password_gen()
-    rn = [(next(pwgen),
-           rng.randint(min_ops, max_ops),
-           rng.randint(min_mem, max_mem))
-          for c in range(n)]
-    return rn
 
 
 @pytest.mark.parametrize(
@@ -318,40 +280,46 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
         nacl.pwhash.verify_argon2(pw_hash, pw)
 
 
-@pytest.mark.parametrize(("password", "ops", "mem"),
-                         gen_argon2i_str_params(10,
-                                                min_ops=4,
-                                                max_ops=6,
-                                                min_mem=1024 * 1024,
-                                                max_mem=16 * 1024 * 1024))
+@given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20),
+       integers(min_value=4,
+                max_value=6),
+       integers(min_value=1024 * 1024,
+                max_value=16 * 1024 * 1024)
+       )
+@settings(deadline=1500, max_examples=20)
 def test_argon2i_str_and_verify(password, ops, mem):
-    pw_hash = nacl.pwhash.argon2i_str(password, opslimit=ops, memlimit=mem)
-    res = nacl.pwhash.verify_argon2(pw_hash, password)
+    _psw = password.encode('utf-8')
+    pw_hash = nacl.pwhash.argon2i_str(_psw, opslimit=ops, memlimit=mem)
+    res = nacl.pwhash.verify_argon2(pw_hash, _psw)
     assert res is True
 
 
-@pytest.mark.parametrize(("password", "ops", "mem"),
-                         gen_argon2id_str_params(10,
-                                                 min_ops=1,
-                                                 max_ops=4,
-                                                 min_mem=1024 * 1024,
-                                                 max_mem=16 * 1024 * 1024))
+@given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20),
+       integers(min_value=1,
+                max_value=4),
+       integers(min_value=1024 * 1024,
+                max_value=16 * 1024 * 1024)
+       )
+@settings(deadline=1500, max_examples=20)
 def test_argon2id_str_and_verify(password, ops, mem):
-    pw_hash = nacl.pwhash.argon2id_str(password, opslimit=ops, memlimit=mem)
-    res = nacl.pwhash.verify_argon2(pw_hash, password)
+    _psw = password.encode('utf-8')
+    pw_hash = nacl.pwhash.argon2id_str(_psw, opslimit=ops, memlimit=mem)
+    res = nacl.pwhash.verify_argon2(pw_hash, _psw)
     assert res is True
 
 
-@pytest.mark.parametrize(("password", "ops", "mem"),
-                         gen_argon2i_str_params(10,
-                                                min_ops=4,
-                                                max_ops=6,
-                                                min_mem=1024 * 1024,
-                                                max_mem=16 * 1024 * 1024))
+@given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20),
+       integers(min_value=4,
+                max_value=6),
+       integers(min_value=1024 * 1024,
+                max_value=16 * 1024 * 1024)
+       )
+@settings(deadline=1500, max_examples=20)
 def test_argon2i_str_and_verify_fail(password, ops, mem):
-    pw_hash = nacl.pwhash.argon2i_str(password, opslimit=ops, memlimit=mem)
+    _psw = password.encode('utf-8')
+    pw_hash = nacl.pwhash.argon2i_str(_psw, opslimit=ops, memlimit=mem)
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pwhash.verify_argon2(pw_hash, b'A' + password)
+        nacl.pwhash.verify_argon2(pw_hash, b'A' + _psw)
 
 
 @pytest.mark.parametrize(("dk_size", "password", "salt",
