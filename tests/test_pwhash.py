@@ -351,7 +351,7 @@ def test_argon2id_str_and_verify(password, ops, mem):
 def test_argon2i_str_and_verify_fail(password, ops, mem):
     pw_hash = nacl.pwhash.argon2i_str(password, opslimit=ops, memlimit=mem)
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pwhash.verify_argon2i(pw_hash, b'A' + password)
+        nacl.pwhash.verify_argon2(pw_hash, b'A' + password)
 
 
 @pytest.mark.parametrize(("dk_size", "password", "salt",
