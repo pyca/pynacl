@@ -22,10 +22,31 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
+crypto_pwhash_scryptsalsa208sha256_STRPREFIX = \
+    ffi.string(ffi.cast("char *",
+                        lib.crypto_pwhash_scryptsalsa208sha256_strprefix()
+                        )
+               )[:]
 crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \
     lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
 crypto_pwhash_scryptsalsa208sha256_STRBYTES = \
     lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
+crypto_pwhash_scryptsalsa208sha256_PASSWD_MIN = \
+    lib.crypto_pwhash_scryptsalsa208sha256_passwd_min()
+crypto_pwhash_scryptsalsa208sha256_PASSWD_MAX = \
+    lib.crypto_pwhash_scryptsalsa208sha256_passwd_max()
+crypto_pwhash_scryptsalsa208sha256_BYTES_MIN = \
+    lib.crypto_pwhash_scryptsalsa208sha256_bytes_min()
+crypto_pwhash_scryptsalsa208sha256_BYTES_MAX = \
+    lib.crypto_pwhash_scryptsalsa208sha256_bytes_max()
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN = \
+    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_min()
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX = \
+    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_max()
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN = \
+    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_min()
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX = \
+    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_max()
 crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE = \
     lib.crypto_pwhash_scryptsalsa208sha256_opslimit_interactive()
 crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE = \
@@ -47,6 +68,11 @@ crypto_pwhash_PASSWD_MAX = lib.crypto_pwhash_passwd_max()
 crypto_pwhash_BYTES_MIN = lib.crypto_pwhash_bytes_min()
 crypto_pwhash_BYTES_MAX = lib.crypto_pwhash_bytes_max()
 
+crypto_pwhash_argon2i_STRPREFIX = \
+    ffi.string(ffi.cast("char *",
+                        lib.crypto_pwhash_argon2i_strprefix()
+                        )
+               )[:]
 crypto_pwhash_argon2i_MEMLIMIT_MIN = \
     lib.crypto_pwhash_argon2i_memlimit_min()
 crypto_pwhash_argon2i_MEMLIMIT_MAX = \
@@ -68,6 +94,11 @@ crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE = \
 crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = \
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 
+crypto_pwhash_argon2id_STRPREFIX = \
+    ffi.string(ffi.cast("char *",
+                        lib.crypto_pwhash_argon2id_strprefix()
+                        )
+               )[:]
 crypto_pwhash_argon2id_MEMLIMIT_MIN = \
     lib.crypto_pwhash_argon2id_memlimit_min()
 crypto_pwhash_argon2id_MEMLIMIT_MAX = \
