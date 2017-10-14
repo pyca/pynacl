@@ -25,6 +25,9 @@ pip-log.txt
 .tox
 .cache
 
+# Hypothesis cache
+.hypothesis
+
 #Translations
 *.mo
 
