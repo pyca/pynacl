@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import
 
+from nacl.exceptions import InvalidkeyError
+
 from . import argon2, argon2i, argon2id, scrypt
 
 STRPREFIX = argon2id.STRPREFIX
@@ -53,3 +55,25 @@ SCRYPT_MEMLIMIT_SENSITIVE = scrypt.MEMLIMIT_SENSITIVE
 kdf_scryptsalsa208sha256 = scrypt.kdf
 scryptsalsa208sha256_str = scrypt.str
 verify_scryptsalsa208sha256 = scrypt.verify
+
+
+def verify(password_hash, password):
+    """
+    Takes a modular crypt encoded stored password hash derived using one
+    of the algorithms supported by `libsodium` and checks if the user provided
+    password will hash to the same string when using the parameters saved
+    in the stored hash
+    """
+    _decoded_hash = password_hash.decode('ascii')
+    # the bytes.beginswith() isn't supported by python 3.3
+    if _decoded_hash.startswith(argon2id.STRPREFIX.decode('ascii')):
+        return argon2id.verify(password_hash, password)
+    elif _decoded_hash.startswith(argon2i.STRPREFIX.decode('ascii')):
+        return argon2id.verify(password_hash, password)
+    elif _decoded_hash.startswith(scrypt.STRPREFIX.decode('ascii')):
+        return scrypt.verify(password_hash, password)
+    else:
+        raise(InvalidkeyError("given password_hash is not "
+                              "in a supported format"
+                              )
+              )
