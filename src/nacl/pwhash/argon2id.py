@@ -79,7 +79,9 @@ def kdf(size, password, salt,
                  :py:const:`.BYTES_MAX`
     :type size: int
     :param password: password used to seed the key derivation procedure;
-                     it maximum length is :py:const:`.PASSWD_MAX`
+                     it length must be between
+                     :py:const:`.PASSWD_MIN` and
+                     :py:const:`.PASSWD_MAX`
     :type password: bytes
     :param salt: **RANDOM** salt used in the key derivation procedure;
                  its length must be exactly :py:const:`.SALTBYTES`
@@ -87,14 +89,14 @@ def kdf(size, password, salt,
     :param opslimit: the time component (operation count)
                      of the key derivation procedure's computational cost;
                      it must be between
-                     :py:const:`.MIN_TIME` and
-                     :py:const:`.MAX_TIME`
+                     :py:const:`.OPSLIMIT_MIN` and
+                     :py:const:`.OPSLIMIT_MAX`
     :type opslimit: int
     :param memlimit: the memory occupation component
                      of the key derivation procedure's computational cost;
                      it must be between
-                     :py:const:`.MIN_MEMORY` and
-                     :py:const:`.MAX_MEMORY`
+                     :py:const:`.MEMLIMIT_MIN` and
+                     :py:const:`.MEMLIMIT_MAX`
     :type memlimit: int
     :rtype: bytes
 
@@ -112,8 +114,9 @@ def str(password,
         opslimit=OPSLIMIT_INTERACTIVE,
         memlimit=MEMLIMIT_INTERACTIVE):
     """
-    Hashes a password with a random salt, returning an ascii string
-    that has all the needed info to check against a future password
+    Hashes a password with a random salt, using the memory-hard
+    argon2id construct and returning an ascii string that has all
+    the needed info to check against a future password
 
     The default settings for opslimit and memlimit are those deemed
     correct for the interactive user login case.

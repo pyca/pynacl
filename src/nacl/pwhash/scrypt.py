@@ -57,8 +57,10 @@ def kdf(size, password, salt,
         memlimit=MEMLIMIT_SENSITIVE,
         encoder=nacl.encoding.RawEncoder):
     """
-    Makes a key defined from ``password`` and ``salt`` that is
-    ``size`` bytes long
+    Derive a ``size`` bytes long key from a caller-supplied
+    ``password`` and ``salt`` pair using the scryptsalsa208sha256
+    memory-hard construct.
+
 
     the enclosing module provides the constants
 
@@ -66,16 +68,37 @@ def kdf(size, password, salt,
         - :py:const:`.MEMLIMIT_INTERACTIVE`
         - :py:const:`.OPSLIMIT_SENSITIVE`
         - :py:const:`.MEMLIMIT_SENSITIVE`
+        - :py:const:`.OPSLIMIT_MODERATE`
+        - :py:const:`.MEMLIMIT_MODERATE`
 
     as a guidance for correct settings respectively for the
     interactive login and the long term key protecting sensitive data
     use cases.
 
-    :param int size: int
-    :param bytes password: bytes
-    :param bytes salt: bytes
-    :param int opslimit:
-    :param int memlimit:
+    :param size: derived key size, must be between
+                 :py:const:`.BYTES_MIN` and
+                 :py:const:`.BYTES_MAX`
+    :type size: int
+    :param password: password used to seed the key derivation procedure;
+                     it length must be between
+                     :py:const:`.PASSWD_MIN` and
+                     :py:const:`.PASSWD_MAX`
+    :type password: bytes
+    :param salt: **RANDOM** salt used in the key derivation procedure;
+                 its length must be exactly :py:const:`.SALTBYTES`
+    :type salt: bytes
+    :param opslimit: the time component (operation count)
+                     of the key derivation procedure's computational cost;
+                     it must be between
+                     :py:const:`.OPSLIMIT_MIN` and
+                     :py:const:`.OPSLIMIT_MAX`
+    :type opslimit: int
+    :param memlimit: the memory occupation component
+                     of the key derivation procedure's computational cost;
+                     it must be between
+                     :py:const:`.MEMLIMIT_MIN` and
+                     :py:const:`.MEMLIMIT_MAX`
+    :type memlimit: int
     :rtype: bytes
 
     .. versionadded:: 1.2
@@ -103,7 +126,8 @@ def str(password,
         opslimit=OPSLIMIT_INTERACTIVE,
         memlimit=MEMLIMIT_INTERACTIVE):
     """
-    Hashes a password with a random salt, returning an ascii string
+    Hashes a password with a random salt, using the memory-hard
+    scryptsalsa208sha256 construct and returning an ascii string
     that has all the needed info to check against a future password
 
     The default settings for opslimit and memlimit are those deemed
