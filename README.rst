@@ -26,3 +26,5 @@ Features
 * Digital signatures
 * Secret-key encryption
 * Public-key encryption
+* Hashing and message authentication
+* Password based key derivation and password hashing
