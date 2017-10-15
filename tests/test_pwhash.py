@@ -447,6 +447,43 @@ def test_argon2i_str_and_verify_fail(password, ops, mem):
         nacl.pwhash.argon2.verify(pw_hash, b'A' + _psw)
 
 
+@given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
+@settings(deadline=1500, max_examples=5)
+def test_pwhash_str_and_verify(password):
+    _psw = password.encode('utf-8')
+
+    a2i_hash = nacl.pwhash.argon2i.str(
+        _psw,
+        opslimit=nacl.pwhash.argon2i.OPSLIMIT_INTERACTIVE,
+        memlimit=nacl.pwhash.argon2i.MEMLIMIT_INTERACTIVE
+    )
+    a2i_res = nacl.pwhash.verify(a2i_hash, _psw)
+    assert a2i_res is True
+
+    a2id_hash = nacl.pwhash.argon2id.str(
+        _psw,
+        opslimit=nacl.pwhash.argon2id.OPSLIMIT_INTERACTIVE,
+        memlimit=nacl.pwhash.argon2id.MEMLIMIT_INTERACTIVE
+    )
+    a2id_res = nacl.pwhash.verify(a2id_hash, _psw)
+    assert a2id_res is True
+
+    scrypt_hash = nacl.pwhash.scrypt.str(
+        _psw,
+        opslimit=nacl.pwhash.scrypt.OPSLIMIT_INTERACTIVE,
+        memlimit=nacl.pwhash.scrypt.MEMLIMIT_INTERACTIVE
+    )
+    scrypt_res = nacl.pwhash.verify(scrypt_hash, _psw)
+    assert scrypt_res is True
+
+
+def test_invalid_modular_scrypt_prefix():
+    psw = b'always invalid password'
+    invalid_modular_hash = b'$invalid_prefix$'
+    with pytest.raises(exc.InvalidkeyError):
+        nacl.pwhash.verify(invalid_modular_hash, psw)
+
+
 @pytest.mark.parametrize(("dk_size", "password", "salt",
                           "iters", "mem_kb", "pwhash"),
                          argon2i_raw_ref())
