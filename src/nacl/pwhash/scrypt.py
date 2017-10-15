@@ -48,6 +48,9 @@ OPSLIMIT_SENSITIVE = \
 MEMLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
 
+OPSLIMIT_MODERATE = 8 * OPSLIMIT_INTERACTIVE
+MEMLIMIT_MODERATE = 8 * MEMLIMIT_INTERACTIVE
+
 
 def kdf(size, password, salt,
         opslimit=OPSLIMIT_SENSITIVE,
