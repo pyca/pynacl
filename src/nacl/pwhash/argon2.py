@@ -20,6 +20,12 @@ _argon2_strbytes_plus_one = nacl.bindings.crypto_pwhash_STRBYTES
 
 PWHASH_SIZE = _argon2_strbytes_plus_one - 1
 SALTBYTES = nacl.bindings.crypto_pwhash_SALTBYTES
+
+PASSWD_MIN = nacl.bindings.crypto_pwhash_PASSWD_MIN
+PASSWD_MAX = nacl.bindings.crypto_pwhash_PASSWD_MAX
+
+PWHASH_SIZE = _argon2_strbytes_plus_one - 1
+
 BYTES_MAX = nacl.bindings.crypto_pwhash_BYTES_MAX
 BYTES_MIN = nacl.bindings.crypto_pwhash_BYTES_MIN
 

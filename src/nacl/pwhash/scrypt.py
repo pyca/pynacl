@@ -22,8 +22,23 @@ from nacl.exceptions import ensure
 
 _strbytes_plus_one = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
+STRPREFIX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRPREFIX
+
 SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
+
+PASSWD_MIN = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_PASSWD_MIN
+PASSWD_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_PASSWD_MAX
+
 PWHASH_SIZE = _strbytes_plus_one - 1
+
+BYTES_MIN = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_BYTES_MIN
+BYTES_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_BYTES_MAX
+
+MEMLIMIT_MIN = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN
+MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX
+OPSLIMIT_MIN = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN
+OPSLIMIT_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX
+
 OPSLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
 MEMLIMIT_INTERACTIVE = \

@@ -19,34 +19,39 @@ import nacl.encoding
 
 from . import argon2
 
+ALG = argon2.ALG_ARGON2I13
+STRPREFIX = nacl.bindings.crypto_pwhash_argon2i_STRPREFIX
+
+SALTBYTES = argon2.SALTBYTES
+
+PASSWD_MIN = argon2.PASSWD_MIN
+PASSWD_MAX = argon2.PASSWD_MAX
+
+PWHASH_SIZE = argon2.PWHASH_SIZE
+
 BYTES_MIN = argon2.BYTES_MIN
 BYTES_MAX = argon2.BYTES_MAX
-PWHASH_SIZE = argon2.PWHASH_SIZE
-SALTBYTES = argon2.SALTBYTES
-ALG = argon2.ALG_ARGON2I13
 
 verify = argon2.verify
 
-MEMLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
-MEMLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN
-OPSLIMIT_MAX = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MAX
-OPSLIMIT_MIN = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MIN
+MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
+MEMLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN
+OPSLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MAX
+OPSLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MIN
+
 OPSLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE
 MEMLIMIT_INTERACTIVE = \
     nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE
-OPSLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MODERATE
-MEMLIMIT_MODERATE = \
-    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MODERATE
 OPSLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE
 MEMLIMIT_SENSITIVE = \
     nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE
+
+OPSLIMIT_MODERATE = \
+    nacl.bindings.crypto_pwhash_argon2i_OPSLIMIT_MODERATE
+MEMLIMIT_MODERATE = \
+    nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MODERATE
 
 
 def kdf(size, password, salt,

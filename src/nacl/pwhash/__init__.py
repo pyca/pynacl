@@ -16,6 +16,8 @@ from __future__ import absolute_import
 
 from . import argon2, argon2i, argon2id, scrypt
 
+STRPREFIX = argon2id.STRPREFIX
+
 PWHASH_SIZE = argon2.PWHASH_SIZE
 SALTBYTES = argon2.SALTBYTES
 BYTES_MAX = argon2.BYTES_MAX
