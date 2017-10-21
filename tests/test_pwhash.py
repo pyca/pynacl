@@ -390,7 +390,7 @@ def test_scrypt_str_verify_wrong_hash_length(passwd_hash, password):
 def test_str_verify_argon2_ref(password_hash, password):
     pw_hash = password_hash.encode('ascii')
     pw = password.encode('ascii')
-    res = nacl.pwhash.argon2.verify(pw_hash, pw)
+    res = nacl.pwhash.argon2id.verify(pw_hash, pw)
     assert res is True
 
 
@@ -402,7 +402,7 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
     pw_hash = password_hash.encode('ascii')
     pw = ('a' + password).encode('ascii')
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pwhash.argon2.verify(pw_hash, pw)
+        nacl.pwhash.argon2id.verify(pw_hash, pw)
 
 
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20),
@@ -415,7 +415,7 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
 def test_argon2i_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
-    res = nacl.pwhash.argon2.verify(pw_hash, _psw)
+    res = nacl.pwhash.argon2i.verify(pw_hash, _psw)
     assert res is True
 
 
@@ -429,7 +429,7 @@ def test_argon2i_str_and_verify(password, ops, mem):
 def test_argon2id_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2id.str(_psw, opslimit=ops, memlimit=mem)
-    res = nacl.pwhash.argon2.verify(pw_hash, _psw)
+    res = nacl.pwhash.argon2id.verify(pw_hash, _psw)
     assert res is True
 
 
@@ -444,7 +444,7 @@ def test_argon2i_str_and_verify_fail(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
     with pytest.raises(exc.InvalidkeyError):
-        nacl.pwhash.argon2.verify(pw_hash, b'A' + _psw)
+        nacl.pwhash.argon2i.verify(pw_hash, b'A' + _psw)
 
 
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
