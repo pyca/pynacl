@@ -17,22 +17,22 @@ from __future__ import division
 import nacl.bindings
 import nacl.encoding
 
-from . import argon2
+from . import _argon2
 
-ALG = argon2.ALG_ARGON2I13
+ALG = _argon2.ALG_ARGON2I13
 STRPREFIX = nacl.bindings.crypto_pwhash_argon2i_STRPREFIX
 
-SALTBYTES = argon2.SALTBYTES
+SALTBYTES = _argon2.SALTBYTES
 
-PASSWD_MIN = argon2.PASSWD_MIN
-PASSWD_MAX = argon2.PASSWD_MAX
+PASSWD_MIN = _argon2.PASSWD_MIN
+PASSWD_MAX = _argon2.PASSWD_MAX
 
-PWHASH_SIZE = argon2.PWHASH_SIZE
+PWHASH_SIZE = _argon2.PWHASH_SIZE
 
-BYTES_MIN = argon2.BYTES_MIN
-BYTES_MAX = argon2.BYTES_MAX
+BYTES_MIN = _argon2.BYTES_MIN
+BYTES_MAX = _argon2.BYTES_MAX
 
-verify = argon2.verify
+verify = _argon2.verify
 
 MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MAX
 MEMLIMIT_MIN = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MIN

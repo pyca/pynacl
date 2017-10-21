@@ -16,16 +16,13 @@ from __future__ import absolute_import
 
 from nacl.exceptions import InvalidkeyError
 
-from . import argon2, argon2i, argon2id, scrypt
+from . import _argon2, argon2i, argon2id, scrypt
 
 STRPREFIX = argon2id.STRPREFIX
 
-PWHASH_SIZE = argon2.PWHASH_SIZE
-SALTBYTES = argon2.SALTBYTES
-BYTES_MAX = argon2.BYTES_MAX
-BYTES_MIN = argon2.BYTES_MIN
+PWHASH_SIZE = argon2id.PWHASH_SIZE
 
-assert argon2.ALG_ARGON2_DEFAULT == argon2.ALG_ARGON2ID13
+assert _argon2.ALG_ARGON2_DEFAULT == _argon2.ALG_ARGON2ID13
 # since version 1.0.15 of libsodium
 
 MEMLIMIT_MAX = argon2id.MEMLIMIT_MAX
@@ -39,7 +36,6 @@ MEMLIMIT_MODERATE = argon2id.MEMLIMIT_MODERATE
 OPSLIMIT_SENSITIVE = argon2id.OPSLIMIT_SENSITIVE
 MEMLIMIT_SENSITIVE = argon2id.MEMLIMIT_SENSITIVE
 
-kdf = argon2id.kdf
 str = argon2id.str
 
 assert argon2i.ALG != argon2id.ALG
@@ -65,7 +61,7 @@ def verify(password_hash, password):
     in the stored hash
     """
     _decoded_hash = password_hash.decode('ascii')
-    # the bytes.beginswith() isn't supported by python 3.3
+    # the bytes.beginswith() method isn't supported by python 3.3
     if _decoded_hash.startswith(argon2id.STRPREFIX.decode('ascii')):
         return argon2id.verify(password_hash, password)
     elif _decoded_hash.startswith(argon2i.STRPREFIX.decode('ascii')):
