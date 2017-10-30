@@ -29,6 +29,8 @@ size_t crypto_pwhash_scryptsalsa208sha256_memlimit_interactive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive(void);
 size_t crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive(void);
 
+const char *crypto_pwhash_scryptsalsa208sha256_strprefix(void);
+
 int crypto_pwhash_scryptsalsa208sha256_ll(const uint8_t * const passwd,
                                            size_t passwdlen,
                                            const uint8_t * salt,
@@ -114,6 +116,13 @@ size_t crypto_pwhash_opslimit_max(void);
 size_t crypto_pwhash_opslimit_interactive(void);
 size_t crypto_pwhash_opslimit_moderate(void);
 size_t crypto_pwhash_opslimit_sensitive(void);
+
+/*
+ * Modular crypt string prefix for implemented argon2 constructions
+ */
+
+const char *crypto_pwhash_argon2i_strprefix(void);
+const char *crypto_pwhash_argon2id_strprefix(void);
 
 /*
  *  crypto_pwhash raw constructs

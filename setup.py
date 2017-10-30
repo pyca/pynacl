@@ -221,6 +221,7 @@ setup(
     package_dir={"": "src"},
     packages=[
         "nacl",
+        "nacl.pwhash",
         "nacl.bindings",
     ],
 

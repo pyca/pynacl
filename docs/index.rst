@@ -25,10 +25,11 @@ Support Features
 
 .. toctree::
     :caption: Api Documentation
-    :maxdepth: 2
+    :maxdepth: 3
     :glob:
 
     api/hash
+    api/pwhash
     api/hashlib
 
 .. toctree::
