@@ -24,8 +24,8 @@ STRPREFIX = nacl.bindings.crypto_pwhash_argon2id_STRPREFIX
 
 SALTBYTES = _argon2.SALTBYTES
 
-PASSWD_MIN = _argon2.PASSWD_MIN,
-PASSWD_MAX = _argon2.PASSWD_MAX,
+PASSWD_MIN = _argon2.PASSWD_MIN
+PASSWD_MAX = _argon2.PASSWD_MAX
 
 PWHASH_SIZE = _argon2.PWHASH_SIZE
 
