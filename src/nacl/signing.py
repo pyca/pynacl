@@ -19,7 +19,6 @@ import six
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
-
 from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
                          PublicKey as _Curve25519_PublicKey)
 from nacl.utils import StringFixer, random
