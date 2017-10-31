@@ -17,7 +17,6 @@ from __future__ import absolute_import, division, print_function
 import binascii
 
 import nacl.bindings
-
 from nacl.utils import bytes_as_string
 
 BYTES = nacl.bindings.crypto_generichash_BYTES
