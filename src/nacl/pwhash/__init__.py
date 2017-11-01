@@ -62,13 +62,11 @@ def verify(password_hash, password):
     password will hash to the same string when using the parameters saved
     in the stored hash
     """
-    _decoded_hash = password_hash.decode('ascii')
-    # the bytes.beginswith() method isn't supported by python 3.3
-    if _decoded_hash.startswith(argon2id.STRPREFIX.decode('ascii')):
+    if password_hash.startswith(argon2id.STRPREFIX):
         return argon2id.verify(password_hash, password)
-    elif _decoded_hash.startswith(argon2i.STRPREFIX.decode('ascii')):
+    elif password_hash.startswith(argon2i.STRPREFIX):
         return argon2id.verify(password_hash, password)
-    elif _decoded_hash.startswith(scrypt.STRPREFIX.decode('ascii')):
+    elif password_hash.startswith(scrypt.STRPREFIX):
         return scrypt.verify(password_hash, password)
     else:
         raise(InvalidkeyError("given password_hash is not "
