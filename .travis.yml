@@ -50,7 +50,8 @@ matrix:
         - python: 3.6
           env: TOXENV=py36 SODIUM_INSTALL=system CC=clang
         - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
-        - env: TOXENV=docs
+        - python: 3.6
+          env: TOXENV=docs
         - env: TOXENV=meta
 
 install: .travis/install.sh

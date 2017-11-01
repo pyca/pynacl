@@ -50,7 +50,10 @@ Password storage and verification
 
 All implementations of the modular crypt hasher `str` function
 internally generate a random salt, and return a hash encoded
-in ascii modular crypt format, which can be stored in a shadow-like file::
+in ascii modular crypt format, which can be stored in a shadow-like file
+
+.. doctest::
+    :pyversion: > 3.3
 
     >>> import nacl.pwhash
     >>> password = b'my password'
@@ -67,10 +70,10 @@ in ascii modular crypt format, which can be stored in a shadow-like file::
     ... for i in range(4):
     ...     print(nacl.pwhash.scrypt.str(password))
     ...
-    b'$7$C6..../....K2K...'
-    b'$7$C6..../....mPn...'
-    b'$7$C6..../....blo...'
-    b'$7$C6..../....1mm...'
+    b'$7$C6..../...'
+    b'$7$C6..../...'
+    b'$7$C6..../...'
+    b'$7$C6..../...'
     >>>
     >>> for i in range(4):
     ...     print(nacl.pwhash.argon2i.str(password))
@@ -81,6 +84,7 @@ in ascii modular crypt format, which can be stored in a shadow-like file::
     b'$argon2i$v=19$m=32768,t=4,p=1$...'
     >>>
     >>> # and
+    ...
     >>> for i in range(4):
     ...     print(nacl.pwhash.argon2id.str(password))
     ...
@@ -95,10 +99,13 @@ To verify a user-proposed password, the :py:func:`~nacl.pwhash.verify`
 function checks the stored hash prefix, and dispatches verification to
 the correct checker, which in turn extracts the used salt, memory
 and operation count parameters from the modular format string
-and checks the compliance of the proposed password with the stored hash::
+and checks the compliance of the proposed password with the stored hash
+
+.. doctest::
+    :pyversion: > 3.3
 
     >>> import nacl.pwhash
-    ... hashed = (b'$7$C6..../....qv5tF9KG2WbuMeUOa0TCoqwLHQ8s0TjQdSagne'
+    >>> hashed = (b'$7$C6..../....qv5tF9KG2WbuMeUOa0TCoqwLHQ8s0TjQdSagne'
     ...           b'9NvU0$3d218uChMvdvN6EwSvKHMASkZIG51XPIsZQDcktKyN7'
     ...           )
     >>> correct = b'my password'
@@ -134,7 +141,7 @@ combines it with the password using one of the `kdf` functions
 and sends the message along with the salt and key derivation
 parameters.
 
-.. code-block:: python
+.. testcode::
 
     from nacl import pwhash, secret, utils
 
@@ -170,17 +177,23 @@ parameters.
                    opslimit=ops, memlimit=mem)
     Bobs_box = secret.SecretBox(Bobs_key)
     received = Bobs_box.decrypt(encrypted)
-    print(received)
+    print(received.decode('utf-8'))
+
+.. testoutput::
+
+   This is a message for Bob's eyes only
+
 
 if Eve manages to get the encrypted message, and tries to decrypt it
 with a incorrect password, even if she does know all of the key
 derivation parameters, she would derive a different key. Therefore
-the decryption would fail and an exception would be raised::
+the decryption would fail and an exception would be raised
 
-    >>> from nacl import pwhash, secret, utils
-    >>>
-    >>> ops = pwhash.argon2i.OPSLIMIT_SENSITIVE
-    >>> mem = pwhash.argon2i.MEMLIMIT_SENSITIVE
+.. doctest::
+    :pyversion: > 3.3
+
+    >>> # ops, mem and salt are the same used by Alice
+    ...
     >>>
     >>> guessed_pw = b'I think Alice shared this password with Bob'
     >>>
