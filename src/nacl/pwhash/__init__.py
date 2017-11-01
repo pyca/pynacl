@@ -63,7 +63,6 @@ def verify(password_hash, password):
     in the stored hash
     """
     _decoded_hash = password_hash.decode('ascii')
-    # the bytes.beginswith() method isn't supported by python 3.3
     if _decoded_hash.startswith(argon2id.STRPREFIX.decode('ascii')):
         return argon2id.verify(password_hash, password)
     elif _decoded_hash.startswith(argon2i.STRPREFIX.decode('ascii')):
