@@ -13,6 +13,7 @@ Changelog
   the same interface for all hashers.
 * Added support for 128 bit ``siphashx24`` variant of ``siphash24``.
 * Added support for ``from_seed`` APIs for X25519 keypair generation.
+* Dropped support for Python 3.3.
 
 1.1.2 - 2017-03-31
 ------------------
