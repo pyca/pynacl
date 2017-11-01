@@ -53,7 +53,7 @@ internally generate a random salt, and return a hash encoded
 in ascii modular crypt format, which can be stored in a shadow-like file
 
 .. doctest::
-    :pyversion: > 3.3
+    :pyversion: >= 3.4
 
     >>> import nacl.pwhash
     >>> password = b'my password'
@@ -102,7 +102,7 @@ and operation count parameters from the modular format string
 and checks the compliance of the proposed password with the stored hash
 
 .. doctest::
-    :pyversion: > 3.3
+    :pyversion: >= 3.4
 
     >>> import nacl.pwhash
     >>> hashed = (b'$7$C6..../....qv5tF9KG2WbuMeUOa0TCoqwLHQ8s0TjQdSagne'
@@ -190,7 +190,7 @@ derivation parameters, she would derive a different key. Therefore
 the decryption would fail and an exception would be raised
 
 .. doctest::
-    :pyversion: > 3.3
+    :pyversion: >= 3.4
 
     >>> # ops, mem and salt are the same used by Alice
     ...

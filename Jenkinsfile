@@ -1,11 +1,11 @@
 def configs = [
     [
         label: 'windows',
-        toxenvs: ['py27', 'py33', 'py34', 'py35', 'py36'],
+        toxenvs: ['py27', 'py34', 'py35', 'py36'],
     ],
     [
         label: 'windows64',
-        toxenvs: ['py27', 'py33', 'py34', 'py35', 'py36'],
+        toxenvs: ['py27', 'py34', 'py35', 'py36'],
     ],
 ]
 
@@ -46,7 +46,6 @@ def build(toxenv, label) {
             withEnv(["TOXENV=$toxenv"]) {
                 def pythonPath = [
                     py27: "C:\\Python27\\python.exe",
-                    py33: "C:\\Python33\\python.exe",
                     py34: "C:\\Python34\\python.exe",
                     py35: "C:\\Python35\\python.exe",
                     py36: "C:\\Python36\\python.exe"
