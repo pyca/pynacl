@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.0 (UNRELEASED)
+1.2.0 - 2017-11-01
 ------------------
 
 * Update ``libsodium`` to 1.0.15.
