@@ -40,7 +40,7 @@ except ImportError:
 requirements = ["six"]
 setup_requirements = []
 test_requirements = ["pytest>=3.2.1",
-                     "hypothesis>=1.11.4"]
+                     "hypothesis>=3.27.0"]
 
 
 if platform.python_implementation() == "PyPy":
