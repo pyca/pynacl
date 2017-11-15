@@ -41,6 +41,8 @@ requirements = ["six"]
 setup_requirements = []
 test_requirements = ["pytest>=3.2.1",
                      "hypothesis>=3.27.0"]
+docs_requirements = ["sphinx>=1.6.5",
+                     "sphinx_rtd_theme"]
 
 
 if platform.python_implementation() == "PyPy":
@@ -215,6 +217,7 @@ setup(
     install_requires=requirements,
     extras_require={
         "tests": test_requirements,
+        "docs": docs_requirements,
     },
     tests_require=test_requirements,
 

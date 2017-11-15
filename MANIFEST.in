@@ -40,6 +40,9 @@ exclude .travis
 exclude .travis/install.sh
 exclude .travis/run.sh
 
+# Remove readthedocs config
+exclude .readthedocs.yml
+
 # Remove the coverage config
 exclude .coveragerc
 
