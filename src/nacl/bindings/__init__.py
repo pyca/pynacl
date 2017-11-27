@@ -49,7 +49,6 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_PASSWD_MIN,
     crypto_pwhash_SALTBYTES,
     crypto_pwhash_STRBYTES,
-
     crypto_pwhash_alg,
     crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE,
     crypto_pwhash_argon2i_MEMLIMIT_MAX,
@@ -62,7 +61,6 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_argon2i_OPSLIMIT_MODERATE,
     crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE,
     crypto_pwhash_argon2i_STRPREFIX,
-
     crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE,
     crypto_pwhash_argon2id_MEMLIMIT_MAX,
     crypto_pwhash_argon2id_MEMLIMIT_MIN,
@@ -74,7 +72,6 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_argon2id_OPSLIMIT_MODERATE,
     crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE,
     crypto_pwhash_argon2id_STRPREFIX,
-
     crypto_pwhash_scryptsalsa208sha256_BYTES_MAX,
     crypto_pwhash_scryptsalsa208sha256_BYTES_MIN,
     crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE,
@@ -93,10 +90,8 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_scryptsalsa208sha256_ll,
     crypto_pwhash_scryptsalsa208sha256_str,
     crypto_pwhash_scryptsalsa208sha256_str_verify,
-
     crypto_pwhash_str_alg,
     crypto_pwhash_str_verify,
-
     nacl_bindings_pick_scrypt_params,
 )
 from nacl.bindings.crypto_scalarmult import (
