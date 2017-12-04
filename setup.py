@@ -39,7 +39,7 @@ except ImportError:
 
 requirements = ["six"]
 setup_requirements = []
-test_requirements = ["pytest>=3.2.1",
+test_requirements = ["pytest>=3.2.1,!=3.3.0",
                      "hypothesis>=3.27.0"]
 docs_requirements = ["sphinx>=1.6.5",
                      "sphinx_rtd_theme"]
