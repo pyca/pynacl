@@ -120,10 +120,9 @@ from nacl.bindings.crypto_sign import (
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.sodium_core import sodium_init
 from nacl.bindings.utils import (
-    sodium_memcmp,
-    sodium_pad,
-    sodium_unpad,
+    sodium_add, sodium_increment, sodium_memcmp, sodium_pad, sodium_unpad,
 )
+
 
 __all__ = [
     "crypto_box_SECRETKEYBYTES",
@@ -257,6 +256,9 @@ __all__ = [
     "randombytes",
 
     "sodium_init",
+
+    "sodium_add",
+    "sodium_increment",
 
     "sodium_memcmp",
     "sodium_pad",
