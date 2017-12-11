@@ -16,9 +16,10 @@ from __future__ import absolute_import, division, print_function
 
 import binascii
 import sys
+from collections import namedtuple
 
 from hypothesis import given, settings
-from hypothesis.strategies import binary
+from hypothesis.strategies import binary, sampled_from
 
 import pytest
 
@@ -46,254 +47,108 @@ def xchacha20poly1305_ietf_vectors():
     return read_kv_test_vectors(DATA, delimiter=b':', newrecord=b'AEAD')
 
 
+Construction = namedtuple('Construction', 'encrypt, decrypt, NPUB, KEYBYTES')
+
+
+def _getconstruction(construction):
+    if construction == b'chacha20-poly1305-old':
+        encrypt = b.crypto_aead_chacha20poly1305_encrypt
+        decrypt = b.crypto_aead_chacha20poly1305_decrypt
+        NPUB = b.crypto_aead_chacha20poly1305_NPUBBYTES
+        KEYBYTES = b.crypto_aead_chacha20poly1305_KEYBYTES
+    elif construction == b'chacha20-poly1305':
+        encrypt = b.crypto_aead_chacha20poly1305_ietf_encrypt
+        decrypt = b.crypto_aead_chacha20poly1305_ietf_decrypt
+        NPUB = b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES
+        KEYBYTES = b.crypto_aead_chacha20poly1305_ietf_KEYBYTES
+    else:
+        encrypt = b.crypto_aead_xchacha20poly1305_ietf_encrypt
+        decrypt = b.crypto_aead_xchacha20poly1305_ietf_decrypt
+        NPUB = b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
+        KEYBYTES = b.crypto_aead_xchacha20poly1305_ietf_KEYBYTES
+
+    return Construction(encrypt, decrypt, NPUB, KEYBYTES)
+
+
 @pytest.mark.parametrize("kv",
-                         chacha20poly1305_agl_vectors())
-def test_chacha20poly1305(kv):
+                         chacha20poly1305_agl_vectors() +
+                         chacha20poly1305_ietf_vectors() +
+                         xchacha20poly1305_ietf_vectors()
+                         )
+def test_chacha20poly1305_variants_kat(kv):
     msg = binascii.unhexlify(kv['IN'])
     ad = binascii.unhexlify(kv['AD'])
     nonce = binascii.unhexlify(kv['NONCE'])
     k = binascii.unhexlify(kv['KEY'])
+    c = _getconstruction(kv['AEAD'])
     _tag = kv.get('TAG', b'')
     exp = binascii.unhexlify(kv['CT']) + binascii.unhexlify(_tag)
-    out = b.crypto_aead_chacha20poly1305_encrypt(msg, ad, nonce, k)
+    out = c.encrypt(msg, ad, nonce, k)
     assert (out == exp)
 
 
-@pytest.mark.parametrize("kv",
-                         chacha20poly1305_ietf_vectors())
-def test_chacha20poly1305_ietf(kv):
-    msg = binascii.unhexlify(kv['IN'])
-    ad = binascii.unhexlify(kv['AD'])
-    nonce = binascii.unhexlify(kv['NONCE'])
-    k = binascii.unhexlify(kv['KEY'])
-    exp = binascii.unhexlify(kv['CT']) + binascii.unhexlify(kv['TAG'])
-    out = b.crypto_aead_chacha20poly1305_ietf_encrypt(msg, ad, nonce, k)
-    assert (out == exp)
-
-
-@pytest.mark.parametrize("kv",
-                         xchacha20poly1305_ietf_vectors())
-def test_xchacha20poly1305_ietf(kv):
-    msg = binascii.unhexlify(kv['IN'])
-    ad = binascii.unhexlify(kv['AD'])
-    nonce = binascii.unhexlify(kv['NONCE'])
-    k = binascii.unhexlify(kv['KEY'])
-    exp = binascii.unhexlify(kv['CT']) + binascii.unhexlify(kv['TAG'])
-    out = b.crypto_aead_xchacha20poly1305_ietf_encrypt(msg, ad, nonce, k)
-    assert (out == exp)
-
-
-@given(binary(min_size=0, max_size=100),
-       binary(min_size=0, max_size=50),
-       binary(min_size=b.crypto_aead_chacha20poly1305_NPUBBYTES,
-              max_size=b.crypto_aead_chacha20poly1305_NPUBBYTES),
-       binary(min_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
-              max_size=b.crypto_aead_chacha20poly1305_KEYBYTES))
-@settings(deadline=1500, max_examples=20)
-def test_chacha20poly1305_roundtrip(message, aad, nonce, key):
-    ct = b.crypto_aead_chacha20poly1305_encrypt(message,
-                                                aad,
-                                                nonce,
-                                                key)
-
-    pt = b.crypto_aead_chacha20poly1305_decrypt(ct,
-                                                aad,
-                                                nonce,
-                                                key)
-
-    assert pt == message
-    with pytest.raises(exc.CryptoError):
-        ct1 = bytearray(ct)
-        ct1[0] = ct1[0] ^ 0xff
-        b.crypto_aead_chacha20poly1305_decrypt(ct1,
-                                               aad,
-                                               nonce,
-                                               key)
-
-
-@given(binary(min_size=0, max_size=100),
-       binary(min_size=0, max_size=50),
-       binary(min_size=b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
-              max_size=b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES),
-       binary(min_size=b.crypto_aead_chacha20poly1305_ietf_KEYBYTES,
-              max_size=b.crypto_aead_chacha20poly1305_ietf_KEYBYTES))
-@settings(deadline=1500, max_examples=20)
-def test_chacha20poly1305_ietf_roundtrip(message, aad, nonce, key):
-    ct = b.crypto_aead_chacha20poly1305_ietf_encrypt(message,
-                                                     aad,
-                                                     nonce,
-                                                     key)
-
-    pt = b.crypto_aead_chacha20poly1305_ietf_decrypt(ct,
-                                                     aad,
-                                                     nonce,
-                                                     key)
-
-    assert pt == message
-    with pytest.raises(exc.CryptoError):
-        ct1 = bytearray(ct)
-        ct1[0] = ct1[0] ^ 0xff
-        b.crypto_aead_chacha20poly1305_ietf_decrypt(ct1,
-                                                    aad,
-                                                    nonce,
-                                                    key)
-
-
-@given(binary(min_size=0, max_size=100),
+@given(sampled_from((b'chacha20-poly1305-old',
+                     b'chacha20-poly1305',
+                     b'xchacha20-poly1305'
+                     )),
+       binary(min_size=0, max_size=100),
        binary(min_size=0, max_size=50),
        binary(min_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
               max_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES),
-       binary(min_size=b.crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
-              max_size=b.crypto_aead_xchacha20poly1305_ietf_KEYBYTES))
+       binary(min_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
+              max_size=b.crypto_aead_chacha20poly1305_KEYBYTES))
 @settings(deadline=1500, max_examples=20)
-def test_xchacha20poly1305_ietf_roundtrip(message, aad, nonce, key):
-    ct = b.crypto_aead_xchacha20poly1305_ietf_encrypt(message,
-                                                      aad,
-                                                      nonce,
-                                                      key)
+def test_chacha20poly1305_variants_roundtrip(construction,
+                                             message,
+                                             aad,
+                                             nonce,
+                                             key):
 
-    pt = b.crypto_aead_xchacha20poly1305_ietf_decrypt(ct,
-                                                      aad,
-                                                      nonce,
-                                                      key)
+    c = _getconstruction(construction)
+    unonce = nonce[:c.NPUB]
+
+    ct = c.encrypt(message, aad, unonce, key)
+    pt = c.decrypt(ct, aad, unonce, key)
 
     assert pt == message
     with pytest.raises(exc.CryptoError):
         ct1 = bytearray(ct)
         ct1[0] = ct1[0] ^ 0xff
-        b.crypto_aead_xchacha20poly1305_ietf_decrypt(ct1,
-                                                     aad,
-                                                     nonce,
-                                                     key)
+        c.decrypt(ct1, aad, unonce, key)
 
 
-def test_chacha20poly1305_wrong_params():
-    nonce = b'\x00' * b.crypto_aead_chacha20poly1305_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_chacha20poly1305_KEYBYTES
+@pytest.mark.parametrize("construction",
+                         [b'chacha20-poly1305-old',
+                          b'chacha20-poly1305',
+                          b'xchacha20-poly1305']
+                         )
+def test_chacha20poly1305_variants_wrong_params(construction):
+    c = _getconstruction(construction)
+    nonce = b'\x00' * c.NPUB
+    key = b'\x00' * c.KEYBYTES
     aad = None
-    b.crypto_aead_chacha20poly1305_encrypt(b'',
-                                           aad,
-                                           nonce,
-                                           key)
+    c.encrypt(b'', aad, nonce, key)
     with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_encrypt(b'',
-                                               aad,
-                                               nonce[:-1],
-                                               key)
-
+        c.encrypt(b'', aad, nonce[:-1], key)
     with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_encrypt(b'',
-                                               aad,
-                                               nonce,
-                                               key[:-1])
+        c.encrypt(b'', aad, nonce, key[:-1])
     with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_encrypt(b'',
-                                               aad,
-                                               nonce.decode('utf-8'),
-                                               key)
+        c.encrypt(b'', aad, nonce.decode('utf-8'), key)
     with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_encrypt(b'',
-                                               aad,
-                                               nonce,
-                                               key.decode('utf-8'))
+        c.encrypt(b'', aad, nonce, key.decode('utf-8'))
 
 
 @pytest.mark.skipif(sys.version_info < (3,),
                     reason="Python 2 doesn't distinguish str() from bytes()")
-def test_chacha20poly1305_str_msg():
-    nonce = b'\x00' * b.crypto_aead_chacha20poly1305_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_chacha20poly1305_KEYBYTES
+@pytest.mark.parametrize("construction",
+                         [b'chacha20-poly1305-old',
+                          b'chacha20-poly1305',
+                          b'xchacha20-poly1305']
+                         )
+def test_chacha20poly1305_variants_str_msg(construction):
+    c = _getconstruction(construction)
+    nonce = b'\x00' * c.NPUB
+    key = b'\x00' * c.KEYBYTES
     aad = None
     with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_encrypt('',
-                                               aad,
-                                               nonce,
-                                               key)
-
-
-def test_chacha20poly1305_ietf_wrong_params():
-    nonce = b'\x00' * b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_chacha20poly1305_ietf_KEYBYTES
-    aad = None
-    b.crypto_aead_chacha20poly1305_ietf_encrypt(b'',
-                                                aad,
-                                                nonce,
-                                                key)
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_ietf_encrypt(b'',
-                                                    aad,
-                                                    nonce[:-1],
-                                                    key)
-
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_ietf_encrypt(b'',
-                                                    aad,
-                                                    nonce,
-                                                    key[:-1])
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_ietf_encrypt(b'',
-                                                    aad,
-                                                    nonce.decode('utf-8'),
-                                                    key)
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_ietf_encrypt(b'',
-                                                    aad,
-                                                    nonce,
-                                                    key.decode('utf-8'))
-
-
-@pytest.mark.skipif(sys.version_info < (3,),
-                    reason="Python 2 doesn't distinguish str() from bytes()")
-def test_chacha20poly1305_ietf_str_msg():
-    nonce = b'\x00' * b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_chacha20poly1305_ietf_KEYBYTES
-    aad = None
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_chacha20poly1305_ietf_encrypt('',
-                                                    aad,
-                                                    nonce,
-                                                    key)
-
-
-def test_xchacha20poly1305_ietf_wrong_params():
-    nonce = b'\x00' * b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_xchacha20poly1305_ietf_KEYBYTES
-    aad = None
-    b.crypto_aead_xchacha20poly1305_ietf_encrypt(b'',
-                                                 aad,
-                                                 nonce,
-                                                 key)
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_xchacha20poly1305_ietf_encrypt(b'',
-                                                     aad,
-                                                     nonce[:-1],
-                                                     key)
-
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_xchacha20poly1305_ietf_encrypt(b'',
-                                                     aad,
-                                                     nonce,
-                                                     key[:-1])
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_xchacha20poly1305_ietf_encrypt(b'',
-                                                     aad,
-                                                     nonce.decode('utf-8'),
-                                                     key)
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_xchacha20poly1305_ietf_encrypt(b'',
-                                                     aad,
-                                                     nonce,
-                                                     key.decode('utf-8'))
-
-
-@pytest.mark.skipif(sys.version_info < (3,),
-                    reason="Python 2 doesn't distinguish str() from bytes()")
-def test_xchacha20poly1305_ietf_str_msg():
-    nonce = b'\x00' * b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-    key = b'\x00' * b.crypto_aead_xchacha20poly1305_ietf_KEYBYTES
-    aad = None
-    with pytest.raises(exc.TypeError):
-        b.crypto_aead_xchacha20poly1305_ietf_encrypt('',
-                                                     aad,
-                                                     nonce,
-                                                     key)
+        c.encrypt('', aad, nonce, key)
