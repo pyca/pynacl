@@ -30,6 +30,21 @@ The reference vector for testing the :py:class:`nacl.secret.SecretBox`
 implementation come from libsodium's ``test/default/secretbox.c``
 and the corresponding expected outputs in ``test/default/secretbox.exp``
 
+chacha20poly1305
+^^^^^^^^^^^^^^^^
+
+The reference vectors for both the legacy draft-agl-tls-chacha20poly1305
+and the IETF ratified rfc7539 chacha20poly1305 constructions are taken
+from libressl version 2.5.5 tests/aeadtests.txt, excluding the shortened
+authentication tag vectors, since libsodium only supports full sized tags.
+
+xchacha20poly1305
+^^^^^^^^^^^^^^^^^
+
+The reference vector for the xchacha20poly1305 construction is taken
+from the first test in libsodium's test/default/aead_xchacha20poly1305.c,
+which defines the parameters, and theacorresponding  expected output from
+aead_xchacha20poly1305.exp.
 
 Custom generated reference vectors
 ----------------------------------
