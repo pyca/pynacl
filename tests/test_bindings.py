@@ -17,6 +17,9 @@ from __future__ import absolute_import, division, print_function
 import hashlib
 from binascii import hexlify, unhexlify
 
+from hypothesis import given, settings
+from hypothesis.strategies import binary, integers
+
 import pytest
 
 from utils import read_crypto_test_vectors
@@ -285,3 +288,47 @@ def test_box_seed_keypair_short_seed():
         c.crypto_box_seed_keypair(seed)
     with pytest.raises(CryptoError):
         c.crypto_box_seed_keypair(seed)
+
+
+@given(integers(min_value=-2,
+                max_value=0)
+       )
+def test_pad_wrong_blocksize(bl_sz):
+    with pytest.raises(ValueError):
+        c.sodium_pad(b'x', bl_sz)
+
+
+def test_unpad_not_padded():
+    with pytest.raises(CryptoError):
+        c.sodium_unpad(b'x', 8)
+
+
+@given(binary(min_size=0,
+              average_size=128,
+              max_size=2049),
+       integers(min_value=16,
+                max_value=256)
+       )
+@settings(max_examples=20)
+def test_pad_sizes(msg, bl_sz):
+    padded = c.sodium_pad(msg, bl_sz)
+    assert len(padded) > len(msg)
+    assert len(padded) >= bl_sz
+    assert len(padded) % bl_sz == 0
+
+
+@given(binary(min_size=0,
+              average_size=128,
+              max_size=2049),
+       integers(min_value=16,
+                max_value=256)
+       )
+@settings(max_examples=20)
+def test_pad_roundtrip(msg, bl_sz):
+    padded = c.sodium_pad(msg, bl_sz)
+    assert len(padded) > len(msg)
+    assert len(padded) >= bl_sz
+    assert len(padded) % bl_sz == 0
+    unpadded = c.sodium_unpad(padded, bl_sz)
+    assert len(unpadded) == len(msg)
+    assert unpadded == msg
