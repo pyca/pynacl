@@ -1,4 +1,4 @@
-/* Copyright 2013 Donald Stufft and individual contributors
+/* Copyright 2013-2017 Donald Stufft and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,3 +18,8 @@ int sodium_memcmp(const void * const b1_, const void * const b2_, size_t len);
 
 int sodium_mlock(void * const addr, const size_t len);
 int sodium_munlock(void * const addr, const size_t len);
+
+int sodium_pad(size_t *padded_buflen_p, unsigned char *buf,
+               size_t unpadded_buflen, size_t blocksize, size_t max_buflen);
+int sodium_unpad(size_t *unpadded_buflen_p, const unsigned char *buf,
+                 size_t padded_buflen, size_t blocksize);
