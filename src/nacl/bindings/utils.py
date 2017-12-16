@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import absolute_import, division, print_function
 
+from six import integer_types
+
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
@@ -39,3 +41,54 @@ def sodium_memcmp(inp1, inp2):
     eqC = lib.sodium_memcmp(buf1, buf2, ln) == 0
 
     return eqL and eqC
+
+
+def sodium_pad(s, blocksize):
+    """
+    Pad the input bytearray ``s`` to a multiple of ``blocksize``
+    using the ISO/IEC 7816-4 algorithm
+
+    :param s: input bytes string
+    :type s: bytes
+    :param blocksize:
+    :type blocksize: int
+    :return: padded string
+    :rtype: bytes
+    """
+    ensure(isinstance(s, bytes),
+           raising=exc.TypeError)
+    ensure(isinstance(blocksize, integer_types),
+           raising=exc.TypeError)
+    if blocksize <= 0:
+        raise exc.ValueError
+    s_len = len(s)
+    m_len = s_len + blocksize
+    buf = ffi.new("unsigned char []", m_len)
+    p_len = ffi.new("size_t []", 1)
+    ffi.memmove(buf, s, s_len)
+    rc = lib.sodium_pad(p_len, buf, s_len, blocksize, m_len)
+    ensure(rc == 0, "Padding failure", raising=exc.CryptoError)
+    return ffi.buffer(buf, p_len[0])[:]
+
+
+def sodium_unpad(s, blocksize):
+    """
+    Remove ISO/IEC 7816-4 padding from the input byte array ``s``
+
+    :param s: input bytes string
+    :type s: bytes
+    :param blocksize:
+    :type blocksize: int
+    :return: unpadded string
+    :rtype: bytes
+    """
+    ensure(isinstance(s, bytes),
+           raising=exc.TypeError)
+    ensure(isinstance(blocksize, integer_types),
+           raising=exc.TypeError)
+    s_len = len(s)
+    u_len = ffi.new("size_t []", 1)
+    rc = lib.sodium_unpad(u_len, s, s_len, blocksize)
+    if rc != 0:
+        raise exc.CryptoError("Unpadding failure")
+    return s[:u_len[0]]
