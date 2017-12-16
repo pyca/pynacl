@@ -75,6 +75,7 @@ def generichash_blake2b_salt_personal(data,
                                       digest_size=crypto_generichash_BYTES,
                                       key=b'', salt=b'', person=b''):
     """One shot hash interface
+
     :param data: the input data to the hash function
     :param digest_size: must be at most
                         :py:data:`.crypto_generichash_BYTES_MAX`;
@@ -90,7 +91,7 @@ def generichash_blake2b_salt_personal(data,
     :type salt: bytes
     :param person: must be at most
                    :py:data:`.crypto_generichash_PERSONALBYTES` long:
-                                          will be zero-padded if needed
+                   will be zero-padded if needed
     :type person: bytes
     :return: digest_size long digest
     :rtype: bytes
