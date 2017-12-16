@@ -440,9 +440,6 @@ def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
 
 def crypto_pwhash_str_verify(passwd_hash, passwd):
     """
-    int crypto_pwhash_str_verify(const char str[128],
-                                 const char * const passwd,
-                                 unsigned long long passwdlen);
     Verifies the ``passwd`` against a given password hash.
 
     Returns True on success, raises InvalidkeyError on failure
