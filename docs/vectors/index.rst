@@ -43,8 +43,17 @@ xchacha20poly1305
 
 The reference vector for the xchacha20poly1305 construction is taken
 from the first test in libsodium's test/default/aead_xchacha20poly1305.c,
-which defines the parameters, and theacorresponding  expected output from
+which defines the parameters, and the corresponding expected output from
 aead_xchacha20poly1305.exp.
+
+siphash24 and siphashx24
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The reference vectors for both the original and the 128 bit variants of
+the siphash-2-4 construction are taken from the reference code sources.
+In particular, the original expected results come from siphash's vectors.h,
+while the key and the input messages have been generated following
+the respective definitions in siphash's test.c.
 
 Custom generated reference vectors
 ----------------------------------
