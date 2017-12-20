@@ -97,11 +97,13 @@ def sodium_unpad(s, blocksize):
 def sodium_increment(inp):
     """
     Increment the value of a byte-sequence interpreted
-    as a little-endian big integer
+    as the little-endian representation of a unsigned big integer.
 
     :param inp: input bytes buffer
     :type inp: bytes
-    :return: integer value of ``inp`` incremented by one
+    :return: a byte-sequence representing, as a little-endian
+             unsigned big integer, the value ``to_int(inp)``
+             incremented by one.
     :rtype: bytes
 
     """
@@ -120,15 +122,17 @@ def sodium_increment(inp):
 
 def sodium_add(a, b):
     """
-    compute a modular addition (a + b) mod 2^(8*len) in constant time
-    for a given common length of their respective little-endian encoded
-    byte arrays.
+    Given a couple of *same-sized* byte sequences, interpreted as the
+    little-endian representation of two unsigned integers, compute
+    the modular addition of the represented values, in constant time for
+    a given common length of the byte sequences.
 
     :param a: input bytes buffer
     :type a: bytes
     :param b: input bytes buffer
     :type b: bytes
-    :return: integer value of (``a`` + ``b``) mod 2^(8*len(``a``))
+    :return: a byte-sequence representing, as a little-endian big integer,
+             the integer value of ``(to_int(a) + to_int(b)) mod 2^(8*len(a))``
     :rtype: bytes
     """
     ensure(isinstance(a, bytes),
