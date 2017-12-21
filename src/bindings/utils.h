@@ -23,3 +23,6 @@ int sodium_pad(size_t *padded_buflen_p, unsigned char *buf,
                size_t unpadded_buflen, size_t blocksize, size_t max_buflen);
 int sodium_unpad(size_t *unpadded_buflen_p, const unsigned char *buf,
                  size_t padded_buflen, size_t blocksize);
+
+void sodium_increment(unsigned char *n, const size_t nlen);
+void sodium_add(unsigned char *a, unsigned char *b, const size_t len);

@@ -332,3 +332,41 @@ def test_pad_roundtrip(msg, bl_sz):
     unpadded = c.sodium_unpad(padded, bl_sz)
     assert len(unpadded) == len(msg)
     assert unpadded == msg
+
+
+def test_sodium_increment():
+    maxint = 32 * b'\xff'
+    zero = 32 * b'\x00'
+    one = b'\x01' + 31 * b'\x00'
+    two = b'\x02' + 31 * b'\x00'
+
+    res = c.sodium_increment(maxint)
+    assert res == zero
+
+    res = c.sodium_increment(res)
+    assert res == one
+
+    res = c.sodium_increment(res)
+    assert res == two
+
+
+def test_sodium_add():
+    maxint = 32 * b'\xff'
+    zero = 32 * b'\x00'
+    one = b'\x01' + 31 * b'\x00'
+    short_one = b'\x01' + 15 * b'\x00'
+    two = b'\x02' + 31 * b'\x00'
+    three = b'\x03' + 31 * b'\x00'
+    four = b'\x04' + 31 * b'\x00'
+
+    res = c.sodium_add(one, two)
+    assert res == three
+
+    res = c.sodium_add(maxint, four)
+    assert res == three
+
+    res = c.sodium_add(one, maxint)
+    assert res == zero
+
+    with pytest.raises(TypeError):
+        res = c.sodium_add(short_one, two)
