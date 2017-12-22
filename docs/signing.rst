@@ -19,7 +19,7 @@ Example
 
 Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
-.. code-block:: python
+.. testcode::
 
     import nacl.encoding
     import nacl.signing
@@ -38,16 +38,28 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
 Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 
-.. code-block:: python
+.. testcode::
 
     import nacl.signing
 
     # Create a VerifyKey object from a hex serialized public key
-    verify_key = nacl.signing.VerifyKey(verify_key_hex, encoder=nacl.encoding.HexEncoder)
+    verify_key = nacl.signing.VerifyKey(verify_key_hex,
+                                        encoder=nacl.encoding.HexEncoder)
 
     # Check the validity of a message's signature
-    # Will raise nacl.exceptions.BadSignatureError if the signature check fails
     verify_key.verify(signed)
+
+    # Alter the signed message text
+    forged = signed[:-1] + bytes([int(signed[-1]) ^ 1])
+    # Will raise nacl.exceptions.BadSignatureError, since the signature check
+    # is failing
+    verify_key.verify(forged)
+
+.. testoutput::
+
+    Traceback (most recent call last):
+     ...
+    nacl.exceptions.BadSignatureError: Signature was forged or corrupt
 
 
 Reference
