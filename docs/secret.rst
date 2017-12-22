@@ -16,7 +16,7 @@ other than the length.
 Example
 -------
 
-.. code-block:: python
+.. testcode::
 
     import nacl.secret
     import nacl.utils
@@ -34,7 +34,7 @@ Example
 PyNaCl can automatically generate a random nonce for us, making the encryption
 very simple:
 
-.. code-block:: python
+.. testcode::
 
     # Encrypt our message, it will be exactly 40 bytes longer than the
     #   original message as it stores authentication information and the
@@ -44,7 +44,7 @@ very simple:
 However, if we need to use an explicit nonce, it can be passed along with the
 message:
 
-.. code-block:: python
+.. testcode::
 
     # This is a nonce, it *MUST* only be used once, but it is not considered
     #   secret and can be transmitted or stored alongside the ciphertext. A
@@ -55,11 +55,16 @@ message:
 
 Finally, the message is decrypted (regardless of how the nonce was generated):
 
-.. code-block:: python
+.. testcode::
 
     # Decrypt our message, an exception will be raised if the encryption was
     #   tampered with or there was otherwise an error.
     plaintext = box.decrypt(encrypted)
+    print(plaintext.decode('utf-8'))
+
+.. testoutput::
+
+    The president will be exiting through the lower levels
 
 
 Requirements
