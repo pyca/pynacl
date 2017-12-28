@@ -20,7 +20,7 @@ Message's creator perspective (:py:func:`~nacl.hash.sha256`,
                                :py:func:`~nacl.hash.sha512`,
                                :py:func:`~nacl.hash.blake2b`)
 
-.. code-block:: python
+.. testcode::
 
     import nacl.encoding
     import nacl.hash
@@ -36,12 +36,18 @@ Message's creator perspective (:py:func:`~nacl.hash.sha256`,
     print(nacl.encoding.HexEncoder.encode(msg))
     print(digest)
 
+.. testoutput::
+
+    b'3235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d6573736167653235362042797465734d657373616765'
+    b'12b413c70c148d79bb57a1542156c5f35e24ad77c38e8c0e776d055e827cdd45'
+
+
 
 Message's user perspective (:py:func:`~nacl.hash.sha256`,
                             :py:func:`~nacl.hash.sha512`,
                             :py:func:`~nacl.hash.blake2b`)
 
-.. code-block:: python
+.. testcode::
 
     from nacl.bindings.utils import sodium_memcmp
     import nacl.encoding
@@ -84,6 +90,12 @@ Message's user perspective (:py:func:`~nacl.hash.sha256`,
 
         print(MSG.format(chk[0], eq_chk(dgst, chk[1])))
 
+.. testoutput::
+
+    Digest of original message equals original digest
+    Digest of truncated message is different from original digest
+    Digest of modified message is different from original digest
+
 
 Additional hashing usages for :class:`~nacl.hash.blake2b`
 ---------------------------------------------------------
@@ -114,9 +126,10 @@ must be called as in the following example.
 Message authentication example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. testcode::
 
     import nacl.encoding
+    import nacl.utils
     from nacl.hash import blake2b
 
     msg = 16*b'256 BytesMessage'
@@ -138,6 +151,12 @@ Message authentication example
     for i, mac in enumerate((mac0, mac1, mac2)):
         print('Mac{0} is: {1}.'.format(i, mac))
 
+.. testoutput::
+
+    Mac0 is: b'...'.
+    Mac1 is: b'...'.
+    Mac2 is: b'...'.
+
 
 Key derivation
 --------------
@@ -148,7 +167,7 @@ following the lines of:
 Key derivation example
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. testcode::
 
     import nacl.encoding
     import nacl.utils
@@ -161,8 +180,8 @@ Key derivation example
     personalization = b'<DK usage>'
 
     derived = blake2b(b'', key=master_key, salt=derivation_salt,
-                      personal=personalization,
-                      encoding=nacl.encoding.RawEncoder)
+                      person=personalization,
+                      encoder=nacl.encoding.RawEncoder)
 
 By repeating the key derivation procedure before encrypting our messages,
 and sending the derivation_salt along with the encrypted message, we can
