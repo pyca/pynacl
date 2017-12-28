@@ -44,7 +44,7 @@ Alice (pkalice, skalice) and Bob (pkbob, skbob), the key derived from
 
 This is how the system works:
 
-.. code-block:: python
+.. testcode::
 
     import nacl.utils
     from nacl.public import PrivateKey, Box
@@ -71,7 +71,7 @@ This is how the system works:
 PyNaCl can automatically generate a random nonce for us, making the encryption
 very simple:
 
-.. code-block:: python
+.. testcode::
 
     # Encrypt our message, it will be exactly 40 bytes longer than the
     #   original message as it stores authentication information and the
@@ -81,7 +81,7 @@ very simple:
 However, if we need to use an explicit nonce, it can be passed along with the
 message:
 
-.. code-block:: python
+.. testcode::
 
     # This is a nonce, it *MUST* only be used once, but it is not considered
     #   secret and can be transmitted or stored alongside the ciphertext. A
@@ -92,7 +92,7 @@ message:
 
 Finally, the message is decrypted (regardless of how the nonce was generated):
 
-.. code-block:: python
+.. testcode::
 
     # Alice creates a second box with her private key to decrypt the message
     alice_box = Box(skalice, pkbob)
@@ -100,6 +100,11 @@ Finally, the message is decrypted (regardless of how the nonce was generated):
     # Decrypt our message, an exception will be raised if the encryption was
     #   tampered with or there was otherwise an error.
     plaintext = alice_box.decrypt(encrypted)
+    print(plaintext.decode('utf-8'))
+
+.. testoutput::
+
+    Kill all humans
 
 
 nacl.public.SealedBox
@@ -122,7 +127,7 @@ authorship.
 
 This is how the system works:
 
-.. code-block:: python
+.. testcode::
 
     import nacl.utils
     from nacl.public import PrivateKey, SealedBox
@@ -145,11 +150,16 @@ This is how the system works:
 Now, Bob wants to read the secret message he just received; therefore
 he must create a SealedBox using his own private key:
 
-.. code-block:: python
+.. testcode::
 
     unseal_box = SealedBox(skbob)
     # decrypt the received message
     plaintext = unseal_box.decrypt(encrypted)
+    print(plaintext.decode('utf-8'))
+
+.. testoutput::
+
+    Kill all kittens
 
 
 Reference
