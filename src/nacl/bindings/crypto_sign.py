@@ -27,6 +27,8 @@ crypto_sign_SECRETKEYBYTES = lib.crypto_sign_secretkeybytes()
 
 crypto_sign_curve25519_BYTES = lib.crypto_box_secretkeybytes()
 
+crypto_sign_ed25519ph_STATEBYTES = lib.crypto_sign_ed25519ph_statebytes()
+
 
 def crypto_sign_keypair():
     """
@@ -161,3 +163,123 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
            raising=exc.RuntimeError)
 
     return ffi.buffer(curve_secret_key, curve_secret_key_len)[:]
+
+
+class crypto_sign_ed25519ph_state(object):
+    """
+    State object wrapping the sha-512 state used in ed25519ph computation
+    """
+    __slots__ = ['state']
+
+    def __init__(self):
+        self.state = ffi.new('unsigned char[]',
+                             crypto_sign_ed25519ph_STATEBYTES)
+
+        rc = lib.crypto_sign_ed25519ph_init(self.state)
+
+        ensure(rc == 0,
+               'Unexpected library error',
+               raising=exc.RuntimeError)
+
+
+def crypto_sign_ed25519ph_update(edph, pmsg):
+    """
+    Update the hash state wrapped in edph
+
+    :param edph: the ed25519ph state being updated
+    :type edph: crypto_sign_ed25519ph_state
+    :param pmsg: the partial message
+    :type pmsg: bytes
+    :rtype: None
+    """
+    ensure(isinstance(edph, crypto_sign_ed25519ph_state),
+           'edph parameter must be a ed25519ph_state object',
+           raising=exc.TypeError)
+    ensure(isinstance(pmsg, bytes),
+           'pmsg parameter must be a bytes object',
+           raising=exc.TypeError)
+    rc = lib.crypto_sign_ed25519ph_update(edph.state,
+                                          pmsg,
+                                          len(pmsg))
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+
+def crypto_sign_ed25519ph_final_create(edph,
+                                       sk):
+    """
+    Create a signature for the data hashed in edph
+    using the secret key sk
+
+    :param edph: the ed25519ph state for the data
+                 being signed
+    :type edph: crypto_sign_ed25519ph_state
+    :param sk: the ed25519 secret part of the signing key
+    :type sk: bytes
+    :return: ed25519ph signature
+    :rtype: bytes
+    """
+    ensure(isinstance(edph, crypto_sign_ed25519ph_state),
+           'edph parameter must be a ed25519ph_state object',
+           raising=exc.TypeError)
+    ensure(isinstance(sk, bytes),
+           'secret key parameter must be a bytes object',
+           raising=exc.TypeError)
+    ensure(len(sk) == crypto_sign_SECRETKEYBYTES,
+           ('secret key must be {0} '
+            'bytes long').format(crypto_sign_SECRETKEYBYTES),
+           raising=exc.TypeError)
+    signature = ffi.new("unsigned char[]", crypto_sign_BYTES)
+    rc = lib.crypto_sign_ed25519ph_final_create(edph.state,
+                                                signature,
+                                                ffi.NULL,
+                                                sk)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(signature, crypto_sign_BYTES)[:]
+
+
+def crypto_sign_ed25519ph_final_verify(edph,
+                                       signature,
+                                       pk):
+    """
+    Verify a prehashed signature using the public key pk
+
+    :param edph: the ed25519ph state for the data
+                 being verified
+    :type edph: crypto_sign_ed25519ph_state
+    :param signature: the signature being verified
+    :type signature: bytes
+    :param pk: the ed25519 public part of the signing key
+    :type pk: bytes
+    :return: True if the signature is valid
+    :rtype: boolean
+    :raises exc.BadSignatureError: if the signature is not valid
+    """
+    ensure(isinstance(edph, crypto_sign_ed25519ph_state),
+           'edph parameter must be a ed25519ph_state object',
+           raising=exc.TypeError)
+    ensure(isinstance(signature, bytes),
+           'signature parameter must be a bytes object',
+           raising=exc.TypeError)
+    ensure(len(signature) == crypto_sign_BYTES,
+           ('signature must be {0} '
+            'bytes long').format(crypto_sign_BYTES),
+           raising=exc.TypeError)
+    ensure(isinstance(pk, bytes),
+           'public key parameter must be a bytes object',
+           raising=exc.TypeError)
+    ensure(len(pk) == crypto_sign_PUBLICKEYBYTES,
+           ('public key must be {0} '
+            'bytes long').format(crypto_sign_PUBLICKEYBYTES),
+           raising=exc.TypeError)
+    rc = lib.crypto_sign_ed25519ph_final_verify(edph.state,
+                                                signature,
+                                                pk)
+    if rc != 0:
+        raise exc.BadSignatureError("Signature was forged or corrupt")
+
+    return True
