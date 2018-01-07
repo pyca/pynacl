@@ -18,7 +18,10 @@ import binascii
 
 import pytest
 
+from six import byte2int, int2byte
+
 from nacl.encoding import HexEncoder
+from nacl.exceptions import CryptoError
 from nacl.secret import SecretBox
 
 
@@ -149,3 +152,31 @@ def test_wrong_types():
                      SecretBox, 12)
     check_type_error("SecretBox must be created from 32 bytes",
                      SecretBox, box)
+
+
+def flip_byte(original, byte_offset):
+    return (original[:byte_offset] +
+            int2byte(0x01 ^ byte2int(original[byte_offset:byte_offset + 1])) +
+            original[byte_offset + 1:])
+
+
+def test_secret_box_bad_decryption():
+    box = SecretBox(b"\x11" * 32)
+    ciphertext = box.encrypt(b"hello")
+
+    with pytest.raises(CryptoError):
+        # changes the nonce
+        box.decrypt(flip_byte(ciphertext, 0))
+    with pytest.raises(CryptoError):
+        # changes ciphertext
+        box.decrypt(flip_byte(ciphertext, 24))
+    with pytest.raises(CryptoError):
+        # changes MAC tag
+        box.decrypt(flip_byte(ciphertext, len(ciphertext) - 1))
+
+    with pytest.raises(CryptoError):
+        # completely changes ciphertext and tag
+        box.decrypt(ciphertext + b"\x00")
+    with pytest.raises(CryptoError):
+        # completely changes everything
+        box.decrypt(b"\x00" + ciphertext)
