@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2018 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import binascii
 
 import pytest
 
-from six import byte2int, int2byte
+from utils import flip_byte
 
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
@@ -152,12 +152,6 @@ def test_wrong_types():
                      SecretBox, 12)
     check_type_error("SecretBox must be created from 32 bytes",
                      SecretBox, box)
-
-
-def flip_byte(original, byte_offset):
-    return (original[:byte_offset] +
-            int2byte(0x01 ^ byte2int(original[byte_offset:byte_offset + 1])) +
-            original[byte_offset + 1:])
 
 
 def test_secret_box_bad_decryption():
