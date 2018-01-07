@@ -40,3 +40,23 @@ def read_crypto_test_vectors(fname, maxels=0, delimiter=None):
                     splt = splt[:maxels]
                 vectors.append(tuple(splt))
     return vectors
+
+
+def read_kv_test_vectors(fname, delimiter=None, newrecord=None):
+    assert delimiter is not None and isinstance(delimiter, bytes)
+    assert newrecord is not None and isinstance(newrecord, bytes)
+    vectors = []
+    path = os.path.join(os.path.dirname(__file__), "data", fname)
+    vector = {}
+    with open(path, 'rb') as fp:
+        for line in fp:
+            line = line.rstrip()
+            if line and line[0] != b'#'[0]:
+                [k, v] = line.split(delimiter, 1)
+                k, v = k.strip(), v.strip()
+                if k == newrecord and k.decode('utf-8') in vector:
+                    vectors.append(vector)
+                    vector = {}
+                vector[k.decode('utf-8')] = v
+        vectors.append(vector)
+    return vectors

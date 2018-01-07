@@ -14,6 +14,29 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl.bindings.crypto_aead import (
+    crypto_aead_chacha20poly1305_ABYTES,
+    crypto_aead_chacha20poly1305_KEYBYTES,
+    crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX,
+    crypto_aead_chacha20poly1305_NPUBBYTES,
+    crypto_aead_chacha20poly1305_NSECBYTES,
+    crypto_aead_chacha20poly1305_decrypt,
+    crypto_aead_chacha20poly1305_encrypt,
+    crypto_aead_chacha20poly1305_ietf_ABYTES,
+    crypto_aead_chacha20poly1305_ietf_KEYBYTES,
+    crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX,
+    crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
+    crypto_aead_chacha20poly1305_ietf_NSECBYTES,
+    crypto_aead_chacha20poly1305_ietf_decrypt,
+    crypto_aead_chacha20poly1305_ietf_encrypt,
+    crypto_aead_xchacha20poly1305_ietf_ABYTES,
+    crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
+    crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX,
+    crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
+    crypto_aead_xchacha20poly1305_ietf_NSECBYTES,
+    crypto_aead_xchacha20poly1305_ietf_decrypt,
+    crypto_aead_xchacha20poly1305_ietf_encrypt,
+)
 from nacl.bindings.crypto_box import (
     crypto_box, crypto_box_BEFORENMBYTES, crypto_box_BOXZEROBYTES,
     crypto_box_NONCEBYTES, crypto_box_PUBLICKEYBYTES, crypto_box_SEALBYTES,
@@ -125,6 +148,28 @@ from nacl.bindings.utils import (
 
 
 __all__ = [
+    "crypto_aead_chacha20poly1305_ABYTES",
+    "crypto_aead_chacha20poly1305_KEYBYTES",
+    "crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX",
+    "crypto_aead_chacha20poly1305_NPUBBYTES",
+    "crypto_aead_chacha20poly1305_NSECBYTES",
+    "crypto_aead_chacha20poly1305_decrypt",
+    "crypto_aead_chacha20poly1305_encrypt",
+    "crypto_aead_chacha20poly1305_ietf_ABYTES",
+    "crypto_aead_chacha20poly1305_ietf_KEYBYTES",
+    "crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX",
+    "crypto_aead_chacha20poly1305_ietf_NPUBBYTES",
+    "crypto_aead_chacha20poly1305_ietf_NSECBYTES",
+    "crypto_aead_chacha20poly1305_ietf_decrypt",
+    "crypto_aead_chacha20poly1305_ietf_encrypt",
+    "crypto_aead_xchacha20poly1305_ietf_ABYTES",
+    "crypto_aead_xchacha20poly1305_ietf_KEYBYTES",
+    "crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX",
+    "crypto_aead_xchacha20poly1305_ietf_NPUBBYTES",
+    "crypto_aead_xchacha20poly1305_ietf_NSECBYTES",
+    "crypto_aead_xchacha20poly1305_ietf_decrypt",
+    "crypto_aead_xchacha20poly1305_ietf_encrypt",
+
     "crypto_box_SECRETKEYBYTES",
     "crypto_box_PUBLICKEYBYTES",
     "crypto_box_SEEDBYTES",
