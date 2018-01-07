@@ -15,13 +15,14 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-from six import int2byte, byte2int
 
 import pytest
 
+from six import byte2int, int2byte
+
 from nacl.encoding import HexEncoder
-from nacl.secret import SecretBox
 from nacl.exceptions import CryptoError
+from nacl.secret import SecretBox
 
 
 VECTORS = [
@@ -152,23 +153,30 @@ def test_wrong_types():
     check_type_error("SecretBox must be created from 32 bytes",
                      SecretBox, box)
 
+
 def flip_byte(original, byte_offset):
     return (original[:byte_offset] +
-            int2byte(0x01 ^ byte2int(original[byte_offset:byte_offset+1])) +
-            original[byte_offset+1:])
+            int2byte(0x01 ^ byte2int(original[byte_offset:byte_offset + 1])) +
+            original[byte_offset + 1:])
+
 
 def test_secret_box_bad_decryption():
     box = SecretBox(b"\x11" * 32)
     ciphertext = box.encrypt(b"hello")
 
     with pytest.raises(CryptoError):
-        box.decrypt(flip_byte(ciphertext, 0)) # changes the nonce
+        # changes the nonce
+        box.decrypt(flip_byte(ciphertext, 0))
     with pytest.raises(CryptoError):
-        box.decrypt(flip_byte(ciphertext, 24)) # changes ciphertext
+        # changes ciphertext
+        box.decrypt(flip_byte(ciphertext, 24))
     with pytest.raises(CryptoError):
-        box.decrypt(flip_byte(ciphertext, len(ciphertext)-1)) # changes MAC tag
+        # changes MAC tag
+        box.decrypt(flip_byte(ciphertext, len(ciphertext) - 1))
 
     with pytest.raises(CryptoError):
-        box.decrypt(ciphertext+b"\x00") # completely changes ciphertext and tag
+        # completely changes ciphertext and tag
+        box.decrypt(ciphertext + b"\x00")
     with pytest.raises(CryptoError):
-        box.decrypt(b"\x00"+ciphertext) # completely changes everything
+        # completely changes everything
+        box.decrypt(b"\x00" + ciphertext)
