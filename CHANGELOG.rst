@@ -9,7 +9,7 @@ Changelog
 1.2.1 - 2017-12-04
 ------------------
 
-* Update hypothesis minumum allowed version.
+* Update hypothesis minimum allowed version.
 * Infrastructure: add proper configuration for readthedocs builder
   runtime environment.
 
