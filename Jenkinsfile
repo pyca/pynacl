@@ -53,19 +53,19 @@ def build(toxenv, label) {
                 if (toxenv == "py35" || toxenv == "py36") {
                     libIncludePaths = [
                         "windows": [
-                            "lib": "C:\\libsodium-1.0.15-msvc\\Win32\\Release\\v140\\static"
+                            "lib": "C:\\libsodium-1.0.16-msvc\\Win32\\Release\\v140\\static"
                         ],
                         "windows64": [
-                            "lib": "C:\\libsodium-1.0.15-msvc\\x64\\Release\\v140\\static"
+                            "lib": "C:\\libsodium-1.0.16-msvc\\x64\\Release\\v140\\static"
                         ]
                     ]
                 } else {
                     libIncludePaths = [
                         "windows": [
-                            "lib": "C:\\libsodium-1.0.15-msvc\\Win32\\Release\\v100\\static"
+                            "lib": "C:\\libsodium-1.0.16-msvc\\Win32\\Release\\v100\\static"
                         ],
                         "windows64": [
-                            "lib": "C:\\libsodium-1.0.15-msvc\\x64\\Release\\v100\\static"
+                            "lib": "C:\\libsodium-1.0.16-msvc\\x64\\Release\\v100\\static"
                         ]
                     ]
                 }
@@ -77,7 +77,7 @@ def build(toxenv, label) {
                     @set PYNACL_SODIUM_STATIC=1
                     @set SODIUM_INSTALL=system
 
-                    @set INCLUDE="C:\\libsodium-1.0.15-msvc\\include";%INCLUDE%
+                    @set INCLUDE="C:\\libsodium-1.0.16-msvc\\include";%INCLUDE%
                     @set LIB="${libIncludePaths[label]['lib']}";%LIB%
                     tox -r
                     IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
