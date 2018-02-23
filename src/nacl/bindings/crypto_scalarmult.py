@@ -21,6 +21,9 @@ from nacl.exceptions import ensure
 
 crypto_scalarmult_BYTES = lib.crypto_scalarmult_bytes()
 crypto_scalarmult_SCALARBYTES = lib.crypto_scalarmult_scalarbytes()
+crypto_scalarmult_ed25519_BYTES = lib.crypto_scalarmult_ed25519_bytes()
+crypto_scalarmult_ed25519_SCALARBYTES = \
+    lib.crypto_scalarmult_ed25519_scalarbytes()
 
 
 def crypto_scalarmult_base(n):
@@ -58,3 +61,40 @@ def crypto_scalarmult(n, p):
            raising=exc.RuntimeError)
 
     return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
+
+
+def crypto_scalarmult_ed25519_base(n):
+    """
+    Computes and returns the scalar product of a standard group element and an
+    integer ``n`` on the edwards25519 curve.
+
+    :param n: bytes
+    :rtype: bytes
+    """
+    q = ffi.new("unsigned char[]", crypto_scalarmult_ed25519_BYTES)
+
+    rc = lib.crypto_scalarmult_ed25519_base(q, n)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(q, crypto_scalarmult_ed25519_SCALARBYTES)[:]
+
+
+def crypto_scalarmult_ed25519(n, p):
+    """
+    Computes and returns the scalar product of the given group element and an
+    integer ``n`` on the edwards25519 curve.
+
+    :param p: bytes
+    :param n: bytes
+    :rtype: bytes
+    """
+    q = ffi.new("unsigned char[]", crypto_scalarmult_ed25519_BYTES)
+
+    rc = lib.crypto_scalarmult_ed25519(q, n, p)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(q, crypto_scalarmult_ed25519_SCALARBYTES)[:]
