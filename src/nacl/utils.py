@@ -14,9 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-import six
+import os
 
-import nacl.bindings
+import six
 
 
 class EncryptedMessage(six.binary_type):
@@ -64,4 +64,4 @@ def bytes_as_string(bytes_in):
 
 
 def random(size=32):
-    return nacl.bindings.randombytes(size)
+    return os.urandom(size)
