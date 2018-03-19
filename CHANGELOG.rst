@@ -5,11 +5,18 @@ Changelog
 ------------------
 
 * Update ``libsodium`` to 1.0.16.
+* Run and test all code examples in PyNaCl docs through sphinx's
+  doctest builder.
+* Add low-level bindings for chacha20-poly1305 AEAD constructions.
+* Add low-level bindings for constant-time increment and addition
+  on fixed-precision big integers represented as little-endian
+  byte sequences.
+* Add low-level bindings for the ISO/IEC 7816-4 compatible padding API.
 
 1.2.1 - 2017-12-04
 ------------------
 
-* Update hypothesis minumum allowed version.
+* Update hypothesis minimum allowed version.
 * Infrastructure: add proper configuration for readthedocs builder
   runtime environment.
 
