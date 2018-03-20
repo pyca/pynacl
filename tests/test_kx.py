@@ -14,19 +14,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-import binascii
-import sys
-from collections import namedtuple
-
-from hypothesis import given, settings
-from hypothesis.strategies import binary, sampled_from
-
 import pytest
-
-from utils import read_kv_test_vectors
 
 import nacl.bindings as b
 import nacl.exceptions as exc
+
 
 @pytest.mark.parametrize(("seed1", "seed2"), [
     (
@@ -70,35 +62,39 @@ def test_crypto_kx_keypair(seed1, seed2):
         seeded_other = b.crypto_kx_keypair(seed2)
         assert seeded != seeded_other
 
+
 @pytest.mark.parametrize('execution_number', range(100))
 def test_crypto_kx_session_keys(execution_number):
-    server_keys = b.crypto_kx_keypair()
-    client_keys = b.crypto_kx_keypair()
+    s_keys = b.crypto_kx_keypair()
+    c_keys = b.crypto_kx_keypair()
 
-    server_decryption_key, server_encryption_key = b.crypto_kx_server_session_keys(server_keys[0], server_keys[1], client_keys[0])
-    client_decryption_key, client_encryption_key = b.crypto_kx_client_session_keys(client_keys[0], client_keys[1], server_keys[0])
+    server_decryption_key, server_encryption_key = \
+        b.crypto_kx_server_session_keys(s_keys[0], s_keys[1], c_keys[0])
+    client_decryption_key, client_encryption_key = \
+        b.crypto_kx_client_session_keys(c_keys[0], c_keys[1], s_keys[0])
 
     assert client_decryption_key == server_encryption_key
     assert server_decryption_key == client_encryption_key
 
+
 def test_crypto_kx_session_keys_wrong_length():
-    server_keys = b.crypto_kx_keypair()
-    client_keys = b.crypto_kx_keypair()
+    s_keys = b.crypto_kx_keypair()
+    c_keys = b.crypto_kx_keypair()
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_server_session_keys(server_keys[0][:-1], server_keys[1], client_keys[0])
+        b.crypto_kx_server_session_keys(s_keys[0][:-1], s_keys[1], c_keys[0])
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_client_session_keys(client_keys[0][:-1], client_keys[1], server_keys[0])
+        b.crypto_kx_client_session_keys(c_keys[0][:-1], c_keys[1], s_keys[0])
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_server_session_keys(server_keys[0], server_keys[1][:-1], client_keys[0])
+        b.crypto_kx_server_session_keys(s_keys[0], s_keys[1][:-1], c_keys[0])
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_client_session_keys(client_keys[0], client_keys[1][:-1], server_keys[0])
+        b.crypto_kx_client_session_keys(c_keys[0], c_keys[1][:-1], s_keys[0])
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_server_session_keys(server_keys[0], server_keys[1], client_keys[0][:-1])
+        b.crypto_kx_server_session_keys(s_keys[0], s_keys[1], c_keys[0][:-1])
 
     with pytest.raises(exc.TypeError):
-        b.crypto_kx_client_session_keys(client_keys[0], client_keys[1], server_keys[0][:-1])
+        b.crypto_kx_client_session_keys(c_keys[0], c_keys[1], s_keys[0][:-1])
