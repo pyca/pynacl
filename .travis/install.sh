@@ -8,7 +8,8 @@ set -x
 # PYENV_COMMIT=v1.0.7
 
 if [[ $SODIUM_INSTALL == 'system' ]]; then
-    wget https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+    wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz || \
+        wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
     tar zxvf LATEST.tar.gz
     cd libsodium-*
     ./configure
