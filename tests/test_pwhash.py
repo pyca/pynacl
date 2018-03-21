@@ -32,6 +32,10 @@ import nacl.encoding
 import nacl.exceptions as exc
 import nacl.pwhash
 
+_deadline = os.getenv('PYNACL_HYPOTHESIS_DEADLINE', 1500)
+# Set the environment variable PYNACL_HYPOTHESIS_DEADLINE to an
+# appropriate value for the architecture under test before running tests.
+# 1,500 milliseconds is the default for fast architectures like amd64.
 
 _all_unicode = u''.join(unichr(i) for i in range(sys.maxunicode))
 PASSWD_CHARS = u''.join(c for c in _all_unicode
@@ -411,7 +415,7 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=1500, max_examples=20, timeout=unlimited)
+@settings(deadline=_deadline, max_examples=20, timeout=unlimited)
 def test_argon2i_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
@@ -425,7 +429,7 @@ def test_argon2i_str_and_verify(password, ops, mem):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=1500, max_examples=20, timeout=unlimited)
+@settings(deadline=_deadline, max_examples=20, timeout=unlimited)
 def test_argon2id_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2id.str(_psw, opslimit=ops, memlimit=mem)
@@ -439,7 +443,7 @@ def test_argon2id_str_and_verify(password, ops, mem):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=1500, max_examples=20, timeout=unlimited)
+@settings(deadline=_deadline, max_examples=20, timeout=unlimited)
 def test_argon2i_str_and_verify_fail(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
@@ -448,7 +452,7 @@ def test_argon2i_str_and_verify_fail(password, ops, mem):
 
 
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
-@settings(deadline=1500, max_examples=5, timeout=unlimited)
+@settings(deadline=_deadline, max_examples=5, timeout=unlimited)
 def test_pwhash_str_and_verify(password):
     _psw = password.encode('utf-8')
 
