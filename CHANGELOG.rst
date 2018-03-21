@@ -12,6 +12,9 @@ Changelog
   on fixed-precision big integers represented as little-endian
   byte sequences.
 * Add low-level bindings for the ISO/IEC 7816-4 compatible padding API.
+* Add PYNACL_HYPOTHESIS_DEADLINE environment variable to allow the allowed
+  time for tests in tests/test_pwhash.py to be adjusted for slower processor
+  architectures.  GitHub issue #370
 
 1.2.1 - 2017-12-04
 ------------------
