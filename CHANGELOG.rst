@@ -12,6 +12,8 @@ Changelog
   on fixed-precision big integers represented as little-endian
   byte sequences.
 * Add low-level bindings for the ISO/IEC 7816-4 compatible padding API.
+* Add low-level bindings for libsodium's crypto_kx... key exchange
+  construction.
 * Set hypothesis deadline to None in tests/test_pwhash.py to avoid
   incorrect test failures on slower processor architectures.  GitHub 
   issue #370
