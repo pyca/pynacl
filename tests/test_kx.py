@@ -14,10 +14,10 @@
 
 from __future__ import absolute_import, division, print_function
 
-import pytest
-
 from hypothesis import given, settings
 from hypothesis.strategies import binary
+
+import pytest
 
 import nacl.bindings as b
 import nacl.exceptions as exc
