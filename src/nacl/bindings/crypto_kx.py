@@ -35,9 +35,28 @@ crypto_kx_SEED_BYTES = lib.crypto_kx_seedbytes()
 crypto_kx_SESSION_KEY_BYTES = lib.crypto_kx_sessionkeybytes()
 
 
-def crypto_kx_keypair(seed=None):
+def crypto_kx_keypair():
     """
     Generate a keypair.
+    This is a duplicate crypto_box_keypair, but
+    is included for api consistency.
+    :return: (public_key, secret_key)
+    :rtype: (bytes, bytes)
+    """
+    public_key = ffi.new("unsigned char[]", crypto_kx_PUBLIC_KEY_BYTES)
+    secret_key = ffi.new("unsigned char[]", crypto_kx_SECRET_KEY_BYTES)
+    res = lib.crypto_kx_keypair(public_key, secret_key)
+    ensure(res == 0, "Key generation failed.", raising=exc.CryptoError)
+
+    return (ffi.buffer(public_key, crypto_kx_PUBLIC_KEY_BYTES)[:],
+            ffi.buffer(secret_key, crypto_kx_SECRET_KEY_BYTES)[:])
+
+
+def crypto_kx_seed_keypair(seed):
+    """
+    Generate a keypair with a given seed.
+    This is a duplicate crypto_box_seed_keypair, but
+    is included for api consistency.
     :param seed: random seed
     :type seed: bytes
     :return: (public_key, secret_key)
@@ -45,15 +64,12 @@ def crypto_kx_keypair(seed=None):
     """
     public_key = ffi.new("unsigned char[]", crypto_kx_PUBLIC_KEY_BYTES)
     secret_key = ffi.new("unsigned char[]", crypto_kx_SECRET_KEY_BYTES)
-    if seed is None:
-        res = lib.crypto_kx_keypair(public_key, secret_key)
-    else:
-        ensure(isinstance(seed, bytes) and
-               len(seed) == crypto_kx_SEED_BYTES,
-               'Seed must be a {0} byte long bytes sequence'.format(
-                   crypto_kx_SEED_BYTES),
-               raising=exc.TypeError)
-        res = lib.crypto_kx_seed_keypair(public_key, secret_key, seed)
+    ensure(isinstance(seed, bytes) and
+           len(seed) == crypto_kx_SEED_BYTES,
+           'Seed must be a {0} byte long bytes sequence'.format(
+               crypto_kx_SEED_BYTES),
+           raising=exc.TypeError)
+    res = lib.crypto_kx_seed_keypair(public_key, secret_key, seed)
     ensure(res == 0, "Key generation failed.", raising=exc.CryptoError)
 
     return (ffi.buffer(public_key, crypto_kx_PUBLIC_KEY_BYTES)[:],
@@ -71,7 +87,7 @@ def crypto_kx_client_session_keys(client_public_key,
     :type client_secret_key: bytes
     :param server_public_key:
     :type server_public_key: bytes
-    :return: (decryption_key, encryption_key)
+    :return: (rx_key, tx_key)
     :rtype: (bytes, bytes)
     """
     ensure(isinstance(client_public_key, bytes) and
@@ -90,10 +106,10 @@ def crypto_kx_client_session_keys(client_public_key,
                crypto_kx_PUBLIC_KEY_BYTES),
            raising=exc.TypeError)
 
-    decryption_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
-    encryption_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
-    res = lib.crypto_kx_client_session_keys(decryption_key,
-                                            encryption_key,
+    rx_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
+    tx_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
+    res = lib.crypto_kx_client_session_keys(rx_key,
+                                            tx_key,
                                             client_public_key,
                                             client_secret_key,
                                             server_public_key)
@@ -101,8 +117,8 @@ def crypto_kx_client_session_keys(client_public_key,
            "Client session key generation failed.",
            raising=exc.CryptoError)
 
-    return (ffi.buffer(decryption_key, crypto_kx_SESSION_KEY_BYTES)[:],
-            ffi.buffer(encryption_key, crypto_kx_SESSION_KEY_BYTES)[:])
+    return (ffi.buffer(rx_key, crypto_kx_SESSION_KEY_BYTES)[:],
+            ffi.buffer(tx_key, crypto_kx_SESSION_KEY_BYTES)[:])
 
 
 def crypto_kx_server_session_keys(server_public_key,
@@ -116,7 +132,7 @@ def crypto_kx_server_session_keys(server_public_key,
     :type server_secret_key: bytes
     :param client_public_key:
     :type client_public_key: bytes
-    :return: (decryption_key, encryption_key)
+    :return: (rx_key, tx_key)
     :rtype: (bytes, bytes)
     """
     ensure(isinstance(server_public_key, bytes) and
@@ -135,10 +151,10 @@ def crypto_kx_server_session_keys(server_public_key,
                crypto_kx_PUBLIC_KEY_BYTES),
            raising=exc.TypeError)
 
-    decryption_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
-    encryption_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
-    res = lib.crypto_kx_server_session_keys(decryption_key,
-                                            encryption_key,
+    rx_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
+    tx_key = ffi.new("unsigned char[]", crypto_kx_SESSION_KEY_BYTES)
+    res = lib.crypto_kx_server_session_keys(rx_key,
+                                            tx_key,
                                             server_public_key,
                                             server_secret_key,
                                             client_public_key)
@@ -146,5 +162,5 @@ def crypto_kx_server_session_keys(server_public_key,
            "Server session key generation failed.",
            raising=exc.CryptoError)
 
-    return (ffi.buffer(decryption_key, crypto_kx_SESSION_KEY_BYTES)[:],
-            ffi.buffer(encryption_key, crypto_kx_SESSION_KEY_BYTES)[:])
+    return (ffi.buffer(rx_key, crypto_kx_SESSION_KEY_BYTES)[:],
+            ffi.buffer(tx_key, crypto_kx_SESSION_KEY_BYTES)[:])

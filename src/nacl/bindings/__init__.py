@@ -69,6 +69,7 @@ from nacl.bindings.crypto_kx import (
     crypto_kx_SESSION_KEY_BYTES,
     crypto_kx_client_session_keys,
     crypto_kx_keypair,
+    crypto_kx_seed_keypair,
     crypto_kx_server_session_keys,
 )
 from nacl.bindings.crypto_pwhash import (
@@ -220,6 +221,7 @@ __all__ = [
     "crypto_generichash_blake2b_state_copy",
 
     "crypto_kx_keypair",
+    "crypto_kx_seed_keypair",
     "crypto_kx_client_session_keys",
     "crypto_kx_server_session_keys",
     "crypto_kx_PUBLIC_KEY_BYTES",

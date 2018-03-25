@@ -16,68 +16,73 @@ from __future__ import absolute_import, division, print_function
 
 import pytest
 
+from hypothesis import given, settings
+from hypothesis.strategies import binary
+
 import nacl.bindings as b
 import nacl.exceptions as exc
 
 
-@pytest.mark.parametrize(("seed1", "seed2"), [
-    (
-        None,
-        None
-    ),
-    (
-        b'12345678901234567890123456789012',
-        b'12345678901234567890123456789012'
-    ),
-    (
-        b'23456789012345678901234567890123',
-        b'34567890123456789012345678901234'
-    ),
-    (
-        b'23456789012345678901234567890123',
-        b'34567890123456789012345678901234'
-    ),
-    (
-        b'27238674',
-        b'345678901234567890123456789012342837472384'
-    )
-])
-def test_crypto_kx_keypair(seed1, seed2):
-    if seed1 is None:
-        public_key, secret_key = b.crypto_kx_keypair()
-        public_key_2, secret_key_2 = b.crypto_kx_keypair()
-        assert public_key != public_key_2
-        assert secret_key != secret_key_2
-    elif len(seed1) < b.crypto_kx_SEED_BYTES:
-        with pytest.raises(exc.TypeError):
-            b.crypto_kx_keypair(seed1)
-        with pytest.raises(exc.TypeError):
-            b.crypto_kx_keypair(seed2)
-    elif seed1 == seed2:
-        seeded = b.crypto_kx_keypair(seed1)
-        seeded_same = b.crypto_kx_keypair(seed2)
-        assert seeded == seeded_same
-    else:
-        seeded = b.crypto_kx_keypair(seed1)
-        seeded_other = b.crypto_kx_keypair(seed2)
+def test_crypto_kx_keypair():
+    public_key, secret_key = b.crypto_kx_keypair()
+    public_key_2, secret_key_2 = b.crypto_kx_keypair()
+    assert public_key != public_key_2
+    assert secret_key != secret_key_2
+
+
+@given(binary(min_size=32,
+              max_size=32),
+       binary(min_size=32,
+              max_size=32),
+       )
+@settings(max_examples=100)
+def test_crypto_kx_seed_keypair(seed1, seed2):
+    seeded = b.crypto_kx_seed_keypair(seed1)
+    seeded_other = b.crypto_kx_seed_keypair(seed2)
+    if seed1 != seed2:
         assert seeded != seeded_other
+    else:
+        assert seeded == seeded_other
 
 
-@pytest.mark.parametrize('execution_number', range(100))
-def test_crypto_kx_session_keys(execution_number):
-    s_keys = b.crypto_kx_keypair()
-    c_keys = b.crypto_kx_keypair()
+@given(binary(min_size=33,
+              max_size=128),
+       )
+@settings(max_examples=20)
+def test_crypto_kx_seed_keypair_seed_too_large(seed):
+    with pytest.raises(exc.TypeError):
+        b.crypto_kx_seed_keypair(seed)
 
-    server_decryption_key, server_encryption_key = \
+
+@given(binary(min_size=0,
+              max_size=31),
+       )
+@settings(max_examples=20)
+def test_crypto_kx_seed_keypair_seed_too_small(seed):
+    with pytest.raises(exc.TypeError):
+        b.crypto_kx_seed_keypair(seed)
+
+
+@given(binary(min_size=32,
+              max_size=32),
+       binary(min_size=32,
+              max_size=32),
+       )
+@settings(max_examples=100)
+def test_crypto_kx_session_keys(seed1, seed2):
+    s_keys = b.crypto_kx_seed_keypair(seed1)
+    c_keys = b.crypto_kx_seed_keypair(seed2)
+
+    server_rx_key, server_tx_key = \
         b.crypto_kx_server_session_keys(s_keys[0], s_keys[1], c_keys[0])
-    client_decryption_key, client_encryption_key = \
+    client_rx_key, client_tx_key = \
         b.crypto_kx_client_session_keys(c_keys[0], c_keys[1], s_keys[0])
 
-    assert client_decryption_key == server_encryption_key
-    assert server_decryption_key == client_encryption_key
+    assert client_rx_key == server_tx_key
+    assert server_rx_key == client_tx_key
 
 
-def test_crypto_kx_session_keys_wrong_length():
+def test_crypto_kx_session_wrong_key_lengths():
     s_keys = b.crypto_kx_keypair()
     c_keys = b.crypto_kx_keypair()
 
