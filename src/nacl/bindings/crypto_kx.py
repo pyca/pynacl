@@ -38,9 +38,8 @@ crypto_kx_SESSION_KEY_BYTES = lib.crypto_kx_sessionkeybytes()
 def crypto_kx_keypair():
     """
     Generate a keypair.
-    This is functionally the same as crypto_box_keypair, however
-    it uses the blake2b hash primitive instead of sha512.
-    It is included mainly for api consistency when using crypto_kx.
+    This is a duplicate crypto_box_keypair, but
+    is included for api consistency.
     :return: (public_key, secret_key)
     :rtype: (bytes, bytes)
     """
