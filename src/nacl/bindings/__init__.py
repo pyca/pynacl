@@ -62,6 +62,16 @@ from nacl.bindings.crypto_hash import (
     crypto_hash, crypto_hash_BYTES, crypto_hash_sha256,
     crypto_hash_sha256_BYTES, crypto_hash_sha512, crypto_hash_sha512_BYTES,
 )
+from nacl.bindings.crypto_kx import (
+    crypto_kx_PUBLIC_KEY_BYTES,
+    crypto_kx_SECRET_KEY_BYTES,
+    crypto_kx_SEED_BYTES,
+    crypto_kx_SESSION_KEY_BYTES,
+    crypto_kx_client_session_keys,
+    crypto_kx_keypair,
+    crypto_kx_seed_keypair,
+    crypto_kx_server_session_keys,
+)
 from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_ALG_ARGON2I13,
     crypto_pwhash_ALG_ARGON2ID13,
@@ -209,6 +219,15 @@ __all__ = [
     "crypto_generichash_blake2b_update",
     "crypto_generichash_blake2b_final",
     "crypto_generichash_blake2b_state_copy",
+
+    "crypto_kx_keypair",
+    "crypto_kx_seed_keypair",
+    "crypto_kx_client_session_keys",
+    "crypto_kx_server_session_keys",
+    "crypto_kx_PUBLIC_KEY_BYTES",
+    "crypto_kx_SECRET_KEY_BYTES",
+    "crypto_kx_SEED_BYTES",
+    "crypto_kx_SESSION_KEY_BYTES",
 
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
