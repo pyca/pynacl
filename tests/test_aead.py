@@ -18,7 +18,7 @@ import binascii
 import sys
 from collections import namedtuple
 
-from hypothesis import given, settings
+from hypothesis import given, settings, unlimited
 from hypothesis.strategies import binary, sampled_from
 
 import pytest
@@ -97,7 +97,7 @@ def test_chacha20poly1305_variants_kat(kv):
               max_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES),
        binary(min_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
               max_size=b.crypto_aead_chacha20poly1305_KEYBYTES))
-@settings(deadline=1500, max_examples=20)
+@settings(deadline=None, max_examples=20, timeout=unlimited)
 def test_chacha20poly1305_variants_roundtrip(construction,
                                              message,
                                              aad,
