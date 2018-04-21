@@ -22,10 +22,12 @@ from hypothesis.strategies import binary, integers
 
 import pytest
 
-from utils import read_crypto_test_vectors
+from test_signing import ed25519_known_answers
+
+from utils import flip_byte, read_crypto_test_vectors
 
 from nacl import bindings as c
-from nacl.exceptions import CryptoError
+from nacl.exceptions import BadSignatureError, CryptoError
 
 
 def tohex(b):
@@ -370,3 +372,74 @@ def test_sodium_add():
 
     with pytest.raises(TypeError):
         res = c.sodium_add(short_one, two)
+
+
+def test_sign_ed25519ph_rfc8032():
+    # sk, pk, msg, exp_sig
+    # taken from RFC 8032 section 7.3.  Test Vectors for Ed25519ph
+    sk = unhexlify(b'833fe62409237b9d62ec77587520911e'
+                   b'9a759cec1d19755b7da901b96dca3d42')
+    pk = unhexlify(b'ec172b93ad5e563bf4932c70e1245034'
+                   b'c35467ef2efd4d64ebf819683467e2bf')
+    msg = b'abc'
+    exp_sig = unhexlify(b'98a70222f0b8121aa9d30f813d683f80'
+                        b'9e462b469c7ff87639499bb94e6dae41'
+                        b'31f85042463c2a355a2003d062adf5aa'
+                        b'a10b8c61e636062aaad11c2a26083406')
+    c_sk = sk + pk
+
+    edph = c.crypto_sign_ed25519ph_state()
+    c.crypto_sign_ed25519ph_update(edph, msg)
+    sig = c.crypto_sign_ed25519ph_final_create(edph, c_sk)
+
+    assert sig == exp_sig
+
+    edph_v = c.crypto_sign_ed25519ph_state()
+    c.crypto_sign_ed25519ph_update(edph_v, msg)
+
+    assert c.crypto_sign_ed25519ph_final_verify(edph_v, exp_sig, pk) is True
+
+    c.crypto_sign_ed25519ph_update(edph_v, msg)
+
+    with pytest.raises(BadSignatureError):
+        c.crypto_sign_ed25519ph_final_verify(edph_v, exp_sig, pk)
+
+
+def test_sign_ed25519ph_libsodium():
+    #
+    _hsk, _hpk, hmsg, _hsig, _hsigmsg = ed25519_known_answers()[-1]
+
+    msg = unhexlify(hmsg)
+
+    seed = unhexlify(b'421151a459faeade3d247115f94aedae'
+                     b'42318124095afabe4d1451a559faedee')
+
+    pk, sk = c.crypto_sign_seed_keypair(seed)
+
+    exp_sig = unhexlify(b'10c5411e40bd10170fb890d4dfdb6d33'
+                        b'8c8cb11d2764a216ee54df10977dcdef'
+                        b'd8ff755b1eeb3f16fce80e40e7aafc99'
+                        b'083dbff43d5031baf04157b48423960d')
+
+    edph = c.crypto_sign_ed25519ph_state()
+    c.crypto_sign_ed25519ph_update(edph, msg)
+    sig = c.crypto_sign_ed25519ph_final_create(edph, sk)
+
+    assert sig == exp_sig
+
+    edph_incr = c.crypto_sign_ed25519ph_state()
+    c.crypto_sign_ed25519ph_update(edph_incr, b'')
+    c.crypto_sign_ed25519ph_update(edph_incr, msg[0:len(msg) // 2])
+    c.crypto_sign_ed25519ph_update(edph_incr, msg[len(msg) // 2:])
+
+    assert c.crypto_sign_ed25519ph_final_verify(edph_incr, exp_sig, pk) is True
+
+    with pytest.raises(BadSignatureError):
+        wrng_sig = flip_byte(exp_sig, 0)
+        c.crypto_sign_ed25519ph_final_verify(edph_incr, wrng_sig, pk)
+
+    with pytest.raises(BadSignatureError):
+        wrng_mesg = flip_byte(msg, 1022)
+        edph_wrng = c.crypto_sign_ed25519ph_state()
+        c.crypto_sign_ed25519ph_update(edph_wrng, wrng_mesg)
+        c.crypto_sign_ed25519ph_final_verify(edph_wrng, exp_sig, pk)

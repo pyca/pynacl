@@ -17,6 +17,7 @@ size_t crypto_sign_bytes();
 // size_t crypto_sign_seedbytes();
 size_t crypto_sign_publickeybytes();
 size_t crypto_sign_secretkeybytes();
+size_t crypto_sign_ed25519ph_statebytes();
 
 
 int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
@@ -37,3 +38,26 @@ int crypto_sign_ed25519_pk_to_curve25519(unsigned char *curve25519_pk,
 
 int crypto_sign_ed25519_sk_to_curve25519(unsigned char *curve25519_sk,
                                          const unsigned char *ed25519_sk);
+
+/*
+ * We use crypto_sign_ed25519ph_state * as
+ * a pointer to a opaque buffer,
+ * therefore the following typedef makes sense:
+ */
+
+typedef void crypto_sign_ed25519ph_state;
+
+int crypto_sign_ed25519ph_init(crypto_sign_ed25519ph_state *state);
+
+int crypto_sign_ed25519ph_update(crypto_sign_ed25519ph_state *state,
+                                 const unsigned char *m,
+				 unsigned long long mlen);
+
+int crypto_sign_ed25519ph_final_create(crypto_sign_ed25519ph_state *state,
+                                       unsigned char *sig,
+                                       unsigned long long *siglen_p,
+                                       const unsigned char *sk);
+
+int crypto_sign_ed25519ph_final_verify(crypto_sign_ed25519ph_state *state,
+                                       unsigned char *sig,
+                                       const unsigned char *pk);

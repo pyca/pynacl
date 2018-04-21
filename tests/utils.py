@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2018 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+
+from six import byte2int, int2byte
 
 
 def assert_equal(x, y):
@@ -60,3 +62,9 @@ def read_kv_test_vectors(fname, delimiter=None, newrecord=None):
                 vector[k.decode('utf-8')] = v
         vectors.append(vector)
     return vectors
+
+
+def flip_byte(original, byte_offset):
+    return (original[:byte_offset] +
+            int2byte(0x01 ^ byte2int(original[byte_offset:byte_offset + 1])) +
+            original[byte_offset + 1:])
