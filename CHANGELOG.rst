@@ -8,6 +8,7 @@ Changelog
 * Run and test all code examples in PyNaCl docs through sphinx's
   doctest builder.
 * Add low-level bindings for chacha20-poly1305 AEAD constructions.
+* Add low-level bindings for ed25519ph pre-hashed signing construction.
 * Add low-level bindings for constant-time increment and addition
   on fixed-precision big integers represented as little-endian
   byte sequences.
