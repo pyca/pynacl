@@ -13,8 +13,7 @@ added a KDF generation check using the ascii encoded passphrase
 were the same we could get from the version of hashlib.scrypt, as provided
 in python version 3.6 stdlib.
 
-.. doctest::
-    :pyversion: >= 3.6
+.. code-block:: python
 
     >>> import hashlib
     >>> import nacl
