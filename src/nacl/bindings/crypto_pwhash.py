@@ -391,8 +391,9 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     _check_argon2_limits_alg(opslimit, memlimit, alg)
 
     outbuf = ffi.new("unsigned char[]", outlen)
+    outpasswd = ffi.new("unsigned char[]", passwd)
 
-    ret = lib.crypto_pwhash(outbuf, outlen, passwd, len(passwd),
+    ret = lib.crypto_pwhash(outbuf, outlen, outpasswd, len(passwd),
                             salt, opslimit, memlimit, alg)
 
     ensure(ret == 0, 'Unexpected failure in key derivation',
