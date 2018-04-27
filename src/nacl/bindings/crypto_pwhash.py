@@ -392,6 +392,7 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
 
     outbuf = ffi.new("unsigned char[]", outlen)
     outpasswd = ffi.new("unsigned char[]", passwd)
+    salt = ffi.new("unsigned char[]", salt)
 
     ret = lib.crypto_pwhash(outbuf, outlen, outpasswd, len(passwd),
                             salt, opslimit, memlimit, alg)
