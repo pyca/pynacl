@@ -41,6 +41,8 @@ very simple:
     #   nonce alongside it.
     encrypted = box.encrypt(message)
 
+    assert len(encrypted) == len(message) + box.NONCE_SIZE + box.MACBYTES
+
 However, if we need to use an explicit nonce, it can be passed along with the
 message:
 
@@ -52,6 +54,27 @@ message:
     nonce = nacl.utils.random(nacl.secret.SecretBox.NONCE_SIZE)
 
     encrypted = box.encrypt(message, nonce)
+
+If you need to get the ciphertext and the authentication data
+without the nonce, you can get the `ciphertext` attribute of the
+:class:`~nacl.utils.EncryptedMessage` instance returned by
+:meth:`~nacl.secret.SecretBox.encrypt`:
+
+.. testcode::
+
+    nonce = nacl.utils.random(nacl.secret.SecretBox.NONCE_SIZE)
+
+    encrypted = box.encrypt(message, nonce)
+
+    # since we are transmitting the nonce by some other means,
+    # we just need to get the ciphertext and authentication data
+
+    ctext = encrypted.ciphertext
+
+    # ctext is just nacl.secret.SecretBox.MACBYTES longer
+    # than the original message
+
+    assert len(ctext) == len(message) + box.MACBYTES
 
 Finally, the message is decrypted (regardless of how the nonce was generated):
 
