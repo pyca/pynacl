@@ -133,6 +133,7 @@ from nacl.bindings.crypto_scalarmult import (
 )
 from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
+    crypto_secretbox_MACBYTES, crypto_secretbox_MESSAGEBYTES_MAX,
     crypto_secretbox_NONCEBYTES, crypto_secretbox_ZEROBYTES,
     crypto_secretbox_open
 )
@@ -241,6 +242,8 @@ __all__ = [
     "crypto_secretbox_NONCEBYTES",
     "crypto_secretbox_ZEROBYTES",
     "crypto_secretbox_BOXZEROBYTES",
+    "crypto_secretbox_MACBYTES",
+    "crypto_secretbox_MESSAGEBYTES_MAX",
     "crypto_secretbox",
     "crypto_secretbox_open",
 

@@ -17,6 +17,8 @@ size_t crypto_secretbox_keybytes();
 size_t crypto_secretbox_noncebytes();
 size_t crypto_secretbox_zerobytes();
 size_t crypto_secretbox_boxzerobytes();
+size_t crypto_secretbox_macbytes();
+size_t crypto_secretbox_messagebytes_max();
 
 
 int crypto_secretbox(unsigned char *c,        const unsigned char *m,
