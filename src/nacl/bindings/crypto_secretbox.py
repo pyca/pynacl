@@ -23,6 +23,8 @@ crypto_secretbox_KEYBYTES = lib.crypto_secretbox_keybytes()
 crypto_secretbox_NONCEBYTES = lib.crypto_secretbox_noncebytes()
 crypto_secretbox_ZEROBYTES = lib.crypto_secretbox_zerobytes()
 crypto_secretbox_BOXZEROBYTES = lib.crypto_secretbox_boxzerobytes()
+crypto_secretbox_MACBYTES = lib.crypto_secretbox_macbytes()
+crypto_secretbox_MESSAGEBYTES_MAX = lib.crypto_secretbox_messagebytes_max()
 
 
 def crypto_secretbox(message, nonce, key):

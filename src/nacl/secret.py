@@ -38,10 +38,16 @@ class SecretBox(encoding.Encodable, StringFixer, object):
 
     :cvar KEY_SIZE: The size that the key is required to be.
     :cvar NONCE_SIZE: The size that the nonce is required to be.
+    :cvar MACBYTES: The size of the authentication MAC tag in bytes.
+    :cvar MESSAGEBYTES_MAX: The maximum size of a message which can be
+                            safely encrypted with a single key/nonce
+                            pair.
     """
 
     KEY_SIZE = nacl.bindings.crypto_secretbox_KEYBYTES
     NONCE_SIZE = nacl.bindings.crypto_secretbox_NONCEBYTES
+    MACBYTES = nacl.bindings.crypto_secretbox_MACBYTES
+    MESSAGEBYTES_MAX = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
 
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
