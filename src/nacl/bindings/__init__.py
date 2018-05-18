@@ -161,8 +161,9 @@ from nacl.bindings.crypto_stream import (
     crypto_stream_chacha20_ietf_KEYBYTES,
     crypto_stream_chacha20_ietf_NONCEBYTES,
     crypto_stream_chacha20_ietf_MESSAGEBYTES,
-    crypto_stream_keygen,
-    crypto_stream_chacha20_xor
+    crypto_stream_chacha20_keygen,
+    crypto_stream_chacha20_xor,
+    crypto_stream_chacha20_xor_ic
 )
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.sodium_core import sodium_init
@@ -344,8 +345,9 @@ __all__ = [
     "crypto_stream_chacha20_ietf_KEYBYTES",
     "crypto_stream_chacha20_ietf_NONCEBYTES",
     "crypto_stream_chacha20_ietf_MESSAGEBYTES",
-    "crypto_stream_keygen",
+    "crypto_stream_chacha20_keygen",
     "crypto_stream_chacha20_xor",
+    "crypto_stream_chacha20_xor_ic",
 
     "randombytes",
 

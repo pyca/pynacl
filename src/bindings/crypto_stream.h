@@ -35,5 +35,4 @@ int crypto_stream_chacha20_ietf_xor(unsigned char *c, const unsigned char *m,
                                 unsigned long long mlen, const unsigned char *n,
                                 const unsigned char *k);
 
-void
-crypto_stream_chacha20_keygen(unsigned char *k);
+void crypto_stream_chacha20_keygen(unsigned char *k);
