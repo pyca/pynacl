@@ -154,6 +154,16 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_ed25519ph_update, crypto_sign_keypair, crypto_sign_open,
     crypto_sign_seed_keypair,
 )
+from nacl.bindings.crypto_stream import (
+    crypto_stream_chacha20_KEYBYTES,
+    crypto_stream_chacha20_NONCEBYTES,
+    crypto_stream_chacha20_MESSAGEBYTES_MAX,
+    crypto_stream_chacha20_ietf_KEYBYTES,
+    crypto_stream_chacha20_ietf_NONCEBYTES,
+    crypto_stream_chacha20_ietf_MESSAGEBYTES,
+    crypto_stream_keygen,
+    crypto_stream_chacha20_xor
+)
 from nacl.bindings.randombytes import randombytes
 from nacl.bindings.sodium_core import sodium_init
 from nacl.bindings.utils import (
@@ -327,6 +337,15 @@ __all__ = [
     "crypto_pwhash_scryptsalsa208sha256_str",
     "crypto_pwhash_scryptsalsa208sha256_str_verify",
     "nacl_bindings_pick_scrypt_params",
+
+    "crypto_stream_chacha20_KEYBYTES",
+    "crypto_stream_chacha20_NONCEBYTES",
+    "crypto_stream_chacha20_MESSAGEBYTES_MAX",
+    "crypto_stream_chacha20_ietf_KEYBYTES",
+    "crypto_stream_chacha20_ietf_NONCEBYTES",
+    "crypto_stream_chacha20_ietf_MESSAGEBYTES",
+    "crypto_stream_keygen",
+    "crypto_stream_chacha20_xor",
 
     "randombytes",
 
