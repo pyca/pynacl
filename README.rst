@@ -3,7 +3,7 @@ PyNaCl: Python binding to the libsodium library
 ===============================================
 
 .. image:: https://img.shields.io/pypi/v/pynacl.svg
-    :target: https://pypi.python.org/pypi/PyNaCl/
+    :target: https://pypi.org/project/PyNaCl/
     :alt: Latest Version
 
 .. image:: https://travis-ci.org/pyca/pynacl.svg?branch=master
