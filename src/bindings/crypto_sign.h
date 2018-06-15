@@ -61,3 +61,12 @@ int crypto_sign_ed25519ph_final_create(crypto_sign_ed25519ph_state *state,
 int crypto_sign_ed25519ph_final_verify(crypto_sign_ed25519ph_state *state,
                                        unsigned char *sig,
                                        const unsigned char *pk);
+
+int crypto_sign_detached(unsigned char *sig, unsigned long long *siglen_p,
+                         const unsigned char *m, unsigned long long mlen,
+                         const unsigned char *sk);
+
+int crypto_sign_verify_detached(const unsigned char *sig,
+                                const unsigned char *m,
+                                unsigned long long mlen,
+                                const unsigned char *pk);

@@ -152,7 +152,8 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_ed25519ph_STATEBYTES, crypto_sign_ed25519ph_final_create,
     crypto_sign_ed25519ph_final_verify, crypto_sign_ed25519ph_state,
     crypto_sign_ed25519ph_update, crypto_sign_keypair, crypto_sign_open,
-    crypto_sign_seed_keypair,
+    crypto_sign_seed_keypair, crypto_sign_detached,
+    crypto_sign_verify_detached,
 )
 from nacl.bindings.crypto_stream import (
     crypto_stream_chacha20_KEYBYTES,

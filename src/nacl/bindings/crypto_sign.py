@@ -283,3 +283,50 @@ def crypto_sign_ed25519ph_final_verify(edph,
         raise exc.BadSignatureError("Signature was forged or corrupt")
 
     return True
+
+def crypto_sign_detached(message, sk):
+    ensure(isinstance(sk, bytes),
+        'private key parameter must be a bytes object',
+        raising=exc.TypeError)
+    ensure(isinstance(message, bytes),
+           'message parameter must be a bytes object',
+           raising=exc.TypeError)
+
+    signature = ffi.new("unsigned char[]", crypto_sign_BYTES)
+    signed_len = ffi.new("unsigned long long *")
+
+    rc = lib.crypto_sign_detached(signature, signed_len,
+                            message, len(message),
+                            sk)
+    ensure(rc == 0,
+        'Unexpected library error',
+        raising=exc.RuntimeError)
+
+    return ffi.buffer(signature, crypto_sign_BYTES)[:]
+
+    
+    
+def crypto_sign_verify_detached(signature, message, pk):
+    ensure(isinstance(pk, bytes),
+        'public key parameter must be a bytes object',
+        raising=exc.TypeError)
+    ensure(isinstance(signature, bytes),
+           'signature parameter must be a bytes object',
+           raising=exc.TypeError)
+    ensure(isinstance(message, bytes),
+           'message parameter must be a bytes object',
+           raising=exc.TypeError)
+    ensure(len(signature) == crypto_sign_BYTES,
+           ('signature must be {0} '
+            'bytes long').format(crypto_sign_BYTES),
+           raising=exc.TypeError)
+    ensure(len(pk) == crypto_sign_PUBLICKEYBYTES,
+           ('public key must be {0} '
+            'bytes long').format(crypto_sign_PUBLICKEYBYTES),
+           raising=exc.TypeError)
+    rc = lib.crypto_sign_verify_detached(signature, message, len(message), pk)
+    
+    if rc != 0:
+        raise exc.BadSignatureError("Signature was forged or corrupt")
+
+    return True
