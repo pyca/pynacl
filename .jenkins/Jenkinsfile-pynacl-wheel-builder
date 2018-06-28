@@ -135,7 +135,9 @@ def build(version, label, imageName) {
                     if [[ "${version}" =~ \$REGEX ]]; then
                         PY_LIMITED_API="--py-limited-api=cp3\${BASH_REMATCH[1]}"
                     fi
-                    python setup.py bdist_wheel --dist-dir=../tmpwheelhouse \$PY_LIMITED_API
+                    $linux32 /opt/python/$version/bin/python setup.py bdist_wheel --dist-dir=../tmpwheelhouse \$PY_LIMITED_API
+                    popd
+                    chmod -R 777 PyNaCl* # sometimes you need to delete stuff
                     $linux32 auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
                     $linux32 /opt/python/$version/bin/pip install pynacl --no-index -f wheelhouse/
                     $linux32 /opt/python/$version/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
