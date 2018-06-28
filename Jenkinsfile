@@ -1,11 +1,11 @@
 def configs = [
     [
         label: 'windows',
-        toxenvs: ['py27', 'py34', 'py35', 'py36'],
+        toxenvs: ['py27', 'py34', 'py35', 'py36', 'py37'],
     ],
     [
         label: 'windows64',
-        toxenvs: ['py27', 'py34', 'py35', 'py36'],
+        toxenvs: ['py27', 'py34', 'py35', 'py36', 'py37'],
     ],
 ]
 
@@ -48,9 +48,10 @@ def build(toxenv, label) {
                     py27: "C:\\Python27\\python.exe",
                     py34: "C:\\Python34\\python.exe",
                     py35: "C:\\Python35\\python.exe",
-                    py36: "C:\\Python36\\python.exe"
+                    py36: "C:\\Python36\\python.exe",
+                    py37: "C:\\Python36\\python.exe"
                 ]
-                if (toxenv == "py35" || toxenv == "py36") {
+                if (toxenv == "py35" || toxenv == "py36" || toxenv == "py37") {
                     libIncludePaths = [
                         "windows": [
                             "lib": "C:\\libsodium-1.0.16-msvc\\Win32\\Release\\v140\\static"
