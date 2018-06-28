@@ -4,6 +4,7 @@ Changelog
 1.3.0 (UNRELEASED)
 ------------------
 
+* Added support for Python 3.7.
 * Update ``libsodium`` to 1.0.16.
 * Run and test all code examples in PyNaCl docs through sphinx's
   doctest builder.
@@ -16,7 +17,7 @@ Changelog
 * Add low-level bindings for libsodium's crypto_kx... key exchange
   construction.
 * Set hypothesis deadline to None in tests/test_pwhash.py to avoid
-  incorrect test failures on slower processor architectures.  GitHub 
+  incorrect test failures on slower processor architectures.  GitHub
   issue #370
 
 1.2.1 - 2017-12-04
