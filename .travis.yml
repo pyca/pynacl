@@ -14,6 +14,10 @@ matrix:
           env: TOXENV=py35 SODIUM_INSTALL=bundled CC=gcc
         - python: 3.6
           env: TOXENV=py36 SODIUM_INSTALL=bundled CC=gcc
+        - python: 3.7
+          env: TOXENV=py37 SODIUM_INSTALL=bundled CC=gcc
+          sudo: true
+          dist: xenial
         - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=gcc
         - python: 2.7
           env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
@@ -23,6 +27,10 @@ matrix:
           env: TOXENV=py35 SODIUM_INSTALL=system CC=gcc
         - python: 3.6
           env: TOXENV=py36 SODIUM_INSTALL=system CC=gcc
+        - python: 3.7
+          env: TOXENV=py37 SODIUM_INSTALL=system CC=gcc
+          sudo: true
+          dist: xenial
         - env: TOXENV=pypy SODIUM_INSTALL=system CC=gcc
         - python: 2.7
           env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
@@ -32,6 +40,10 @@ matrix:
           env: TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
         - python: 3.6
           env: TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
+        - python: 3.7
+          env: TOXENV=py37 SODIUM_INSTALL=bundled CC=clang
+          sudo: true
+          dist: xenial
         - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
         - python: 2.7
           env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
@@ -41,6 +53,10 @@ matrix:
           env: TOXENV=py35 SODIUM_INSTALL=system CC=clang
         - python: 3.6
           env: TOXENV=py36 SODIUM_INSTALL=system CC=clang
+        - python: 3.7
+          env: TOXENV=py37 SODIUM_INSTALL=system CC=clang
+          sudo: true
+          dist: xenial
         - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
         - python: 3.6
           env: TOXENV=docs
