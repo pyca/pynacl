@@ -4,6 +4,8 @@ include README.rst
 include CHANGELOG.rst
 include INSTALL.rst
 
+include pyproject.toml
+
 # libsodium files
 recursive-include src/libsodium *
 recursive-include src/libsodium *.S
