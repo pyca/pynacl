@@ -14,6 +14,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import binascii
+import json
+import os
 import random
 
 import pytest
@@ -38,6 +41,43 @@ from nacl.bindings.crypto_secretstream import (
     crypto_secretstream_xchacha20poly1305_rekey,
 )
 from nacl.utils import random as randombytes
+
+
+def read_secretstream_vectors():
+    DATA = "secretstream-test-vectors.json"
+    path = os.path.join(os.path.dirname(__file__), "data", DATA)
+    with open(path, 'r') as fp:
+        jvectors = json.load(fp)
+    unhex = binascii.unhexlify
+    vectors = [
+        [
+            unhex(v['key']),
+            unhex(v['header']),
+            [
+                [
+                    c['tag'],
+                    unhex(c['ad']) if c['ad'] is not None else None,
+                    unhex(c['message']),
+                    unhex(c['ciphertext']),
+                ]
+                for c in v['chunks']
+            ],
+        ]
+        for v in jvectors
+    ]
+    return vectors
+
+
+@pytest.mark.parametrize(
+    ('key', 'header', 'chunks'),
+    read_secretstream_vectors(),
+)
+def test_vectors(key, header, chunks):
+    st = crypto_secretstream_xchacha20poly1305_init_pull(header, key)
+    for tag, ad, message, ciphertext in chunks:
+        m, t = crypto_secretstream_xchacha20poly1305_pull(st, ciphertext, ad)
+        assert m == message
+        assert t == tag
 
 
 def test_it_like_libsodium():
