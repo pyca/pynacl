@@ -152,6 +152,7 @@ from nacl.bindings.crypto_secretstream import (
     crypto_secretstream_xchacha20poly1305_pull,
     crypto_secretstream_xchacha20poly1305_push,
     crypto_secretstream_xchacha20poly1305_rekey,
+    crypto_secretstream_xchacha20poly1305_state,
 )
 from nacl.bindings.crypto_shorthash import (
     BYTES as crypto_shorthash_siphash24_BYTES,
@@ -277,6 +278,7 @@ __all__ = [
     "crypto_secretstream_xchacha20poly1305_pull",
     "crypto_secretstream_xchacha20poly1305_push",
     "crypto_secretstream_xchacha20poly1305_rekey",
+    "crypto_secretstream_xchacha20poly1305_state",
 
     "crypto_shorthash_siphash24_BYTES",
     "crypto_shorthash_siphash24_KEYBYTES",

@@ -39,6 +39,7 @@ from nacl.bindings.crypto_secretstream import (
     crypto_secretstream_xchacha20poly1305_pull,
     crypto_secretstream_xchacha20poly1305_push,
     crypto_secretstream_xchacha20poly1305_rekey,
+    crypto_secretstream_xchacha20poly1305_state,
 )
 from nacl.utils import random as randombytes
 
@@ -73,9 +74,11 @@ def read_secretstream_vectors():
     read_secretstream_vectors(),
 )
 def test_vectors(key, header, chunks):
-    st = crypto_secretstream_xchacha20poly1305_init_pull(header, key)
+    state = crypto_secretstream_xchacha20poly1305_state()
+    crypto_secretstream_xchacha20poly1305_init_pull(state, header, key)
     for tag, ad, message, ciphertext in chunks:
-        m, t = crypto_secretstream_xchacha20poly1305_pull(st, ciphertext, ad)
+        m, t = crypto_secretstream_xchacha20poly1305_pull(
+            state, ciphertext, ad)
         assert m == message
         assert t == tag
 
@@ -94,13 +97,16 @@ def test_it_like_libsodium():
     m2_ = m2[:]
     m3_ = m3[:]
 
+    state = crypto_secretstream_xchacha20poly1305_state()
+
     k = crypto_secretstream_xchacha20poly1305_keygen()
     assert len(k) == crypto_secretstream_xchacha20poly1305_KEYBYTES
 
     # push
 
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
-    assert len(state) == crypto_secretstream_xchacha20poly1305_STATEBYTES
+    assert len(state.statebuf) == \
+        crypto_secretstream_xchacha20poly1305_STATEBYTES
+    header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
     assert len(header) == crypto_secretstream_xchacha20poly1305_HEADERBYTES
 
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
@@ -115,7 +121,7 @@ def test_it_like_libsodium():
 
     # pull
 
-    state = crypto_secretstream_xchacha20poly1305_init_pull(header, k)
+    crypto_secretstream_xchacha20poly1305_init_pull(state, header, k)
 
     m1, tag = crypto_secretstream_xchacha20poly1305_pull(state, c1)
     assert tag == crypto_secretstream_xchacha20poly1305_TAG_MESSAGE
@@ -166,11 +172,11 @@ def test_it_like_libsodium():
 
     # without explicit rekeying
 
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
+    header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
     c2 = crypto_secretstream_xchacha20poly1305_push(state, m2)
 
-    state = crypto_secretstream_xchacha20poly1305_init_pull(header, k)
+    crypto_secretstream_xchacha20poly1305_init_pull(state, header, k)
     m1, tag = crypto_secretstream_xchacha20poly1305_pull(state, c1)
     assert m1 == m1_
     m2, tag = crypto_secretstream_xchacha20poly1305_pull(state, c2)
@@ -178,14 +184,14 @@ def test_it_like_libsodium():
 
     # with explicit rekeying
 
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
+    header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
 
     crypto_secretstream_xchacha20poly1305_rekey(state)
 
     c2 = crypto_secretstream_xchacha20poly1305_push(state, m2)
 
-    state = crypto_secretstream_xchacha20poly1305_init_pull(header, k)
+    crypto_secretstream_xchacha20poly1305_init_pull(state, header, k)
     m1, tag = crypto_secretstream_xchacha20poly1305_pull(state, c1)
     assert m1 == m1_
 
@@ -199,9 +205,9 @@ def test_it_like_libsodium():
 
     # with explicit rekeying using TAG_REKEY
 
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
+    header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
-    state_save = ffi.buffer(state)[:]
+    state_save = ffi.buffer(state.statebuf)[:]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
         state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_REKEY)
@@ -210,7 +216,7 @@ def test_it_like_libsodium():
 
     csave = c2[:]
 
-    state = crypto_secretstream_xchacha20poly1305_init_pull(header, k)
+    crypto_secretstream_xchacha20poly1305_init_pull(state, header, k)
     m1, tag = crypto_secretstream_xchacha20poly1305_pull(state, c1)
     assert m1 == m1_
     assert tag == crypto_secretstream_xchacha20poly1305_TAG_REKEY
@@ -222,7 +228,7 @@ def test_it_like_libsodium():
     # avoid using from_buffer until at least cffi >= 1.10 in setup.py
     # state = ffi.from_buffer(state_save)
     for i in range(crypto_secretstream_xchacha20poly1305_STATEBYTES):
-        state[i] = six.indexbytes(state_save, i)
+        state.statebuf[i] = six.indexbytes(state_save, i)
 
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
 
@@ -231,7 +237,7 @@ def test_it_like_libsodium():
 
     # New stream
 
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
+    header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
         state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_PUSH)
@@ -252,7 +258,8 @@ def test_max_message_size(monkeypatch):
     )
     m = b'0' * (css.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX + 1)
     k = crypto_secretstream_xchacha20poly1305_keygen()
-    state, header = crypto_secretstream_xchacha20poly1305_init_push(k)
+    state = crypto_secretstream_xchacha20poly1305_state()
+    crypto_secretstream_xchacha20poly1305_init_push(state, k)
     with pytest.raises(ValueError) as excinfo:
         crypto_secretstream_xchacha20poly1305_push(state, m, None, 0)
     assert str(excinfo.value) == 'Message is too long'

@@ -55,16 +55,42 @@ def crypto_secretstream_xchacha20poly1305_keygen():
     return ffi.buffer(keybuf)[:]
 
 
-def crypto_secretstream_xchacha20poly1305_init_push(key):
+class crypto_secretstream_xchacha20poly1305_state(object):
+    """
+    An object wrapping the crypto_secretstream_xchacha20poly1305 state.
+
+    """
+    __slots__ = ['statebuf', 'rawbuf', 'tagbuf']
+
+    def __init__(self):
+        """ Initialize a clean state object."""
+        self.statebuf = ffi.new(
+            "unsigned char[]",
+            crypto_secretstream_xchacha20poly1305_STATEBYTES,
+        )
+
+        self.rawbuf = None
+        self.tagbuf = None
+
+
+def crypto_secretstream_xchacha20poly1305_init_push(state, key):
     """
     Initialize a crypto_secretstream_xchacha20poly1305 encryption buffer.
 
+    :param state: a secretstream state object
+    :type state: crypto_secretstream_xchacha20poly1305_state
     :param key: must be
                 :data:`.crypto_secretstream_xchacha20poly1305_KEYBYTES` long
     :type key: bytes
-    :return: (state buffer, header)
-    :rtype: (object, bytes)
+    :return: header
+    :rtype: bytes
+
     """
+    ensure(
+        isinstance(state, crypto_secretstream_xchacha20poly1305_state),
+        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        raising=exc.TypeError,
+    )
     ensure(
         isinstance(key, bytes),
         'Key must be a bytes sequence',
@@ -76,25 +102,20 @@ def crypto_secretstream_xchacha20poly1305_init_push(key):
         raising=exc.ValueError,
     )
 
-    statebuf = ffi.new(
-        "unsigned char[]",
-        crypto_secretstream_xchacha20poly1305_STATEBYTES,
-    )
-
     headerbuf = ffi.new(
         "unsigned char []",
         crypto_secretstream_xchacha20poly1305_HEADERBYTES,
     )
 
     rc = lib.crypto_secretstream_xchacha20poly1305_init_push(
-        statebuf, headerbuf, key)
+        state.statebuf, headerbuf, key)
     ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
 
-    return statebuf, ffi.buffer(headerbuf)[:]
+    return ffi.buffer(headerbuf)[:]
 
 
 def crypto_secretstream_xchacha20poly1305_push(
-    statebuf,
+    state,
     m,
     ad=None,
     tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
@@ -102,9 +123,8 @@ def crypto_secretstream_xchacha20poly1305_push(
     """
     Add an encrypted message to the secret stream.
 
-    :param statebuf: the initialized state buffer returned from
-                     :func:`.crypto_secretstream_xchacha20poly1305_init_push`.
-    :type statebuf: object
+    :param state: a secretstream state object
+    :type state: crypto_secretstream_xchacha20poly1305_state
     :param m: the message to encrypt, the maximum length of an individual
               message is
               :data:`.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX`.
@@ -117,7 +137,13 @@ def crypto_secretstream_xchacha20poly1305_push(
     :type tag: int
     :return: ciphertext
     :rtype: bytes
+
     """
+    ensure(
+        isinstance(state, crypto_secretstream_xchacha20poly1305_state),
+        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        raising=exc.TypeError,
+    )
     ensure(isinstance(m, bytes), 'Message is not bytes', raising=exc.TypeError)
     ensure(
         len(m) <= crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX,
@@ -131,7 +157,9 @@ def crypto_secretstream_xchacha20poly1305_push(
     )
 
     clen = len(m) + crypto_secretstream_xchacha20poly1305_ABYTES
-    cbuf = ffi.new('unsigned char[]', clen)
+    if state.rawbuf is None or len(state.rawbuf) < clen:
+        state.rawbuf = ffi.new('unsigned char[]', clen)
+
     if ad is None:
         ad = ffi.NULL
         adlen = 0
@@ -139,30 +167,36 @@ def crypto_secretstream_xchacha20poly1305_push(
         adlen = len(ad)
 
     rc = lib.crypto_secretstream_xchacha20poly1305_push(
-        statebuf,
-        cbuf, ffi.NULL,
+        state.statebuf,
+        state.rawbuf, ffi.NULL,
         m, len(m),
         ad, adlen,
         tag,
     )
     ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
 
-    return ffi.buffer(cbuf)[:]
+    return ffi.buffer(state.rawbuf, clen)[:]
 
 
-def crypto_secretstream_xchacha20poly1305_init_pull(header, key):
+def crypto_secretstream_xchacha20poly1305_init_pull(state, header, key):
     """
     Initialize a crypto_secretstream_xchacha20poly1305 decryption buffer.
 
+    :param state: a secretstream state object
+    :type state: crypto_secretstream_xchacha20poly1305_state
     :param header: must be
                 :data:`.crypto_secretstream_xchacha20poly1305_HEADERBYTES` long
     :type header: bytes
     :param key: must be
                 :data:`.crypto_secretstream_xchacha20poly1305_KEYBYTES` long
     :type key: bytes
-    :return: initialized state buffer
-    :rtype: object
+
     """
+    ensure(
+        isinstance(state, crypto_secretstream_xchacha20poly1305_state),
+        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        raising=exc.TypeError,
+    )
     ensure(
         isinstance(header, bytes),
         'Header must be a bytes sequence',
@@ -184,25 +218,20 @@ def crypto_secretstream_xchacha20poly1305_init_pull(header, key):
         raising=exc.ValueError,
     )
 
-    statebuf = ffi.new(
-        "unsigned char[]",
-        crypto_secretstream_xchacha20poly1305_STATEBYTES,
-    )
+    if state.tagbuf is None:
+        state.tagbuf = ffi.new('unsigned char *')
 
     rc = lib.crypto_secretstream_xchacha20poly1305_init_pull(
-        statebuf, header, key)
+        state.statebuf, header, key)
     ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
 
-    return statebuf
 
-
-def crypto_secretstream_xchacha20poly1305_pull(statebuf, c, ad=None):
+def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
     """
     Read a decrypted message from the secret stream.
 
-    :param statebuf: the initialized state buffer returned from
-                     :func:`.crypto_secretstream_xchacha20poly1305_init_pull`.
-    :type statebuf: object
+    :param state: a secretstream state object
+    :type state: crypto_secretstream_xchacha20poly1305_state
     :param c: the ciphertext to decrypt, the maximum length of an individual
               ciphertext is
               :data:`.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX` +
@@ -212,7 +241,21 @@ def crypto_secretstream_xchacha20poly1305_pull(statebuf, c, ad=None):
     :type ad: bytes or None
     :return: (message, tag)
     :rtype: (bytes, int)
+
     """
+    ensure(
+        isinstance(state, crypto_secretstream_xchacha20poly1305_state),
+        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        raising=exc.TypeError,
+    )
+    ensure(
+        state.tagbuf is not None,
+        (
+            'State must be initialized using '
+            'crypto_secretstream_xchacha20poly1305_init_pull'
+        ),
+        raising=exc.ValueError,
+    )
     ensure(
         isinstance(c, bytes),
         'Ciphertext is not bytes',
@@ -238,8 +281,9 @@ def crypto_secretstream_xchacha20poly1305_pull(statebuf, c, ad=None):
     )
 
     mlen = len(c) - crypto_secretstream_xchacha20poly1305_ABYTES
-    mbuf = ffi.new('unsigned char[]', mlen)
-    tag_p = ffi.new('unsigned char *')
+    if state.rawbuf is None or len(state.rawbuf) < mlen:
+        state.rawbuf = ffi.new('unsigned char[]', mlen)
+
     if ad is None:
         ad = ffi.NULL
         adlen = 0
@@ -247,17 +291,18 @@ def crypto_secretstream_xchacha20poly1305_pull(statebuf, c, ad=None):
         adlen = len(ad)
 
     rc = lib.crypto_secretstream_xchacha20poly1305_pull(
-        statebuf,
-        mbuf, ffi.NULL, tag_p,
+        state.statebuf,
+        state.rawbuf, ffi.NULL,
+        state.tagbuf,
         c, len(c),
         ad, adlen,
     )
     ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
 
-    return (ffi.buffer(mbuf)[:], tag_p[0])
+    return (ffi.buffer(state.rawbuf, mlen)[:], int(state.tagbuf[0]))
 
 
-def crypto_secretstream_xchacha20poly1305_rekey(statebuf):
+def crypto_secretstream_xchacha20poly1305_rekey(state):
     """
     Explicitly change the encryption key in the stream.
 
@@ -266,10 +311,13 @@ def crypto_secretstream_xchacha20poly1305_rekey(statebuf):
     message to ensure forward secrecy, but this method can be used instead
     if the re-keying is controlled without adding the tag.
 
-    :param statebuf: the initialized state buffer returned from
-                     :func:`.crypto_secretstream_xchacha20poly1305_init_push`
-                     or
-                     :func:`.crypto_secretstream_xchacha20poly1305_init_pull`.
-    :type statebuf: object
+    :param state: a secretstream state object
+    :type state: crypto_secretstream_xchacha20poly1305_state
+
     """
-    lib.crypto_secretstream_xchacha20poly1305_rekey(statebuf)
+    ensure(
+        isinstance(state, crypto_secretstream_xchacha20poly1305_state),
+        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        raising=exc.TypeError,
+    )
+    lib.crypto_secretstream_xchacha20poly1305_rekey(state.statebuf)
