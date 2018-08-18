@@ -145,7 +145,7 @@ def generichash_blake2b_init(key=b'', salt=b'',
                         :py:data:`.crypto_generichash_BYTES`
     :type digest_size: int
     :return: an initizialized state buffer
-    :rtype: bytes
+    :rtype: object
     """
 
     _checkparams(digest_size, key, salt, person)
@@ -174,7 +174,7 @@ def generichash_blake2b_update(statebuf, data):
 
     :param statebuf: an initialized blake2b state buffer as returned from
                      :py:func:`.crypto_generichash_blake2b_init`
-    :type name: bytes
+    :type statebuf: object
     :param data:
     :type data: bytes
     """
@@ -192,7 +192,7 @@ def generichash_blake2b_final(statebuf, digest_size):
     """Finalize the blake2b hash state and return the digest.
 
     :param statebuf:
-    :type statebuf: bytes
+    :type statebuf: object
     :param digest_size:
     :type digest_size: int
     :return: the blake2 digest of the passed-in data stream
