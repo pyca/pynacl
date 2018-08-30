@@ -113,7 +113,7 @@ def release(ctx, version):
     # so that the Jenkins builders will see the new sdist immediately when they
     # go to build the wheels.
     response = session.request(
-        "PURGE", "https://pypi.python.org/simple/pynacl/"
+        "PURGE", "https://pypi.org/simple/pynacl/"
     )
     response.raise_for_status()
 
