@@ -109,14 +109,6 @@ def release(ctx, version):
 
     session = requests.Session()
 
-    # This tells the CDN to delete the cached response for the URL. We do this
-    # so that the Jenkins builders will see the new sdist immediately when they
-    # go to build the wheels.
-    response = session.request(
-        "PURGE", "https://pypi.org/simple/pynacl/"
-    )
-    response.raise_for_status()
-
     token = getpass.getpass("Input the Jenkins token: ")
     response = session.post(
         "{0}/build".format(JENKINS_URL),
