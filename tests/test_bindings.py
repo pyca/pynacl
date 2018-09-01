@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2018 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -449,3 +449,28 @@ def test_sign_ed25519ph_libsodium():
         edph_wrng = c.crypto_sign_ed25519ph_state()
         c.crypto_sign_ed25519ph_update(edph_wrng, wrng_mesg)
         c.crypto_sign_ed25519ph_final_verify(edph_wrng, exp_sig, pk)
+
+
+def test_ed25519_is_valid_point():
+    zero = c.crypto_core_ed25519_BYTES * b'\x00'
+    res = c.crypto_core_ed25519_is_valid_point(zero)
+    assert res is False
+
+
+def test_ed25519_add_and_sub():
+    p1, _s1 = c.crypto_sign_keypair()
+    p2, _s2 = c.crypto_sign_keypair()
+
+    p3 = c.crypto_core_ed25519_add(p1, p2)
+
+    assert c.crypto_core_ed25519_is_valid_point(p3) is True
+    assert c.crypto_core_ed25519_sub(p3, p1) == p2
+    assert c.crypto_core_ed25519_sub(p3, p2) == p1
+
+
+def test_scalarmult_ed25519():
+    pass
+
+
+def test_scalarmult_ed25519_base():
+    pass
