@@ -19,7 +19,7 @@ import os
 import six
 
 
-class EncryptedMessage(six.binary_type):
+class EncryptedMessage(bytes):
     """
     A bytes subclass that holds a messaged that has been encrypted by a
     :class:`SecretBox`.
