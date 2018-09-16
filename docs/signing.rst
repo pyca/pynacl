@@ -200,7 +200,7 @@ Ed25519 is a public-key signature system with several attractive features:
   of tied to an entropy source.
 
 The numbers 87548 and 273364 shown above are official
-`eBATS <http://bench.cr.yp.to/>`_ reports for a Westmere CPU (Intel Xeon E5620,
+`eBATS <https://bench.cr.yp.to/>`_ reports for a Westmere CPU (Intel Xeon E5620,
 hydra2).
 
 Ed25519 signatures are elliptic-curve signatures, carefully engineered at
