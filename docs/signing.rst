@@ -190,7 +190,7 @@ Ed25519 is a public-key signature system with several attractive features:
   derived from the private key, meaning that it doesn't need to be included
   in a serialized private key in cases you want both.
 * **Deterministic:** Unlike (EC)DSA, Ed25519 does not rely on an entropy
-  source when signing messages (which has lead to `catastrophic private key <https://www.mydigitallife.net/fail0verflow-hack-permanent-sony-ps3-crack-to-code-sign-homebrew-games-and-apps/>`_
+  source when signing messages (which has lead to `catastrophic private key <https://arstechnica.com/gaming/2010/12/ps3-hacked-through-poor-implementation-of-cryptography/>`_
   compromises), but instead computes signature nonces from a combination of
   a hash of the signing key's "seed" and the message to be signed. This
   avoids using an entropy source for nonces, which can be a potential attack
