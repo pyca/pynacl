@@ -14,8 +14,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import six
-
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
@@ -24,7 +22,7 @@ from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
 from nacl.utils import StringFixer, random
 
 
-class SignedMessage(six.binary_type):
+class SignedMessage(bytes):
     """
     A bytes subclass that holds a messaged that has been signed by a
     :class:`SigningKey`.
