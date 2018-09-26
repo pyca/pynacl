@@ -24,10 +24,10 @@ __summary__ = ("Python binding to the Networking and Cryptography (NaCl) "
                "library")
 __uri__ = "https://github.com/pyca/pynacl/"
 
-__version__ = "1.3.0.dev1"
+__version__ = "1.3.0"
 
 __author__ = "The PyNaCl developers"
 __email__ = "cryptography-dev@python.org"
 
 __license__ = "Apache License 2.0"
-__copyright__ = "Copyright 2013-2017 {0}".format(__author__)
+__copyright__ = "Copyright 2013-2018 {0}".format(__author__)

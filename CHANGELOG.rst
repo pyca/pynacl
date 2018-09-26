@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.3.0 (UNRELEASED)
-------------------
+1.3.0 2018-09-26
+----------------
 
 * Added support for Python 3.7.
 * Update ``libsodium`` to 1.0.16.
