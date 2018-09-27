@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from hypothesis import given, settings, HealthCheck
+from hypothesis import HealthCheck, given, settings
 from hypothesis.strategies import binary
 
 import pytest
