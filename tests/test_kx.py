@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 from hypothesis.strategies import binary
 
 import pytest
@@ -48,7 +48,9 @@ def test_crypto_kx_seed_keypair(seed1, seed2):
 @given(binary(min_size=33,
               max_size=128),
        )
-@settings(max_examples=20)
+@settings(max_examples=20, suppress_health_check=[
+    HealthCheck.too_slow
+])
 def test_crypto_kx_seed_keypair_seed_too_large(seed):
     with pytest.raises(exc.TypeError):
         b.crypto_kx_seed_keypair(seed)
