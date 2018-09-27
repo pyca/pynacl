@@ -306,7 +306,6 @@ def test_unpad_not_padded():
 
 
 @given(binary(min_size=0,
-              average_size=128,
               max_size=2049),
        integers(min_value=16,
                 max_value=256)
@@ -320,7 +319,6 @@ def test_pad_sizes(msg, bl_sz):
 
 
 @given(binary(min_size=0,
-              average_size=128,
               max_size=2049),
        integers(min_value=16,
                 max_value=256)
