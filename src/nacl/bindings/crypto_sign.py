@@ -167,8 +167,8 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
 
 def crypto_sign_ed25519_sk_to_pk(secret_key_bytes):
     """
-    Converts a secret Ed25519 key (encoded as bytes ``secret_key_bytes``) to
-    a public Ed25519 key as bytes.
+    Extract the public Ed25519 key from a secret Ed25519 key (encoded
+    as bytes ``secret_key_bytes``).
 
     Raises a ValueError if ``secret_key_bytes``is not of length
     ``crypto_sign_SECRETKEYBYTES``
