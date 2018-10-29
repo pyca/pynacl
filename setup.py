@@ -25,7 +25,6 @@ import subprocess
 import sys
 
 from setuptools import Distribution, setup
-
 from setuptools.command.build_ext import build_ext as _build_ext
 
 try:
