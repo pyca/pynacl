@@ -4,6 +4,15 @@ group: edge
 dist: trusty
 sudo: required
 
+# Only build master, the version branches (e.g. 1.7.x), and
+# version tags (which are apparently considered branches by travis)
+branches:
+    only:
+        - master
+        - /\d+\.\d+\.x/
+        - /\d+\.\d+(\.\d+)?/
+
+
 matrix:
     include:
         - python: 2.7
