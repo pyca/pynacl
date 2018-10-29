@@ -24,12 +24,8 @@ import platform
 import subprocess
 import sys
 
-from distutils.command.build import build
-
 from setuptools import Distribution, setup
-
 from setuptools.command.build_ext import build_ext as _build_ext
-from setuptools.command.install import install
 
 try:
     from setuptools.command.build_clib import build_clib as _build_clib
@@ -70,7 +66,7 @@ sodium = functools.partial(here, "src/libsodium/src/libsodium")
 sys.path.insert(0, abshere("src"))
 
 
-import nacl # flake8: noqa
+import nacl  # noqa
 
 
 def which(name, flags=os.X_OK):  # Taken from twisted
@@ -190,11 +186,11 @@ class build_ext(_build_ext):
             self.include_dirs.append(
                 os.path.join(build_clib.build_clib, "include"),
             )
-            self.library_dirs.insert(0,
-                os.path.join(build_clib.build_clib, "lib64"),
+            self.library_dirs.insert(
+                0, os.path.join(build_clib.build_clib, "lib64"),
             )
-            self.library_dirs.insert(0,
-                os.path.join(build_clib.build_clib, "lib"),
+            self.library_dirs.insert(
+                0, os.path.join(build_clib.build_clib, "lib"),
             )
 
         return _build_ext.run(self)
