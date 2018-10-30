@@ -179,15 +179,7 @@ def crypto_sign_ed25519_sk_to_pk(secret_key_bytes):
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
         raise exc.ValueError("Invalid secret key")
 
-    public_key_len = crypto_sign_PUBLICKEYBYTES
-    public_key = ffi.new("unsigned char[]", public_key_len)
-
-    rc = lib.crypto_sign_ed25519_sk_to_pk(public_key, secret_key_bytes)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
-
-    return ffi.buffer(public_key, public_key_len)[:]
+    return secret_key_bytes[crypto_sign_SEEDBYTES:]
 
 
 class crypto_sign_ed25519ph_state(object):
