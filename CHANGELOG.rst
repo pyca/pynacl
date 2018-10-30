@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.4.0 (UNRELEASED)
+------------------
+
+* Add low level bindings for extracting the seed and the public key
+  from crypto_sign_ed25519 secret key
+
 1.3.0 2018-09-26
 ----------------
 
