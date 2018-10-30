@@ -147,7 +147,7 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
     Raises a ValueError if ``secret_key_bytes``is not of length
     ``crypto_sign_SECRETKEYBYTES``
 
-    :param public_key_bytes: bytes
+    :param secret_key_bytes: bytes
     :rtype: bytes
     """
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
@@ -173,7 +173,7 @@ def crypto_sign_ed25519_sk_to_pk(secret_key_bytes):
     Raises a ValueError if ``secret_key_bytes``is not of length
     ``crypto_sign_SECRETKEYBYTES``
 
-    :param public_key_bytes: bytes
+    :param secret_key_bytes: bytes
     :rtype: bytes
     """
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
