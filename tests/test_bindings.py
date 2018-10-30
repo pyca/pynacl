@@ -211,6 +211,14 @@ def test_sign_test_key_conversion():
                              b"42318124095afabe4d1451a559faedee")
     ed25519_pk, ed25519_sk = c.crypto_sign_seed_keypair(keypair_seed)
 
+    assert c.crypto_sign_ed25519_sk_to_pk(ed25519_sk) == ed25519_pk
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_sk_to_pk(unhexlify(b"12"))
+
+    assert c.crypto_sign_ed25519_sk_to_seed(ed25519_sk) == keypair_seed
+    with pytest.raises(ValueError):
+        c.crypto_sign_ed25519_sk_to_seed(unhexlify(b"12"))
+
     curve25519_pk = c.crypto_sign_ed25519_pk_to_curve25519(ed25519_pk)
 
     with pytest.raises(ValueError):

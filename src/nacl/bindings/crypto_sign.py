@@ -147,7 +147,7 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
     Raises a ValueError if ``secret_key_bytes``is not of length
     ``crypto_sign_SECRETKEYBYTES``
 
-    :param public_key_bytes: bytes
+    :param secret_key_bytes: bytes
     :rtype: bytes
     """
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
@@ -163,6 +163,40 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
            raising=exc.RuntimeError)
 
     return ffi.buffer(curve_secret_key, curve_secret_key_len)[:]
+
+
+def crypto_sign_ed25519_sk_to_pk(secret_key_bytes):
+    """
+    Extract the public Ed25519 key from a secret Ed25519 key (encoded
+    as bytes ``secret_key_bytes``).
+
+    Raises a ValueError if ``secret_key_bytes``is not of length
+    ``crypto_sign_SECRETKEYBYTES``
+
+    :param secret_key_bytes: bytes
+    :rtype: bytes
+    """
+    if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
+    return secret_key_bytes[crypto_sign_SEEDBYTES:]
+
+
+def crypto_sign_ed25519_sk_to_seed(secret_key_bytes):
+    """
+    Extract the seed from a secret Ed25519 key (encoded
+    as bytes ``secret_key_bytes``).
+
+    Raises a ValueError if ``secret_key_bytes``is not of length
+    ``crypto_sign_SECRETKEYBYTES``
+
+    :param secret_key_bytes: bytes
+    :rtype: bytes
+    """
+    if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
+    return secret_key_bytes[:crypto_sign_SEEDBYTES]
 
 
 class crypto_sign_ed25519ph_state(object):
