@@ -212,6 +212,7 @@ setup(
 
     author=nacl.__author__,
     author_email=nacl.__email__,
+    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={
