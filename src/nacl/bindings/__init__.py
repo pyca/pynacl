@@ -46,8 +46,7 @@ from nacl.bindings.crypto_box import (
     crypto_box_seal_open, crypto_box_seed_keypair,
 )
 from nacl.bindings.crypto_core import (
-    crypto_core_ed25519_BYTES, crypto_core_ed25519_UNIFORMBYTES,
-    crypto_core_ed25519_add, crypto_core_ed25519_from_uniform,
+    crypto_core_ed25519_BYTES, crypto_core_ed25519_add,
     crypto_core_ed25519_is_valid_point, crypto_core_ed25519_sub
 )
 from nacl.bindings.crypto_generichash import (

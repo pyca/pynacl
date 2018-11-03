@@ -20,7 +20,6 @@ from nacl.exceptions import ensure
 
 
 crypto_core_ed25519_BYTES = lib.crypto_core_ed25519_bytes()
-crypto_core_ed25519_UNIFORMBYTES = lib.crypto_core_ed25519_uniformbytes()
 
 
 def crypto_core_ed25519_is_valid_point(p):
@@ -30,21 +29,6 @@ def crypto_core_ed25519_is_valid_point(p):
     """
     rc = lib.crypto_core_ed25519_is_valid_point(p)
     return rc == 1
-
-
-def crypto_core_ed25519_from_uniform(r):
-    """
-    Maps a 32 bytes vector (usually the output of a hash function) to a point
-    on the edwards25519 curve in compressed representation.
-    """
-    p = ffi.new("unsigned char[]", crypto_core_ed25519_BYTES)
-
-    rc = lib.crypto_core_ed25519_from_uniform(p, r)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
-
-    return ffi.buffer(p, crypto_core_ed25519_BYTES)[:]
 
 
 def crypto_core_ed25519_add(p, q):
