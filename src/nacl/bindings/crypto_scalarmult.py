@@ -83,8 +83,11 @@ def crypto_scalarmult_ed25519_base(n):
 
 def crypto_scalarmult_ed25519(n, p):
     """
-    Computes and returns the scalar product of the given group element and an
-    integer ``n`` on the edwards25519 curve.
+    Computes and returns the scalar product of a *clamped* integer ``n``
+    and the given group element on the edwards25519 curve.
+    The scalar is clamped, as done in the public key generation case,
+    by setting to zero the bits in position [0, 1, 2, 255] and setting
+    to one the bit in position 254.
 
     :param p: bytes
     :param n: bytes
