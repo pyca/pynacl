@@ -30,6 +30,9 @@ from nacl import bindings as c
 from nacl.exceptions import BadSignatureError, CryptoError
 
 
+_BA = bytearray
+
+
 def tohex(b):
     return hexlify(b).decode("ascii")
 
@@ -469,8 +472,45 @@ def test_ed25519_add_and_sub():
 
 
 def test_scalarmult_ed25519():
-    pass
+    SCALARBYTES = c.crypto_scalarmult_ed25519_SCALARBYTES
+    MINSC = bytes(_BA([8] + (SCALARBYTES - 2) * [0] + [64]))
+    CLMPD = bytes(_BA([8] + (SCALARBYTES - 2) * [0] + [192]))
+    MIN_P1 = bytes(_BA([9] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P7 = bytes(_BA([15] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P8 = bytes(_BA([16] + (SCALARBYTES - 2) * [0] + [64]))
+
+    p, _s = c.crypto_sign_keypair()
+    _p = p
+
+    for i in range(254):
+        _p = c.crypto_core_ed25519_add(_p, _p)
+    for i in range(8):
+        _p = c.crypto_core_ed25519_add(_p, p)
+
+    assert c.crypto_scalarmult_ed25519(MINSC, p) == _p
+    assert c.crypto_scalarmult_ed25519(CLMPD, p) == _p
+    assert c.crypto_scalarmult_ed25519(MIN_P1, p) == _p
+    assert c.crypto_scalarmult_ed25519(MIN_P7, p) == _p
+
+    _p8 = _p
+    for i in range(8):
+        _p8 = c.crypto_core_ed25519_add(_p8, p)
+
+    assert c.crypto_scalarmult_ed25519(MIN_P8, p) == _p8
 
 
 def test_scalarmult_ed25519_base():
-    pass
+
+    BASEPOINT = bytes(_BA([0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
+                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
+                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
+                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66]
+                          )
+                      )
+
+    sclr = c.randombytes(c.crypto_scalarmult_ed25519_SCALARBYTES)
+
+    p = c.crypto_scalarmult_ed25519_base(sclr)
+    p2 = c.crypto_scalarmult_ed25519(sclr, BASEPOINT)
+
+    assert p2 == p
