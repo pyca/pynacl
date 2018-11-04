@@ -48,8 +48,8 @@ correctly verify a password hashed using any of the supported constructions.
 Password storage and verification
 ---------------------------------
 
-All implementations of the modular crypt hasher :py:func:`~nacl.pwhash.str` function
-internally generate a random salt, and return a hash encoded
+All implementations of the modular crypt hasher :py:func:`~nacl.pwhash.str`
+function internally generate a random salt, and return a hash encoded
 in ascii modular crypt format, which can be stored in a shadow-like file
 
 .. doctest::
