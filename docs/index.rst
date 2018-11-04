@@ -28,6 +28,7 @@ Support Features
     :maxdepth: 3
     :glob:
 
+    api/public_key
     api/hash
     api/pwhash
     api/hashlib
