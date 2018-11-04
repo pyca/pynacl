@@ -31,6 +31,7 @@ Support Features
     api/hash
     api/pwhash
     api/hashlib
+    api/bindings
 
 .. toctree::
     :caption: The PyNaCl open source project
