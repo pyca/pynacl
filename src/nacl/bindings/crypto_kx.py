@@ -40,6 +40,7 @@ def crypto_kx_keypair():
     Generate a keypair.
     This is a duplicate crypto_box_keypair, but
     is included for api consistency.
+
     :return: (public_key, secret_key)
     :rtype: (bytes, bytes)
     """
@@ -58,6 +59,7 @@ def crypto_kx_seed_keypair(seed):
     This is functionally the same as crypto_box_seed_keypair, however
     it uses the blake2b hash primitive instead of sha512.
     It is included mainly for api consistency when using crypto_kx.
+
     :param seed: random seed
     :type seed: bytes
     :return: (public_key, secret_key)
@@ -82,6 +84,7 @@ def crypto_kx_client_session_keys(client_public_key,
                                   server_public_key):
     """
     Generate session keys for the client.
+
     :param client_public_key:
     :type client_public_key: bytes
     :param client_secret_key:
@@ -127,6 +130,7 @@ def crypto_kx_server_session_keys(server_public_key,
                                   client_public_key):
     """
     Generate session keys for the server.
+
     :param server_public_key:
     :type server_public_key: bytes
     :param server_secret_key:

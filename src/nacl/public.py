@@ -274,6 +274,7 @@ class Box(encoding.Encodable, StringFixer, object):
             symmetric cipher. If you fail to do this, you compromise the
             privacy of the messages encrypted. Ensure that the key length of
             your cipher is 32 bytes.
+
         :rtype: [:class:`bytes`]
         """
 
