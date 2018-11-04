@@ -110,3 +110,20 @@ the modules implementing named password hashing constructs expose also
 a :py:func:`kdf` function returning a raw pseudo-random bytes sequence
 derived from the input parameters
 
+nacl.pwhash.argon2i
+-------------------
+
+.. automodule:: nacl.pwhash.argon2i
+   :members:
+
+nacl.pwhash.argon2id
+--------------------
+
+.. automodule:: nacl.pwhash.argon2id
+   :members:
+
+nacl.pwhash.scrypt
+-------------------
+
+.. automodule:: nacl.pwhash.scrypt
+   :members:

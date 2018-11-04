@@ -3,8 +3,6 @@
 Password hashing
 ================
 
-.. currentmodule:: nacl.pwhash
-
 Password hashing and password based key derivation mechanisms in
 actual use are all based on the idea of iterating a hash function
 many times on a combination of the password and a random ``salt``,
@@ -17,38 +15,40 @@ and followed-on by the schemes submitted to the **Password Hashing
 Competition** [PHC]_.
 
 The :py:mod:`nacl.pwhash` module exposes both the **PHC** recommended
-partially data dependent ``argon2id`` and the data independent ``argon2i``
-mechanisms alongside to the ``scrypt`` one.
+partially data dependent :py:mod:`~nacl.pwhash.argon2id` and the data
+independent :mod:`~nacl.pwhash.argon2i` mechanisms alongside to the
+:py:mod:`~nacl.pwhash.scrypt` one.
 
 In the case of password storage, it's usually suggested to give preference to
 data dependent mechanisms, therefore the default mechanism suggested by
 ``libsodium`` since version 1.0.15, and therefore by ``PyNaCl`` since version
-1.2 is ``argon2id``.
+1.2 is :py:mod:`~nacl.pwhash.argon2id`.
 
 If you think in your use-case the risk of potential timing-attacks stemming
 from data-dependency is greater than the potential time/memory trade-offs
-stemming out of data-independency, you should prefer ``argon2i`` to
-``argon2id`` or ``scrypt``
+stemming out of data-independency, you should prefer
+:py:mod:`~nacl.pwhash.argon2i` to :py:mod:`~nacl.pwhash.argon2id`
+or :py:mod:`~nacl.pwhash.scrypt`
 
 Hashers and parameters
 ----------------------
 
 PyNaCl exposes the functions and the associated parameters needed
 to exploit the password hashing constructions in a uniform way
-in the modules :py:mod:`~nacl.pwhash.argon2id`,
-:py:mod:`~nacl.pwhash.argon2i` and :py:mod:`~nacl.pwhash.scrypt`,
+in the modules :py:mod:`nacl.pwhash.argon2id`,
+:py:mod:`nacl.pwhash.argon2i` and :py:mod:`nacl.pwhash.scrypt`,
 therefore, if you need to change your choice of construction, you simply
 need to replace one module name with another in the example below.
 
 Further, if you just want to use a default choosen construction, you can
-directly call :py:func:`nacl.pwhash.str` or :py:func:`nacl.pwhash.kdf`
-to use the preferred construct in modular crypt password hashing
-or key derivation mode.
+directly call :py:func:`nacl.pwhash.str` or :py:func:`nacl.pwhash.verify`
+to use the preferred construct in modular crypt password hashing, and
+correctly verify a password hashed using any of the supported constructions.
 
 Password storage and verification
 ---------------------------------
 
-All implementations of the modular crypt hasher `str` function
+All implementations of the modular crypt hasher :py:func:`~nacl.pwhash.str` function
 internally generate a random salt, and return a hash encoded
 in ascii modular crypt format, which can be stored in a shadow-like file
 
@@ -137,8 +137,8 @@ Key derivation
 
 Alice needs to send a secret message to Bob, using a shared
 password to protect the content. She generates a random salt,
-combines it with the password using one of the `kdf` functions
-and sends the message along with the salt and key derivation
+combines it with the password using one of the ``nacl.pwhash.*.kdf``
+functions and sends the message along with the salt and key derivation
 parameters.
 
 .. testcode::
@@ -220,38 +220,43 @@ To help in selecting the correct values for the tweaking parameters for
 the used construction, all the implementation modules provide suggested values
 for the `opslimit` and `memlimit` parameters with the names:
 
-    * `OPSLIMIT_INTERACTIVE`
-    * `MEMLIMIT_INTERACTIVE`
-    * `OPSLIMIT_SENSITIVE`
-    * `MEMLIMIT_SENSITIVE`
-    * `OPSLIMIT_MODERATE`
-    * `MEMLIMIT_MODERATE`
+    * :const:`nacl.pwhash.OPSLIMIT_INTERACTIVE`
+    * :const:`nacl.pwhash.MEMLIMIT_INTERACTIVE`
+    * :const:`nacl.pwhash.OPSLIMIT_SENSITIVE`
+    * :const:`nacl.pwhash.MEMLIMIT_SENSITIVE`
+    * :const:`nacl.pwhash.OPSLIMIT_MODERATE`
+    * :const:`nacl.pwhash.MEMLIMIT_MODERATE`
 
 and the corresponding minimum and maximum allowed values in:
 
-    * `OPSLIMIT_MIN`
-    * `MEMLIMIT_MIN`
-    * `OPSLIMIT_MAX`
-    * `MEMLIMIT_MAX`
+    * :const:`nacl.pwhash.OPSLIMIT_MIN`
+    * :const:`nacl.pwhash.MEMLIMIT_MIN`
+    * :const:`nacl.pwhash.OPSLIMIT_MAX`
+    * :const:`nacl.pwhash.MEMLIMIT_MAX`
 
 Further, for each construction, pwhash modules expose the following
 constants:
 
-    * `STRPREFIX`
-    * `PWHASH_SIZE`
-    * `SALTBYTES`
-    * `BYTES_MIN`
-    * `BYTES_MAX`
+    * :const:`nacl.pwhash.STRPREFIX`
+    * :const:`nacl.pwhash.PWHASH_SIZE`
+    * :const:`nacl.pwhash.SALTBYTES`
+    * :const:`nacl.pwhash.BYTES_MIN`
+    * :const:`nacl.pwhash.BYTES_MAX`
 
 In general, the _INTERACTIVE values are recommended in the case of hashes
 stored for interactive password checking, and lead to a sub-second password
 verification time, with a memory consumption in the tens of megabytes range,
 while the _SENSITIVE values are meant to store hashes for password protecting
 sensitive data, and lead to hashing times exceeding one second, with memory
-consumption in the hundred of megabytes range. The _MODERATE values, suggested
-for ``argon2`` mechanisms are meant to run the construct at a runtime and
-memory cost intermediate between _INTERACTIVE and _SENSITIVE.
+consumption in the hundred of megabytes range. The _MODERATE values,
+suggested for the :py:mod:`nacl.pwhash.argon2i` and
+:py:mod:`nacl.pwhash.argon2id` mechanisms are meant to run the construct
+at a runtime and memory cost intermediate between _INTERACTIVE and _SENSITIVE.
 
+Reference
+---------
+
+See the full module API reference, available at :mod:`nacl.pwhash`.
 
 .. [SD2012] A nice overview of password hashing history is available
    in Solar Designer's presentation
