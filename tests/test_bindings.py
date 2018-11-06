@@ -30,9 +30,6 @@ from nacl import bindings as c
 from nacl.exceptions import BadSignatureError, CryptoError
 
 
-_BA = bytearray
-
-
 def tohex(b):
     return hexlify(b).decode("ascii")
 
@@ -473,11 +470,11 @@ def test_ed25519_add_and_sub():
 
 def test_scalarmult_ed25519():
     SCALARBYTES = c.crypto_scalarmult_ed25519_SCALARBYTES
-    MINSC = bytes(_BA([8] + (SCALARBYTES - 2) * [0] + [64]))
-    CLMPD = bytes(_BA([8] + (SCALARBYTES - 2) * [0] + [192]))
-    MIN_P1 = bytes(_BA([9] + (SCALARBYTES - 2) * [0] + [64]))
-    MIN_P7 = bytes(_BA([15] + (SCALARBYTES - 2) * [0] + [64]))
-    MIN_P8 = bytes(_BA([16] + (SCALARBYTES - 2) * [0] + [64]))
+    MINSC = bytes(bytearray([8] + (SCALARBYTES - 2) * [0] + [64]))
+    CLMPD = bytes(bytearray([8] + (SCALARBYTES - 2) * [0] + [192]))
+    MIN_P1 = bytes(bytearray([9] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P7 = bytes(bytearray([15] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P8 = bytes(bytearray([16] + (SCALARBYTES - 2) * [0] + [64]))
 
     p, _s = c.crypto_sign_keypair()
     _p = p
@@ -501,11 +498,15 @@ def test_scalarmult_ed25519():
 
 def test_scalarmult_ed25519_base():
 
-    BASEPOINT = bytes(_BA([0x58, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
-                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
-                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
-                           0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66]
-                          )
+    BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66]
+                                )
                       )
 
     sclr = c.randombytes(c.crypto_scalarmult_ed25519_SCALARBYTES)
