@@ -6,6 +6,9 @@ Changelog
 
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
+* Cancel hypothesis too_slow health check for test_crypto_kx_seed_keypair_
+  seed_too_large to fix build on very slow architectures such mips. GitHub
+  Merge Request #465
 
 1.3.0 2018-09-26
 ----------------
