@@ -6,6 +6,8 @@ Changelog
 
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
+* Add ``wheel`` and ``setuptools`` setup_requirements in ``setup.py`` (#485)
+* Fix checks on very slow builders (#481, #495)
 
 1.3.0 2018-09-26
 ----------------
