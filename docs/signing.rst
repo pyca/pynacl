@@ -47,10 +47,11 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
                                         encoder=nacl.encoding.HexEncoder)
 
     # Check the validity of a message's signature
-    # The message and the signature can either be passed separately or
-    # concatenated together.  These are equivalent:
+    # The message and the signature can either be passed together, or
+    # separately if the signature is decoded to raw bytes.
+    # These are equivalent:
     verify_key.verify(signed)
-    verify_key.verify(signed.message, signed.signature)
+    verify_key.verify(signed.message, HexEncoder.decode(signed.signature))
 
     # Alter the signed message text
     forged = signed[:-1] + bytes([int(signed[-1]) ^ 1])
