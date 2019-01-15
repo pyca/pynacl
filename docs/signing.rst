@@ -212,7 +212,7 @@ Reference
         Sign a message using this key.
 
         :param bytes message: The data to be signed.
-        :param encoder: A class that is able to decode the signed message.
+        :param encoder: A class that is able to encode the signed message.
 
         :return: An instance of :class:`~nacl.signing.SignedMessage`.
 
