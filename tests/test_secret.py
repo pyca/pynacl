@@ -15,12 +15,13 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+import warnings
 
 import pytest
 
 from utils import flip_byte
 
-from nacl.encoding import HexEncoder
+from nacl.encoding import HexEncoder, RawEncoder
 from nacl.exceptions import CryptoError
 from nacl.secret import SecretBox
 
@@ -61,54 +62,156 @@ def test_secret_box_bytes():
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
+
     encrypted = box.encrypt(
         binascii.unhexlify(plaintext),
-        binascii.unhexlify(nonce),
-        encoder=HexEncoder,
-    )
+        binascii.unhexlify(nonce))
 
-    expected = binascii.hexlify(
-        binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
-    )
+    expected = binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext)
 
     assert encrypted == expected
-    assert encrypted.nonce == nonce
-    assert encrypted.ciphertext == ciphertext
+    assert binascii.hexlify(encrypted.nonce) == nonce
+    assert binascii.hexlify(encrypted.ciphertext) == ciphertext
+
+    hexencrypted = box.encrypt(
+        binascii.unhexlify(plaintext),
+        binascii.unhexlify(nonce),
+        ciphertext_encoder=HexEncoder,
+        nonce_encoder=HexEncoder)
+
+    hexexpected = binascii.hexlify(expected)
+
+    assert hexencrypted == hexexpected
+    assert hexencrypted.nonce == nonce
+    assert hexencrypted.ciphertext == ciphertext
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered
+        warnings.simplefilter("always")
+
+        encrypted == box.encrypt(
+            binascii.unhexlify(plaintext),
+            binascii.unhexlify(nonce),
+            encoder=RawEncoder,
+            nonce_encoder=RawEncoder)
+
+        assert encrypted == expected
+        assert encrypted.nonce == binascii.unhexlify(nonce)
+        assert encrypted.ciphertext == binascii.unhexlify(ciphertext)
+
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert ("Use of encoder is deprecated. Please update your code to "
+                "use ciphertext_encoder and nonce_encoder instead."
+                ) == str(w[-1].message)
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
-    nonce = binascii.unhexlify(nonce)
+    hexnonce = nonce
+
     decrypted = binascii.hexlify(
-        box.decrypt(ciphertext, nonce, encoder=HexEncoder),
+        box.decrypt(ciphertext, hexnonce,
+                    ciphertext_encoder=HexEncoder,
+                    nonce_encoder=HexEncoder),
     )
 
     assert decrypted == plaintext
+
+    nonce = binascii.unhexlify(hexnonce)
+    decrypted = binascii.hexlify(
+        box.decrypt(ciphertext, nonce,
+                    ciphertext_encoder=HexEncoder),
+    )
+
+    assert decrypted == plaintext
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered
+        warnings.simplefilter("always")
+
+        decrypted == box.decrypt(ciphertext, hexnonce,
+                                 encoder=HexEncoder,
+                                 nonce_encoder=HexEncoder)
+
+        assert decrypted == plaintext
+
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert ("Use of encoder is deprecated. Please update your code to "
+                "use ciphertext_encoder and nonce_encoder instead."
+                ) == str(w[-1].message)
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
-    combined = binascii.hexlify(
-        binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
+    combined = binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext)
+    decrypted = binascii.hexlify(
+        box.decrypt(combined),
     )
-    decrypted = binascii.hexlify(box.decrypt(combined, encoder=HexEncoder))
 
     assert decrypted == plaintext
+
+    hexcombined = binascii.hexlify(
+        binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
+    )
+    decrypted = binascii.hexlify(
+        box.decrypt(hexcombined, ciphertext_encoder=HexEncoder),
+    )
+
+    assert decrypted == plaintext
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered
+        warnings.simplefilter("always")
+
+        decrypted = binascii.hexlify(box.decrypt(hexcombined,
+                                                 encoder=HexEncoder))
+
+        assert decrypted == plaintext
+
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert ("Use of encoder is deprecated. Please update your code to "
+                "use ciphertext_encoder and nonce_encoder instead."
+                ) == str(w[-1].message)
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
 def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
-    encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder)
+    encrypted = box.encrypt(binascii.unhexlify(plaintext))
 
-    decrypted = binascii.hexlify(box.decrypt(encrypted, encoder=HexEncoder))
+    decrypted = binascii.hexlify(box.decrypt(encrypted))
 
     assert decrypted == plaintext
+
+    encrypted = box.encrypt(binascii.unhexlify(plaintext),
+                            ciphertext_encoder=HexEncoder)
+
+    decrypted = binascii.hexlify(box.decrypt(encrypted,
+                                             ciphertext_encoder=HexEncoder))
+
+    assert decrypted == plaintext
+
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered
+        warnings.simplefilter("always")
+
+        encrypted = box.encrypt(binascii.unhexlify(plaintext),
+                                encoder=HexEncoder)
+
+        decrypted = binascii.hexlify(
+            box.decrypt(encrypted, ciphertext_encoder=HexEncoder))
+
+        assert decrypted == plaintext
+
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert ("Use of encoder is deprecated. Please update your code to "
+                "use ciphertext_encoder and nonce_encoder instead."
+                ) == str(w[-1].message)
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
@@ -117,10 +220,10 @@ def test_secret_box_encryption_generates_different_nonces(
     box = SecretBox(key, encoder=HexEncoder)
 
     nonce_0 = box.encrypt(binascii.unhexlify(plaintext),
-                          encoder=HexEncoder).nonce
+                          nonce_encoder=HexEncoder).nonce
 
     nonce_1 = box.encrypt(binascii.unhexlify(plaintext),
-                          encoder=HexEncoder).nonce
+                          nonce_encoder=HexEncoder).nonce
 
     assert nonce_0 != nonce_1
 
