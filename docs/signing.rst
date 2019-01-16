@@ -17,16 +17,15 @@ use it to validate that your messages are actually authentic.
 Example
 -------
 
-Signing and verifying a message without encoding the key or message
-
 Signer's perspective (:class:`~nacl.signing.SigningKey`)
 
 .. testcode::
 
-    from nacl.signing import SigningKey
+    import nacl.encoding
+    import nacl.signing
 
     # Generate a new random signing key
-    signing_key = SigningKey.generate()
+    signing_key = nacl.signing.SigningKey.generate()
 
     # Sign a message with the signing key
     signed = signing_key.sign(b"Attack at Dawn")
@@ -35,138 +34,26 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     verify_key = signing_key.verify_key
 
     # Serialize the verify key to send it to a third party
-    verify_key_bytes = verify_key.encode()
+    verify_key_hex = verify_key.encode(encoder=nacl.encoding.HexEncoder)
 
 Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 
 .. testcode::
 
-    from nacl.signing import VerifyKey
+    import nacl.signing
 
     # Create a VerifyKey object from a hex serialized public key
-    verify_key = VerifyKey(verify_key_bytes)
+    verify_key = nacl.signing.VerifyKey(verify_key_hex,
+                                        encoder=nacl.encoding.HexEncoder)
 
     # Check the validity of a message's signature
-    # The message and the signature can either be passed together, or
-    # separately if the signature is decoded to raw bytes.
-    # These are equivalent:
+    # The message and the signature can either be passed separately or
+    # concatenated together.  These are equivalent:
     verify_key.verify(signed)
     verify_key.verify(signed.message, signed.signature)
 
     # Alter the signed message text
     forged = signed[:-1] + bytes([int(signed[-1]) ^ 1])
-    # Will raise nacl.exceptions.BadSignatureError, since the signature check
-    # is failing
-    verify_key.verify(forged)
-
-.. testoutput::
-
-    Traceback (most recent call last):
-     ...
-    nacl.exceptions.BadSignatureError: Signature was forged or corrupt
-
-
-Example
--------
-
-Signing and verifying a message encoded with HexEncoder
-
-Signer's perspective (:class:`~nacl.signing.SigningKey`)
-
-.. testcode::
-
-    from nacl.encoding import HexEncoder
-    from nacl.signing import SigningKey
-
-    # Generate a new random signing key
-    signing_key = SigningKey.generate()
-
-    # Sign a message with the signing key
-    signed_hex = signing_key.sign(b"Attack at Dawn", encoder=HexEncoder)
-
-    # Obtain the verify key for a given signing key
-    verify_key = signing_key.verify_key
-
-    # Serialize the verify key to send it to a third party
-    verify_key_hex = verify_key.encode(encoder=HexEncoder)
-
-Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
-
-.. testcode::
-
-    from nacl.encoding import HexEncoder
-    from nacl.signing import VerifyKey
-
-    # Create a VerifyKey object from a hex serialized public key
-    verify_key = VerifyKey(verify_key_hex, encoder=HexEncoder)
-
-    # Check the validity of a message's signature
-    # The message and the signature can either be passed together, or
-    # separately if the signature is decoded to raw bytes.
-    # These are equivalent:
-    verify_key.verify(signed_hex, encoder=HexEncoder)
-    signature_bytes = HexEncoder.decode(signed_hex.signature)
-    verify_key.verify(signed_hex.message, signature_bytes,
-                      encoder=HexEncoder)
-
-    # Alter the signed message text
-    forged = signed_hex[:-1] + bytes([int(signed_hex[-1]) ^ 1])
-    # Will raise nacl.exceptions.BadSignatureError, since the signature check
-    # is failing
-    verify_key.verify(forged)
-
-.. testoutput::
-
-    Traceback (most recent call last):
-     ...
-    nacl.exceptions.BadSignatureError: Signature was forged or corrupt
-
-
-Example
--------
-
-Signing and verifying a message encoded with Base64Encoder
-
-Signer's perspective (:class:`~nacl.signing.SigningKey`)
-
-.. testcode::
-
-    from nacl.encoding import Base64Encoder
-    from nacl.signing import SigningKey
-
-    # Generate a new random signing key
-    signing_key = SigningKey.generate()
-
-    # Sign a message with the signing key
-    signed_b64 = signing_key.sign(b"Attack at Dawn", encoder=Base64Encoder)
-
-    # Obtain the verify key for a given signing key
-    verify_key = signing_key.verify_key
-
-    # Serialize the verify key to send it to a third party
-    verify_key_b64 = verify_key.encode(encoder=Base64Encoder)
-
-Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
-
-.. testcode::
-
-    from nacl.encoding import Base64Encoder
-    from nacl.signing import VerifyKey
-
-    # Create a VerifyKey object from a base64 serialized public key
-    verify_key = VerifyKey(verify_key_b64, encoder=Base64Encoder)
-
-    # Check the validity of a message's signature
-    # The message and the signature can either be passed together, or
-    # separately if the signature is decoded to raw bytes.
-    # These are equivalent:
-    verify_key.verify(signed_b64, encoder=Base64Encoder)
-    signature_bytes = Base64Encoder.decode(signed_b64.signature)
-    verify_key.verify(signed_b64.message, signature_bytes,
-                      encoder=Base64Encoder)
-
-    # Alter the signed message text
-    forged = signed_b64[:-1] + bytes([int(signed_b64[-1]) ^ 1])
     # Will raise nacl.exceptions.BadSignatureError, since the signature check
     # is failing
     verify_key.verify(forged)
