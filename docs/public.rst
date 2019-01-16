@@ -219,7 +219,7 @@ Reference
 
         :return: An instance of :class:`~nacl.public.Box`.
 
-    .. method:: encrypt(plaintext, nonce, encoder)
+    .. method:: encrypt(plaintext, nonce, ciphertext_encoder, nonce_encoder)
 
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -232,11 +232,12 @@ Reference
 
         :param bytes plaintext: The plaintext message to encrypt.
         :param bytes nonce: The nonce to use in the encryption.
-        :param encoder:  A class that is able to decode the ciphertext.
+        :param ciphertext_encoder: The encoder to use to encode the ciphertext.
+        :param nonce_encoder: The encoder to use to encode the nonce.
 
         :return: An instance of :class:`~nacl.utils.EncryptedMessage`.
 
-    .. method:: decrypt(ciphertext, nonce, encoder)
+    .. method:: decrypt(ciphertext, nonce, ciphertext_encoder, nonce_encoder)
 
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and
@@ -244,7 +245,8 @@ Reference
 
         :param bytes ciphertext: The encrypted message to decrypt.
         :param bytes nonce: The nonce to use in the decryption.
-        :param encoder: A class that is able to decode the plaintext.
+        :param ciphertext_encoder: The encoder to use to decode the ciphertext.
+        :param nonce_encoder: The encoder to use to decode the nonce.
 
         :return bytes: The decrypted plaintext.
 

@@ -82,7 +82,9 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     signing_key = SigningKey.generate()
 
     # Sign a message with the signing key
-    signed_hex = signing_key.sign(b"Attack at Dawn", encoder=HexEncoder)
+    signed_hex = signing_key.sign(b"Attack at Dawn",
+                                  message_encoder=HexEncoder,
+                                  signature_encoder=HexEncoder)
 
     # Obtain the verify key for a given signing key
     verify_key = signing_key.verify_key
@@ -104,10 +106,9 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
     # The message and the signature can either be passed together, or
     # separately if the signature is decoded to raw bytes.
     # These are equivalent:
-    verify_key.verify(signed_hex, encoder=HexEncoder)
-    signature_bytes = HexEncoder.decode(signed_hex.signature)
-    verify_key.verify(signed_hex.message, signature_bytes,
-                      encoder=HexEncoder)
+    verify_key.verify(signed_hex, message_encoder=HexEncoder)
+    verify_key.verify(signed_hex.message, signed_hex.signature,
+                      message_encoder=HexEncoder, signature_encoder=HexEncoder)
 
     # Alter the signed message text
     forged = signed_hex[:-1] + bytes([int(signed_hex[-1]) ^ 1])
@@ -138,7 +139,9 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     signing_key = SigningKey.generate()
 
     # Sign a message with the signing key
-    signed_b64 = signing_key.sign(b"Attack at Dawn", encoder=Base64Encoder)
+    signed_b64 = signing_key.sign(b"Attack at Dawn",
+                                  message_encoder=Base64Encoder,
+                                  signature_encoder=Base64Encoder)
 
     # Obtain the verify key for a given signing key
     verify_key = signing_key.verify_key
@@ -160,10 +163,10 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
     # The message and the signature can either be passed together, or
     # separately if the signature is decoded to raw bytes.
     # These are equivalent:
-    verify_key.verify(signed_b64, encoder=Base64Encoder)
-    signature_bytes = Base64Encoder.decode(signed_b64.signature)
-    verify_key.verify(signed_b64.message, signature_bytes,
-                      encoder=Base64Encoder)
+    verify_key.verify(signed_b64, message_encoder=Base64Encoder)
+    verify_key.verify(signed_b64.message, signed_b64.signature,
+                      message_encoder=Base64Encoder,
+                      signature_encoder=Base64Encoder)
 
     # Alter the signed message text
     forged = signed_b64[:-1] + bytes([int(signed_b64[-1]) ^ 1])
@@ -207,12 +210,13 @@ Reference
 
         :return: An instance of :class:`~nacl.signing.SigningKey`.
 
-    .. method:: sign(message, encoder)
+    .. method:: sign(message, message_encoder, signature_encoder)
 
         Sign a message using this key.
 
         :param bytes message: The data to be signed.
-        :param encoder: A class that is able to encode the signed message.
+        :param message_encoder: A class that is able to decode the signed message.
+        :param signature_encoder: A class that is able to decode the signed signature.
 
         :return: An instance of :class:`~nacl.signing.SignedMessage`.
 
@@ -224,7 +228,7 @@ Reference
     :param bytes key: A serialized Ed25519 public key.
     :param encoder: A class that is able to decode the ``key``.
 
-    .. method:: verify(smessage, signature, encoder)
+    .. method:: verify(smessage, signature, message_encoder, signature_encoder)
 
         Verifies the signature of a signed message.
 
@@ -233,8 +237,8 @@ Reference
         :param bytes signature: The signature of the message to verify against.
             If the value of ``smessage`` is the concated signature and message,
             this parameter can be ``None``.
-        :param encoder: A class that is able to decode the secret message and
-            signature.
+        :param message_encoder: A class that is able to decode the message.
+        :param signature_encoder: A class that is able to decode the signature.
 
         :return bytes: The message if successfully verified.
 
