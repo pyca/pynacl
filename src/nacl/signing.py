@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import warnings
+
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
@@ -87,7 +89,9 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __ne__(self, other):
         return not (self == other)
 
-    def verify(self, smessage, signature=None, encoder=encoding.RawEncoder):
+    def verify(self, smessage, signature=None, encoder=None,
+               message_encoder=encoding.RawEncoder,
+               signature_encoder=encoding.RawEncoder):
         """
         Verifies the signature of a signed message, returning the message
         if it has not been tampered with else raising
@@ -97,17 +101,27 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
             signature and message concated together.
         :param signature: [:class:`bytes`] If an unsigned message is given for
             smessage then the detached signature must be provided.
-        :param encoder: A class that is able to decode the secret message and
-            signature.
+        :param encoder: DEPRECATED: A class that is able to decode the signed
+            message and signature.
+        :param message_encoder: A class that is able to decode the message.
+        :param signature_encoder: A class that is able to decode the signature.
         :rtype: :class:`bytes`
         """
+        if encoder is not None:
+            warnings.warn("Use of encoder is deprecated. Please update your "
+                          "code to use message_encoder and signature_encoder "
+                          "instead.",
+                          DeprecationWarning)
+            message_encoder = encoder
+
         if signature is not None:
             # If we were given the message and signature separately, combine
             #   them.
-            smessage = signature + encoder.decode(smessage)
+            smessage = signature_encoder.decode(signature) + \
+                message_encoder.decode(smessage)
         else:
             # Decode the signed message
-            smessage = encoder.decode(smessage)
+            smessage = message_encoder.decode(smessage)
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 
@@ -187,20 +201,31 @@ class SigningKey(encoding.Encodable, StringFixer, object):
             encoder=encoding.RawEncoder,
         )
 
-    def sign(self, message, encoder=encoding.RawEncoder):
+    def sign(self, message, encoder=None,
+             message_encoder=encoding.RawEncoder,
+             signature_encoder=encoding.RawEncoder):
         """
         Sign a message using this key.
 
         :param message: [:class:`bytes`] The data to be signed.
         :param encoder: A class that is used to encode the signed message.
+        :param message_encoder: A class that is used to encode the message.
+        :param signature_encoder: A class that is used to encode the signature.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
+        if encoder is not None:
+            warnings.warn("Use of encoder is deprecated. Please update your "
+                          "code to use message_encoder and signature_encoder "
+                          "instead.",
+                          DeprecationWarning)
+            message_encoder = encoder
+
         raw_signed = nacl.bindings.crypto_sign(message, self._signing_key)
 
         crypto_sign_BYTES = nacl.bindings.crypto_sign_BYTES
-        signature = encoder.encode(raw_signed[:crypto_sign_BYTES])
-        message = encoder.encode(raw_signed[crypto_sign_BYTES:])
-        signed = encoder.encode(raw_signed)
+        signature = signature_encoder.encode(raw_signed[:crypto_sign_BYTES])
+        message = message_encoder.encode(raw_signed[crypto_sign_BYTES:])
+        signed = message_encoder.encode(raw_signed)
 
         return SignedMessage._from_parts(signature, message, signed)
 

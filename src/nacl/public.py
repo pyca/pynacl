@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import warnings
+
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
@@ -196,7 +198,9 @@ class Box(encoding.Encodable, StringFixer, object):
 
         return box
 
-    def encrypt(self, plaintext, nonce=None, encoder=encoding.RawEncoder):
+    def encrypt(self, plaintext, nonce=None, encoder=None,
+                ciphertext_encoder=encoding.RawEncoder,
+                nonce_encoder=encoding.RawEncoder):
         """
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -208,9 +212,18 @@ class Box(encoding.Encodable, StringFixer, object):
 
         :param plaintext: [:class:`bytes`] The plaintext message to encrypt
         :param nonce: [:class:`bytes`] The nonce to use in the encryption
-        :param encoder: The encoder to use to encode the ciphertext
+        :param encoder: DEPRECATED: The encoder to use to encode the ciphertext
+        :param ciphertext_encoder: The encoder to use to encode the ciphertext
+        :param nonce_encoder: The encoder to use to encode the nonce
         :rtype: [:class:`nacl.utils.EncryptedMessage`]
         """
+        if encoder is not None:
+            warnings.warn("Use of encoder is deprecated. Please update your "
+                          "code to use ciphertext_encoder and nonce_encoder "
+                          "instead.",
+                          DeprecationWarning)
+            ciphertext_encoder = encoder
+
         if nonce is None:
             nonce = random(self.NONCE_SIZE)
 
@@ -224,16 +237,18 @@ class Box(encoding.Encodable, StringFixer, object):
             self._shared_key,
         )
 
-        encoded_nonce = encoder.encode(nonce)
-        encoded_ciphertext = encoder.encode(ciphertext)
+        encoded_nonce = nonce_encoder.encode(nonce)
+        encoded_ciphertext = ciphertext_encoder.encode(ciphertext)
 
         return EncryptedMessage._from_parts(
             encoded_nonce,
             encoded_ciphertext,
-            encoder.encode(nonce + ciphertext),
+            ciphertext_encoder.encode(nonce + ciphertext),
         )
 
-    def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
+    def decrypt(self, ciphertext, nonce=None, encoder=None,
+                ciphertext_encoder=encoding.RawEncoder,
+                nonce_encoder=encoding.RawEncoder):
         """
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and
@@ -242,16 +257,27 @@ class Box(encoding.Encodable, StringFixer, object):
         :param ciphertext: [:class:`bytes`] The encrypted message to decrypt
         :param nonce: [:class:`bytes`] The nonce used when encrypting the
             ciphertext
-        :param encoder: The encoder used to decode the ciphertext.
+        :param encoder: DEPRECATED: The encoder to use to decode the ciphertext
+        :param ciphertext_encoder: The encoder to use to decode the ciphertext
+        :param nonce_encoder: The encoder to use to decode the nonce
         :rtype: [:class:`bytes`]
         """
+        if encoder is not None:
+            warnings.warn("Use of encoder is deprecated. Please update your "
+                          "code to use ciphertext_encoder and nonce_encoder "
+                          "instead.",
+                          DeprecationWarning)
+            ciphertext_encoder = encoder
+
         # Decode our ciphertext
-        ciphertext = encoder.decode(ciphertext)
+        ciphertext = ciphertext_encoder.decode(ciphertext)
 
         if nonce is None:
             # If we were given the nonce and ciphertext combined, split them.
             nonce = ciphertext[:self.NONCE_SIZE]
             ciphertext = ciphertext[self.NONCE_SIZE:]
+        else:
+            nonce = nonce_encoder.decode(nonce)
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError("The nonce must be exactly %s bytes long" %
