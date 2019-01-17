@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from warnings import warn
+
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
@@ -29,25 +31,44 @@ class SignedMessage(bytes):
     """
 
     @classmethod
-    def _from_parts(cls, signature, message, combined):
+    def _from_parts(cls, signature, message, combined, encoder):
         obj = cls(combined)
+        obj._encoder = encoder
         obj._signature = signature
         obj._message = message
         return obj
 
     @property
-    def signature(self):
+    def raw_signature(self):
         """
         The signature contained within the :class:`SignedMessage`.
         """
         return self._signature
 
     @property
-    def message(self):
+    def raw_message(self):
         """
         The message contained within the :class:`SignedMessage`.
         """
         return self._message
+
+    @property
+    def signature(self):
+        """
+        The signature contained within the :class:`SignedMessage`,
+        encoded as requested on signature generation
+        """
+        warn("Deprecated attribute")
+        return self._encoder.encode(self._signature)
+
+    @property
+    def message(self):
+        """
+        The message contained within the :class:`SignedMessage`.
+        encoded as requested on signature generation
+        """
+        warn("Deprecated attribute")
+        return self._encoder.encode(self._message)
 
 
 class VerifyKey(encoding.Encodable, StringFixer, object):
@@ -198,11 +219,11 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         raw_signed = nacl.bindings.crypto_sign(message, self._signing_key)
 
         crypto_sign_BYTES = nacl.bindings.crypto_sign_BYTES
-        signature = encoder.encode(raw_signed[:crypto_sign_BYTES])
-        message = encoder.encode(raw_signed[crypto_sign_BYTES:])
+        signature = raw_signed[:crypto_sign_BYTES]
+        message = raw_signed[crypto_sign_BYTES:]
         signed = encoder.encode(raw_signed)
 
-        return SignedMessage._from_parts(signature, message, signed)
+        return SignedMessage._from_parts(signature, message, signed, encoder)
 
     def to_curve25519_private_key(self):
         """

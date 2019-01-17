@@ -19,6 +19,14 @@ import os
 import six
 
 
+class PyNaclWarning(UserWarning):
+    pass
+
+
+class PyNaclDeprecated(PyNaclWarning):
+    pass
+
+
 class EncryptedMessage(bytes):
     """
     A bytes subclass that holds a messaged that has been encrypted by a
