@@ -99,6 +99,7 @@ class TestSigningKey:
             encoder=HexEncoder,
         )
 
+        assert message == binascii.hexlify(signed.raw_message)
         assert signed == expected
         assert signed.message == message
         assert signed.signature == signature
@@ -155,7 +156,7 @@ class TestVerifyKey:
     def test_invalid_signed_message(self):
         skey = SigningKey.generate()
         smessage = skey.sign(b"A Test Message!")
-        signature, message = smessage.signature, b"A Forged Test Message!"
+        signature, message = smessage.raw_signature, b"A Forged Test Message!"
 
         # Small sanity check
         assert skey.verify_key.verify(smessage)
