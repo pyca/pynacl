@@ -21,7 +21,7 @@ from nacl import encoding
 from nacl import exceptions as exc
 from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
                          PublicKey as _Curve25519_PublicKey)
-from nacl.utils import StringFixer, random
+from nacl.utils import PyNaclDeprecated, StringFixer, random
 
 
 class SignedMessage(bytes):
@@ -58,7 +58,9 @@ class SignedMessage(bytes):
         The signature contained within the :class:`SignedMessage`,
         encoded as requested on signature generation
         """
-        warn("Deprecated attribute")
+        warn("Access to the encoded attribute `.signature "
+             "is deprecated. Use `.raw_signature instead",
+             PyNaclDeprecated)
         return self._encoder.encode(self._signature)
 
     @property
@@ -67,7 +69,9 @@ class SignedMessage(bytes):
         The message contained within the :class:`SignedMessage`.
         encoded as requested on signature generation
         """
-        warn("Deprecated attribute")
+        warn("Access to the encoded attribute `.message "
+             "is deprecated. Use `.raw_message instead",
+             PyNaclDeprecated)
         return self._encoder.encode(self._message)
 
 
@@ -122,13 +126,18 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
             signature.
         :rtype: :class:`bytes`
         """
-        if signature is not None:
-            # If we were given the message and signature separately, combine
-            #   them.
-            smessage = signature + smessage
 
         # Decode the signed message
         smessage = encoder.decode(smessage)
+
+        if signature is not None:
+            if len(signature) == nacl.bindings.crypto_sign_BYTES:
+                smessage = signature + smessage
+            else:
+                warn("Passing in encoded detached signatures is deprecated. "
+                     "Use raw bytes representation instead",
+                     PyNaclDeprecated)
+                smessage = encoder.decode(signature) + smessage
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 

@@ -19,11 +19,7 @@ import os
 import six
 
 
-class PyNaclWarning(UserWarning):
-    pass
-
-
-class PyNaclDeprecated(PyNaclWarning):
+class PyNaclDeprecated(UserWarning):
     pass
 
 
