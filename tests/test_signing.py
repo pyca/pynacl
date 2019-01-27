@@ -24,6 +24,7 @@ from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
 from nacl.encoding import HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
+from nacl.utils import PyNaclDeprecated
 
 
 def tohex(b):
@@ -101,8 +102,9 @@ class TestSigningKey:
 
         assert message == binascii.hexlify(signed.raw_message)
         assert signed == expected
-        assert signed.message == message
-        assert signed.signature == signature
+        with pytest.warns(PyNaclDeprecated):
+            assert signed.message == message
+            assert signed.signature == signature
 
 
 class TestVerifyKey:
@@ -149,9 +151,10 @@ class TestVerifyKey:
         assert binascii.hexlify(
             key.verify(signed, encoder=HexEncoder),
         ) == message
-        assert binascii.hexlify(
-            key.verify(message, signature, encoder=HexEncoder),
-        ) == message
+        with pytest.warns(PyNaclDeprecated):
+            assert binascii.hexlify(
+                key.verify(message, signature, encoder=HexEncoder),
+            ) == message
 
     def test_invalid_signed_message(self):
         skey = SigningKey.generate()
