@@ -151,7 +151,7 @@ def crypto_sign_ed25519_sk_to_curve25519(secret_key_bytes):
     :rtype: bytes
     """
     if len(secret_key_bytes) != crypto_sign_SECRETKEYBYTES:
-        raise exc.ValueError("Invalid curve public key")
+        raise exc.ValueError("Invalid curve secret key")
 
     curve_secret_key_len = crypto_sign_curve25519_BYTES
     curve_secret_key = ffi.new("unsigned char[]", curve_secret_key_len)
