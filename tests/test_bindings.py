@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2018 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -449,3 +449,98 @@ def test_sign_ed25519ph_libsodium():
         edph_wrng = c.crypto_sign_ed25519ph_state()
         c.crypto_sign_ed25519ph_update(edph_wrng, wrng_mesg)
         c.crypto_sign_ed25519ph_final_verify(edph_wrng, exp_sig, pk)
+
+
+def test_ed25519_is_valid_point():
+    """
+    Verify crypto_core_ed25519_is_valid_point correctly rejects
+    the all-zeros "point"
+    """
+    zero = c.crypto_core_ed25519_BYTES * b'\x00'
+    res = c.crypto_core_ed25519_is_valid_point(zero)
+    assert res is False
+
+
+def test_ed25519_add_and_sub():
+    # the public component of a ed25519 keypair
+    # is a point on the ed25519 curve
+    p1, _s1 = c.crypto_sign_keypair()
+    p2, _s2 = c.crypto_sign_keypair()
+
+    p3 = c.crypto_core_ed25519_add(p1, p2)
+
+    assert c.crypto_core_ed25519_is_valid_point(p3) is True
+    assert c.crypto_core_ed25519_sub(p3, p1) == p2
+    assert c.crypto_core_ed25519_sub(p3, p2) == p1
+
+
+def test_scalarmult_ed25519():
+    SCALARBYTES = c.crypto_scalarmult_ed25519_SCALARBYTES
+
+    # the minimum ed25519 scalar is represented by a 8 value in the
+    # first octet, a 64 value in the last octet, and all zeros
+    # in between:
+    MINSC = bytes(bytearray([8] + (SCALARBYTES - 2) * [0] + [64]))
+
+    # the scalar multiplication formula for ed25519
+    # "clamps" the scalar by setting the most significant bit
+    # of the last octet to zero, therefore scalar multiplication
+    # by CLMPD is equivalent to scalar multiplication by MINSC
+    CLMPD = bytes(bytearray([8] + (SCALARBYTES - 2) * [0] + [192]))
+
+    MIN_P1 = bytes(bytearray([9] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P7 = bytes(bytearray([15] + (SCALARBYTES - 2) * [0] + [64]))
+    MIN_P8 = bytes(bytearray([16] + (SCALARBYTES - 2) * [0] + [64]))
+
+    p, _s = c.crypto_sign_keypair()
+    _p = p
+
+    for i in range(254):
+        # double _p
+        _p = c.crypto_core_ed25519_add(_p, _p)
+
+    for i in range(8):
+        _p = c.crypto_core_ed25519_add(_p, p)
+
+    # at this point _p is (2^254+8) times p
+
+    assert c.crypto_scalarmult_ed25519(MINSC, p) == _p
+    assert c.crypto_scalarmult_ed25519(CLMPD, p) == _p
+
+    # ed25519 scalar multiplication sets the least three significant
+    # bits of the first octet to zero; therefore:
+    assert c.crypto_scalarmult_ed25519(MIN_P1, p) == _p
+    assert c.crypto_scalarmult_ed25519(MIN_P7, p) == _p
+
+    _p8 = _p
+    for i in range(8):
+        _p8 = c.crypto_core_ed25519_add(_p8, p)
+
+    # at this point _p is (2^254 + 16) times p
+
+    assert c.crypto_scalarmult_ed25519(MIN_P8, p) == _p8
+
+
+def test_scalarmult_ed25519_base():
+    """
+    Verify scalarmult_ed25519_base is congruent to
+    scalarmult_ed25519 on the ed25519 base point
+    """
+
+    BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66]
+                                )
+                      )
+
+    sclr = c.randombytes(c.crypto_scalarmult_ed25519_SCALARBYTES)
+
+    p = c.crypto_scalarmult_ed25519_base(sclr)
+    p2 = c.crypto_scalarmult_ed25519(sclr, BASEPOINT)
+
+    assert p2 == p

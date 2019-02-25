@@ -45,6 +45,10 @@ from nacl.bindings.crypto_box import (
     crypto_box_open, crypto_box_open_afternm, crypto_box_seal,
     crypto_box_seal_open, crypto_box_seed_keypair,
 )
+from nacl.bindings.crypto_core import (
+    crypto_core_ed25519_BYTES, crypto_core_ed25519_add,
+    crypto_core_ed25519_is_valid_point, crypto_core_ed25519_sub
+)
 from nacl.bindings.crypto_generichash import (
     crypto_generichash_BYTES, crypto_generichash_BYTES_MAX,
     crypto_generichash_BYTES_MIN, crypto_generichash_KEYBYTES,
@@ -129,7 +133,9 @@ from nacl.bindings.crypto_pwhash import (
 )
 from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
-    crypto_scalarmult_base
+    crypto_scalarmult_base, crypto_scalarmult_ed25519,
+    crypto_scalarmult_ed25519_BYTES, crypto_scalarmult_ed25519_SCALARBYTES,
+    crypto_scalarmult_ed25519_base
 )
 from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
@@ -220,6 +226,13 @@ __all__ = [
     "crypto_box_seal_open",
     "crypto_box_seed_keypair",
 
+    "crypto_core_ed25519_BYTES",
+    "crypto_core_ed25519_UNIFORMBYTES",
+    "crypto_core_ed25519_add",
+    "crypto_core_ed25519_from_uniform",
+    "crypto_core_ed25519_is_valid_point",
+    "crypto_core_ed25519_sub",
+
     "crypto_hash_BYTES",
     "crypto_hash_sha256_BYTES",
     "crypto_hash_sha512_BYTES",
@@ -255,6 +268,10 @@ __all__ = [
     "crypto_scalarmult_SCALARBYTES",
     "crypto_scalarmult",
     "crypto_scalarmult_base",
+    "crypto_scalarmult_ed25519_BYTES",
+    "crypto_scalarmult_ed25519_SCALARBYTES",
+    "crypto_scalarmult_ed25519",
+    "crypto_scalarmult_ed25519_base",
 
     "crypto_secretbox_KEYBYTES",
     "crypto_secretbox_NONCEBYTES",

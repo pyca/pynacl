@@ -1,4 +1,4 @@
-/* Copyright 2013 Donald Stufft and individual contributors
+/* Copyright 2017 Donald Stufft and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-size_t crypto_scalarmult_bytes();
-size_t crypto_scalarmult_scalarbytes();
-size_t crypto_scalarmult_ed25519_bytes();
+size_t crypto_scalarmult_ed25519_scalarbytes();
+size_t crypto_core_ed25519_bytes();
 
-int crypto_scalarmult_base(unsigned char *q, const unsigned char *n);
-int crypto_scalarmult(unsigned char *q, const unsigned char *n, const unsigned char *p);
-int crypto_scalarmult_ed25519(unsigned char *q, const unsigned char *n, const unsigned char *p);
-int crypto_scalarmult_ed25519_base(unsigned char *q, const unsigned char *n);
+int crypto_core_ed25519_is_valid_point(const unsigned char *p);
+int crypto_core_ed25519_add(unsigned char *r, const unsigned char *p, const unsigned char *q);
+int crypto_core_ed25519_sub(unsigned char *r, const unsigned char *p, const unsigned char *q);

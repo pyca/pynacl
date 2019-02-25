@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2018 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ from nacl.exceptions import ensure
 
 crypto_scalarmult_BYTES = lib.crypto_scalarmult_bytes()
 crypto_scalarmult_SCALARBYTES = lib.crypto_scalarmult_scalarbytes()
+crypto_scalarmult_ed25519_BYTES = lib.crypto_scalarmult_ed25519_bytes()
+crypto_scalarmult_ed25519_SCALARBYTES = \
+    lib.crypto_scalarmult_ed25519_scalarbytes()
 
 
 def crypto_scalarmult_base(n):
@@ -58,3 +61,71 @@ def crypto_scalarmult(n, p):
            raising=exc.RuntimeError)
 
     return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
+
+
+def crypto_scalarmult_ed25519_base(n):
+    """
+    Computes and returns the scalar product of a standard group element and an
+    integer ``n`` on the edwards25519 curve.
+
+    :param n: a :py:data:`.crypto_scalarmult_ed25519_SCALARBYTES` long bytes
+              sequence representing a scalar
+    :type n: bytes
+    :return: a point on the edwards25519 curve, represented as a
+             :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
+    :rtype: bytes
+    """
+    ensure(isinstance(n, bytes) and
+           len(n) == crypto_scalarmult_ed25519_SCALARBYTES,
+           'Input must be a {} long bytes sequence'.format(
+           'crypto_scalarmult_ed25519_SCALARBYTES'),
+           raising=exc.TypeError)
+
+    q = ffi.new("unsigned char[]", crypto_scalarmult_ed25519_BYTES)
+
+    rc = lib.crypto_scalarmult_ed25519_base(q, n)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(q, crypto_scalarmult_ed25519_BYTES)[:]
+
+
+def crypto_scalarmult_ed25519(n, p):
+    """
+    Computes and returns the scalar product of a *clamped* integer ``n``
+    and the given group element on the edwards25519 curve.
+    The scalar is clamped, as done in the public key generation case,
+    by setting to zero the bits in position [0, 1, 2, 255] and setting
+    to one the bit in position 254.
+
+    :param n: a :py:data:`.crypto_scalarmult_ed25519_SCALARBYTES` long bytes
+              sequence representing a scalar
+    :type n: bytes
+    :param p: a :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
+              representing a point on the edwards25519 curve
+    :type p: bytes
+    :return: a point on the edwards25519 curve, represented as a
+             :py:data:`.crypto_scalarmult_ed25519_BYTES` long bytes sequence
+    :rtype: bytes
+    """
+    ensure(isinstance(n, bytes) and
+           len(n) == crypto_scalarmult_ed25519_SCALARBYTES,
+           'Input must be a {} long bytes sequence'.format(
+           'crypto_scalarmult_ed25519_SCALARBYTES'),
+           raising=exc.TypeError)
+
+    ensure(isinstance(p, bytes) and
+           len(p) == crypto_scalarmult_ed25519_BYTES,
+           'Input must be a {} long bytes sequence'.format(
+           'crypto_scalarmult_ed25519_BYTES'),
+           raising=exc.TypeError)
+
+    q = ffi.new("unsigned char[]", crypto_scalarmult_ed25519_BYTES)
+
+    rc = lib.crypto_scalarmult_ed25519(q, n, p)
+    ensure(rc == 0,
+           'Unexpected library error',
+           raising=exc.RuntimeError)
+
+    return ffi.buffer(q, crypto_scalarmult_ed25519_BYTES)[:]
