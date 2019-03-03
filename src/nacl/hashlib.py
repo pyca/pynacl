@@ -1,4 +1,4 @@
-# Copyright 2016 Donald Stufft and individual contributors
+# Copyright 2016-2019 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ PERSONALBYTES = nacl.bindings.crypto_generichash_PERSONALBYTES
 
 _b2b_init = nacl.bindings.crypto_generichash_blake2b_init
 _b2b_final = nacl.bindings.crypto_generichash_blake2b_final
-_b2b_copy = nacl.bindings.crypto_generichash_blake2b_state_copy
 _b2b_update = nacl.bindings.crypto_generichash_blake2b_update
 
 
@@ -56,7 +55,7 @@ class blake2b(object):
         :param key: the key to be set for keyed MAC/PRF usage; if set,
                     the key must be at most :py:data:`.KEYBYTES_MAX` long
         :type key: bytes
-        :param salt: an initialization salt at most
+        :param salt: a initialization salt at most
                      :py:attr:`.SALT_SIZE` long; it will be zero-padded
                      if needed
         :type salt: bytes
@@ -89,17 +88,19 @@ class blake2b(object):
         _b2b_update(self._state, data)
 
     def digest(self):
-        _st = nacl.bindings.crypto_generichash_blake2b_state_copy(self._state)
-        return _b2b_final(_st, self.digest_size)
+        _st = self._state.copy()
+        return _b2b_final(_st)
 
     def hexdigest(self):
         return bytes_as_string(binascii.hexlify(self.digest()))
 
-    def copy(self):
+    def __copy__(self):
         _cp = type(self)(digest_size=self.digest_size)
-        _st = _b2b_copy(self._state)
+        _st = self._state.copy()
         _cp._state = _st
         return _cp
+
+    copy = __copy__
 
 
 def scrypt(password, salt='', n=2**20, r=8, p=1,

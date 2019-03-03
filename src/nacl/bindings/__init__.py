@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2019 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ from nacl.bindings.crypto_generichash import (
     generichash_blake2b_init as crypto_generichash_blake2b_init,
     generichash_blake2b_salt_personal as
     crypto_generichash_blake2b_salt_personal,
-    generichash_blake2b_state_copy as crypto_generichash_blake2b_state_copy,
     generichash_blake2b_update as crypto_generichash_blake2b_update
 )
 from nacl.bindings.crypto_hash import (
@@ -253,7 +252,6 @@ __all__ = [
     "crypto_generichash_blake2b_init",
     "crypto_generichash_blake2b_update",
     "crypto_generichash_blake2b_final",
-    "crypto_generichash_blake2b_state_copy",
 
     "crypto_kx_keypair",
     "crypto_kx_seed_keypair",

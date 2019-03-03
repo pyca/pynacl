@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2019 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -122,6 +122,26 @@ def generichash_blake2b_salt_personal(data,
     return ffi.buffer(digest, digest_size)[:]
 
 
+class Blake2State(object):
+    """
+    Python-level wrapper for the crypto_generichash_blake2b state buffer
+    """
+    __slots__ = ['statebuf', 'digest_size']
+
+    def __init__(self, digest_size):
+        self.statebuf = ffi.new("unsigned char[]",
+                                crypto_generichash_STATEBYTES)
+        self.digest_size = digest_size
+
+    def __copy__(self):
+        _st = self.__class__(self.digest_size)
+        ffi.memmove(_st.statebuf,
+                    self.statebuf, crypto_generichash_STATEBYTES)
+        return _st
+
+    copy = __copy__
+
+
 def generichash_blake2b_init(key=b'', salt=b'',
                              person=b'',
                              digest_size=crypto_generichash_BYTES):
@@ -144,13 +164,13 @@ def generichash_blake2b_init(key=b'', salt=b'',
                         the default digest size is
                         :py:data:`.crypto_generichash_BYTES`
     :type digest_size: int
-    :return: an initizialized state buffer
+    :return: a initizialized :py:class:`.Blake2State`
     :rtype: object
     """
 
     _checkparams(digest_size, key, salt, person)
 
-    statebuf = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
+    state = Blake2State(digest_size)
 
     # both _salt and _personal must be zero-padded to the correct length
     _salt = ffi.new("unsigned char []", crypto_generichash_SALTBYTES)
@@ -159,58 +179,57 @@ def generichash_blake2b_init(key=b'', salt=b'',
     ffi.memmove(_salt, salt, len(salt))
     ffi.memmove(_person, person, len(person))
 
-    rc = lib.crypto_generichash_blake2b_init_salt_personal(statebuf,
+    rc = lib.crypto_generichash_blake2b_init_salt_personal(state.statebuf,
                                                            key, len(key),
                                                            digest_size,
                                                            _salt, _person)
     ensure(rc == 0, 'Unexpected failure',
            raising=exc.RuntimeError)
 
-    return statebuf
+    return state
 
 
-def generichash_blake2b_update(statebuf, data):
+def generichash_blake2b_update(state, data):
     """Update the blake2b hash state
 
-    :param statebuf: an initialized blake2b state buffer as returned from
+    :param state: a initialized Blake2bState object as returned from
                      :py:func:`.crypto_generichash_blake2b_init`
-    :type statebuf: object
+    :type state: :py:class:`.Blake2State`
     :param data:
     :type data: bytes
     """
+
+    ensure(isinstance(state, Blake2State),
+           'State must be a Blake2State object',
+           raising=exc.TypeError)
 
     ensure(isinstance(data, bytes),
            'Input data must be a bytes sequence',
            raising=exc.TypeError)
 
-    rc = lib.crypto_generichash_blake2b_update(statebuf, data, len(data))
+    rc = lib.crypto_generichash_blake2b_update(state.statebuf, data, len(data))
     ensure(rc == 0, 'Unexpected failure',
            raising=exc.RuntimeError)
 
 
-def generichash_blake2b_final(statebuf, digest_size):
+def generichash_blake2b_final(state):
     """Finalize the blake2b hash state and return the digest.
 
-    :param statebuf:
-    :type statebuf: object
-    :param digest_size:
-    :type digest_size: int
+    :param state: a initialized Blake2bState object as returned from
+                     :py:func:`.crypto_generichash_blake2b_init`
+    :type state: :py:class:`.Blake2State`
     :return: the blake2 digest of the passed-in data stream
     :rtype: bytes
     """
 
+    ensure(isinstance(state, Blake2State),
+           'State must be a Blake2State object',
+           raising=exc.TypeError)
+
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
-    rc = lib.crypto_generichash_blake2b_final(statebuf, _digest, digest_size)
+    rc = lib.crypto_generichash_blake2b_final(state.statebuf,
+                                              _digest, state.digest_size)
 
     ensure(rc == 0, 'Unexpected failure',
            raising=exc.RuntimeError)
-    return ffi.buffer(_digest, digest_size)[:]
-
-
-def generichash_blake2b_state_copy(statebuf):
-    """Return a copy of the given blake2b hash state"""
-
-    newstate = ffi.new("unsigned char[]", crypto_generichash_STATEBYTES)
-    ffi.memmove(newstate, statebuf, crypto_generichash_STATEBYTES)
-
-    return newstate
+    return ffi.buffer(_digest, state.digest_size)[:]
