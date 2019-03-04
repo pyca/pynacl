@@ -14,8 +14,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import copy
-
 from six import integer_types
 
 from nacl import exceptions as exc
