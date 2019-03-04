@@ -15,7 +15,6 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-import copy
 
 import nacl.bindings
 from nacl.utils import bytes_as_string
@@ -89,7 +88,7 @@ class blake2b(object):
         _b2b_update(self._state, data)
 
     def digest(self):
-        _st = copy.copy(self._state)
+        _st = self._state.copy()
         return _b2b_final(_st)
 
     def hexdigest(self):
@@ -97,7 +96,7 @@ class blake2b(object):
 
     def __copy__(self):
         _cp = type(self)(digest_size=self.digest_size)
-        _st = copy.copy(self._state)
+        _st = self._state.copy()
         _cp._state = _st
         return _cp
 
