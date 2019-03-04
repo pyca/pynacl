@@ -14,6 +14,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import copy
+
 from six import integer_types
 
 from nacl import exceptions as exc
@@ -138,8 +140,6 @@ class Blake2State(object):
         ffi.memmove(_st._statebuf,
                     self._statebuf, crypto_generichash_STATEBYTES)
         return _st
-
-    copy = __copy__
 
 
 def generichash_blake2b_init(key=b'', salt=b'',
