@@ -133,7 +133,7 @@ class Blake2State(object):
                                  crypto_generichash_STATEBYTES)
         self.digest_size = digest_size
 
-    def __copy__(self):
+    def copy(self):
         _st = self.__class__(self.digest_size)
         ffi.memmove(_st._statebuf,
                     self._statebuf, crypto_generichash_STATEBYTES)

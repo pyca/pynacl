@@ -15,7 +15,6 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-import copy
 
 import nacl.bindings
 from nacl.utils import bytes_as_string
@@ -89,19 +88,17 @@ class blake2b(object):
         _b2b_update(self._state, data)
 
     def digest(self):
-        _st = copy.copy(self._state)
+        _st = self._state.copy()
         return _b2b_final(_st)
 
     def hexdigest(self):
         return bytes_as_string(binascii.hexlify(self.digest()))
 
-    def __copy__(self):
+    def copy(self):
         _cp = type(self)(digest_size=self.digest_size)
-        _st = copy.copy(self._state)
+        _st = self._state.copy()
         _cp._state = _st
         return _cp
-
-    copy = __copy__
 
 
 def scrypt(password, salt='', n=2**20, r=8, p=1,
