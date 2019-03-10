@@ -100,6 +100,14 @@ class blake2b(object):
         _cp._state = _st
         return _cp
 
+    def __reduce__(self):
+        """
+        Raise the same exception as hashlib's blake implementation
+        on copy.copy()
+        """
+        raise TypeError("can't pickle {} objects".format(
+            self.__class__.__name__))
+
 
 def scrypt(password, salt='', n=2**20, r=8, p=1,
            maxmem=2**25, dklen=64):

@@ -133,6 +133,14 @@ class Blake2State(object):
                                  crypto_generichash_STATEBYTES)
         self.digest_size = digest_size
 
+    def __reduce__(self):
+        """
+        Raise the same exception as hashlib's blake implementation
+        on copy.copy()
+        """
+        raise TypeError("can't pickle {} objects".format(
+            self.__class__.__name__))
+
     def copy(self):
         _st = self.__class__(self.digest_size)
         ffi.memmove(_st._statebuf,
