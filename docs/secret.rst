@@ -181,5 +181,5 @@ Reference
 Algorithm details
 -----------------
 
-:Encryption: `Salsa20 stream cipher <https://en.wikipedia.org/wiki/Salsa20>`_
+:Encryption: `XSalsa20 stream cipher <https://libsodium.gitbook.io/doc/advanced/stream_ciphers/xsalsa20>`_
 :Authentication: `Poly1305 MAC <https://en.wikipedia.org/wiki/Poly1305-AES>`_
