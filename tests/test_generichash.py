@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+import copy
 import json
 import os
 
@@ -98,6 +99,24 @@ def test_hash_blake2b(message, key, salt, person, outlen, output):
     out = nacl.hash.blake2b(msg, digest_size=outlen, key=k,
                             salt=slt, person=pers)
     assert (out == output)
+
+
+def test_expected_hashlib_level_pickle_and_copy_failures():
+    h = nacl.hashlib.blake2b()
+    with pytest.raises(TypeError):
+        copy.deepcopy(h)
+    with pytest.raises(TypeError):
+        copy.copy(h)
+
+
+def test_expected_bindings_level_pickle_and_copy_failures():
+    from nacl.bindings.crypto_generichash import (Blake2State,
+                                                  crypto_generichash_BYTES)
+    st = Blake2State(crypto_generichash_BYTES)
+    with pytest.raises(TypeError):
+        copy.deepcopy(st)
+    with pytest.raises(TypeError):
+        copy.copy(st)
 
 
 @pytest.mark.parametrize(["message", "key", "outlen", "output"],
