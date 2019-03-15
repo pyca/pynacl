@@ -304,10 +304,11 @@ def crypto_box_seal_open(ciphertext, pk, sk):
     _clen = len(ciphertext)
     _mlen = _clen - crypto_box_SEALBYTES
 
-    plaintext = ffi.new("unsigned char[]", _mlen)
+    # zero-length malloc results are implementation.dependent
+    plaintext = ffi.new("unsigned char[]", max(1, _mlen))
 
     res = lib.crypto_box_seal_open(plaintext, ciphertext, _clen, pk, sk)
     ensure(res == 0, "An error occurred trying to decrypt the message",
            raising=exc.CryptoError)
 
-    return ffi.buffer(plaintext, _mlen)[:]
+    return ffi.buffer(plaintext, max(0, _mlen))[:]
