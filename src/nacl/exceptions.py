@@ -47,6 +47,10 @@ class InvalidkeyError(CryptoError):
     pass
 
 
+class CryptPrefixError(InvalidkeyError):
+    pass
+
+
 def ensure(cond, *args, **kwds):
     """
     Return if a condition is true, otherwise raise a caller-configurable

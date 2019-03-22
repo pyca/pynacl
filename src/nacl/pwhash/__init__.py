@@ -14,7 +14,7 @@
 
 from __future__ import absolute_import
 
-from nacl.exceptions import InvalidkeyError
+from nacl.exceptions import CryptPrefixError
 
 from . import _argon2, argon2i, argon2id, scrypt
 
@@ -69,7 +69,7 @@ def verify(password_hash, password):
     elif password_hash.startswith(scrypt.STRPREFIX):
         return scrypt.verify(password_hash, password)
     else:
-        raise(InvalidkeyError("given password_hash is not "
-                              "in a supported format"
-                              )
+        raise(CryptPrefixError("given password_hash is not "
+                               "in a supported format"
+                               )
               )
