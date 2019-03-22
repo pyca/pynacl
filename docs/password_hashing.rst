@@ -129,7 +129,7 @@ and checks the compliance of the proposed password with the stored hash
     >>> res = nacl.pwhash.verify(wrong_hash, correct)
     Traceback (most recent call last):
         ...
-    nacl.exceptions.InvalidkeyError: given password_hash is not in a supported format
+    nacl.exceptions.CryptPrefixError: given password_hash is not in a supported format
 
 
 Key derivation
