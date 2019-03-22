@@ -483,6 +483,13 @@ def test_invalid_modular_scrypt_prefix():
         nacl.pwhash.verify(invalid_modular_hash, psw)
 
 
+def test_crypt_prefix_error():
+    psw = b'always invalid password'
+    invalid_modular_hash = b'$invalid_prefix$'
+    with pytest.raises(exc.CryptPrefixError):
+        nacl.pwhash.verify(invalid_modular_hash, psw)
+
+
 @pytest.mark.parametrize(("dk_size", "password", "salt",
                           "iters", "mem_kb", "pwhash"),
                          argon2i_raw_ref())
