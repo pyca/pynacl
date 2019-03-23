@@ -244,6 +244,18 @@ def test_box_seal_empty():
     assert decoded == empty
 
 
+def test_box_seal_empty_is_verified():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    empty = b""
+    amsg = bytearray(c.crypto_box_seal(empty, A_pubkey))
+    amsg[-1] ^= 1
+    msg = bytes(amsg)
+    with pytest.raises(CryptoError):
+        c.crypto_box_seal_open(msg,
+                               A_pubkey,
+                               A_secretkey)
+
+
 def test_box_seal_wrong_lengths():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
     with pytest.raises(ValueError):
