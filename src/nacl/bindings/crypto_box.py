@@ -302,6 +302,12 @@ def crypto_box_seal_open(ciphertext, pk, sk):
         raise exc.ValueError("Invalid secret key")
 
     _clen = len(ciphertext)
+
+    ensure(_clen >= crypto_box_SEALBYTES,
+           ("Input cyphertext must be "
+            "at least {} long").format(crypto_box_SEALBYTES),
+           raising=exc.TypeError)
+
     _mlen = _clen - crypto_box_SEALBYTES
 
     # zero-length malloc results are implementation.dependent
@@ -311,4 +317,4 @@ def crypto_box_seal_open(ciphertext, pk, sk):
     ensure(res == 0, "An error occurred trying to decrypt the message",
            raising=exc.CryptoError)
 
-    return ffi.buffer(plaintext, max(0, _mlen))[:]
+    return ffi.buffer(plaintext, _mlen)[:]
