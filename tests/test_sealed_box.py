@@ -21,6 +21,7 @@ import pytest
 from utils import read_crypto_test_vectors
 
 from nacl.encoding import HexEncoder
+from nacl.exceptions import CryptoError
 from nacl.public import PrivateKey, PublicKey, SealedBox
 
 
@@ -141,3 +142,26 @@ def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
             encrypted,
             encoder=HexEncoder,
         )
+
+
+def test_sealed_box_zero_length_plaintext():
+    empty_plaintext = b''
+    k = PrivateKey.generate()
+    enc_box = SealedBox(k.public_key)
+    dec_box = SealedBox(k)
+
+    msg = enc_box.encrypt(empty_plaintext)
+    decoded = dec_box.decrypt(msg)
+
+    assert decoded == empty_plaintext
+
+
+def test_sealed_box_too_short_msg():
+    empty_plaintext = b''
+    k = PrivateKey.generate()
+    enc_box = SealedBox(k.public_key)
+    dec_box = SealedBox(k)
+
+    msg = enc_box.encrypt(empty_plaintext)
+    with pytest.raises(CryptoError):
+        dec_box.decrypt(msg[:-1])

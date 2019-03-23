@@ -234,16 +234,48 @@ def test_sign_test_key_conversion():
                                     "dd12ad910b654455798b4667d73de166")
 
 
+def test_box_seal_empty():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    empty = b""
+    msg = c.crypto_box_seal(empty, A_pubkey)
+    decoded = c.crypto_box_seal_open(msg,
+                                     A_pubkey,
+                                     A_secretkey)
+    assert decoded == empty
+
+
+def test_box_seal_empty_is_verified():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    empty = b""
+    amsg = bytearray(c.crypto_box_seal(empty, A_pubkey))
+    amsg[-1] ^= 1
+    msg = bytes(amsg)
+    with pytest.raises(CryptoError):
+        c.crypto_box_seal_open(msg,
+                               A_pubkey,
+                               A_secretkey)
+
+
 def test_box_seal_wrong_lengths():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
     with pytest.raises(ValueError):
         c.crypto_box_seal(b"abc", A_pubkey[:-1])
     with pytest.raises(ValueError):
-        c.crypto_box_seal_open(
-            b"abc", b"", A_secretkey)
+        c.crypto_box_seal_open(b"abc",
+                               b"",
+                               A_secretkey
+                               )
     with pytest.raises(ValueError):
-        c.crypto_box_seal_open(
-            b"abc", A_pubkey, A_secretkey[:-1])
+        c.crypto_box_seal_open(b"abc",
+                               A_pubkey,
+                               A_secretkey[:-1]
+                               )
+    msg = c.crypto_box_seal(b"", A_pubkey)
+    with pytest.raises(CryptoError):
+        c.crypto_box_seal_open(msg[:-1],
+                               A_pubkey,
+                               A_secretkey
+                               )
 
 
 def test_box_seal_wrong_types():
