@@ -34,7 +34,7 @@ Signer's perspective (:class:`~nacl.signing.SigningKey`)
     verify_key = signing_key.verify_key
 
     # Serialize the verify key to send it to a third party
-    verify_key_hex = verify_key.encode(encoder=nacl.encoding.HexEncoder)
+    verify_key_hex = nacl.encoding.HexEncoder.encode(bytes(verify_key))
 
 Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 
@@ -43,8 +43,8 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
     import nacl.signing
 
     # Create a VerifyKey object from a hex serialized public key
-    verify_key = nacl.signing.VerifyKey(verify_key_hex,
-                                        encoder=nacl.encoding.HexEncoder)
+    decoded_key = nacl.encoding.HexEncoder.decode(verify_key_hex)
+    verify_key = nacl.signing.VerifyKey(decoded_key)
 
     # Check the validity of a message's signature
     # The message and the signature can either be passed separately or
@@ -68,7 +68,7 @@ Verifier's perspective (:class:`~nacl.signing.VerifyKey`)
 Reference
 ---------
 
-.. class:: SigningKey(seed, encoder)
+.. class:: SigningKey(seed)
 
     Private key for producing digital signatures using the Ed25519 algorithm.
 
@@ -81,7 +81,6 @@ Reference
         masquerade as you.
 
     :param bytes seed: Random 32-byte value (i.e. private key).
-    :param encoder: A class that is able to decode the ``seed``.
 
     .. attribute:: verify_key
 
@@ -94,24 +93,22 @@ Reference
 
         :return: An instance of :class:`~nacl.signing.SigningKey`.
 
-    .. method:: sign(message, encoder)
+    .. method:: sign(message)
 
         Sign a message using this key.
 
         :param bytes message: The data to be signed.
-        :param encoder: A class that is able to decode the signed message.
 
         :return: An instance of :class:`~nacl.signing.SignedMessage`.
 
-.. class:: VerifyKey(key, encoder)
+.. class:: VerifyKey(key)
 
     The public key counterpart to an Ed25519 :class:`~nacl.signing.SigningKey`
     for producing digital signatures.
 
     :param bytes key: A serialized Ed25519 public key.
-    :param encoder: A class that is able to decode the ``key``.
 
-    .. method:: verify(smessage, signature, encoder)
+    .. method:: verify(smessage, signature)
 
         Verifies the signature of a signed message.
 
@@ -120,8 +117,6 @@ Reference
         :param bytes signature: The signature of the message to verify against.
             If the value of ``smessage`` is the concated signature and message,
             this parameter can be ``None``.
-        :param encoder: A class that is able to decode the secret message and
-            signature.
 
         :return bytes: The message if successfully verified.
 
