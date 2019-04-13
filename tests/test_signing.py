@@ -24,6 +24,7 @@ from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
 from nacl.encoding import HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
+from nacl.utils import PyNaclDeprecated
 
 
 def tohex(b):
@@ -78,30 +79,37 @@ class TestSigningKey:
         k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         assert_not_equal(k1, k2)
 
-    @pytest.mark.parametrize("seed", [
+    @pytest.mark.parametrize("hseed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
     ])
-    def test_initialization_with_seed(self, seed):
-        SigningKey(seed, encoder=HexEncoder)
+    def test_initialization_with_seed(self, hseed):
+        seed = binascii.unhexlify(hseed)
+        SigningKey(seed)
 
     @pytest.mark.parametrize(
-        ("seed", "_public_key", "message", "signature", "expected"),
+        ("hseed", "_public_key", "message", "signature", "expected"),
         ed25519_known_answers()
     )
-    def test_message_signing(self, seed, _public_key,
+    def test_message_signing(self, hseed, _public_key,
                              message, signature, expected):
-        signing_key = SigningKey(
-            seed,
-            encoder=HexEncoder,
-        )
+        seed = binascii.unhexlify(hseed)
+        signing_key = SigningKey(seed)
         signed = signing_key.sign(
             binascii.unhexlify(message),
-            encoder=HexEncoder,
         )
 
-        assert signed == expected
-        assert signed.message == message
-        assert signed.signature == signature
+        assert signed == binascii.unhexlify(expected)
+        assert signed.message == binascii.unhexlify(message)
+        assert signed.signature == binascii.unhexlify(signature)
+
+    @pytest.mark.parametrize("hseed", [
+        b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
+    ])
+    def test_initialization_with_internal_decode_of_seed(self, hseed):
+        with pytest.warns(PyNaclDeprecated):
+            SigningKey(hseed,
+                       encoder=HexEncoder,
+                       )
 
 
 class TestVerifyKey:
@@ -135,22 +143,20 @@ class TestVerifyKey:
         assert_not_equal(k1, k2)
 
     @pytest.mark.parametrize(
-        ("_seed", "public_key", "message", "signature", "signed"),
+        ("_seed", "hpublic_key", "hmessage", "hsignature", "hsigned"),
         ed25519_known_answers()
     )
     def test_valid_signed_message(
-            self, _seed, public_key, message, signature, signed):
-        key = VerifyKey(
-            public_key,
-            encoder=HexEncoder,
-        )
+            self, _seed, hpublic_key, hmessage, hsignature, hsigned):
+        public_key = binascii.unhexlify(hpublic_key)
+        key = VerifyKey(public_key)
 
-        assert binascii.hexlify(
-            key.verify(signed, encoder=HexEncoder),
-        ) == message
-        assert binascii.hexlify(
-            key.verify(message, signature, encoder=HexEncoder),
-        ) == message
+        signed = binascii.unhexlify(hsigned)
+        message = binascii.unhexlify(hmessage)
+        signature = binascii.unhexlify(hsignature)
+
+        assert key.verify(signed) == message
+        assert key.verify(message, signature) == message
 
     def test_invalid_signed_message(self):
         skey = SigningKey.generate()
