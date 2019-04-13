@@ -14,12 +14,14 @@
 
 from __future__ import absolute_import, division, print_function
 
+from warnings import warn
+
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
 from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
                          PublicKey as _Curve25519_PublicKey)
-from nacl.utils import StringFixer, random
+from nacl.utils import PyNaclDeprecated, StringFixer, random
 
 
 class SignedMessage(bytes):
@@ -59,7 +61,15 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     :param encoder: A class that is able to decode the `key`
     """
 
-    def __init__(self, key, encoder=encoding.RawEncoder):
+    def __init__(self, key, **kwargs):
+        encoder = kwargs.get('encoder', encoding.RawEncoder)
+
+        if 'encoder' in kwargs:
+            warn(("Implicit encoding/decoding of signing keys "
+                  "is deprecated and will get removed in a future release. "
+                  "Remove explicit 'encoder={}' calling parameter").format(
+                      encoder.__class__),
+                 PyNaclDeprecated)
         # Decode the key
         key = encoder.decode(key)
         if not isinstance(key, bytes):
@@ -87,7 +97,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __ne__(self, other):
         return not (self == other)
 
-    def verify(self, smessage, signature=None, encoder=encoding.RawEncoder):
+    def verify(self, smessage, signature=None, **kwargs):
         """
         Verifies the signature of a signed message, returning the message
         if it has not been tampered with else raising
@@ -101,6 +111,15 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
             signature.
         :rtype: :class:`bytes`
         """
+        encoder = kwargs.get('encoder', encoding.RawEncoder)
+
+        if 'encoder' in kwargs:
+            warn(("Automatic encoding/decoding of signed messages "
+                  "is deprecated and will get removed in a future release. "
+                  "Remove explicit 'encoder={}' calling parameter").format(
+                      encoder.__class__),
+                 PyNaclDeprecated)
+
         if signature is not None:
             # If we were given the message and signature separately, combine
             #   them.
@@ -141,7 +160,17 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed, encoder=encoding.RawEncoder):
+    def __init__(self, seed, **kwargs):
+
+        encoder = kwargs.get('encoder', encoding.RawEncoder)
+
+        if 'encoder' in kwargs:
+            warn(("Implicit encoding/decoding of signing keys "
+                  "is deprecated and will get removed in a future release. "
+                  "Remove explicit 'encoder={}' calling parameter").format(
+                      encoder.__class__),
+                 PyNaclDeprecated)
+
         # Decode the seed
         seed = encoder.decode(seed)
         if not isinstance(seed, bytes):
@@ -182,12 +211,9 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         :rtype: :class:`~nacl.signing.SigningKey`
         """
-        return cls(
-            random(nacl.bindings.crypto_sign_SEEDBYTES),
-            encoder=encoding.RawEncoder,
-        )
+        return cls(random(nacl.bindings.crypto_sign_SEEDBYTES))
 
-    def sign(self, message, encoder=encoding.RawEncoder):
+    def sign(self, message, **kwargs):
         """
         Sign a message using this key.
 
@@ -195,6 +221,15 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         :param encoder: A class that is used to encode the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
+        encoder = kwargs.get('encoder', encoding.RawEncoder)
+
+        if 'encoder' in kwargs:
+            warn(("Automatic encoding/decoding of signed messages "
+                  "is deprecated and will get removed in a future release. "
+                  "Remove explicit 'encoder={}' calling parameter").format(
+                      encoder.__class__),
+                 PyNaclDeprecated)
+
         raw_signed = nacl.bindings.crypto_sign(message, self._signing_key)
 
         crypto_sign_BYTES = nacl.bindings.crypto_sign_BYTES
