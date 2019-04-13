@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2013-2019 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@ from __future__ import absolute_import, division, print_function
 import os
 
 import six
+
+
+class PyNaclDeprecated(UserWarning):
+    pass
 
 
 class EncryptedMessage(bytes):
