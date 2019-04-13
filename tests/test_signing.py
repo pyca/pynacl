@@ -105,11 +105,16 @@ class TestSigningKey:
     @pytest.mark.parametrize("hseed", [
         b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
     ])
-    def test_initialization_with_internal_decode_of_seed(self, hseed):
+    def test_deprecation_of_encoder_parameter(self, hseed):
         with pytest.warns(PyNaclDeprecated):
             SigningKey(hseed,
                        encoder=HexEncoder,
                        )
+        sk = SigningKey.generate()
+        unsigned = b"A test message!"
+        with pytest.warns(PyNaclDeprecated):
+            sk.sign(unsigned,
+                    encoder=HexEncoder)
 
 
 class TestVerifyKey:
@@ -187,6 +192,20 @@ class TestVerifyKey:
 
         assert tohex(public_key) == ("f1814f0e8ff1043d8a44d25babff3ced"
                                      "cae6c22c3edaa48f857ae70de2baae50")
+
+    def test_deprecation_of_encoder_parameter(self):
+        sk = SigningKey.generate()
+        unsigned = b"A test message!"
+        signed = sk.sign(unsigned)
+        hsigned = HexEncoder.encode(signed)
+        hpub = HexEncoder.encode(bytes(sk.verify_key))
+        with pytest.warns(PyNaclDeprecated):
+            VerifyKey(hpub,
+                      encoder=HexEncoder,
+                      )
+        with pytest.warns(PyNaclDeprecated):
+            sk.verify_key.verify(hsigned,
+                                 encoder=HexEncoder)
 
 
 def check_type_error(expected, f, *args):
