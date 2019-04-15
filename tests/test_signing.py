@@ -110,11 +110,34 @@ class TestSigningKey:
             SigningKey(hseed,
                        encoder=HexEncoder,
                        )
+        with pytest.warns(PyNaclDeprecated):
+            SigningKey(hseed,
+                       HexEncoder,
+                       )
         sk = SigningKey.generate()
         unsigned = b"A test message!"
         with pytest.warns(PyNaclDeprecated):
             sk.sign(unsigned,
                     encoder=HexEncoder)
+        with pytest.warns(PyNaclDeprecated):
+            sk.sign(unsigned,
+                    HexEncoder)
+
+    @pytest.mark.parametrize("hseed", [
+        b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a",
+    ])
+    def test_raising_on_excess_encoder_parameter(self, hseed):
+        with pytest.raises(TypeError):
+            SigningKey(hseed,
+                       HexEncoder,
+                       HexEncoder,
+                       )
+        sk = SigningKey.generate()
+        unsigned = b"A test message!"
+        with pytest.raises(TypeError):
+            sk.sign(unsigned,
+                    HexEncoder,
+                    HexEncoder)
 
 
 class TestVerifyKey:
@@ -196,16 +219,41 @@ class TestVerifyKey:
     def test_deprecation_of_encoder_parameter(self):
         sk = SigningKey.generate()
         unsigned = b"A test message!"
-        signed = sk.sign(unsigned)
-        hsigned = HexEncoder.encode(signed)
+        with pytest.warns(PyNaclDeprecated):
+            hsigned = sk.sign(unsigned, encoder=HexEncoder)
         hpub = HexEncoder.encode(bytes(sk.verify_key))
         with pytest.warns(PyNaclDeprecated):
             VerifyKey(hpub,
                       encoder=HexEncoder,
                       )
         with pytest.warns(PyNaclDeprecated):
+            VerifyKey(hpub,
+                      HexEncoder,
+                      )
+        with pytest.warns(PyNaclDeprecated):
             sk.verify_key.verify(hsigned,
                                  encoder=HexEncoder)
+        with pytest.warns(PyNaclDeprecated):
+            sk.verify_key.verify(hsigned.message,
+                                 hsigned.signature,
+                                 HexEncoder)
+
+    def test_raising_on_excess_encoder_parameter(self):
+        sk = SigningKey.generate()
+        unsigned = b"A test message!"
+        with pytest.warns(PyNaclDeprecated):
+            hsigned = sk.sign(unsigned, encoder=HexEncoder)
+        hpub = HexEncoder.encode(bytes(sk.verify_key))
+        with pytest.raises(TypeError):
+            VerifyKey(hpub,
+                      HexEncoder,
+                      HexEncoder,
+                      )
+        with pytest.raises(TypeError):
+            sk.verify_key.verify(hsigned.message,
+                                 hsigned.signature,
+                                 HexEncoder,
+                                 HexEncoder)
 
 
 def check_type_error(expected, f, *args):
