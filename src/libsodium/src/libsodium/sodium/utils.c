@@ -25,7 +25,7 @@
 # ifdef HAVE_ALLOCA_H
 #  include <alloca.h>
 # elif !defined(alloca)
-#  if defined(__GNUC__)
+#  if defined(__clang__) || defined(__GNUC__)
 #   define alloca __builtin_alloca
 #  elif defined _AIX
 #   define alloca __alloca
@@ -110,11 +110,13 @@ sodium_memzero(void *const pnt, const size_t len)
     }
 #elif defined(HAVE_EXPLICIT_BZERO)
     explicit_bzero(pnt, len);
+#elif defined(HAVE_EXPLICIT_MEMSET)
+    explicit_memset(pnt, 0, len);
 #elif HAVE_WEAK_SYMBOLS
     memset(pnt, 0, len);
     _sodium_dummy_symbol_to_prevent_memzero_lto(pnt, len);
-# ifdef HAVE_AMD64_ASM
-    __asm__ __volatile__ ("" : : "p"(pnt));
+# ifdef HAVE_INLINE_ASM
+    __asm__ __volatile__ ("" : : "r"(pnt) : "memory");
 # endif
 #else
     volatile unsigned char *volatile pnt_ =
@@ -287,7 +289,7 @@ sodium_increment(unsigned char *n, const size_t nlen)
 void
 sodium_add(unsigned char *a, const unsigned char *b, const size_t len)
 {
-    size_t        i = 0U;
+    size_t        i;
     uint_fast16_t c = 0U;
 
 #ifdef HAVE_AMD64_ASM
@@ -326,10 +328,53 @@ sodium_add(unsigned char *a, const unsigned char *b, const size_t len)
         return;
     }
 #endif
-    for (; i < len; i++) {
+    for (i = 0U; i < len; i++) {
         c += (uint_fast16_t) a[i] + (uint_fast16_t) b[i];
         a[i] = (unsigned char) c;
         c >>= 8;
+    }
+}
+
+void
+sodium_sub(unsigned char *a, const unsigned char *b, const size_t len)
+{
+    uint_fast16_t c = 0U;
+    size_t        i;
+
+#ifdef HAVE_AMD64_ASM
+    uint64_t t64_1, t64_2, t64_3, t64_4;
+    uint64_t t64_5, t64_6, t64_7, t64_8;
+    uint32_t t32;
+
+    if (len == 64U) {
+        __asm__ __volatile__(
+            "movq   (%[in]), %[t64_1] \n"
+            "movq  8(%[in]), %[t64_2] \n"
+            "movq 16(%[in]), %[t64_3] \n"
+            "movq 24(%[in]), %[t64_4] \n"
+            "movq 32(%[in]), %[t64_5] \n"
+            "movq 40(%[in]), %[t64_6] \n"
+            "movq 48(%[in]), %[t64_7] \n"
+            "movq 56(%[in]), %[t64_8] \n"
+            "subq %[t64_1],   (%[out]) \n"
+            "sbbq %[t64_2],  8(%[out]) \n"
+            "sbbq %[t64_3], 16(%[out]) \n"
+            "sbbq %[t64_4], 24(%[out]) \n"
+            "sbbq %[t64_5], 32(%[out]) \n"
+            "sbbq %[t64_6], 40(%[out]) \n"
+            "sbbq %[t64_7], 48(%[out]) \n"
+            "sbbq %[t64_8], 56(%[out]) \n"
+            : [t64_1] "=&r"(t64_1), [t64_2] "=&r"(t64_2), [t64_3] "=&r"(t64_3), [t64_4] "=&r"(t64_4),
+              [t64_5] "=&r"(t64_5), [t64_6] "=&r"(t64_6), [t64_7] "=&r"(t64_7), [t64_8] "=&r"(t64_8)
+            : [in] "S"(b), [out] "D"(a)
+            : "memory", "flags", "cc");
+        return;
+    }
+#endif
+    for (i = 0U; i < len; i++) {
+        c = (uint_fast16_t) a[i] - (uint_fast16_t) b[i] - c;
+        a[i] = (unsigned char) c;
+        c = (c >> 8) & 1U;
     }
 }
 
@@ -573,15 +618,11 @@ sodium_malloc(const size_t size)
 __attribute__((malloc)) void *
 sodium_allocarray(size_t count, size_t size)
 {
-    size_t total_size;
-
     if (count > (size_t) 0U && size >= (size_t) SIZE_MAX / count) {
         errno = ENOMEM;
         return NULL;
     }
-    total_size = count * size;
-
-    return sodium_malloc(total_size);
+    return sodium_malloc(count * size);
 }
 
 #ifndef HAVE_ALIGNED_MALLOC
@@ -699,8 +740,9 @@ sodium_pad(size_t *padded_buflen_p, unsigned char *buf,
     }
     mask = 0U;
     for (i = 0; i < blocksize; i++) {
-        barrier_mask = (unsigned char) (((i ^ xpadlen) - 1U) >> 8);
-        tail[-i] = (tail[-i] & mask) | (0x80 & barrier_mask);
+        barrier_mask = (unsigned char) (((i ^ xpadlen) - 1U)
+           >> ((sizeof(size_t) - 1) * CHAR_BIT));
+        *(tail - i) = ((*(tail - i)) & mask) | (0x80 & barrier_mask);
         mask |= barrier_mask;
     }
     return 0;
@@ -724,7 +766,7 @@ sodium_unpad(size_t *unpadded_buflen_p, const unsigned char *buf,
     tail = &buf[padded_buflen - 1U];
 
     for (i = 0U; i < blocksize; i++) {
-        c = tail[-i];
+        c = *(tail - i);
         is_barrier =
             (( (acc - 1U) & (pad_len - 1U) & ((c ^ 0x80) - 1U) ) >> 8) & 1U;
         acc |= c;
