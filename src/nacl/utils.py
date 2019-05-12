@@ -15,7 +15,8 @@
 from __future__ import absolute_import, division, print_function
 
 import os
-
+import nacl.bindings
+from nacl import encoding
 import six
 
 
@@ -65,3 +66,17 @@ def bytes_as_string(bytes_in):
 
 def random(size=32):
     return os.urandom(size)
+
+
+def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
+    """
+    Returns ``size`` number of deterministically generated pseudorandom bytes from a seed
+
+    :param size: int
+    :param seed: bytes
+    :rtype: bytes
+    """
+    raw_data = nacl.bindings.randombytes_buf_deterministic(size, seed)
+
+    return encoder.encode(raw_data)
+
