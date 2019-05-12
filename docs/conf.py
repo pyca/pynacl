@@ -181,6 +181,6 @@ htmlhelp_basename = "PyNaCldoc"
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {"http://docs.python.org/": None}
 
-
-# Enable the new ReadTheDocs theme
-RTD_NEW_THEME = True
+# Retry requests in the linkcheck builder so that we're resillient against
+# transient network errors.
+linkcheck_retries = 10
