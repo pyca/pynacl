@@ -1053,15 +1053,8 @@ static void add_l(unsigned char * const S)
         0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10 };
-    unsigned char c = 0U;
-    unsigned int  i;
-    unsigned int  s;
 
-    for (i = 0U; i < 32U; i++) {
-        s = S[i] + l[i] + c;
-        S[i] = (unsigned char) s;
-        c = (s >> 8) & 1;
-    }
+    sodium_add(S, l, sizeof l);
 }
 
 int main(void)
@@ -1266,7 +1259,7 @@ int main(void)
     }
     sodium_hex2bin(sk, crypto_sign_SECRETKEYBYTES,
                    "833fe62409237b9d62ec77587520911e9a759cec1d19755b7da901b96dca3d42",
-                   2 * crypto_sign_SECRETKEYBYTES , NULL, NULL, NULL);
+                   2 * crypto_sign_SECRETKEYBYTES / 2, NULL, NULL, NULL);
     sodium_hex2bin(pk, crypto_sign_PUBLICKEYBYTES,
                    "ec172b93ad5e563bf4932c70e1245034c35467ef2efd4d64ebf819683467e2bf",
                    2 * crypto_sign_PUBLICKEYBYTES, NULL, NULL, NULL);

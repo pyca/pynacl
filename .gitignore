@@ -40,3 +40,6 @@ src/libsodium/config.log
 src/libsodium/config.status
 src/libsodium/libsodium.pc
 src/libsodium/libtool
+
+# whitelist libsodium's build directory
+!src/libsodium/builds/msvc/build
