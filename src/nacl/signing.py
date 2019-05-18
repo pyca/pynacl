@@ -58,18 +58,13 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     signatures.
 
     :param key: [:class:`bytes`] Serialized Ed25519 public key
-    :param encoder: A class that is able to decode the `key`
+    :param encoder: (Deprecated) A class that is able to decode the `key`
     """
 
-    def __init__(self, key, *args, **kwargs):
-        if len(args) == 1:
-            encoder = args[0]
-        elif len(args) > 1:
-            raise TypeError("Too many arguments")
+    def __init__(self, key, encoder=None):
+        if encoder is None:
+            encoder = encoding.RawEncoder
         else:
-            encoder = kwargs.get('encoder', encoding.RawEncoder)
-
-        if 'encoder' in kwargs or len(args) > 0:
             warn(("Implicit encoding/decoding of signing keys "
                   "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
@@ -102,7 +97,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
     def __ne__(self, other):
         return not (self == other)
 
-    def verify(self, smessage, signature=None, *args, **kwargs):
+    def verify(self, smessage, signature=None, encoder=None):
         """
         Verifies the signature of a signed message, returning the message
         if it has not been tampered with else raising
@@ -112,18 +107,13 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
             signature and message concated together.
         :param signature: [:class:`bytes`] If an unsigned message is given for
             smessage then the detached signature must be provided.
-        :param encoder: A class that is able to decode the secret message and
-            signature.
+        :param encoder: (Deprecated) A class that is able to decode the secret
+            message and signature.
         :rtype: :class:`bytes`
         """
-        if len(args) == 1:
-            encoder = args[0]
-        elif len(args) > 1:
-            raise TypeError("Too many arguments")
+        if encoder is None:
+            encoder = encoding.RawEncoder
         else:
-            encoder = kwargs.get('encoder', encoding.RawEncoder)
-
-        if 'encoder' in kwargs or len(args) > 0:
             warn(("Automatic encoding/decoding of signed messages "
                   "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
@@ -164,22 +154,16 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         masquerade as you.
 
     :param seed: [:class:`bytes`] Random 32-byte value (i.e. private key)
-    :param encoder: A class that is able to decode the seed
+    :param encoder: (Deprecated) A class that is able to decode the seed
 
     :ivar: verify_key: [:class:`~nacl.signing.VerifyKey`] The verify
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed, *args, **kwargs):
-
-        if len(args) == 1:
-            encoder = args[0]
-        elif len(args) > 1:
-            raise TypeError("Too many arguments")
+    def __init__(self, seed, encoder=None):
+        if encoder is None:
+            encoder = encoding.RawEncoder
         else:
-            encoder = kwargs.get('encoder', encoding.RawEncoder)
-
-        if 'encoder' in kwargs or len(args) > 0:
             warn(("Implicit encoding/decoding of signing keys "
                   "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
@@ -228,22 +212,18 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         """
         return cls(random(nacl.bindings.crypto_sign_SEEDBYTES))
 
-    def sign(self, message, *args, **kwargs):
+    def sign(self, message, encoder=None):
         """
         Sign a message using this key.
 
         :param message: [:class:`bytes`] The data to be signed.
-        :param encoder: A class that is used to encode the signed message.
+        :param encoder: (Deprecated) A class that is used to encode
+            the signed message.
         :rtype: :class:`~nacl.signing.SignedMessage`
         """
-        if len(args) == 1:
-            encoder = args[0]
-        elif len(args) > 1:
-            raise TypeError("Too many arguments")
+        if encoder is None:
+            encoder = encoding.RawEncoder
         else:
-            encoder = kwargs.get('encoder', encoding.RawEncoder)
-
-        if 'encoder' in kwargs or len(args) > 0:
             warn(("Automatic encoding/decoding of signed messages "
                   "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
