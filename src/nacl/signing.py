@@ -71,7 +71,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         if 'encoder' in kwargs or len(args) > 0:
             warn(("Implicit encoding/decoding of signing keys "
-                  "is deprecated and will get removed in a future release. "
+                  "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
                       encoder.__class__),
                  PyNaclDeprecated)
@@ -125,7 +125,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         if 'encoder' in kwargs or len(args) > 0:
             warn(("Automatic encoding/decoding of signed messages "
-                  "is deprecated and will get removed in a future release. "
+                  "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
                       encoder.__class__),
                  PyNaclDeprecated)
@@ -181,7 +181,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         if 'encoder' in kwargs or len(args) > 0:
             warn(("Implicit encoding/decoding of signing keys "
-                  "is deprecated and will get removed in a future release. "
+                  "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
                       encoder.__class__),
                  PyNaclDeprecated)
@@ -245,7 +245,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
         if 'encoder' in kwargs or len(args) > 0:
             warn(("Automatic encoding/decoding of signed messages "
-                  "is deprecated and will get removed in a future release. "
+                  "is deprecated and will be removed in a future release. "
                   "Remove explicit 'encoder={}' calling parameter").format(
                       encoder.__class__),
                  PyNaclDeprecated)
