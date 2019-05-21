@@ -24,7 +24,7 @@ tv(void)
     unsigned char *m = (unsigned char *) sodium_malloc(MLEN);
     static const unsigned char nonce[crypto_aead_xchacha20poly1305_ietf_NPUBBYTES]
         = { 0x07, 0x00, 0x00, 0x00, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-            0x48, 0x49, 0x4a, 0x4b };
+            0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53 };
     static const unsigned char ad[ADLEN]
         = { 0x50, 0x51, 0x52, 0x53, 0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7 };
     unsigned char *c = (unsigned char *) sodium_malloc(CLEN);
@@ -118,7 +118,7 @@ tv(void)
     }
     m2len = 1;
     if (crypto_aead_xchacha20poly1305_ietf_decrypt(
-            m2, &m2len, NULL, NULL,
+            m2, &m2len, NULL, guard_page,
             randombytes_uniform(crypto_aead_xchacha20poly1305_ietf_ABYTES),
             NULL, 0U, nonce, firstkey) != -1) {
         printf("crypto_aead_xchacha20poly1305_ietf_decrypt() worked with a short "
@@ -175,6 +175,7 @@ tv(void)
     sodium_free(m2);
     sodium_free(m);
 
+    assert(crypto_aead_xchacha20poly1305_ietf_abytes() == crypto_aead_xchacha20poly1305_ietf_ABYTES);
     assert(crypto_aead_xchacha20poly1305_ietf_keybytes() == crypto_aead_xchacha20poly1305_ietf_KEYBYTES);
     assert(crypto_aead_xchacha20poly1305_ietf_npubbytes() == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
     assert(crypto_aead_xchacha20poly1305_ietf_nsecbytes() == 0U);
