@@ -1,0 +1,133 @@
+trigger:
+  branches:
+    include:
+      - "master"
+      - "*.x"
+  tags:
+    include:
+      - "*"
+
+jobs:
+- job: 'mac'
+  pool:
+    vmImage: 'macOS-10.14'
+  strategy:
+    matrix:
+      Python27-macOS1014:
+        python.version: '2.7'
+        TOXENV: py27
+        MACOS_VERSION: '10.14'
+      Python34-macOS1014:
+        python.version: '3.4'
+        TOXENV: py34
+        MACOS_VERSION: '10.14'
+      Python35-macOS1014:
+        python.version: '3.5'
+        TOXENV: py35
+        MACOS_VERSION: '10.14'
+      Python36-macOS1014:
+        python.version: '3.6'
+        TOXENV: py36
+        MACOS_VERSION: '10.14'
+      Python37-macOS1014:
+        python.version: '3.7'
+        TOXENV: py37
+        MACOS_VERSION: '10.14'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      architecture: 'x64'
+
+  - script: pip install tox codecov
+    displayName: 'Install tox & codecov'
+
+  - script: tox
+    displayName: 'Run tests'
+
+  - script: codecov -e MACOS_VERSION,AGENT_OS,TOXENV
+    displayName: 'Submit coverage'
+    condition: succeeded()
+- job: 'windows'
+  pool:
+    vmImage: 'windows-2019'
+  container: $[variables.containerImage]
+  strategy:
+    matrix:
+      Python27-x86:
+        TOXENV: py27
+        containerImage: 'pyca/cryptography-runner-windows:py27-x86'
+        PYTHON_DIR: 'Python27'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v100/static'
+      Python27-x86_64:
+        TOXENV: py27
+        containerImage: 'pyca/cryptography-runner-windows:py27-x86_64'
+        PYTHON_DIR: 'Python27'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
+      Python34-x86:
+        TOXENV: py34
+        containerImage: 'pyca/cryptography-runner-windows:py34-x86'
+        PYTHON_DIR: 'Python34'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v100/static'
+      Python34-x86_64:
+        TOXENV: py34
+        containerImage: 'pyca/cryptography-runner-windows:py34-x86_64'
+        PYTHON_DIR: 'Python34'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
+      Python35-x86:
+        TOXENV: py35
+        containerImage: 'pyca/cryptography-runner-windows:py35-x86'
+        PYTHON_DIR: 'Python35'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
+      Python35-x86_64:
+        TOXENV: py35
+        containerImage: 'pyca/cryptography-runner-windows:py35-x86_64'
+        PYTHON_DIR: 'Python35'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
+      Python36-x86:
+        TOXENV: py36
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86'
+        PYTHON_DIR: 'Python36'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
+      Python36-x86_64:
+        TOXENV: py36
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
+        PYTHON_DIR: 'Python36'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
+      Python37-x86:
+        TOXENV: py37
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86'
+        PYTHON_DIR: 'Python37'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
+      Python37-x86_64:
+        TOXENV: py37
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
+        PYTHON_DIR: 'Python37'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
+  steps:
+  - powershell: |
+      $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
+      Write-Host ('Downloading {0} ...' -f $url)
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      # See https://github.com/PowerShell/PowerShell/issues/2138
+      $ProgressPreference = 'SilentlyContinue'
+      Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
+      Expand-Archive libsodium.zip -DestinationPath c:\
+    displayName: 'Download libsodium libraries'
+  - powershell: |
+      Copy-Item ".azure-pipelines/windows/stdint.h" -Destination "C:/libsodium/include/stdint.h"
+    displayName: 'Copy stdint.h to include dir (distant weeping)'
+  - script: C:/%PYTHON_DIR%/Scripts/pip install codecov
+    displayName: 'Install codecov'
+  - script: |
+        set PYNACL_SODIUM_LIBRARY_NAME=sodium
+        set PYNACL_SODIUM_STATIC=1
+        set SODIUM_INSTALL=system
+        set INCLUDE=C:/libsodium/include;%INCLUDE%
+        set LIB=%SODIUM_LIB_PATH%;%LIB%
+        C:/%PYTHON_DIR%/Scripts/tox
+        IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+    displayName: 'Run tests'
+  - script: set PATH=%PATH%;C:/%PYTHON_DIR%/Scripts; & codecov -e AGENT_OS,TOXENV,WINDOWS_ARCH
+    displayName: 'Submit coverage'
+    condition: succeeded()
