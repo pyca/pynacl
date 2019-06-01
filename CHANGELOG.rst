@@ -4,6 +4,8 @@ Changelog
 1.4.0 (UNRELEASED)
 ------------------
 
+* **BACKWARDS INCOMPATIBLE:** We no longer distribute 32-bit ``manylinux1``
+  wheels. Continuing to produce them was a maintenance burden.
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
 * Add ``wheel`` and ``setuptools`` setup_requirements in ``setup.py`` (#485)
