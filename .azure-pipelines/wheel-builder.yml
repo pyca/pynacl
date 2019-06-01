@@ -103,50 +103,64 @@ jobs:
                   containerImage: 'pyca/cryptography-runner-windows:py27-x86'
                   SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v100/static'
                   PYTHON_VERSION: '27'
+                  WINDOWS_ARCH: 'x86'
               Python27-x86-64:
                   containerImage: 'pyca/cryptography-runner-windows:py27-x86_64'
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
                   PYTHON_VERSION: '27'
+                  WINDOWS_ARCH: 'x86_64'
               Python34-x86:
                   containerImage: 'pyca/cryptography-runner-windows:py34-x86'
                   SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v100/static'
                   PYTHON_VERSION: '34'
+                  WINDOWS_ARCH: 'x86'
               Python34-x86-64:
                   containerImage: 'pyca/cryptography-runner-windows:py34-x86_64'
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
                   PYTHON_VERSION: '34'
+                  WINDOWS_ARCH: 'x86_64'
               Python35-x86:
                   containerImage: 'pyca/cryptography-runner-windows:py35-x86'
                   SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
                   PYTHON_VERSION: '35'
+                  WINDOWS_ARCH: 'x86'
               Python35-x86-64:
                   containerImage: 'pyca/cryptography-runner-windows:py35-x86_64'
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
                   PYTHON_VERSION: '35'
+                  WINDOWS_ARCH: 'x86_64'
               Python36-x86:
                   containerImage: 'pyca/cryptography-runner-windows:py3-x86'
                   SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
                   PYTHON_VERSION: '36'
+                  WINDOWS_ARCH: 'x86'
               Python36-x86-64:
                   containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
                   PYTHON_VERSION: '36'
+                  WINDOWS_ARCH: 'x86_64'
               Python37-x86:
                   containerImage: 'pyca/cryptography-runner-windows:py3-x86'
                   SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
                   PYTHON_VERSION: '37'
+                  WINDOWS_ARCH: 'x86'
               Python37-x86-64:
                   containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
                   PYTHON_VERSION: '37'
+                  WINDOWS_ARCH: 'x86_64'
       steps:
           - powershell: |
               $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
+              $sha256hash = "C1D48D85C9361E350931FFE5067559CD7405A697C655D26955FB568D1084A5F4"
               Write-Host ('Downloading {0} ...' -f $url)
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               # See https://github.com/PowerShell/PowerShell/issues/2138
               $ProgressPreference = 'SilentlyContinue'
               Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
+              if ((Get-FileHash C:\libsodium.zip -Algorithm "SHA256").Hash -ne $sha256hash) {
+                exit 1
+              }
               Expand-Archive libsodium.zip -DestinationPath c:\
             displayName: 'Download libsodium libraries'
           - powershell: |
