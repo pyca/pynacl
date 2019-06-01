@@ -138,12 +138,10 @@ class build_clib(_build_clib):
             if e.errno != errno.EEXIST:
                 raise
 
-        # Ensure all of our executanle files have their permission set
+        # Ensure all of our executable files have their permission set
         for filename in [
                 "src/libsodium/autogen.sh",
                 "src/libsodium/compile",
-                "src/libsodium/config.guess",
-                "src/libsodium/config.sub",
                 "src/libsodium/configure",
                 "src/libsodium/depcomp",
                 "src/libsodium/install-sh",
