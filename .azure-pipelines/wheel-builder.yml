@@ -146,7 +146,7 @@ jobs:
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               # See https://github.com/PowerShell/PowerShell/issues/2138
               $ProgressPreference = 'SilentlyContinue'
-              Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip' -MaximumRetryCount 5 -RetryIntervalSec 3
+              Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
               Expand-Archive libsodium.zip -DestinationPath c:\
             displayName: 'Download libsodium libraries'
           - powershell: |
@@ -155,6 +155,9 @@ jobs:
           - script: '"C:/Python%PYTHON_VERSION%/Scripts/pip" install wheel cffi six'
             displayName: Install wheel and our Python dependencies
           - script: |
+              set PYNACL_SODIUM_LIBRARY_NAME=sodium
+              set PYNACL_SODIUM_STATIC=1
+              set SODIUM_INSTALL=system
               set INCLUDE="C:\libsodium\include";%INCLUDE%
               set LIB=%SODIUM_LIB_PATH%;%INCLUDE%
               C:/Python%PYTHON_VERSION%/Scripts/pip wheel pynacl --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
