@@ -159,7 +159,7 @@ jobs:
               set PYNACL_SODIUM_STATIC=1
               set SODIUM_INSTALL=system
               set INCLUDE="C:\libsodium\include";%INCLUDE%
-              set LIB=%SODIUM_LIB_PATH%;%INCLUDE%
+              set LIB=%SODIUM_LIB_PATH%;%LIB%
               C:/Python%PYTHON_VERSION%/Scripts/pip wheel pynacl --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
             displayName: Build the wheel
           - script: '"C:/Python%PYTHON_VERSION%/Scripts/pip" install -f wheelhouse pynacl --no-index'
