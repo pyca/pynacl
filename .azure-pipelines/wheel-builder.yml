@@ -158,7 +158,7 @@ jobs:
               # See https://github.com/PowerShell/PowerShell/issues/2138
               $ProgressPreference = 'SilentlyContinue'
               Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
-              if ((Get-FileHash C:\libsodium.zip -Algorithm "SHA256").Hash -ne $sha256hash) {
+              if ((Get-FileHash libsodium.zip -Algorithm "SHA256").Hash -ne $sha256hash) {
                 exit 1
               }
               Expand-Archive libsodium.zip -DestinationPath c:\
