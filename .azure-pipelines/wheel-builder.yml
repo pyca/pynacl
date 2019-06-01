@@ -147,7 +147,7 @@ jobs:
               # See https://github.com/PowerShell/PowerShell/issues/2138
               $ProgressPreference = 'SilentlyContinue'
               Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
-              Expand-Archive libsodium.zip -DestinationPath c:\libsodium
+              Expand-Archive libsodium.zip -DestinationPath c:\
             displayName: 'Download libsodium libraries'
           - powershell: |
               Copy-Item ".azure-pipelines/windows/stdint.h" -Destination "C:/libsodium/include/stdint.h"
