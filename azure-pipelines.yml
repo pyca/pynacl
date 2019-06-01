@@ -108,10 +108,11 @@ jobs:
   - powershell: |
       $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
       Write-Host ('Downloading {0} ...' -f $url)
-      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-      # See https://github.com/PowerShell/PowerShell/issues/2138
-      $ProgressPreference = 'SilentlyContinue'
-      Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
+      C:/%PYTHON_DIR%/python -c "
+      import urllib
+      with open('libsodium.zip') as f:
+          shutil.copyfileobj(urllib.urlopen('$url'), f)
+      "
       Expand-Archive libsodium.zip -DestinationPath c:\
     displayName: 'Download libsodium libraries'
   - powershell: |
