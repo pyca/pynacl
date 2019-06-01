@@ -146,7 +146,7 @@ jobs:
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               # See https://github.com/PowerShell/PowerShell/issues/2138
               $ProgressPreference = 'SilentlyContinue'
-              Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
+              Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip' -MaximumRetryCount 5 -RetryIntervalSec 3
               Expand-Archive libsodium.zip -DestinationPath c:\
             displayName: 'Download libsodium libraries'
           - powershell: |
