@@ -108,7 +108,7 @@ jobs:
   - powershell: |
       $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
       Write-Host ('Downloading {0} ...' -f $url)
-      & "C:/$PYTHON_DIR/python.exe" -c "
+      & "C:/$env:PYTHON_DIR/python" -c "
       import shutil
       import urllib
       with open('libsodium.zip') as f:
