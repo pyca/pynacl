@@ -57,9 +57,4 @@ exclude .coveragerc
 exclude codecov.yml
 
 # Remove release automation script
-exclude tasks.py
-
-# Exclude jenkins things
-exclude Jenkinsfile
-exclude .jenkins
-exclude .jenkins/Jenkinsfile-pynacl-wheel-builder
+exclude release.py
