@@ -4,12 +4,18 @@ Changelog
 1.4.0 (UNRELEASED)
 ------------------
 
+* Update ``libsodium`` to 1.0.18.
 * **BACKWARDS INCOMPATIBLE:** We no longer distribute 32-bit ``manylinux1``
   wheels. Continuing to produce them was a maintenance burden.
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
 * Add ``wheel`` and ``setuptools`` setup_requirements in ``setup.py`` (#485)
 * Fix checks on very slow builders (#481, #495)
+* Add low-level bindings to ed25519 arithmetic functions
+* update low-level blake2b state implementation
+* fix wrong short-input behavior of SealedBox.decrypt() (#517)
+* raise CryptPrefixError exception instead of InvalidkeyError when trying
+  to check a password against a verifier stored in a unknown format (#519)
 
 1.3.0 2018-09-26
 ----------------
