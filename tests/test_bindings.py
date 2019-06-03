@@ -579,7 +579,8 @@ def test_scalarmult_ed25519_base():
 
 
 def test_scalarmult_ed25519_noclamp():
-    one = 32 * b'\x01'
+    # An arbitrary scalar which is known to differ once clamped
+    scalar = 32 * b'\x01'
     BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
                                  0x66, 0x66, 0x66, 0x66,
                                  0x66, 0x66, 0x66, 0x66,
@@ -591,20 +592,20 @@ def test_scalarmult_ed25519_noclamp():
                                 )
                       )
 
-    p = c.crypto_scalarmult_ed25519_noclamp(one, BASEPOINT)
-    pb = c.crypto_scalarmult_ed25519_base_noclamp(one)
-    pc = c.crypto_scalarmult_ed25519_base(one)
+    p = c.crypto_scalarmult_ed25519_noclamp(scalar, BASEPOINT)
+    pb = c.crypto_scalarmult_ed25519_base_noclamp(scalar)
+    pc = c.crypto_scalarmult_ed25519_base(scalar)
     assert p == pb
     assert pb != pc
 
     # clamp manually
-    ba = bytearray(one)
+    ba = bytearray(scalar)
     ba0 = bytes(bytearray([ba[0] & 248]))
     ba31 = bytes(bytearray([(ba[31] & 127) | 64]))
-    one_clamped = ba0 + bytes(ba[1:31]) + ba31
+    scalar_clamped = ba0 + bytes(ba[1:31]) + ba31
 
-    p1 = c.crypto_scalarmult_ed25519_noclamp(one_clamped, BASEPOINT)
-    p2 = c.crypto_scalarmult_ed25519(one, BASEPOINT)
+    p1 = c.crypto_scalarmult_ed25519_noclamp(scalar_clamped, BASEPOINT)
+    p2 = c.crypto_scalarmult_ed25519(scalar, BASEPOINT)
     assert p1 == p2
 
 
