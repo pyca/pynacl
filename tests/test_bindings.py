@@ -576,3 +576,121 @@ def test_scalarmult_ed25519_base():
     p2 = c.crypto_scalarmult_ed25519(sclr, BASEPOINT)
 
     assert p2 == p
+
+
+def test_scalarmult_ed25519_noclamp():
+    one = 32 * b'\x01'
+    BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66,
+                                 0x66, 0x66, 0x66, 0x66]
+                                )
+                      )
+
+    p = c.crypto_scalarmult_ed25519_noclamp(one, BASEPOINT)
+    pb = c.crypto_scalarmult_ed25519_base_noclamp(one)
+    pc = c.crypto_scalarmult_ed25519_base(one)
+    assert p == pb
+    assert pb != pc
+
+    # clamp manually
+    ba = bytearray(one)
+    ba0 = bytes(bytearray([ba[0] & 248]))
+    ba31 = bytes(bytearray([(ba[31] & 127) | 64]))
+    one_clamped = ba0 + bytes(ba[1:31]) + ba31
+
+    p1 = c.crypto_scalarmult_ed25519_noclamp(one_clamped, BASEPOINT)
+    p2 = c.crypto_scalarmult_ed25519(one, BASEPOINT)
+    assert p1 == p2
+
+
+def test_ed25519_scalar_add_and_sub():
+    zero = 32 * b'\x00'
+    one = b'\x01' + 31 * b'\x00'
+    two = b'\x02' + 31 * b'\x00'
+    # the max integer over l, the order of the main subgroup
+    # 2^252+27742317777372353535851937790883648493 - 1
+    max = bytes(bytearray([0xec, 0xd3, 0xf5, 0x5c,
+                           0x1a, 0x63, 0x12, 0x58,
+                           0xd6, 0x9c, 0xf7, 0xa2,
+                           0xde, 0xf9, 0xde, 0x14,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x10]
+                          )
+                )
+
+    p1 = c.crypto_core_ed25519_scalar_add(two, max)
+    assert p1 == one
+
+    p2 = c.crypto_core_ed25519_scalar_sub(p1, p1)
+    assert p2 == zero
+
+    p3 = c.crypto_core_ed25519_scalar_sub(p2, one)
+    assert p3 == max
+
+
+def test_ed25519_scalar_mul():
+    zero = 32 * b'\x00'
+    three = b'\x03' + 31 * b'\x00'
+
+    # random scalar modulo l
+    sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
+    p = c.crypto_core_ed25519_scalar_add(sclr, zero)
+
+    p3 = c.crypto_core_ed25519_scalar_mul(p, three)
+    p2 = c.crypto_core_ed25519_scalar_add(p, p)
+    p1 = c.crypto_core_ed25519_scalar_sub(p3, p2)
+
+    assert p1 == p
+
+
+def test_ed25519_scalar_invert_negate_complement():
+    zero = 32 * b'\x00'
+    one = b'\x01' + 31 * b'\x00'
+
+    # random scalar modulo l
+    sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
+    sclr = c.crypto_core_ed25519_scalar_add(sclr, zero)
+
+    i = c.crypto_core_ed25519_scalar_invert(sclr)
+    assert c.crypto_core_ed25519_scalar_mul(sclr, i) == one
+
+    n = c.crypto_core_ed25519_scalar_negate(sclr)
+    assert c.crypto_core_ed25519_scalar_add(sclr, n) == zero
+
+    cp = c.crypto_core_ed25519_scalar_complement(sclr)
+    assert c.crypto_core_ed25519_scalar_add(sclr, cp) == one
+
+
+def test_ed25519_scalar_reduce():
+    zero = 32 * b'\x00'
+    # 65536 times the order of the main subgroup (which is bigger
+    # than 32 bytes), padded to 64 bytes
+    # 2^252+27742317777372353535851937790883648493
+    l65536 = bytes(2 * b'\x00') + \
+        bytes(bytearray([0xed, 0xd3, 0xf5, 0x5c,
+                         0x1a, 0x63, 0x12, 0x58,
+                         0xd6, 0x9c, 0xf7, 0xa2,
+                         0xde, 0xf9, 0xde, 0x14,
+                         0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x10]
+                        )
+              ) + bytes(30 * b'\x00')
+
+    # random scalar modulo l
+    sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
+    p = c.crypto_core_ed25519_scalar_add(sclr, zero)
+
+    # l65536 + p is bigger than 32 bytes
+    big = c.sodium_add(l65536, p + bytes(32 * b'\x00'))
+
+    r = c.crypto_core_ed25519_scalar_reduce(big)
+    assert r == p

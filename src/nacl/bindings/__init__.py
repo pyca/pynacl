@@ -46,8 +46,13 @@ from nacl.bindings.crypto_box import (
     crypto_box_seal_open, crypto_box_seed_keypair,
 )
 from nacl.bindings.crypto_core import (
-    crypto_core_ed25519_BYTES, crypto_core_ed25519_add,
-    crypto_core_ed25519_is_valid_point, crypto_core_ed25519_sub
+    crypto_core_ed25519_BYTES, crypto_core_ed25519_NONREDUCEDSCALARBYTES,
+    crypto_core_ed25519_SCALARBYTES, crypto_core_ed25519_add,
+    crypto_core_ed25519_is_valid_point, crypto_core_ed25519_scalar_add,
+    crypto_core_ed25519_scalar_complement, crypto_core_ed25519_scalar_invert,
+    crypto_core_ed25519_scalar_mul, crypto_core_ed25519_scalar_negate,
+    crypto_core_ed25519_scalar_reduce, crypto_core_ed25519_scalar_sub,
+    crypto_core_ed25519_sub
 )
 from nacl.bindings.crypto_generichash import (
     crypto_generichash_BYTES, crypto_generichash_BYTES_MAX,
@@ -134,7 +139,8 @@ from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult, crypto_scalarmult_BYTES, crypto_scalarmult_SCALARBYTES,
     crypto_scalarmult_base, crypto_scalarmult_ed25519,
     crypto_scalarmult_ed25519_BYTES, crypto_scalarmult_ed25519_SCALARBYTES,
-    crypto_scalarmult_ed25519_base
+    crypto_scalarmult_ed25519_base, crypto_scalarmult_ed25519_base_noclamp,
+    crypto_scalarmult_ed25519_noclamp
 )
 from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
@@ -227,10 +233,19 @@ __all__ = [
 
     "crypto_core_ed25519_BYTES",
     "crypto_core_ed25519_UNIFORMBYTES",
+    "crypto_core_ed25519_SCALARBYTES",
+    "crypto_core_ed25519_NONREDUCEDSCALARBYTES",
     "crypto_core_ed25519_add",
     "crypto_core_ed25519_from_uniform",
     "crypto_core_ed25519_is_valid_point",
     "crypto_core_ed25519_sub",
+    "crypto_core_ed25519_scalar_invert",
+    "crypto_core_ed25519_scalar_negate",
+    "crypto_core_ed25519_scalar_complement",
+    "crypto_core_ed25519_scalar_add",
+    "crypto_core_ed25519_scalar_sub",
+    "crypto_core_ed25519_scalar_mul",
+    "crypto_core_ed25519_scalar_reduce",
 
     "crypto_hash_BYTES",
     "crypto_hash_sha256_BYTES",
@@ -270,6 +285,8 @@ __all__ = [
     "crypto_scalarmult_ed25519_SCALARBYTES",
     "crypto_scalarmult_ed25519",
     "crypto_scalarmult_ed25519_base",
+    "crypto_scalarmult_ed25519_noclamp",
+    "crypto_scalarmult_ed25519_base_noclamp",
 
     "crypto_secretbox_KEYBYTES",
     "crypto_secretbox_NONCEBYTES",
@@ -390,6 +407,7 @@ __all__ = [
     "sodium_pad",
     "sodium_unpad",
 ]
+
 
 # Initialize Sodium
 sodium_init()
