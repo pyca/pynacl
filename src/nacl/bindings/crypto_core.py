@@ -191,7 +191,7 @@ def crypto_core_ed25519_scalar_complement(s):
 
 def crypto_core_ed25519_scalar_add(p, q):
     """
-    Add integers ``p`` and ``p`` modulo ``L``, where ``L`` is the order of
+    Add integers ``p`` and ``q`` modulo ``L``, where ``L`` is the order of
     the main subgroup.
 
     :param p: a :py:data:`.crypto_core_ed25519_SCALARBYTES`
@@ -220,7 +220,7 @@ def crypto_core_ed25519_scalar_add(p, q):
 
 def crypto_core_ed25519_scalar_sub(p, q):
     """
-    Subtract integers ``p`` and ``p`` modulo ``L``, where ``L`` is the
+    Subtract integers ``p`` and ``q`` modulo ``L``, where ``L`` is the
     order of the main subgroup.
 
     :param p: a :py:data:`.crypto_core_ed25519_SCALARBYTES`
@@ -249,7 +249,7 @@ def crypto_core_ed25519_scalar_sub(p, q):
 
 def crypto_core_ed25519_scalar_mul(p, q):
     """
-    Multiply integers ``p`` and ``p`` modulo ``L``, where ``L`` is the
+    Multiply integers ``p`` and ``q`` modulo ``L``, where ``L`` is the
     order of the main subgroup.
 
     :param p: a :py:data:`.crypto_core_ed25519_SCALARBYTES`
@@ -265,7 +265,7 @@ def crypto_core_ed25519_scalar_mul(p, q):
     ensure(isinstance(p, bytes) and isinstance(q, bytes) and
            len(p) == crypto_core_ed25519_SCALARBYTES and
            len(q) == crypto_core_ed25519_SCALARBYTES,
-           'Each scalar must be a {} long bytes sequence'.format(
+           'Each integer must be a {} long bytes sequence'.format(
            'crypto_core_ed25519_SCALARBYTES'),
            raising=exc.TypeError)
 
@@ -278,8 +278,8 @@ def crypto_core_ed25519_scalar_mul(p, q):
 
 def crypto_core_ed25519_scalar_reduce(s):
     """
-    Reduce integer ``s`` to s modulo ``L``, where ``L`` is the order of
-    the main subgroup.
+    Reduce integer ``s`` to ``s`` modulo ``L``, where ``L`` is the order
+    of the main subgroup.
 
     :param s: a :py:data:`.crypto_core_ed25519_NONREDUCEDSCALARBYTES`
               long bytes sequence representing an integer
