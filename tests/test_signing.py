@@ -21,7 +21,7 @@ import pytest
 from utils import assert_equal, assert_not_equal, read_crypto_test_vectors
 
 from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
-from nacl.encoding import Base64Encoder, HexEncoder
+from nacl.encoding import HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
@@ -149,8 +149,7 @@ class TestVerifyKey:
             key.verify(signed, encoder=HexEncoder),
         ) == message
         assert binascii.hexlify(
-            key.verify(message, HexEncoder.decode(signature),
-                       encoder=HexEncoder),
+            key.verify(message, signature, encoder=HexEncoder),
         ) == message
 
     def test_invalid_signed_message(self):
@@ -167,38 +166,6 @@ class TestVerifyKey:
         with pytest.raises(BadSignatureError):
             forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
-
-    def test_base64_smessage_with_detached_sig_matches_with_attached_sig(self):
-        sk = SigningKey.generate()
-        vk = sk.verify_key
-
-        smsg = sk.sign(b"Hello World in base64", encoder=Base64Encoder)
-
-        msg = smsg.message
-        b64sig = smsg.signature
-
-        sig = Base64Encoder.decode(b64sig)
-
-        assert vk.verify(msg, sig, encoder=Base64Encoder) == \
-            vk.verify(smsg, encoder=Base64Encoder)
-
-        assert Base64Encoder.decode(msg) == b"Hello World in base64"
-
-    def test_hex_smessage_with_detached_sig_matches_with_attached_sig(self):
-        sk = SigningKey.generate()
-        vk = sk.verify_key
-
-        smsg = sk.sign(b"Hello World in hex", encoder=HexEncoder)
-
-        msg = smsg.message
-        hexsig = smsg.signature
-
-        sig = HexEncoder.decode(hexsig)
-
-        assert vk.verify(msg, sig, encoder=HexEncoder) == \
-            vk.verify(smsg, encoder=HexEncoder)
-
-        assert HexEncoder.decode(msg) == b"Hello World in hex"
 
     def test_key_conversion(self):
         keypair_seed = (b"421151a459faeade3d247115f94aedae"
