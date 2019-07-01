@@ -142,7 +142,7 @@ def test_secret_box_wrong_lengths():
 def check_type_error(expected, f, *args):
     with pytest.raises(TypeError) as e:
         f(*args)
-    assert expected in str(e)
+    assert expected in str(e.value)
 
 
 def test_wrong_types():
