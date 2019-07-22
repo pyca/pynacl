@@ -15,9 +15,11 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+
+import six
+
 import nacl.bindings
 from nacl import encoding
-import six
 
 
 class EncryptedMessage(bytes):
@@ -70,7 +72,8 @@ def random(size=32):
 
 def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
     """
-    Returns ``size`` number of deterministically generated pseudorandom bytes from a seed
+    Returns ``size`` number of deterministically generated pseudorandom bytes
+    from a seed
 
     :param size: int
     :param seed: bytes
@@ -79,4 +82,3 @@ def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
     raw_data = nacl.bindings.randombytes_buf_deterministic(size, seed)
 
     return encoder.encode(raw_data)
-
