@@ -25,6 +25,17 @@ Utilities
     :param bytes size: The size of the random bytestring.
     :return bytes: The random bytestring.
 
+.. function:: randombytes_deterministic(size, seed, encoder=encoding.RawEncoder)
+
+    Returns ``size`` number of deterministically generated pseudorandom bytes
+    from a 32 byte seed.
+
+    :param bytes size: The size of the random bytestring.
+    :param bytes seed: The seed for the bytestring. This should be 32 bytes
+                            or a TypeError will be thrown.
+    :param encoder: The encoder class used to encode the produced bytes.
+    :return bytes: The random bytestring.
+
 .. function:: ensure(cond, *args, raising=nacl.exceptions.AssertionError)
 
     Returns if a condition is true, otherwise raise a caller-configurable

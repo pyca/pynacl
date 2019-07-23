@@ -77,6 +77,7 @@ def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
 
     :param size: int
     :param seed: bytes
+    :param encoder: The encoder class used to encode the produced bytes
     :rtype: bytes
     """
     raw_data = nacl.bindings.randombytes_buf_deterministic(size, seed)
