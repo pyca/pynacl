@@ -164,12 +164,16 @@ class build_clib(_build_clib):
         configure = abshere("src/libsodium/configure")
 
         # Run ./configure
+        configure_flags = ["--disable-shared", "--enable-static",
+                           "--disable-debug", "--disable-dependency-tracking",
+                           "--with-pic"]
+        if platform.system() == "SunOS":
+            # On Solaris, libssp doesn't link statically and causes linker
+            # errors during import
+            configure_flags.append("--disable-ssp")
         subprocess.check_call(
-            [
-                configure, "--disable-shared", "--enable-static",
-                "--disable-debug", "--disable-dependency-tracking",
-                "--with-pic", "--prefix", os.path.abspath(self.build_clib),
-            ],
+            [configure] + configure_flags +
+            ["--prefix", os.path.abspath(self.build_clib)],
             cwd=build_temp,
         )
 
