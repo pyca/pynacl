@@ -5,3 +5,4 @@ requires = [
     "wheel",
     "cffi>=1.4.1; python_implementation != 'PyPy'",
 ]
+build-backend = "setuptools.build_meta"

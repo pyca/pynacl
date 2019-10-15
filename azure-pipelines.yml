@@ -33,6 +33,10 @@ jobs:
         python.version: '3.7'
         TOXENV: py37
         MACOS_VERSION: '10.14'
+      Python38-macOS1014:
+        python.version: '3.8'
+        TOXENV: py37
+        MACOS_VERSION: '10.14'
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -103,6 +107,16 @@ jobs:
         TOXENV: py37
         containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
         PYTHON_DIR: 'Python37'
+        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
+      Python38-x86:
+        TOXENV: py38
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86'
+        PYTHON_DIR: 'Python38'
+        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
+      Python38-x86_64:
+        TOXENV: py38
+        containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
+        PYTHON_DIR: 'Python38'
         SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
   steps:
   - powershell: |
