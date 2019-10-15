@@ -23,6 +23,7 @@ import os.path
 import platform
 import subprocess
 import sys
+from distutils.sysconfig import get_config_vars
 
 from setuptools import Distribution, setup
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -129,9 +130,15 @@ class build_clib(_build_clib):
         if use_system():
             return
 
-        build_temp = os.path.abspath(self.build_temp)
+        # use Python's build environment variables
+        build_env = {key: val for key, val in
+                     get_config_vars().items() if key in
+                     ("LDFLAGS", "CFLAGS", "CC", "CCSHARED", "LDSHARED") and
+                     key not in os.environ}
+        os.environ.update(build_env)
 
         # Ensure our temporary build directory exists
+        build_temp = os.path.abspath(self.build_temp)
         try:
             os.makedirs(build_temp)
         except OSError as e:
