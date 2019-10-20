@@ -149,6 +149,16 @@ jobs:
                   SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
                   PYTHON_VERSION: '37'
                   WINDOWS_ARCH: 'x86_64'
+              Python38-x86:
+                  containerImage: 'pyca/cryptography-runner-windows:py3-x86'
+                  SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v140/static'
+                  PYTHON_VERSION: '38'
+                  WINDOWS_ARCH: 'x86'
+              Python38-x86-64:
+                  containerImage: 'pyca/cryptography-runner-windows:py3-x86_64'
+                  SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v140/static'
+                  PYTHON_VERSION: '38'
+                  WINDOWS_ARCH: 'x86_64'
       steps:
           - powershell: |
               $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
