@@ -181,6 +181,6 @@ htmlhelp_basename = "PyNaCldoc"
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {"http://docs.python.org/": None}
 
-# Retry requests in the linkcheck builder so that we're resillient against
+# Retry requests in the linkcheck builder so that we're resilient against
 # transient network errors.
 linkcheck_retries = 10
