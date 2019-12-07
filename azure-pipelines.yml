@@ -17,10 +17,6 @@ jobs:
         python.version: '2.7'
         TOXENV: py27
         MACOS_VERSION: '10.14'
-      Python34-macOS1014:
-        python.version: '3.4'
-        TOXENV: py34
-        MACOS_VERSION: '10.14'
       Python35-macOS1014:
         python.version: '3.5'
         TOXENV: py35
