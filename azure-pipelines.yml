@@ -60,16 +60,6 @@ jobs:
         containerImage: 'pyca/cryptography-runner-windows:py27-x86_64'
         PYTHON_DIR: 'Python27'
         SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
-      Python34-x86:
-        TOXENV: py34
-        containerImage: 'pyca/cryptography-runner-windows:py34-x86'
-        PYTHON_DIR: 'Python34'
-        SODIUM_LIB_PATH: 'C:/libsodium/Win32/Release/v100/static'
-      Python34-x86_64:
-        TOXENV: py34
-        containerImage: 'pyca/cryptography-runner-windows:py34-x86_64'
-        PYTHON_DIR: 'Python34'
-        SODIUM_LIB_PATH: 'C:/libsodium/x64/Release/v100/static'
       Python35-x86:
         TOXENV: py35
         containerImage: 'pyca/cryptography-runner-windows:py35-x86'
