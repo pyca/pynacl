@@ -20,7 +20,7 @@ import os
 import sys
 import unicodedata as ud
 
-from hypothesis import given, settings, unlimited
+from hypothesis import given, settings
 from hypothesis.strategies import integers, text
 
 import pytest
@@ -410,7 +410,7 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=None, max_examples=20, timeout=unlimited)
+@settings(deadline=None, max_examples=20)
 def test_argon2i_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
@@ -424,7 +424,7 @@ def test_argon2i_str_and_verify(password, ops, mem):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=None, max_examples=20, timeout=unlimited)
+@settings(deadline=None, max_examples=20)
 def test_argon2id_str_and_verify(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2id.str(_psw, opslimit=ops, memlimit=mem)
@@ -438,7 +438,7 @@ def test_argon2id_str_and_verify(password, ops, mem):
        integers(min_value=1024 * 1024,
                 max_value=16 * 1024 * 1024)
        )
-@settings(deadline=None, max_examples=20, timeout=unlimited)
+@settings(deadline=None, max_examples=20)
 def test_argon2i_str_and_verify_fail(password, ops, mem):
     _psw = password.encode('utf-8')
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
@@ -447,7 +447,7 @@ def test_argon2i_str_and_verify_fail(password, ops, mem):
 
 
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
-@settings(deadline=None, max_examples=5, timeout=unlimited)
+@settings(deadline=None, max_examples=5)
 def test_pwhash_str_and_verify(password):
     _psw = password.encode('utf-8')
 
