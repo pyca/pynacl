@@ -23,6 +23,7 @@ import os.path
 import platform
 import subprocess
 import sys
+from distutils.sysconfig import get_config_vars
 
 from setuptools import Distribution, setup
 from setuptools.command.build_ext import build_ext as _build_ext
@@ -129,9 +130,15 @@ class build_clib(_build_clib):
         if use_system():
             return
 
-        build_temp = os.path.abspath(self.build_temp)
+        # use Python's build environment variables
+        build_env = {key: val for key, val in
+                     get_config_vars().items() if key in
+                     ("LDFLAGS", "CFLAGS", "CC", "CCSHARED", "LDSHARED") and
+                     key not in os.environ}
+        os.environ.update(build_env)
 
         # Ensure our temporary build directory exists
+        build_temp = os.path.abspath(self.build_temp)
         try:
             os.makedirs(build_temp)
         except OSError as e:
@@ -157,12 +164,16 @@ class build_clib(_build_clib):
         configure = abshere("src/libsodium/configure")
 
         # Run ./configure
+        configure_flags = ["--disable-shared", "--enable-static",
+                           "--disable-debug", "--disable-dependency-tracking",
+                           "--with-pic"]
+        if platform.system() == "SunOS":
+            # On Solaris, libssp doesn't link statically and causes linker
+            # errors during import
+            configure_flags.append("--disable-ssp")
         subprocess.check_call(
-            [
-                configure, "--disable-shared", "--enable-static",
-                "--disable-debug", "--disable-dependency-tracking",
-                "--with-pic", "--prefix", os.path.abspath(self.build_clib),
-            ],
+            [configure] + configure_flags +
+            ["--prefix", os.path.abspath(self.build_clib)],
             cwd=build_temp,
         )
 
