@@ -132,7 +132,7 @@ jobs:
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
       - name: Test the installed wheel
-      - run: |
+        run: |
           python -c "import nacl.signing; key = nacl.signing.SigningKey.gene  rate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
       - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
