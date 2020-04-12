@@ -30,7 +30,7 @@ jobs:
                 PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
             fi
 
-            pip wheel pynacl --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+            pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: pip install -f wheelhouse --no-index pynacl
@@ -97,7 +97,7 @@ jobs:
           set SODIUM_INSTALL=system
           set INCLUDE=C:/libsodium/include;%INCLUDE%
           set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
-          pip wheel pynacl --no-use-pep517 --wheel-dir=wheelhouse --no  -binary pynacl
+          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no  -binary pynacl
         shell: cmd
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
