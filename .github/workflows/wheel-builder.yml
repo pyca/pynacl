@@ -101,19 +101,9 @@ jobs:
             Remove-Item VCForPython27.msi -Force
         shell: powershell
         if: matrix.PYTHON.VERSION == '2.7'
-      - name: 'Download libsodium libraries'
+      - name: Extract libsodium libraries
         run: |
-          $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
-          $sha256hash = "C1D48D85C9361E350931FFE5067559CD7405A697C655D26955FB568D1084A5F4"
-          Write-Host ('Downloading {0} ...' -f $url)
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          # See https://github.com/PowerShell/PowerShell/issues/2138
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
-          if ((Get-FileHash libsodium.zip -Algorithm "SHA256").Hash -ne $sha256hash) {
-            exit 1
-          }
-          Expand-Archive libsodium.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Copy stdint.h to include dir (distant weeping)
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
