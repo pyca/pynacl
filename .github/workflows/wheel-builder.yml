@@ -1,0 +1,45 @@
+name: Wheel Builder
+on:
+  repository_dispatch:
+    types: [wheel-builder]
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        PYTHON:
+          - {VERSION: '2.7', ABI_VERSION: '2.7'}
+          - {VERSION: '3.8', ABI_VERSION: '3.5'}
+    name: "Python ${{ matrix.PYTHON.VERSION }} on macOS"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.PYTHON.VERSION }}
+
+      # Downgrade pip, I can't remember why
+      - run: pip install -U pip==10.0.1
+      - run: pip install -U wheel cffi six
+
+      - name: Build the wheel
+        run: |
+            REGEX="3\.([0-9])*"
+            if [[ "$PYTHON_VERSION" =~ $REGEX ]]; then
+                PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
+            fi
+
+            pip wheel pynacl --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+        env:
+          PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
+      - run: pip install -f wheelhouse --no-index pynacl
+      - run: |
+          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
+
+      - run: mkdir pynacl-wheelhouse
+      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      - uses: actions/upload-artifact@v1
+        with:
+          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-macOS-${{ matrix.PYTHON.VERSION }}"
+          path: pynacl-wheelhouse/
