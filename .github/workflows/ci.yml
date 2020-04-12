@@ -33,7 +33,7 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: Install MSVC for Python 2.7
         run: |
-            Invoke-WebRequest -Uri https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59  FBF6D907B/VCForPython27.msi -OutFile VCForPython27.msi
+            Invoke-WebRequest -Uri https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi -OutFile VCForPython27.msi
             Start-Process msiexec -Wait -ArgumentList @('/i', 'VCForPython27.msi', '/qn', 'ALLUSERS=1')
             Remove-Item VCForPython27.msi -Force
         shell: powershell
