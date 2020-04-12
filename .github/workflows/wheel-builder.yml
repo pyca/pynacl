@@ -26,7 +26,7 @@ jobs:
       - run: auditwheel repair tmpwheelhouse/pynacl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
-          .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signatu      re = key.sign(b'test'); key.verify_key.verify(signature)"
+          .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
