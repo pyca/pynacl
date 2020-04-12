@@ -66,6 +66,8 @@ jobs:
             set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
             tox
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
+        env:
+          TOXENV: ${{ matrix.PYTHON.TOXENV }}
         shell: cmd
       - name: Upload coverage
         run: |
