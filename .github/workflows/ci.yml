@@ -55,6 +55,8 @@ jobs:
       - name: Copy stdint.h to include dir (distant weeping)
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
         if: matrix.PYTHON.VERSION == '2.7'
+      - name: Install tox and coverage
+        run: pip install tox coverage
       - name: Run tests
         run: |
             set PYNACL_SODIUM_LIBRARY_NAME=sodium
