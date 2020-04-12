@@ -68,7 +68,7 @@ jobs:
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-macOS-${{ matrix.PYTHON.VERSION }}"
@@ -135,7 +135,7 @@ jobs:
         run: |
           python -c "import nacl.signing; key = nacl.signing.SigningKey.gene  rate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
-      - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
+      - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-${{ matrix.WINDOWS.WINDOWS }}-${{ matrix.PYTHON.VERSION }}"
