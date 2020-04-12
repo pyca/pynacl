@@ -58,3 +58,6 @@ exclude codecov.yml
 
 # Remove release automation script
 exclude release.py
+
+# Exclude the libsodium msvc zip
+exclude src/libsodium*.zip
