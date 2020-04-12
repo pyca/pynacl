@@ -23,13 +23,13 @@ jobs:
               PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           .venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-binary pynacl --no-deps --wheel-dir=tmpwheelhouse $PY_LIMITED_API
-      - run: auditwheel repair tmpwheelhouse/pynacl*.whl -w wheelhouse/
+      - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-manylinux1-${{ matrix.PYTHON }}"
@@ -68,7 +68,7 @@ jobs:
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-macOS-${{ matrix.PYTHON.VERSION }}"
@@ -101,19 +101,9 @@ jobs:
             Remove-Item VCForPython27.msi -Force
         shell: powershell
         if: matrix.PYTHON.VERSION == '2.7'
-      - name: 'Download libsodium libraries'
+      - name: Extract libsodium libraries
         run: |
-          $url = "https://download.libsodium.org/libsodium/releases/libsodium-1.0.18-msvc.zip"
-          $sha256hash = "C1D48D85C9361E350931FFE5067559CD7405A697C655D26955FB568D1084A5F4"
-          Write-Host ('Downloading {0} ...' -f $url)
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-          # See https://github.com/PowerShell/PowerShell/issues/2138
-          $ProgressPreference = 'SilentlyContinue'
-          Invoke-WebRequest -Uri $url -OutFile 'libsodium.zip'
-          if ((Get-FileHash libsodium.zip -Algorithm "SHA256").Hash -ne $sha256hash) {
-            exit 1
-          }
-          Expand-Archive libsodium.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Copy stdint.h to include dir (distant weeping)
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
@@ -127,7 +117,7 @@ jobs:
           set SODIUM_INSTALL=system
           set INCLUDE=C:/libsodium/include;%INCLUDE%
           set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
-          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no  -binary pynacl
+          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
         shell: cmd
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
@@ -135,7 +125,7 @@ jobs:
         run: |
           python -c "import nacl.signing; key = nacl.signing.SigningKey.gene  rate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
-      - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
+      - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-${{ matrix.WINDOWS.WINDOWS }}-${{ matrix.PYTHON.VERSION }}"
