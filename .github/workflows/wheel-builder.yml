@@ -123,7 +123,7 @@ jobs:
         run: pip install -f wheelhouse pynacl --no-index
       - name: Test the installed wheel
         run: |
-          python -c "import nacl.signing; key = nacl.signing.SigningKey.gene  rate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
+          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
       - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v1
