@@ -23,7 +23,7 @@ jobs:
           - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v140"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on ${{ matrix.WINDOWS.WINDOWS }}"`
+    name: "Python ${{ matrix.PYTHON.VERSION }} on ${{ matrix.WINDOWS.WINDOWS }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
