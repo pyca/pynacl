@@ -119,7 +119,7 @@ def release(version):
 
     run("python", "setup.py", "sdist")
 
-    packages = glob.glob("dist/pynacl-{0}*".format(version))
+    packages = glob.glob("dist/PyNaCl-{0}*".format(version))
     run("twine", "upload", "-s", *packages)
 
     github_actions_wheel_paths = build_github_actions_wheels(
