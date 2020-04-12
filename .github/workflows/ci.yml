@@ -8,8 +8,34 @@ on:
     tags:
       - '*'
 
-
 jobs:
+  macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        PYTHON:
+          - {VERSION: "2.7", TOXENV: "py27"}
+          - {VERSION: "3.5", TOXENV: "py35"}
+          - {VERSION: "3.6", TOXENV: "py36"}
+          - {VERSION: "3.7", TOXENV: "py37"}
+          - {VERSION: "3.8", TOXENV: "py38"}
+    name: "Python ${{ matrix.PYTHON.VERSION }} on macOS"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.PYTHON.VERSION }}
+      - name: Install tox and coverage
+        run: pip install tox coverage
+      - name: Run tests
+        run: tox
+        env:
+          TOXENV: ${{ matrix.PYTHON.TOXENV }}
+      - name: Upload coverage
+        run: |
+          curl -o codecov.sh -f https://codecov.io/bash
+          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }} on macOS" -Z
   windows:
     runs-on: windows-latest
     strategy:
