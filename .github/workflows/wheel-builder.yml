@@ -23,13 +23,13 @@ jobs:
               PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           .venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-binary pynacl --no-deps --wheel-dir=tmpwheelhouse $PY_LIMITED_API
-      - run: auditwheel repair tmpwheelhouse/pynacl*.whl -w wheelhouse/
+      - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
           name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-manylinux1-${{ matrix.PYTHON }}"
@@ -127,7 +127,7 @@ jobs:
           set SODIUM_INSTALL=system
           set INCLUDE=C:/libsodium/include;%INCLUDE%
           set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
-          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no  -binary pynacl
+          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
         shell: cmd
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
