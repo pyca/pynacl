@@ -78,15 +78,15 @@ jobs:
     strategy:
       matrix:
         WINDOWS:
-          - {ARCH: 'x86', WINDOWS: 'win32', SODIUM_ARCH: 'Win32'}
-          - {ARCH: 'x64', WINDOWS: 'win64', SODIUM_ARCH: 'x64'}
+          - {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86'}
+          - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
           - {VERSION: "2.7", SODIUM_MSVC_VERSION: "v100"}
           - {VERSION: "3.5", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.6", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8",  SODIUM_MSVC_VERSION: "v140"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on ${{ matrix.WINDOWS.WINDOWS }}"
+    name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
@@ -101,24 +101,40 @@ jobs:
             Remove-Item VCForPython27.msi -Force
         shell: powershell
         if: matrix.PYTHON.VERSION == '2.7'
+
       - name: Extract libsodium libraries
         run: |
           Expand-Archive src/libsodium-1.0.18-msvc.zip -DestinationPath c:\
         shell: powershell
+      - name: Add sodium to paths
+        run: |
+          echo "::set-env name=INCLUDE::C:/libsodium/include;%INCLUDE%"
+          echo "::set-env name=LIB::C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%"
+
       - name: Copy stdint.h to include dir (distant weeping)
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
         if: matrix.PYTHON.VERSION == '2.7'
       - name: Install wheel and our Python dependencies
         run: pip install wheel cffi six
-      - name: Build the wheel
+
+      - name: Build the wheel (py2)
+        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
+        env:
+          PYNACL_SODIUM_LIBRARY_NAME: sodium
+          PYNACL_SODIUM_STATIC: 1
+          SODIUM_INSTALL: system
+        if: matrix.PYTHON.VERSION == '2.7'
+      - name: Build the wheel (py3)
         run: |
-          set PYNACL_SODIUM_LIBRARY_NAME=sodium
-          set PYNACL_SODIUM_STATIC=1
-          set SODIUM_INSTALL=system
-          set INCLUDE=C:/libsodium/include;%INCLUDE%
-          set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
         shell: cmd
+        env:
+          PYNACL_SODIUM_LIBRARY_NAME: sodium
+          PYNACL_SODIUM_STATIC: 1
+          SODIUM_INSTALL: system
+        if: matrix.PYTHON.VERSION != '2.7'
+
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
       - name: Test the installed wheel
@@ -128,5 +144,5 @@ jobs:
       - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-${{ matrix.WINDOWS.WINDOWS }}-${{ matrix.PYTHON.VERSION }}"
+          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse\

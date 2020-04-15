@@ -41,15 +41,15 @@ jobs:
     strategy:
       matrix:
         WINDOWS:
-          - {ARCH: 'x86', WINDOWS: 'win32', SODIUM_ARCH: 'Win32'}
-          - {ARCH: 'x64', WINDOWS: 'win64', SODIUM_ARCH: 'x64'}
+          - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
+          - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
           - {VERSION: "2.7", TOXENV: "py27", SODIUM_MSVC_VERSION: "v100"}
           - {VERSION: "3.5", TOXENV: "py35", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v140"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on ${{ matrix.WINDOWS.WINDOWS }}"
+    name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
@@ -88,4 +88,4 @@ jobs:
       - name: Upload coverage
         run: |
           curl -o codecov.sh -f https://codecov.io/bash
-          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }} on ${{ matrix.WINDOWS.WINDOWS }}" -Z
+          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}" -Z
