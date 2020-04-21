@@ -4,7 +4,7 @@ Installation
 Binary wheel install
 --------------------
 
-PyNaCl ships as a binary wheel on OS X, Windows and Linux ``manylinux1`` [#many]_ ,
+PyNaCl ships as a binary wheel on macOS, Windows and Linux ``manylinux1`` [#many]_ ,
 so all dependencies are included. Make sure you have an up-to-date pip
 and run:
 
