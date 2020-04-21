@@ -7,6 +7,7 @@ Changelog
 * Update ``libsodium`` to 1.0.18.
 * **BACKWARDS INCOMPATIBLE:** We no longer distribute 32-bit ``manylinux1``
   wheels. Continuing to produce them was a maintenance burden.
+* Added support for Python 3.8, and removed support for Python 3.4.
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
 * Add ``wheel`` and ``setuptools`` setup_requirements in ``setup.py`` (#485)
