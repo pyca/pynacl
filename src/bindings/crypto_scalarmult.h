@@ -13,9 +13,12 @@
  * limitations under the License.
  */
 
+static const int PYNACL_HAS_CRYPTO_SCALARMULT_ED25519;
+
 size_t crypto_scalarmult_bytes();
 size_t crypto_scalarmult_scalarbytes();
 size_t crypto_scalarmult_ed25519_bytes();
+size_t crypto_scalarmult_ed25519_scalarbytes();
 
 int crypto_scalarmult_base(unsigned char *q, const unsigned char *n);
 int crypto_scalarmult(unsigned char *q, const unsigned char *n, const unsigned char *p);
