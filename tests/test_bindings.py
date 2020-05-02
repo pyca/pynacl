@@ -483,6 +483,8 @@ def test_sign_ed25519ph_libsodium():
         c.crypto_sign_ed25519ph_final_verify(edph_wrng, exp_sig, pk)
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_is_valid_point():
     """
     Verify crypto_core_ed25519_is_valid_point correctly rejects
@@ -493,6 +495,8 @@ def test_ed25519_is_valid_point():
     assert res is False
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_add_and_sub():
     # the public component of a ed25519 keypair
     # is a point on the ed25519 curve
@@ -506,6 +510,9 @@ def test_ed25519_add_and_sub():
     assert c.crypto_core_ed25519_sub(p3, p2) == p1
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519 or
+                    not c.has_crypto_scalarmult_ed25519,
+                    reason="Requires full build of libsodium")
 def test_scalarmult_ed25519():
     SCALARBYTES = c.crypto_scalarmult_ed25519_SCALARBYTES
 
@@ -553,6 +560,8 @@ def test_scalarmult_ed25519():
     assert c.crypto_scalarmult_ed25519(MIN_P8, p) == _p8
 
 
+@pytest.mark.skipif(not c.has_crypto_scalarmult_ed25519,
+                    reason="Requires full build of libsodium")
 def test_scalarmult_ed25519_base():
     """
     Verify scalarmult_ed25519_base is congruent to
@@ -578,6 +587,8 @@ def test_scalarmult_ed25519_base():
     assert p2 == p
 
 
+@pytest.mark.skipif(not c.has_crypto_scalarmult_ed25519,
+                    reason="Requires full build of libsodium")
 def test_scalarmult_ed25519_noclamp():
     # An arbitrary scalar which is known to differ once clamped
     scalar = 32 * b'\x01'
@@ -609,6 +620,8 @@ def test_scalarmult_ed25519_noclamp():
     assert p1 == p2
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_scalar_add_and_sub():
     zero = 32 * b'\x00'
     one = b'\x01' + 31 * b'\x00'
@@ -636,6 +649,8 @@ def test_ed25519_scalar_add_and_sub():
     assert p3 == max
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_scalar_mul():
     zero = 32 * b'\x00'
     three = b'\x03' + 31 * b'\x00'
@@ -651,6 +666,8 @@ def test_ed25519_scalar_mul():
     assert p1 == p
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_scalar_invert_negate_complement():
     zero = 32 * b'\x00'
     one = b'\x01' + 31 * b'\x00'
@@ -669,6 +686,8 @@ def test_ed25519_scalar_invert_negate_complement():
     assert c.crypto_core_ed25519_scalar_add(sclr, cp) == one
 
 
+@pytest.mark.skipif(not c.has_crypto_core_ed25519,
+                    reason="Requires full build of libsodium")
 def test_ed25519_scalar_reduce():
     zero = 32 * b'\x00'
     # 65536 times the order of the main subgroup (which is bigger

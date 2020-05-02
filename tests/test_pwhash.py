@@ -84,6 +84,8 @@ def argon2id_raw_ref():
     return vectors
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit", "expected"),
     [
@@ -105,6 +107,8 @@ def test_kdf_scryptsalsa208sha256(size, password, salt,
     assert res == expected
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -116,6 +120,8 @@ def test_scryptsalsa208sha256_random(password):
     assert h1 != h2
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -128,6 +134,8 @@ def test_scryptsalsa208sha256_verify(password):
     )
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -141,6 +149,8 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
         )
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit"),
     [
@@ -160,6 +170,8 @@ def test_wrong_salt_length(size, password, salt,
                                              opslimit, memlimit)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
     [
@@ -175,6 +187,8 @@ def test_wrong_hash_length(passwd_hash, password):
                                                 password)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit"),
     [
@@ -194,6 +208,8 @@ def test_kdf_wrong_salt_length(size, password, salt,
                                              opslimit, memlimit)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
     [
@@ -209,6 +225,8 @@ def test_str_verify_wrong_hash_length(passwd_hash, password):
                                                 password)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit", "expected"),
     [
@@ -230,6 +248,8 @@ def test_scrypt_kdf(size, password, salt,
     assert res == expected
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -241,6 +261,8 @@ def test_scrypt_random(password):
     assert h1 != h2
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -253,6 +275,8 @@ def test_scrypt_verify(password):
     )
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("password", ), [
     (
         b"The quick brown fox jumps over the lazy dog.",
@@ -266,6 +290,8 @@ def test_scrypt_verify_incorrect(password):
         )
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit"),
     [
@@ -285,6 +311,8 @@ def test_wrong_scrypt_salt_length(size, password, salt,
                                opslimit, memlimit)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
     [
@@ -300,6 +328,8 @@ def test_wrong_scrypt_hash_length(passwd_hash, password):
                                   password)
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("size", "password", "salt", "opslimit", "memlimit"),
     [
@@ -367,6 +397,8 @@ def test_variable_limits(opslimit, memlimit, n, r, p):
     assert rp == p
 
 
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
     [
@@ -466,6 +498,14 @@ def test_pwhash_str_and_verify(password):
     )
     a2id_res = nacl.pwhash.verify(a2id_hash, _psw)
     assert a2id_res is True
+
+
+@pytest.mark.skipif(not nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires full build of libsodium")
+@given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
+@settings(deadline=None, max_examples=5)
+def test_pwhash_scrypt_str_and_verify(password):
+    _psw = password.encode('utf-8')
 
     scrypt_hash = nacl.pwhash.scrypt.str(
         _psw,

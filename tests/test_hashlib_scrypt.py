@@ -80,6 +80,8 @@ RFC_7914_VECTORS = [
 ]
 
 
+@pytest.mark.skipif(not nacl.hashlib.SCRYPT_AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(('password', 'salt', 'n', 'r', 'p',
                           'dklen', 'expected'),
                          RFC_7914_VECTORS)

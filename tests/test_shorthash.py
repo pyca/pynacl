@@ -18,7 +18,7 @@ from binascii import hexlify
 
 import pytest
 
-from nacl.hash import siphash24, siphashx24
+from nacl.hash import SIPHASHX_AVAILABLE, siphash24, siphashx24
 
 HASHES = [
     b"\x31\x0e\x0e\xdd\x47\xdb\x6f\x72",
@@ -202,6 +202,8 @@ def test_siphash24(inp, key, expected):
     assert rs == hexlify(expected)
 
 
+@pytest.mark.skipif(not SIPHASHX_AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(("inp", "key", "expected"),
                          sipx24_vectors()
                          )
@@ -217,8 +219,20 @@ def test_siphashx24(inp, key, expected):
         b''
     )
 ])
-def test_shortened_key(inp, key, expected):
+def test_siphash24_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphash24(inp, key)
+
+
+@pytest.mark.skipif(not SIPHASHX_AVAILABLE,
+                    reason="Requires full build of libsodium")
+@pytest.mark.parametrize(("inp", "key", "expected"), [
+    (
+        b'\00',
+        b'\x00\x01\x02\x03\x04\x05\x06\x07',
+        b''
+    )
+])
+def test_siphashx24_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphashx24(inp, key)
