@@ -291,6 +291,9 @@ nacl.pwhash.scrypt
 
     See: :py:func:`nacl.pwhash.argon2id.kdf` for the general API.
 
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
+
     .. versionadded:: 1.2
 
 .. function:: str(password, \
@@ -302,6 +305,9 @@ nacl.pwhash.scrypt
 
     See: :py:func:`nacl.pwhash.str` for the general API.
 
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
+
     .. versionadded:: 1.2
 
 .. function:: verify(password_hash, password)
@@ -310,6 +316,9 @@ nacl.pwhash.scrypt
     ``password_hash`` as a password verifier.
 
     See: py:func:`nacl.pwhash.verify` for the general API.
+
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     .. versionadded:: 1.2
 

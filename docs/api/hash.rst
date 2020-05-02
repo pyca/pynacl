@@ -78,4 +78,5 @@ nacl.hash
     :param encoder: A class that is able to encode the hashed message.
     :return: The hashed message.
     :rtype: bytes(:py:data:`.SIPHASHX_BYTES`) long bytes sequence
-
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.

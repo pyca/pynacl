@@ -28,6 +28,8 @@ KEYBYTES_MAX = nacl.bindings.crypto_generichash_KEYBYTES_MAX
 SALTBYTES = nacl.bindings.crypto_generichash_SALTBYTES
 PERSONALBYTES = nacl.bindings.crypto_generichash_PERSONALBYTES
 
+SCRYPT_AVAILABLE = nacl.bindings.has_crypto_pwhash_scryptsalsa208sha256
+
 _b2b_init = nacl.bindings.crypto_generichash_blake2b_init
 _b2b_final = nacl.bindings.crypto_generichash_blake2b_final
 _b2b_update = nacl.bindings.crypto_generichash_blake2b_update
@@ -113,6 +115,9 @@ def scrypt(password, salt='', n=2**20, r=8, p=1,
            maxmem=2**25, dklen=64):
     """
     Derive a cryptographic key using the scrypt KDF.
+
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     Implements the same signature as the ``hashlib.scrypt`` implemented
     in cpython version 3.6
