@@ -171,6 +171,8 @@ class build_clib(_build_clib):
             # On Solaris, libssp doesn't link statically and causes linker
             # errors during import
             configure_flags.append("--disable-ssp")
+        if os.environ.get('SODIUM_INSTALL_MINIMAL'):
+            configure_flags.append("--enable-minimal")
         subprocess.check_call(
             [configure] + configure_flags +
             ["--prefix", os.path.abspath(self.build_clib)],
