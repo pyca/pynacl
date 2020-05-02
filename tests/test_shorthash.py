@@ -18,6 +18,7 @@ from binascii import hexlify
 
 import pytest
 
+from nacl.exceptions import UnavailableError
 from nacl.hash import SIPHASHX_AVAILABLE, siphash24, siphashx24
 
 HASHES = [
@@ -236,3 +237,10 @@ def test_siphash24_shortened_key(inp, key, expected):
 def test_siphashx24_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphashx24(inp, key)
+
+
+@pytest.mark.skipif(SIPHASHX_AVAILABLE,
+                    reason="Requires minimal build of libsodium")
+def test_siphashx24_unavailable():
+    with pytest.raises(UnavailableError):
+        siphashx24(b'', b'')

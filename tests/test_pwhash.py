@@ -599,3 +599,29 @@ def test_check_limits_for_unknown_algorithm():
     from nacl.bindings.crypto_pwhash import _check_argon2_limits_alg
     with pytest.raises(exc.TypeError):
         _check_argon2_limits_alg(4, 1024, -1)
+
+
+@pytest.mark.skipif(nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires minimal build of libsodium")
+def test_scryptsalsa208sha256_unavailable():
+    empty = b""
+
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.kdf_scryptsalsa208sha256(0, empty, empty)
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.scryptsalsa208sha256_str(empty)
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.verify_scryptsalsa208sha256(empty, empty)
+
+
+@pytest.mark.skipif(nacl.pwhash.scrypt.AVAILABLE,
+                    reason="Requires minimal build of libsodium")
+def test_scrypt_unavailable():
+    empty = b""
+
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.scrypt.kdf(0, empty, empty)
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.scrypt.str(empty)
+    with pytest.raises(exc.UnavailableError):
+        nacl.pwhash.scrypt.verify(empty, empty)

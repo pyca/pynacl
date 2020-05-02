@@ -27,7 +27,7 @@ from test_signing import ed25519_known_answers
 from utils import flip_byte, read_crypto_test_vectors
 
 from nacl import bindings as c
-from nacl.exceptions import BadSignatureError, CryptoError
+from nacl.exceptions import BadSignatureError, CryptoError, UnavailableError
 
 
 def tohex(b):
@@ -714,3 +714,46 @@ def test_ed25519_scalar_reduce():
 
     r = c.crypto_core_ed25519_scalar_reduce(big)
     assert r == p
+
+
+@pytest.mark.skipif(c.has_crypto_core_ed25519,
+                    reason="Requires minimal build of libsodium")
+def test_ed25519_unavailable():
+    zero = 32 * b'\x00'
+
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_is_valid_point(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_add(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_sub(zero, zero)
+
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_invert(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_negate(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_complement(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_add(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_sub(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_mul(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ed25519_scalar_reduce(zero)
+
+
+@pytest.mark.skipif(c.has_crypto_scalarmult_ed25519,
+                    reason="Requires minimal build of libsodium")
+def test_scalarmult_ed25519_unavailable():
+    zero = 32 * b'\x00'
+
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ed25519_base(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ed25519_base_noclamp(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ed25519(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ed25519_noclamp(zero, zero)
