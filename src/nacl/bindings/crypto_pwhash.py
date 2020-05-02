@@ -22,39 +22,59 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-crypto_pwhash_scryptsalsa208sha256_STRPREFIX = \
-    ffi.string(ffi.cast("char *",
-                        lib.crypto_pwhash_scryptsalsa208sha256_strprefix()
-                        )
-               )[:]
-crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \
-    lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
-crypto_pwhash_scryptsalsa208sha256_STRBYTES = \
-    lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
-crypto_pwhash_scryptsalsa208sha256_PASSWD_MIN = \
-    lib.crypto_pwhash_scryptsalsa208sha256_passwd_min()
-crypto_pwhash_scryptsalsa208sha256_PASSWD_MAX = \
-    lib.crypto_pwhash_scryptsalsa208sha256_passwd_max()
-crypto_pwhash_scryptsalsa208sha256_BYTES_MIN = \
-    lib.crypto_pwhash_scryptsalsa208sha256_bytes_min()
-crypto_pwhash_scryptsalsa208sha256_BYTES_MAX = \
-    lib.crypto_pwhash_scryptsalsa208sha256_bytes_max()
-crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN = \
-    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_min()
-crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX = \
-    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_max()
-crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN = \
-    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_min()
-crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX = \
-    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_max()
-crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE = \
-    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_interactive()
-crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE = \
-    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_interactive()
-crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = \
-    lib.crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive()
-crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = \
-    lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
+has_crypto_pwhash_scryptsalsa208sha256 = \
+    bool(lib.PYNACL_HAS_CRYPTO_PWHASH_SCRYPTSALSA208SHA256)
+
+crypto_pwhash_scryptsalsa208sha256_STRPREFIX = b''
+crypto_pwhash_scryptsalsa208sha256_SALTBYTES = 0
+crypto_pwhash_scryptsalsa208sha256_STRBYTES = 0
+crypto_pwhash_scryptsalsa208sha256_PASSWD_MIN = 0
+crypto_pwhash_scryptsalsa208sha256_PASSWD_MAX = 0
+crypto_pwhash_scryptsalsa208sha256_BYTES_MIN = 0
+crypto_pwhash_scryptsalsa208sha256_BYTES_MAX = 0
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN = 0
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX = 0
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN = 0
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX = 0
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE = 0
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE = 0
+crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = 0
+crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = 0
+
+if has_crypto_pwhash_scryptsalsa208sha256:
+    crypto_pwhash_scryptsalsa208sha256_STRPREFIX = \
+        ffi.string(ffi.cast("char *",
+                            lib.crypto_pwhash_scryptsalsa208sha256_strprefix()
+                            )
+                   )[:]
+    crypto_pwhash_scryptsalsa208sha256_SALTBYTES = \
+        lib.crypto_pwhash_scryptsalsa208sha256_saltbytes()
+    crypto_pwhash_scryptsalsa208sha256_STRBYTES = \
+        lib.crypto_pwhash_scryptsalsa208sha256_strbytes()
+    crypto_pwhash_scryptsalsa208sha256_PASSWD_MIN = \
+        lib.crypto_pwhash_scryptsalsa208sha256_passwd_min()
+    crypto_pwhash_scryptsalsa208sha256_PASSWD_MAX = \
+        lib.crypto_pwhash_scryptsalsa208sha256_passwd_max()
+    crypto_pwhash_scryptsalsa208sha256_BYTES_MIN = \
+        lib.crypto_pwhash_scryptsalsa208sha256_bytes_min()
+    crypto_pwhash_scryptsalsa208sha256_BYTES_MAX = \
+        lib.crypto_pwhash_scryptsalsa208sha256_bytes_max()
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MIN = \
+        lib.crypto_pwhash_scryptsalsa208sha256_memlimit_min()
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX = \
+        lib.crypto_pwhash_scryptsalsa208sha256_memlimit_max()
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN = \
+        lib.crypto_pwhash_scryptsalsa208sha256_opslimit_min()
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX = \
+        lib.crypto_pwhash_scryptsalsa208sha256_opslimit_max()
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE = \
+        lib.crypto_pwhash_scryptsalsa208sha256_opslimit_interactive()
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE = \
+        lib.crypto_pwhash_scryptsalsa208sha256_memlimit_interactive()
+    crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE = \
+        lib.crypto_pwhash_scryptsalsa208sha256_opslimit_sensitive()
+    crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE = \
+        lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
 
 crypto_pwhash_ALG_ARGON2I13 = lib.crypto_pwhash_alg_argon2i13()
 crypto_pwhash_ALG_ARGON2ID13 = lib.crypto_pwhash_alg_argon2id13()
@@ -229,7 +249,13 @@ def crypto_pwhash_scryptsalsa208sha256_ll(passwd, salt, n, r, p, dklen=64,
     :param int maxmem: the maximum available memory available for scrypt's
                        operations
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(has_crypto_pwhash_scryptsalsa208sha256,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
+
     ensure(isinstance(n, integer_types),
            raising=TypeError)
     ensure(isinstance(r, integer_types),
@@ -275,7 +301,13 @@ def crypto_pwhash_scryptsalsa208sha256_str(
     :param int memlimit:
     :return: serialized key hash, including salt and tuning parameters
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(has_crypto_pwhash_scryptsalsa208sha256,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
+
     buf = ffi.new("char[]", SCRYPT_STRBYTES)
 
     ret = lib.crypto_pwhash_scryptsalsa208sha256_str(buf, passwd,
@@ -297,7 +329,12 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     :param passwd_hash: bytes
     :param passwd: bytes
     :rtype: boolean
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(has_crypto_pwhash_scryptsalsa208sha256,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
 
     ensure(len(passwd_hash) == SCRYPT_STRBYTES - 1, 'Invalid password hash',
            raising=exc.ValueError)

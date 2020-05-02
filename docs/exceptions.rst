@@ -33,6 +33,13 @@ PyNaCl specific exceptions
     Raised on password/key verification mismatch
 
 
+.. class:: UnavailableError
+
+    is a subclass of :class:`~nacl.exceptions.RuntimeError`, raised when
+    trying to call functions not available in a minimal build of
+    libsodium.
+
+
 PyNaCl exceptions mixing-in standard library ones
 -------------------------------------------------
 

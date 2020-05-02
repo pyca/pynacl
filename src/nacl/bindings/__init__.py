@@ -52,7 +52,7 @@ from nacl.bindings.crypto_core import (
     crypto_core_ed25519_scalar_complement, crypto_core_ed25519_scalar_invert,
     crypto_core_ed25519_scalar_mul, crypto_core_ed25519_scalar_negate,
     crypto_core_ed25519_scalar_reduce, crypto_core_ed25519_scalar_sub,
-    crypto_core_ed25519_sub
+    crypto_core_ed25519_sub, has_crypto_core_ed25519
 )
 from nacl.bindings.crypto_generichash import (
     crypto_generichash_BYTES, crypto_generichash_BYTES_MAX,
@@ -133,6 +133,7 @@ from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_scryptsalsa208sha256_str_verify,
     crypto_pwhash_str_alg,
     crypto_pwhash_str_verify,
+    has_crypto_pwhash_scryptsalsa208sha256,
     nacl_bindings_pick_scrypt_params,
 )
 from nacl.bindings.crypto_scalarmult import (
@@ -140,7 +141,7 @@ from nacl.bindings.crypto_scalarmult import (
     crypto_scalarmult_base, crypto_scalarmult_ed25519,
     crypto_scalarmult_ed25519_BYTES, crypto_scalarmult_ed25519_SCALARBYTES,
     crypto_scalarmult_ed25519_base, crypto_scalarmult_ed25519_base_noclamp,
-    crypto_scalarmult_ed25519_noclamp
+    crypto_scalarmult_ed25519_noclamp, has_crypto_scalarmult_ed25519
 )
 from nacl.bindings.crypto_secretbox import (
     crypto_secretbox, crypto_secretbox_BOXZEROBYTES, crypto_secretbox_KEYBYTES,
@@ -171,7 +172,8 @@ from nacl.bindings.crypto_shorthash import (
     XBYTES as crypto_shorthash_siphashx24_BYTES,
     XKEYBYTES as crypto_shorthash_siphashx24_KEYBYTES,
     crypto_shorthash_siphash24,
-    crypto_shorthash_siphashx24
+    crypto_shorthash_siphashx24,
+    has_crypto_shorthash_siphashx24
 )
 from nacl.bindings.crypto_sign import (
     crypto_sign, crypto_sign_BYTES, crypto_sign_PUBLICKEYBYTES,
@@ -231,6 +233,7 @@ __all__ = [
     "crypto_box_seal_open",
     "crypto_box_seed_keypair",
 
+    "has_crypto_core_ed25519",
     "crypto_core_ed25519_BYTES",
     "crypto_core_ed25519_UNIFORMBYTES",
     "crypto_core_ed25519_SCALARBYTES",
@@ -277,6 +280,7 @@ __all__ = [
     "crypto_kx_SEED_BYTES",
     "crypto_kx_SESSION_KEY_BYTES",
 
+    "has_crypto_scalarmult_ed25519",
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
     "crypto_scalarmult",
@@ -313,6 +317,7 @@ __all__ = [
     "crypto_secretstream_xchacha20poly1305_rekey",
     "crypto_secretstream_xchacha20poly1305_state",
 
+    "has_crypto_shorthash_siphashx24",
     "crypto_shorthash_siphash24_BYTES",
     "crypto_shorthash_siphash24_KEYBYTES",
     "crypto_shorthash_siphash24",
@@ -376,6 +381,7 @@ __all__ = [
     "crypto_pwhash_str_alg",
     "crypto_pwhash_str_verify",
 
+    "has_crypto_pwhash_scryptsalsa208sha256",
     "crypto_pwhash_scryptsalsa208sha256_BYTES_MAX",
     "crypto_pwhash_scryptsalsa208sha256_BYTES_MIN",
     "crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE",

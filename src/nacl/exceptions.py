@@ -51,6 +51,15 @@ class CryptPrefixError(InvalidkeyError):
     pass
 
 
+class UnavailableError(RuntimeError):
+    """
+    is a subclass of :class:`~nacl.exceptions.RuntimeError`, raised when
+    trying to call functions not available in a minimal build of
+    libsodium.
+    """
+    pass
+
+
 def ensure(cond, *args, **kwds):
     """
     Return if a condition is true, otherwise raise a caller-configurable
