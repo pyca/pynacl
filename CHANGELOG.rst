@@ -17,6 +17,11 @@ Changelog
 * Fix wrong short-input behavior of SealedBox.decrypt() (#517)
 * Raise CryptPrefixError exception instead of InvalidkeyError when trying
   to check a password against a verifier stored in a unknown format (#519)
+* Add support for minimal builds of libsodium. Trying to call functions
+  not available in a minimal build will raise an UnavailableError
+  exception. To compile a minimal build of the bundled libsodium, set
+  the SODIUM_INSTALL_MINIMAL environment variable to any non-empty
+  string (e.g. ``SODIUM_INSTALL_MINIMAL=1``) for setup.
 
 1.3.0 2018-09-26
 ----------------
