@@ -19,7 +19,8 @@ jobs:
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on macOS"
+          - {VERSION: "3.8", TOXENV: "py38", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+    name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
@@ -32,10 +33,11 @@ jobs:
         run: tox
         env:
           TOXENV: ${{ matrix.PYTHON.TOXENV }}
+          SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
       - name: Upload coverage
         run: |
           curl -o codecov.sh -f https://codecov.io/bash
-          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }} on macOS" -Z
+          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS" -Z
   windows:
     runs-on: windows-latest
     strategy:
