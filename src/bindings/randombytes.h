@@ -13,4 +13,7 @@
  * limitations under the License.
  */
 
+size_t randombytes_seedbytes();
+
 void randombytes(unsigned char * const buf, const unsigned long long buf_len);
+void randombytes_buf_deterministic(void * const buf, const size_t size, const unsigned char seed[32]);

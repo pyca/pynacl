@@ -14,7 +14,10 @@
 
 from __future__ import absolute_import, division, print_function
 
+from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
+
+randombytes_SEEDBYTES = lib.randombytes_seedbytes()
 
 
 def randombytes(size):
@@ -27,4 +30,22 @@ def randombytes(size):
     """
     buf = ffi.new("unsigned char[]", size)
     lib.randombytes(buf, size)
+    return ffi.buffer(buf, size)[:]
+
+
+def randombytes_buf_deterministic(size, seed):
+    """
+    Returns ``size`` number of deterministically generated pseudorandom bytes
+    from a seed
+
+    :param size: int
+    :param seed: bytes
+    :rtype: bytes
+    """
+    if len(seed) != randombytes_SEEDBYTES:
+        raise exc.TypeError("Deterministic random bytes must be generated "
+                            "from 32 bytes")
+
+    buf = ffi.new("unsigned char[]", size)
+    lib.randombytes_buf_deterministic(buf, size, seed)
     return ffi.buffer(buf, size)[:]

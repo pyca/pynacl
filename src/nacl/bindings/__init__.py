@@ -185,7 +185,10 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_ed25519ph_update, crypto_sign_keypair, crypto_sign_open,
     crypto_sign_seed_keypair,
 )
-from nacl.bindings.randombytes import randombytes
+from nacl.bindings.randombytes import (
+    randombytes,
+    randombytes_buf_deterministic
+)
 from nacl.bindings.sodium_core import sodium_init
 from nacl.bindings.utils import (
     sodium_add, sodium_increment, sodium_memcmp, sodium_pad, sodium_unpad,
@@ -403,6 +406,7 @@ __all__ = [
     "nacl_bindings_pick_scrypt_params",
 
     "randombytes",
+    "randombytes_buf_deterministic",
 
     "sodium_init",
 
