@@ -39,20 +39,27 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - {VERSION: '2.7', ABI_VERSION: '2.7'}
-          - {VERSION: '3.8', ABI_VERSION: '3.5'}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on macOS"
+          - VERSION: '2.7'
+            ABI_VERSION: '2.7'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/2.7.17/python-2.7.17-macosx10.9.pkg'
+            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/2.7/bin/python'
+          - VERSION: '3.8'
+            ABI_VERSION: '3.5'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg'
+            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
+    name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
       - uses: actions/checkout@master
-      - name: Setup python
-        uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.PYTHON.VERSION }}
-
+      - run: |
+          curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
+          sudo installer -pkg python.pkg -target /
+        env:
+          PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
+      - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
+      - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       # Downgrade pip, I can't remember why
-      - run: pip install -U pip==10.0.1
-      - run: pip install -U wheel cffi six
-
+      - run: venv/bin/pip install -U pip==10.0.1
+      - run: venv/bin/pip install -U wheel cffi six
       - name: Build the wheel
         run: |
             REGEX="3\.([0-9])*"
@@ -60,12 +67,12 @@ jobs:
                 PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
             fi
 
-            pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+            venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
-      - run: pip install -f wheelhouse --no-index pynacl
+      - run: venv/bin/pip install -f wheelhouse --no-index pynacl
       - run: |
-          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
+          venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
@@ -118,7 +125,7 @@ jobs:
         run: pip install wheel cffi six
 
       - name: Build the wheel (py2)
-        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
+        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
@@ -127,7 +134,7 @@ jobs:
       - name: Build the wheel (py3)
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
+          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
