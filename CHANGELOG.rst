@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.0 (UNRELEASED)
+1.4.0 (2020-05-25)
 ------------------
 
 * Update ``libsodium`` to 1.0.18.
@@ -10,6 +10,7 @@ Changelog
 * Added support for Python 3.8, and removed support for Python 3.4.
 * Add low level bindings for extracting the seed and the public key
   from crypto_sign_ed25519 secret key
+* Add low level bindings for deterministic random generation.
 * Add ``wheel`` and ``setuptools`` setup_requirements in ``setup.py`` (#485)
 * Fix checks on very slow builders (#481, #495)
 * Add low-level bindings to ed25519 arithmetic functions

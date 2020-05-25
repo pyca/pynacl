@@ -32,3 +32,8 @@ Features
 * Public-key encryption
 * Hashing and message authentication
 * Password based key derivation and password hashing
+
+`Changelog`_
+------------
+
+.. _Changelog: https://pynacl.readthedocs.io/en/stable/changelog/
