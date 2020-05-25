@@ -66,7 +66,7 @@ def verify(password_hash, password):
         return argon2id.verify(password_hash, password)
     elif password_hash.startswith(argon2i.STRPREFIX):
         return argon2id.verify(password_hash, password)
-    elif password_hash.startswith(scrypt.STRPREFIX):
+    elif scrypt.AVAILABLE and password_hash.startswith(scrypt.STRPREFIX):
         return scrypt.verify(password_hash, password)
     else:
         raise(CryptPrefixError("given password_hash is not "

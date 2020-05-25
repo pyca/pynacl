@@ -65,6 +65,8 @@ to cpython standard library's hashlib module in cpython's version 3.6.
     :param dklen: length of the derived key
     :type dklen: int
     :return: a buffer dklen bytes long containing the derived key
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     Implements the same signature as the ``hashlib.scrypt`` implemented
     in cpython version 3.6

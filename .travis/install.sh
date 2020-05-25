@@ -12,7 +12,7 @@ if [[ $SODIUM_INSTALL == 'system' ]]; then
         wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
     tar zxvf LATEST.tar.gz
     cd libsodium-*
-    ./configure
+    ./configure ${SODIUM_INSTALL_MINIMAL:+--enable-minimal}
     make
     make check
     sudo make install

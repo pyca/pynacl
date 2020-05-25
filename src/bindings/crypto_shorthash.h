@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+static const int PYNACL_HAS_CRYPTO_SHORTHASH_SIPHASHX24;
 
 // size_t crypto_hash_bytes();
 

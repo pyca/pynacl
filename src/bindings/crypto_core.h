@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-size_t crypto_scalarmult_ed25519_scalarbytes();
+static const int PYNACL_HAS_CRYPTO_CORE_ED25519;
+
 size_t crypto_core_ed25519_bytes();
 size_t crypto_core_ed25519_scalarbytes(void);
 size_t crypto_core_ed25519_nonreducedscalarbytes(void);

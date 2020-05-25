@@ -21,6 +21,8 @@ from nacl.exceptions import ensure
 
 _strbytes_plus_one = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES
 
+AVAILABLE = nacl.bindings.has_crypto_pwhash_scryptsalsa208sha256
+
 STRPREFIX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRPREFIX
 
 SALTBYTES = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_SALTBYTES
@@ -99,9 +101,15 @@ def kdf(size, password, salt,
                      :py:const:`.MEMLIMIT_MAX`
     :type memlimit: int
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     .. versionadded:: 1.2
     """
+    ensure(AVAILABLE,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
+
     ensure(
         len(salt) == SALTBYTES,
         "The salt must be exactly %s, not %s bytes long" % (
@@ -136,9 +144,14 @@ def str(password,
     :param int opslimit:
     :param int memlimit:
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     .. versionadded:: 1.2
     """
+    ensure(AVAILABLE,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
 
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password,
                                                                 opslimit,
@@ -153,9 +166,14 @@ def verify(password_hash, password):
     :param password_hash: bytes
     :param password: bytes
     :rtype: boolean
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     .. versionadded:: 1.2
     """
+    ensure(AVAILABLE,
+           'Not available in minimal build',
+           raising=exc.UnavailableError)
 
     ensure(len(password_hash) == PWHASH_SIZE,
            "The password hash must be exactly %s bytes long" %

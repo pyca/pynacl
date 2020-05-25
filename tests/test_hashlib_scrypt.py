@@ -21,6 +21,7 @@ import pytest
 import nacl.bindings
 import nacl.encoding
 import nacl.hashlib
+from nacl.exceptions import UnavailableError
 
 
 # Test vectors from rfc 7914, Page 13
@@ -80,6 +81,8 @@ RFC_7914_VECTORS = [
 ]
 
 
+@pytest.mark.skipif(not nacl.hashlib.SCRYPT_AVAILABLE,
+                    reason="Requires full build of libsodium")
 @pytest.mark.parametrize(('password', 'salt', 'n', 'r', 'p',
                           'dklen', 'expected'),
                          RFC_7914_VECTORS)
@@ -88,3 +91,10 @@ def test_hashlib_scrypt_api(password, salt, n, r, p, dklen, expected):
     dgst = nacl.hashlib.scrypt(password, salt=salt, n=n, r=r, p=p,
                                dklen=dklen, maxmem=2 * (1024 ** 3))
     assert _exp == dgst
+
+
+@pytest.mark.skipif(nacl.hashlib.SCRYPT_AVAILABLE,
+                    reason="Requires minimal build of libsodium")
+def test_hashlib_scrypt_unavailable():
+    with pytest.raises(UnavailableError):
+        nacl.hashlib.scrypt(b"")

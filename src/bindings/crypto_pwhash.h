@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+static const int PYNACL_HAS_CRYPTO_PWHASH_SCRYPTSALSA208SHA256;
 
 size_t crypto_pwhash_scryptsalsa208sha256_saltbytes(void);
 size_t crypto_pwhash_scryptsalsa208sha256_strbytes(void);

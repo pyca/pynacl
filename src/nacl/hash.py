@@ -47,6 +47,9 @@ SIPHASH_BYTES = nacl.bindings.crypto_shorthash_siphash24_BYTES
 SIPHASH_KEYBYTES = nacl.bindings.crypto_shorthash_siphash24_KEYBYTES
 """Size of the secret ``key`` used by the :func:`siphash24` MAC"""
 
+SIPHASHX_AVAILABLE = nacl.bindings.has_crypto_shorthash_siphashx24
+"""``True`` if :func:`siphashx24` is available to be called"""
+
 SIPHASHX_BYTES = nacl.bindings.crypto_shorthash_siphashx24_BYTES
 """Size of the :func:`siphashx24` digest"""
 SIPHASHX_KEYBYTES = nacl.bindings.crypto_shorthash_siphashx24_KEYBYTES
@@ -153,6 +156,8 @@ def siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder):
     :param encoder: A class that is able to encode the hashed message.
     :returns: The hashed message.
     :rtype: bytes(:const:`SIPHASHX_BYTES`)
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
 
     .. versionadded:: 1.2
     """
