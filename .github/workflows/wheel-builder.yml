@@ -118,7 +118,7 @@ jobs:
         run: pip install wheel cffi six
 
       - name: Build the wheel (py2)
-        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
+        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
@@ -127,7 +127,7 @@ jobs:
       - name: Build the wheel (py3)
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-use-pep517 --wheel-dir=wheelhouse --no-binary pynacl
+          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
