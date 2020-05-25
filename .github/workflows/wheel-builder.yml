@@ -67,7 +67,8 @@ jobs:
                 PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
             fi
 
-            venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+            CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
+                venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index pynacl
