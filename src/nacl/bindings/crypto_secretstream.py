@@ -262,7 +262,7 @@ def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
         raising=exc.TypeError,
     )
     ensure(
-        len(c) > crypto_secretstream_xchacha20poly1305_ABYTES,
+        len(c) >= crypto_secretstream_xchacha20poly1305_ABYTES,
         'Ciphertext is too short',
         raising=exc.ValueError,
     )

@@ -153,7 +153,10 @@ def test_it_like_libsodium():
     # short ciphertext
 
     with pytest.raises(ValueError) as excinfo:
-        c2len = random.randint(1, crypto_secretstream_xchacha20poly1305_ABYTES)
+        c2len = random.randint(
+            1,
+            crypto_secretstream_xchacha20poly1305_ABYTES - 1
+        )
         crypto_secretstream_xchacha20poly1305_pull(state, c2[:c2len])
     assert str(excinfo.value) == 'Ciphertext is too short'
     with pytest.raises(ValueError) as excinfo:
@@ -165,7 +168,7 @@ def test_it_like_libsodium():
     with pytest.raises(ValueError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(
             state,
-            c2[:crypto_secretstream_xchacha20poly1305_ABYTES],
+            c2[:crypto_secretstream_xchacha20poly1305_ABYTES - 1],
             None,
         )
     assert str(excinfo.value) == 'Ciphertext is too short'
