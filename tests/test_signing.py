@@ -168,6 +168,24 @@ class TestVerifyKey:
             forged = SignedMessage(signature + message)
             skey.verify_key.verify(forged)
 
+    def test_invalid_signature_length(self):
+        skey = SigningKey.generate()
+        message = b"hello"
+        signature = skey.sign(message).signature
+
+        # Sanity checks
+        assert skey.verify_key.verify(message, signature)
+        assert skey.verify_key.verify(signature + message)
+
+        with pytest.raises(ValueError):
+            skey.verify_key.verify(message, b"")
+
+        with pytest.raises(ValueError):
+            skey.verify_key.verify(message, signature * 2)
+
+        with pytest.raises(ValueError):
+            skey.verify_key.verify(signature + message, b"")
+
     def test_base64_smessage_with_detached_sig_matches_with_attached_sig(self):
         sk = SigningKey.generate()
         vk = sk.verify_key
@@ -238,3 +256,13 @@ def test_wrong_types():
                      VerifyKey, sk)
     check_type_error("VerifyKey must be created from 32 bytes",
                      VerifyKey, sk.verify_key)
+
+    def verify_detached_signature(x):
+        sk.verify_key.verify(b"", x)
+
+    check_type_error("Verification signature must be created from 64 bytes",
+                     verify_detached_signature, 13)
+    check_type_error("Verification signature must be created from 64 bytes",
+                     verify_detached_signature, sk)
+    check_type_error("Verification signature must be created from 64 bytes",
+                     verify_detached_signature, sk.verify_key)

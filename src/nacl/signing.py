@@ -102,8 +102,20 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         :rtype: :class:`bytes`
         """
         if signature is not None:
-            # If we were given the message and signature separately, combine
-            #   them.
+            # If we were given the message and signature separately, validate
+            #   signature size and combine them.
+            if not isinstance(signature, bytes):
+                raise exc.TypeError(
+                    "Verification signature must be created from %d bytes" %
+                    nacl.bindings.crypto_sign_BYTES,
+                )
+
+            if len(signature) != nacl.bindings.crypto_sign_BYTES:
+                raise exc.ValueError(
+                    "The signature must be exactly %d bytes long" %
+                    nacl.bindings.crypto_sign_BYTES,
+                )
+
             smessage = signature + encoder.decode(smessage)
         else:
             # Decode the signed message
