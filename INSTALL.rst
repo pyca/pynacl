@@ -19,8 +19,6 @@ and enable ``parallelization``:
 
     $ LIBSODIUM_MAKE_ARGS=-j4 pip install pynacl
 
-LIBSODIUM_MAKE_ARGS
-
 Linux source build
 ------------------
 
