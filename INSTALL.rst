@@ -15,7 +15,7 @@ and run:
 Faster wheel build
 ------------------
 You can define the environment variable `$LIBSODIUM_MAKE_ARGS` to pass arguments to `make`
-and enable ``parallelization``:
+and enable `parallelization`_:
 
     $ LIBSODIUM_MAKE_ARGS=-j4 pip install pynacl
 
