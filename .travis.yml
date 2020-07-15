@@ -70,6 +70,38 @@ matrix:
         - python: 3.6
           env: TOXENV=docs
         - env: TOXENV=meta
+        - python: 2.7
+          arch: arm64
+          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
+        - python: 3.8
+          arch: arm64
+          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=gcc
+          dist: xenial
+        - python: 2.7
+          arch: arm64
+          env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
+        - python: 3.8
+          arch: arm64
+          env: TOXENV=py38 SODIUM_INSTALL=system CC=gcc
+          dist: xenial
+        - python: 2.7
+          arch: arm64
+          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
+        - python: 3.8
+          arch: arm64
+          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=clang
+          dist: xenial
+        - python: 2.7
+          arch: arm64
+          env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
+        - python: 3.8
+          arch: arm64
+          env: TOXENV=py38 SODIUM_INSTALL=system CC=clang
+          dist: xenial
+        - python: 3.8
+          arch: arm64
+          env: TOXENV=py38 SODIUM_INSTALL=bundled SODIUM_INSTALL_MINIMAL=1 CC=gcc
+          dist: xenial
 
 install: .travis/install.sh
 
