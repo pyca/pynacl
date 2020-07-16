@@ -12,6 +12,13 @@ and run:
 
     $ pip install pynacl
 
+Faster wheel build
+------------------
+You can define the environment variable `$LIBSODIUM_MAKE_ARGS` to pass arguments to `make`
+and enable `parallelization`_:
+
+    $ LIBSODIUM_MAKE_ARGS=-j4 pip install pynacl
+
 Linux source build
 ------------------
 
@@ -31,6 +38,8 @@ distribution, you can disable the bundled copy during install by running:
 
 .. warning:: Usage of the legacy ``easy_install`` command provided by setuptools
    is generally discouraged, and is completely unsupported in PyNaCl's case.
+
+.. _parallelization: https://www.gnu.org/software/make/manual/html_node/Parallel.html
 
 .. _libsodium: https://github.com/jedisct1/libsodium
 
