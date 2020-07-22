@@ -23,13 +23,14 @@ from cffi import FFI
 __all__ = ["ffi"]
 
 
-HEADERS = glob.glob(
+# sort to negate indeterministic filesystem readdir order
+HEADERS = sorted(glob.glob(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), "*.h")
-)
+))
 
-MINIMAL_HEADERS = glob.glob(
+MINIMAL_HEADERS = sorted(glob.glob(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), "minimal", "*.h")
-)
+))
 
 
 # Build our FFI instance
