@@ -32,31 +32,31 @@ import nacl.exceptions as exc
 def chacha20poly1305_agl_vectors():
     # NIST vectors derived format
     DATA = "chacha20-poly1305-agl_ref.txt"
-    return read_kv_test_vectors(DATA, delimiter=b':', newrecord=b'AEAD')
+    return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
 def chacha20poly1305_ietf_vectors():
     # NIST vectors derived format
     DATA = "chacha20-poly1305-ietf_ref.txt"
-    return read_kv_test_vectors(DATA, delimiter=b':', newrecord=b'AEAD')
+    return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
 def xchacha20poly1305_ietf_vectors():
     # NIST vectors derived format
     DATA = "xchacha20-poly1305-ietf_ref.txt"
-    return read_kv_test_vectors(DATA, delimiter=b':', newrecord=b'AEAD')
+    return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-Construction = namedtuple('Construction', 'encrypt, decrypt, NPUB, KEYBYTES')
+Construction = namedtuple("Construction", "encrypt, decrypt, NPUB, KEYBYTES")
 
 
 def _getconstruction(construction):
-    if construction == b'chacha20-poly1305-old':
+    if construction == b"chacha20-poly1305-old":
         encrypt = b.crypto_aead_chacha20poly1305_encrypt
         decrypt = b.crypto_aead_chacha20poly1305_decrypt
         NPUB = b.crypto_aead_chacha20poly1305_NPUBBYTES
         KEYBYTES = b.crypto_aead_chacha20poly1305_KEYBYTES
-    elif construction == b'chacha20-poly1305':
+    elif construction == b"chacha20-poly1305":
         encrypt = b.crypto_aead_chacha20poly1305_ietf_encrypt
         decrypt = b.crypto_aead_chacha20poly1305_ietf_decrypt
         NPUB = b.crypto_aead_chacha20poly1305_ietf_NPUBBYTES
@@ -70,42 +70,46 @@ def _getconstruction(construction):
     return Construction(encrypt, decrypt, NPUB, KEYBYTES)
 
 
-@pytest.mark.parametrize("kv",
-                         chacha20poly1305_agl_vectors() +
-                         chacha20poly1305_ietf_vectors() +
-                         xchacha20poly1305_ietf_vectors()
-                         )
+@pytest.mark.parametrize(
+    "kv",
+    chacha20poly1305_agl_vectors()
+    + chacha20poly1305_ietf_vectors()
+    + xchacha20poly1305_ietf_vectors(),
+)
 def test_chacha20poly1305_variants_kat(kv):
-    msg = binascii.unhexlify(kv['IN'])
-    ad = binascii.unhexlify(kv['AD'])
-    nonce = binascii.unhexlify(kv['NONCE'])
-    k = binascii.unhexlify(kv['KEY'])
-    c = _getconstruction(kv['AEAD'])
-    _tag = kv.get('TAG', b'')
-    exp = binascii.unhexlify(kv['CT']) + binascii.unhexlify(_tag)
+    msg = binascii.unhexlify(kv["IN"])
+    ad = binascii.unhexlify(kv["AD"])
+    nonce = binascii.unhexlify(kv["NONCE"])
+    k = binascii.unhexlify(kv["KEY"])
+    c = _getconstruction(kv["AEAD"])
+    _tag = kv.get("TAG", b"")
+    exp = binascii.unhexlify(kv["CT"]) + binascii.unhexlify(_tag)
     out = c.encrypt(msg, ad, nonce, k)
-    assert (out == exp)
+    assert out == exp
 
 
-@given(sampled_from((b'chacha20-poly1305-old',
-                     b'chacha20-poly1305',
-                     b'xchacha20-poly1305'
-                     )),
-       binary(min_size=0, max_size=100),
-       binary(min_size=0, max_size=50),
-       binary(min_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
-              max_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES),
-       binary(min_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
-              max_size=b.crypto_aead_chacha20poly1305_KEYBYTES))
+@given(
+    sampled_from(
+        (b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305")
+    ),
+    binary(min_size=0, max_size=100),
+    binary(min_size=0, max_size=50),
+    binary(
+        min_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
+        max_size=b.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
+    ),
+    binary(
+        min_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
+        max_size=b.crypto_aead_chacha20poly1305_KEYBYTES,
+    ),
+)
 @settings(deadline=None, max_examples=20)
-def test_chacha20poly1305_variants_roundtrip(construction,
-                                             message,
-                                             aad,
-                                             nonce,
-                                             key):
+def test_chacha20poly1305_variants_roundtrip(
+    construction, message, aad, nonce, key
+):
 
     c = _getconstruction(construction)
-    unonce = nonce[:c.NPUB]
+    unonce = nonce[: c.NPUB]
 
     ct = c.encrypt(message, aad, unonce, key)
     pt = c.decrypt(ct, aad, unonce, key)
@@ -113,42 +117,42 @@ def test_chacha20poly1305_variants_roundtrip(construction,
     assert pt == message
     with pytest.raises(exc.CryptoError):
         ct1 = bytearray(ct)
-        ct1[0] = ct1[0] ^ 0xff
+        ct1[0] = ct1[0] ^ 0xFF
         c.decrypt(ct1, aad, unonce, key)
 
 
-@pytest.mark.parametrize("construction",
-                         [b'chacha20-poly1305-old',
-                          b'chacha20-poly1305',
-                          b'xchacha20-poly1305']
-                         )
+@pytest.mark.parametrize(
+    "construction",
+    [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
+)
 def test_chacha20poly1305_variants_wrong_params(construction):
     c = _getconstruction(construction)
-    nonce = b'\x00' * c.NPUB
-    key = b'\x00' * c.KEYBYTES
+    nonce = b"\x00" * c.NPUB
+    key = b"\x00" * c.KEYBYTES
     aad = None
-    c.encrypt(b'', aad, nonce, key)
+    c.encrypt(b"", aad, nonce, key)
     with pytest.raises(exc.TypeError):
-        c.encrypt(b'', aad, nonce[:-1], key)
+        c.encrypt(b"", aad, nonce[:-1], key)
     with pytest.raises(exc.TypeError):
-        c.encrypt(b'', aad, nonce, key[:-1])
+        c.encrypt(b"", aad, nonce, key[:-1])
     with pytest.raises(exc.TypeError):
-        c.encrypt(b'', aad, nonce.decode('utf-8'), key)
+        c.encrypt(b"", aad, nonce.decode("utf-8"), key)
     with pytest.raises(exc.TypeError):
-        c.encrypt(b'', aad, nonce, key.decode('utf-8'))
+        c.encrypt(b"", aad, nonce, key.decode("utf-8"))
 
 
-@pytest.mark.skipif(sys.version_info < (3,),
-                    reason="Python 2 doesn't distinguish str() from bytes()")
-@pytest.mark.parametrize("construction",
-                         [b'chacha20-poly1305-old',
-                          b'chacha20-poly1305',
-                          b'xchacha20-poly1305']
-                         )
+@pytest.mark.skipif(
+    sys.version_info < (3,),
+    reason="Python 2 doesn't distinguish str() from bytes()",
+)
+@pytest.mark.parametrize(
+    "construction",
+    [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
+)
 def test_chacha20poly1305_variants_str_msg(construction):
     c = _getconstruction(construction)
-    nonce = b'\x00' * c.NPUB
-    key = b'\x00' * c.KEYBYTES
+    nonce = b"\x00" * c.NPUB
+    key = b"\x00" * c.KEYBYTES
     aad = None
     with pytest.raises(exc.TypeError):
-        c.encrypt('', aad, nonce, key)
+        c.encrypt("", aad, nonce, key)

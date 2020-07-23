@@ -27,37 +27,49 @@ VECTORS = [
     # Encoder, Ciphertext
     (
         nacl.encoding.RawEncoder,
-        (b"111111111111111111111111\xfcU\xe2\x9f\xe6E\x92\xd7\x0eFM=x\x83\x8fj"
-         b"} v\xd4\xf0\x1a1\xc0\x88Uk\x12\x02\x1cd\xfaOH\x13\xdc\x0e\x0e\xd7A"
-         b"\x07\x0b.\x9f\x01\xbf\xe4\xd0s\xf1P\xd3\x0e\xaa\x9d\xb3\xf7\\\x0f"),
+        (
+            b"111111111111111111111111\xfcU\xe2\x9f\xe6E\x92\xd7\x0eFM=x\x83\x8fj"
+            b"} v\xd4\xf0\x1a1\xc0\x88Uk\x12\x02\x1cd\xfaOH\x13\xdc\x0e\x0e\xd7A"
+            b"\x07\x0b.\x9f\x01\xbf\xe4\xd0s\xf1P\xd3\x0e\xaa\x9d\xb3\xf7\\\x0f"
+        ),
     ),
     (
         nacl.encoding.HexEncoder,
-        (b"313131313131313131313131313131313131313131313131fc55e29fe64592d70e4"
-         b"64d3d78838f6a7d2076d4f01a31c088556b12021c64fa4f4813dc0e0ed741070b2e"
-         b"9f01bfe4d073f150d30eaa9db3f75c0f"),
+        (
+            b"313131313131313131313131313131313131313131313131fc55e29fe64592d70e4"
+            b"64d3d78838f6a7d2076d4f01a31c088556b12021c64fa4f4813dc0e0ed741070b2e"
+            b"9f01bfe4d073f150d30eaa9db3f75c0f"
+        ),
     ),
     (
         nacl.encoding.Base16Encoder,
-        (b"313131313131313131313131313131313131313131313131FC55E29FE64592D70E4"
-         b"64D3D78838F6A7D2076D4F01A31C088556B12021C64FA4F4813DC0E0ED741070B2E"
-         b"9F01BFE4D073F150D30EAA9DB3F75C0F"),
+        (
+            b"313131313131313131313131313131313131313131313131FC55E29FE64592D70E4"
+            b"64D3D78838F6A7D2076D4F01A31C088556B12021C64FA4F4813DC0E0ED741070B2E"
+            b"9F01BFE4D073F150D30EAA9DB3F75C0F"
+        ),
     ),
     (
         nacl.encoding.Base32Encoder,
-        (b"GEYTCMJRGEYTCMJRGEYTCMJRGEYTCMJRGEYTCMP4KXRJ7ZSFSLLQ4RSNHV4IHD3KPUQ"
-         b"HNVHQDIY4BCCVNMJAEHDE7JHUQE64BYHNOQIHBMXJ6AN74TIHH4KQ2MHKVHNT65OA6"
-         b"==="),
+        (
+            b"GEYTCMJRGEYTCMJRGEYTCMJRGEYTCMJRGEYTCMP4KXRJ7ZSFSLLQ4RSNHV4IHD3KPUQ"
+            b"HNVHQDIY4BCCVNMJAEHDE7JHUQE64BYHNOQIHBMXJ6AN74TIHH4KQ2MHKVHNT65OA6"
+            b"==="
+        ),
     ),
     (
         nacl.encoding.Base64Encoder,
-        (b"MTExMTExMTExMTExMTExMTExMTExMTEx/FXin+ZFktcORk09eIOPan0gdtTwGjHAiFV"
-         b"rEgIcZPpPSBPcDg7XQQcLLp8Bv+TQc/FQ0w6qnbP3XA8="),
+        (
+            b"MTExMTExMTExMTExMTExMTExMTExMTEx/FXin+ZFktcORk09eIOPan0gdtTwGjHAiFV"
+            b"rEgIcZPpPSBPcDg7XQQcLLp8Bv+TQc/FQ0w6qnbP3XA8="
+        ),
     ),
     (
         nacl.encoding.URLSafeBase64Encoder,
-        (b"MTExMTExMTExMTExMTExMTExMTExMTEx_FXin-ZFktcORk09eIOPan0gdtTwGjHAiFV"
-         b"rEgIcZPpPSBPcDg7XQQcLLp8Bv-TQc_FQ0w6qnbP3XA8="),
+        (
+            b"MTExMTExMTExMTExMTExMTExMTExMTEx_FXin-ZFktcORk09eIOPan0gdtTwGjHAiFV"
+            b"rEgIcZPpPSBPcDg7XQQcLLp8Bv-TQc_FQ0w6qnbP3XA8="
+        ),
     ),
 ]
 

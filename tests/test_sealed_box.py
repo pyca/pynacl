@@ -30,18 +30,15 @@ def sealbox_vectors():
     # <tab><cr_len>:<ciphertext>[<tab> ...]
 
     def splitlen(x):
-        ln, dta = x.split(b':')
+        ln, dta = x.split(b":")
         assert len(dta) == 2 * int(ln)
         return dta
 
     DATA = "sealed_box_ref.txt"
-    return [(x[0],
-             x[1],
-             splitlen(x[2]),
-             splitlen(x[3])
-             )
-            for x in read_crypto_test_vectors(DATA,
-                                              maxels=4, delimiter=b'\t')]
+    return [
+        (x[0], x[1], splitlen(x[2]), splitlen(x[3]))
+        for x in read_crypto_test_vectors(DATA, maxels=4, delimiter=b"\t")
+    ]
 
 
 def test_generate_private_key():
@@ -62,48 +59,33 @@ def test_sealed_box_creation():
 
 
 @pytest.mark.parametrize(
-    (
-        "privalice", "pubalice", "plaintext", "_encrypted"
-    ),
-    sealbox_vectors()
+    ("privalice", "pubalice", "plaintext", "_encrypted"), sealbox_vectors()
 )
 def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
     box = SealedBox(pubalice)
-    encrypted = box.encrypt(
-        binascii.unhexlify(plaintext),
-        encoder=HexEncoder,
-    )
+    encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder,)
 
     assert encrypted != _encrypted
     # since SealedBox.encrypt uses an ephemeral sender's keypair
 
     box2 = SealedBox(privalice)
-    decrypted = box2.decrypt(
-        encrypted,
-        encoder=HexEncoder,
-    )
+    decrypted = box2.decrypt(encrypted, encoder=HexEncoder,)
     assert binascii.hexlify(decrypted) == plaintext
     assert bytes(box) == bytes(box2)
 
 
 @pytest.mark.parametrize(
-    (
-        "privalice", "pubalice", "plaintext", "encrypted"
-    ),
-    sealbox_vectors()
+    ("privalice", "pubalice", "plaintext", "encrypted"), sealbox_vectors()
 )
 def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
     box = SealedBox(privalice)
-    decrypted = box.decrypt(
-        encrypted,
-        encoder=HexEncoder,
-    )
+    decrypted = box.decrypt(encrypted, encoder=HexEncoder,)
     assert binascii.hexlify(decrypted) == plaintext
 
 
@@ -116,36 +98,37 @@ def check_type_error(expected, f, *args):
 def test_wrong_types():
     priv = PrivateKey.generate()
 
-    check_type_error(("SealedBox must be created from a PublicKey"
-                      " or a PrivateKey"),
-                     SealedBox, priv.encode())
-    check_type_error(("SealedBox must be created from a PublicKey"
-                      " or a PrivateKey"),
-                     SealedBox, priv.public_key.encode())
+    check_type_error(
+        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        SealedBox,
+        priv.encode(),
+    )
+    check_type_error(
+        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        SealedBox,
+        priv.public_key.encode(),
+    )
     with pytest.raises(TypeError):
         SealedBox(priv, priv.public_key)
 
 
 @pytest.mark.parametrize(
-    (
-        "_privalice", "pubalice", "_plaintext", "encrypted"
-    ),
-    sealbox_vectors()
+    ("_privalice", "pubalice", "_plaintext", "encrypted"), sealbox_vectors()
 )
-def test_sealed_box_public_key_cannot_decrypt(_privalice, pubalice,
-                                              _plaintext, encrypted):
+def test_sealed_box_public_key_cannot_decrypt(
+    _privalice, pubalice, _plaintext, encrypted
+):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
 
     box = SealedBox(pubalice)
     with pytest.raises(TypeError):
         box.decrypt(
-            encrypted,
-            encoder=HexEncoder,
+            encrypted, encoder=HexEncoder,
         )
 
 
 def test_sealed_box_zero_length_plaintext():
-    empty_plaintext = b''
+    empty_plaintext = b""
     k = PrivateKey.generate()
     enc_box = SealedBox(k.public_key)
     dec_box = SealedBox(k)
@@ -157,7 +140,7 @@ def test_sealed_box_zero_length_plaintext():
 
 
 def test_sealed_box_too_short_msg():
-    empty_plaintext = b''
+    empty_plaintext = b""
     k = PrivateKey.generate()
     enc_box = SealedBox(k.public_key)
     dec_box = SealedBox(k)

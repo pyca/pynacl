@@ -15,13 +15,20 @@
 from __future__ import absolute_import, division, print_function
 
 __all__ = [
-    "__title__", "__summary__", "__uri__", "__version__", "__author__",
-    "__email__", "__license__", "__copyright__",
+    "__title__",
+    "__summary__",
+    "__uri__",
+    "__version__",
+    "__author__",
+    "__email__",
+    "__license__",
+    "__copyright__",
 ]
 
 __title__ = "PyNaCl"
-__summary__ = ("Python binding to the Networking and Cryptography (NaCl) "
-               "library")
+__summary__ = (
+    "Python binding to the Networking and Cryptography (NaCl) " "library"
+)
 __uri__ = "https://github.com/pyca/pynacl/"
 
 __version__ = "1.5.0.dev1"

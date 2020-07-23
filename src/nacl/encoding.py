@@ -19,7 +19,6 @@ import binascii
 
 
 class RawEncoder(object):
-
     @staticmethod
     def encode(data):
         return data
@@ -30,7 +29,6 @@ class RawEncoder(object):
 
 
 class HexEncoder(object):
-
     @staticmethod
     def encode(data):
         return binascii.hexlify(data)
@@ -41,7 +39,6 @@ class HexEncoder(object):
 
 
 class Base16Encoder(object):
-
     @staticmethod
     def encode(data):
         return base64.b16encode(data)
@@ -52,7 +49,6 @@ class Base16Encoder(object):
 
 
 class Base32Encoder(object):
-
     @staticmethod
     def encode(data):
         return base64.b32encode(data)
@@ -63,7 +59,6 @@ class Base32Encoder(object):
 
 
 class Base64Encoder(object):
-
     @staticmethod
     def encode(data):
         return base64.b64encode(data)
@@ -74,7 +69,6 @@ class Base64Encoder(object):
 
 
 class URLSafeBase64Encoder(object):
-
     @staticmethod
     def encode(data):
         return base64.urlsafe_b64encode(data)
@@ -85,6 +79,5 @@ class URLSafeBase64Encoder(object):
 
 
 class Encodable(object):
-
     def encode(self, encoder=RawEncoder):
         return encoder.encode(bytes(self))

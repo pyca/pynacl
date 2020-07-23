@@ -36,11 +36,14 @@ class TestPublicKey:
         assert_equal(k1, k1)
         assert_equal(k1, k2)
 
-    @pytest.mark.parametrize('k2', [
-        b"\x00" * crypto_box_PUBLICKEYBYTES,
-        PublicKey(b"\x01" * crypto_box_PUBLICKEYBYTES),
-        PublicKey(b"\x00" * (crypto_box_PUBLICKEYBYTES - 1) + b"\x01"),
-    ])
+    @pytest.mark.parametrize(
+        "k2",
+        [
+            b"\x00" * crypto_box_PUBLICKEYBYTES,
+            PublicKey(b"\x01" * crypto_box_PUBLICKEYBYTES),
+            PublicKey(b"\x00" * (crypto_box_PUBLICKEYBYTES - 1) + b"\x01"),
+        ],
+    )
     def test_different_keys_are_not_equal(self, k2):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
         assert_not_equal(k1, k2)
@@ -88,11 +91,14 @@ class TestPrivateKey:
         sk = PrivateKey(random(crypto_box_SECRETKEYBYTES))
         assert hash(sk) != hash(sk.public_key)
 
-    @pytest.mark.parametrize('k2', [
-        b"\x00" * crypto_box_SECRETKEYBYTES,
-        PrivateKey(b"\x01" * crypto_box_SECRETKEYBYTES),
-        PrivateKey(b"\x00" * (crypto_box_SECRETKEYBYTES - 1) + b"\x01"),
-    ])
+    @pytest.mark.parametrize(
+        "k2",
+        [
+            b"\x00" * crypto_box_SECRETKEYBYTES,
+            PrivateKey(b"\x01" * crypto_box_SECRETKEYBYTES),
+            PrivateKey(b"\x00" * (crypto_box_SECRETKEYBYTES - 1) + b"\x01"),
+        ],
+    )
     def test_different_keys_are_not_equal(self, k2):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         assert_not_equal(k1, k2)
@@ -117,14 +123,22 @@ class TestPrivateKey:
         key derivation pass on the raw shared Diffie-Hellman key, which
         is not exposed by itself, we just check the shared key for equality.
         """
-        prv_A = (b'77076d0a7318a57d3c16c17251b26645'
-                 b'df4c2f87ebc0992ab177fba51db92c2a')
-        pub_A = (b'8520f0098930a754748b7ddcb43ef75a'
-                 b'0dbf3a0d26381af4eba4a98eaa9b4e6a')
-        prv_B = (b'5dab087e624a8a4b79e17f8b83800ee6'
-                 b'6f3bb1292618b6fd1c2f8b27ff88e0eb')
-        pub_B = (b'de9edb7d7b7dc1b4d35b61c2ece43537'
-                 b'3f8343c85b78674dadfc7e146f882b4f')
+        prv_A = (
+            b"77076d0a7318a57d3c16c17251b26645"
+            b"df4c2f87ebc0992ab177fba51db92c2a"
+        )
+        pub_A = (
+            b"8520f0098930a754748b7ddcb43ef75a"
+            b"0dbf3a0d26381af4eba4a98eaa9b4e6a"
+        )
+        prv_B = (
+            b"5dab087e624a8a4b79e17f8b83800ee6"
+            b"6f3bb1292618b6fd1c2f8b27ff88e0eb"
+        )
+        pub_B = (
+            b"de9edb7d7b7dc1b4d35b61c2ece43537"
+            b"3f8343c85b78674dadfc7e146f882b4f"
+        )
 
         alices = PrivateKey(binascii.unhexlify(prv_A))
         bobs = PrivateKey(binascii.unhexlify(prv_B))

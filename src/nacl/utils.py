@@ -51,7 +51,6 @@ class EncryptedMessage(bytes):
 
 
 class StringFixer(object):
-
     def __str__(self):
         if six.PY3:
             return str(self.__bytes__())
@@ -61,7 +60,7 @@ class StringFixer(object):
 
 def bytes_as_string(bytes_in):
     if six.PY3:
-        return bytes_in.decode('ascii')
+        return bytes_in.decode("ascii")
     else:
         return bytes_in
 

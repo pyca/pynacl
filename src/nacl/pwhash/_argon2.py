@@ -48,5 +48,4 @@ def verify(password_hash, password):
 
     .. versionadded:: 1.2
     """
-    return nacl.bindings.crypto_pwhash_str_verify(password_hash,
-                                                  password)
+    return nacl.bindings.crypto_pwhash_str_verify(password_hash, password)

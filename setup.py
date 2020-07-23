@@ -36,10 +36,8 @@ except ImportError:
 
 requirements = ["six"]
 setup_requirements = ["setuptools"]
-test_requirements = ["pytest>=3.2.1,!=3.3.0",
-                     "hypothesis>=3.27.0"]
-docs_requirements = ["sphinx>=1.6.5",
-                     "sphinx_rtd_theme"]
+test_requirements = ["pytest>=3.2.1,!=3.3.0", "hypothesis>=3.27.0"]
+docs_requirements = ["sphinx>=1.6.5", "sphinx_rtd_theme"]
 
 
 if platform.python_implementation() == "PyPy":
@@ -72,11 +70,11 @@ import nacl  # noqa
 
 def which(name, flags=os.X_OK):  # Taken from twisted
     result = []
-    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-    path = os.environ.get('PATH', None)
+    exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
+    path = os.environ.get("PATH", None)
     if path is None:
         return []
-    for p in os.environ.get('PATH', '').split(os.pathsep):
+    for p in os.environ.get("PATH", "").split(os.pathsep):
         p = os.path.join(p, name)
         if os.access(p, flags):
             result.append(p)
@@ -99,13 +97,11 @@ def use_system():
 
 
 class Distribution(Distribution):
-
     def has_c_libraries(self):
         return not use_system()
 
 
 class build_clib(_build_clib):
-
     def get_source_files(self):
         files = glob.glob(here("src/libsodium/*"))
         files += glob.glob(here("src/libsodium/*/*"))
@@ -130,10 +126,12 @@ class build_clib(_build_clib):
             return
 
         # use Python's build environment variables
-        build_env = {key: val for key, val in
-                     get_config_vars().items() if key in
-                     ("LDFLAGS", "CFLAGS", "CC", "CCSHARED", "LDSHARED") and
-                     key not in os.environ}
+        build_env = {
+            key: val
+            for key, val in get_config_vars().items()
+            if key in ("LDFLAGS", "CFLAGS", "CC", "CCSHARED", "LDSHARED")
+            and key not in os.environ
+        }
         os.environ.update(build_env)
 
         # Ensure our temporary build directory exists
@@ -146,14 +144,15 @@ class build_clib(_build_clib):
 
         # Ensure all of our executable files have their permission set
         for filename in [
-                "src/libsodium/autogen.sh",
-                "src/libsodium/compile",
-                "src/libsodium/configure",
-                "src/libsodium/depcomp",
-                "src/libsodium/install-sh",
-                "src/libsodium/missing",
-                "src/libsodium/msvc-scripts/process.bat",
-                "src/libsodium/test/default/wintest.bat"]:
+            "src/libsodium/autogen.sh",
+            "src/libsodium/compile",
+            "src/libsodium/configure",
+            "src/libsodium/depcomp",
+            "src/libsodium/install-sh",
+            "src/libsodium/missing",
+            "src/libsodium/msvc-scripts/process.bat",
+            "src/libsodium/test/default/wintest.bat",
+        ]:
             os.chmod(here(filename), 0o755)
 
         if not which("make"):
@@ -163,22 +162,27 @@ class build_clib(_build_clib):
         configure = abshere("src/libsodium/configure")
 
         # Run ./configure
-        configure_flags = ["--disable-shared", "--enable-static",
-                           "--disable-debug", "--disable-dependency-tracking",
-                           "--with-pic"]
+        configure_flags = [
+            "--disable-shared",
+            "--enable-static",
+            "--disable-debug",
+            "--disable-dependency-tracking",
+            "--with-pic",
+        ]
         if platform.system() == "SunOS":
             # On Solaris, libssp doesn't link statically and causes linker
             # errors during import
             configure_flags.append("--disable-ssp")
-        if os.environ.get('SODIUM_INSTALL_MINIMAL'):
+        if os.environ.get("SODIUM_INSTALL_MINIMAL"):
             configure_flags.append("--enable-minimal")
         subprocess.check_call(
-            [configure] + configure_flags +
-            ["--prefix", os.path.abspath(self.build_clib)],
+            [configure]
+            + configure_flags
+            + ["--prefix", os.path.abspath(self.build_clib)],
             cwd=build_temp,
         )
 
-        make_args = os.environ.get('LIBSODIUM_MAKE_ARGS', '').split()
+        make_args = os.environ.get("LIBSODIUM_MAKE_ARGS", "").split()
         # Build the library
         subprocess.check_call(["make"] + make_args, cwd=build_temp)
 
@@ -190,7 +194,6 @@ class build_clib(_build_clib):
 
 
 class build_ext(_build_ext):
-
     def run(self):
         if self.distribution.has_c_libraries():
             build_clib = self.get_finalized_command("build_clib")
@@ -215,42 +218,24 @@ CHANGELOG = open("CHANGELOG.rst").read()
 setup(
     name=nacl.__title__,
     version=nacl.__version__,
-
     description=nacl.__summary__,
-    long_description='\n'.join((README, INSTALL, CHANGELOG)),
+    long_description="\n".join((README, INSTALL, CHANGELOG)),
     url=nacl.__uri__,
     license=nacl.__license__,
-
     author=nacl.__author__,
     author_email=nacl.__email__,
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
     setup_requires=setup_requirements,
     install_requires=requirements,
-    extras_require={
-        "tests": test_requirements,
-        "docs": docs_requirements,
-    },
+    extras_require={"tests": test_requirements, "docs": docs_requirements},
     tests_require=test_requirements,
-
     package_dir={"": "src"},
-    packages=[
-        "nacl",
-        "nacl.pwhash",
-        "nacl.bindings",
-    ],
-
+    packages=["nacl", "nacl.pwhash", "nacl.bindings"],
     ext_package="nacl",
-    cffi_modules=[
-        "src/bindings/build.py:ffi",
-    ],
-
-    cmdclass={
-        "build_clib": build_clib,
-        "build_ext": build_ext,
-    },
+    cffi_modules=["src/bindings/build.py:ffi"],
+    cmdclass={"build_clib": build_clib, "build_ext": build_ext},
     distclass=Distribution,
     zip_safe=False,
-
     classifiers=[
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
@@ -261,5 +246,5 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
-    ]
+    ],
 )

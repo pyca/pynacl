@@ -57,6 +57,7 @@ class UnavailableError(RuntimeError):
     trying to call functions not available in a minimal build of
     libsodium.
     """
+
     pass
 
 
@@ -70,9 +71,9 @@ def ensure(cond, *args, **kwds):
     The only accepted named parameter is `raising` used to configure the
     exception to be raised if `cond` is not `True`
     """
-    _CHK_UNEXP = 'check_condition() got an unexpected keyword argument {0}'
+    _CHK_UNEXP = "check_condition() got an unexpected keyword argument {0}"
 
-    raising = kwds.pop('raising', AssertionError)
+    raising = kwds.pop("raising", AssertionError)
     if kwds:
         raise TypeError(_CHK_UNEXP.format(repr(kwds.popitem()[0])))
 

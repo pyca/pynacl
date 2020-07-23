@@ -56,8 +56,7 @@ class SecretBox(encoding.Encodable, StringFixer, object):
 
         if len(key) != self.KEY_SIZE:
             raise exc.ValueError(
-                "The key must be exactly %s bytes long" %
-                self.KEY_SIZE,
+                "The key must be exactly %s bytes long" % self.KEY_SIZE,
             )
 
         self._key = key
@@ -90,8 +89,9 @@ class SecretBox(encoding.Encodable, StringFixer, object):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        ciphertext = nacl.bindings.crypto_secretbox(plaintext,
-                                                    nonce, self._key)
+        ciphertext = nacl.bindings.crypto_secretbox(
+            plaintext, nonce, self._key
+        )
 
         encoded_nonce = encoder.encode(nonce)
         encoded_ciphertext = encoder.encode(ciphertext)
@@ -119,15 +119,16 @@ class SecretBox(encoding.Encodable, StringFixer, object):
 
         if nonce is None:
             # If we were given the nonce and ciphertext combined, split them.
-            nonce = ciphertext[:self.NONCE_SIZE]
-            ciphertext = ciphertext[self.NONCE_SIZE:]
+            nonce = ciphertext[: self.NONCE_SIZE]
+            ciphertext = ciphertext[self.NONCE_SIZE :]
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
             )
 
-        plaintext = nacl.bindings.crypto_secretbox_open(ciphertext,
-                                                        nonce, self._key)
+        plaintext = nacl.bindings.crypto_secretbox_open(
+            ciphertext, nonce, self._key
+        )
 
         return plaintext

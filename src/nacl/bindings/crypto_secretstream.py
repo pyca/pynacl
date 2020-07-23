@@ -19,26 +19,35 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-crypto_secretstream_xchacha20poly1305_ABYTES = \
+crypto_secretstream_xchacha20poly1305_ABYTES = (
     lib.crypto_secretstream_xchacha20poly1305_abytes()
-crypto_secretstream_xchacha20poly1305_HEADERBYTES = \
+)
+crypto_secretstream_xchacha20poly1305_HEADERBYTES = (
     lib.crypto_secretstream_xchacha20poly1305_headerbytes()
-crypto_secretstream_xchacha20poly1305_KEYBYTES = \
+)
+crypto_secretstream_xchacha20poly1305_KEYBYTES = (
     lib.crypto_secretstream_xchacha20poly1305_keybytes()
-crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX = \
+)
+crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX = (
     lib.crypto_secretstream_xchacha20poly1305_messagebytes_max()
-crypto_secretstream_xchacha20poly1305_STATEBYTES = \
+)
+crypto_secretstream_xchacha20poly1305_STATEBYTES = (
     lib.crypto_secretstream_xchacha20poly1305_statebytes()
+)
 
 
-crypto_secretstream_xchacha20poly1305_TAG_MESSAGE = \
+crypto_secretstream_xchacha20poly1305_TAG_MESSAGE = (
     lib.crypto_secretstream_xchacha20poly1305_tag_message()
-crypto_secretstream_xchacha20poly1305_TAG_PUSH = \
+)
+crypto_secretstream_xchacha20poly1305_TAG_PUSH = (
     lib.crypto_secretstream_xchacha20poly1305_tag_push()
-crypto_secretstream_xchacha20poly1305_TAG_REKEY = \
+)
+crypto_secretstream_xchacha20poly1305_TAG_REKEY = (
     lib.crypto_secretstream_xchacha20poly1305_tag_rekey()
-crypto_secretstream_xchacha20poly1305_TAG_FINAL = \
+)
+crypto_secretstream_xchacha20poly1305_TAG_FINAL = (
     lib.crypto_secretstream_xchacha20poly1305_tag_final()
+)
 
 
 def crypto_secretstream_xchacha20poly1305_keygen():
@@ -48,8 +57,7 @@ def crypto_secretstream_xchacha20poly1305_keygen():
 
     """
     keybuf = ffi.new(
-        "unsigned char[]",
-        crypto_secretstream_xchacha20poly1305_KEYBYTES,
+        "unsigned char[]", crypto_secretstream_xchacha20poly1305_KEYBYTES,
     )
     lib.crypto_secretstream_xchacha20poly1305_keygen(keybuf)
     return ffi.buffer(keybuf)[:]
@@ -60,7 +68,8 @@ class crypto_secretstream_xchacha20poly1305_state(object):
     An object wrapping the crypto_secretstream_xchacha20poly1305 state.
 
     """
-    __slots__ = ['statebuf', 'rawbuf', 'tagbuf']
+
+    __slots__ = ["statebuf", "rawbuf", "tagbuf"]
 
     def __init__(self):
         """ Initialize a clean state object."""
@@ -88,37 +97,34 @@ def crypto_secretstream_xchacha20poly1305_init_push(state, key):
     """
     ensure(
         isinstance(state, crypto_secretstream_xchacha20poly1305_state),
-        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        "State must be a crypto_secretstream_xchacha20poly1305_state object",
         raising=exc.TypeError,
     )
     ensure(
         isinstance(key, bytes),
-        'Key must be a bytes sequence',
+        "Key must be a bytes sequence",
         raising=exc.TypeError,
     )
     ensure(
         len(key) == crypto_secretstream_xchacha20poly1305_KEYBYTES,
-        'Invalid key length',
+        "Invalid key length",
         raising=exc.ValueError,
     )
 
     headerbuf = ffi.new(
-        "unsigned char []",
-        crypto_secretstream_xchacha20poly1305_HEADERBYTES,
+        "unsigned char []", crypto_secretstream_xchacha20poly1305_HEADERBYTES,
     )
 
     rc = lib.crypto_secretstream_xchacha20poly1305_init_push(
-        state.statebuf, headerbuf, key)
-    ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
+        state.statebuf, headerbuf, key
+    )
+    ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
     return ffi.buffer(headerbuf)[:]
 
 
 def crypto_secretstream_xchacha20poly1305_push(
-    state,
-    m,
-    ad=None,
-    tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+    state, m, ad=None, tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
 ):
     """
     Add an encrypted message to the secret stream.
@@ -141,24 +147,24 @@ def crypto_secretstream_xchacha20poly1305_push(
     """
     ensure(
         isinstance(state, crypto_secretstream_xchacha20poly1305_state),
-        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        "State must be a crypto_secretstream_xchacha20poly1305_state object",
         raising=exc.TypeError,
     )
-    ensure(isinstance(m, bytes), 'Message is not bytes', raising=exc.TypeError)
+    ensure(isinstance(m, bytes), "Message is not bytes", raising=exc.TypeError)
     ensure(
         len(m) <= crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX,
-        'Message is too long',
+        "Message is too long",
         raising=exc.ValueError,
     )
     ensure(
         ad is None or isinstance(ad, bytes),
-        'Additional data must be bytes or None',
+        "Additional data must be bytes or None",
         raising=exc.TypeError,
     )
 
     clen = len(m) + crypto_secretstream_xchacha20poly1305_ABYTES
     if state.rawbuf is None or len(state.rawbuf) < clen:
-        state.rawbuf = ffi.new('unsigned char[]', clen)
+        state.rawbuf = ffi.new("unsigned char[]", clen)
 
     if ad is None:
         ad = ffi.NULL
@@ -167,13 +173,9 @@ def crypto_secretstream_xchacha20poly1305_push(
         adlen = len(ad)
 
     rc = lib.crypto_secretstream_xchacha20poly1305_push(
-        state.statebuf,
-        state.rawbuf, ffi.NULL,
-        m, len(m),
-        ad, adlen,
-        tag,
+        state.statebuf, state.rawbuf, ffi.NULL, m, len(m), ad, adlen, tag,
     )
-    ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
     return ffi.buffer(state.rawbuf, clen)[:]
 
@@ -194,36 +196,37 @@ def crypto_secretstream_xchacha20poly1305_init_pull(state, header, key):
     """
     ensure(
         isinstance(state, crypto_secretstream_xchacha20poly1305_state),
-        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        "State must be a crypto_secretstream_xchacha20poly1305_state object",
         raising=exc.TypeError,
     )
     ensure(
         isinstance(header, bytes),
-        'Header must be a bytes sequence',
+        "Header must be a bytes sequence",
         raising=exc.TypeError,
     )
     ensure(
         len(header) == crypto_secretstream_xchacha20poly1305_HEADERBYTES,
-        'Invalid header length',
+        "Invalid header length",
         raising=exc.ValueError,
     )
     ensure(
         isinstance(key, bytes),
-        'Key must be a bytes sequence',
+        "Key must be a bytes sequence",
         raising=exc.TypeError,
     )
     ensure(
         len(key) == crypto_secretstream_xchacha20poly1305_KEYBYTES,
-        'Invalid key length',
+        "Invalid key length",
         raising=exc.ValueError,
     )
 
     if state.tagbuf is None:
-        state.tagbuf = ffi.new('unsigned char *')
+        state.tagbuf = ffi.new("unsigned char *")
 
     rc = lib.crypto_secretstream_xchacha20poly1305_init_pull(
-        state.statebuf, header, key)
-    ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
+        state.statebuf, header, key
+    )
+    ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
 
 def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
@@ -245,44 +248,43 @@ def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
     """
     ensure(
         isinstance(state, crypto_secretstream_xchacha20poly1305_state),
-        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        "State must be a crypto_secretstream_xchacha20poly1305_state object",
         raising=exc.TypeError,
     )
     ensure(
         state.tagbuf is not None,
         (
-            'State must be initialized using '
-            'crypto_secretstream_xchacha20poly1305_init_pull'
+            "State must be initialized using "
+            "crypto_secretstream_xchacha20poly1305_init_pull"
         ),
         raising=exc.ValueError,
     )
     ensure(
-        isinstance(c, bytes),
-        'Ciphertext is not bytes',
-        raising=exc.TypeError,
+        isinstance(c, bytes), "Ciphertext is not bytes", raising=exc.TypeError,
     )
     ensure(
         len(c) >= crypto_secretstream_xchacha20poly1305_ABYTES,
-        'Ciphertext is too short',
+        "Ciphertext is too short",
         raising=exc.ValueError,
     )
     ensure(
-        len(c) <= (
-            crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX +
-            crypto_secretstream_xchacha20poly1305_ABYTES
+        len(c)
+        <= (
+            crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX
+            + crypto_secretstream_xchacha20poly1305_ABYTES
         ),
-        'Ciphertext is too long',
+        "Ciphertext is too long",
         raising=exc.ValueError,
     )
     ensure(
         ad is None or isinstance(ad, bytes),
-        'Additional data must be bytes or None',
+        "Additional data must be bytes or None",
         raising=exc.TypeError,
     )
 
     mlen = len(c) - crypto_secretstream_xchacha20poly1305_ABYTES
     if state.rawbuf is None or len(state.rawbuf) < mlen:
-        state.rawbuf = ffi.new('unsigned char[]', mlen)
+        state.rawbuf = ffi.new("unsigned char[]", mlen)
 
     if ad is None:
         ad = ffi.NULL
@@ -292,12 +294,15 @@ def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
 
     rc = lib.crypto_secretstream_xchacha20poly1305_pull(
         state.statebuf,
-        state.rawbuf, ffi.NULL,
+        state.rawbuf,
+        ffi.NULL,
         state.tagbuf,
-        c, len(c),
-        ad, adlen,
+        c,
+        len(c),
+        ad,
+        adlen,
     )
-    ensure(rc == 0, 'Unexpected failure', raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
     return (ffi.buffer(state.rawbuf, mlen)[:], int(state.tagbuf[0]))
 
@@ -317,7 +322,7 @@ def crypto_secretstream_xchacha20poly1305_rekey(state):
     """
     ensure(
         isinstance(state, crypto_secretstream_xchacha20poly1305_state),
-        'State must be a crypto_secretstream_xchacha20poly1305_state object',
+        "State must be a crypto_secretstream_xchacha20poly1305_state object",
         raising=exc.TypeError,
     )
     lib.crypto_secretstream_xchacha20poly1305_rekey(state.statebuf)

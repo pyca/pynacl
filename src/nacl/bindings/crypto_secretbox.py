@@ -72,10 +72,12 @@ def crypto_secretbox_open(ciphertext, nonce, key):
     padded = b"\x00" * crypto_secretbox_BOXZEROBYTES + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
 
-    res = lib.crypto_secretbox_open(
-        plaintext, padded, len(padded), nonce, key)
-    ensure(res == 0, "Decryption failed. Ciphertext failed verification",
-           raising=exc.CryptoError)
+    res = lib.crypto_secretbox_open(plaintext, padded, len(padded), nonce, key)
+    ensure(
+        res == 0,
+        "Decryption failed. Ciphertext failed verification",
+        raising=exc.CryptoError,
+    )
 
     plaintext = ffi.buffer(plaintext, len(padded))
     return plaintext[crypto_secretbox_ZEROBYTES:]

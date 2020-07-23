@@ -47,21 +47,21 @@ from nacl.utils import random as randombytes
 def read_secretstream_vectors():
     DATA = "secretstream-test-vectors.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    with open(path, 'r') as fp:
+    with open(path, "r") as fp:
         jvectors = json.load(fp)
     unhex = binascii.unhexlify
     vectors = [
         [
-            unhex(v['key']),
-            unhex(v['header']),
+            unhex(v["key"]),
+            unhex(v["header"]),
             [
                 [
-                    c['tag'],
-                    unhex(c['ad']) if c['ad'] is not None else None,
-                    unhex(c['message']),
-                    unhex(c['ciphertext']),
+                    c["tag"],
+                    unhex(c["ad"]) if c["ad"] is not None else None,
+                    unhex(c["message"]),
+                    unhex(c["ciphertext"]),
                 ]
-                for c in v['chunks']
+                for c in v["chunks"]
             ],
         ]
         for v in jvectors
@@ -70,15 +70,15 @@ def read_secretstream_vectors():
 
 
 @pytest.mark.parametrize(
-    ('key', 'header', 'chunks'),
-    read_secretstream_vectors(),
+    ("key", "header", "chunks"), read_secretstream_vectors(),
 )
 def test_vectors(key, header, chunks):
     state = crypto_secretstream_xchacha20poly1305_state()
     crypto_secretstream_xchacha20poly1305_init_pull(state, header, key)
     for tag, ad, message, ciphertext in chunks:
         m, t = crypto_secretstream_xchacha20poly1305_pull(
-            state, ciphertext, ad)
+            state, ciphertext, ad
+        )
         assert m == message
         assert t == tag
 
@@ -104,8 +104,9 @@ def test_it_like_libsodium():
 
     # push
 
-    assert len(state.statebuf) == \
-        crypto_secretstream_xchacha20poly1305_STATEBYTES
+    assert (
+        len(state.statebuf) == crypto_secretstream_xchacha20poly1305_STATEBYTES
+    )
     header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
     assert len(header) == crypto_secretstream_xchacha20poly1305_HEADERBYTES
 
@@ -116,7 +117,8 @@ def test_it_like_libsodium():
     assert len(c2) == m2_len + crypto_secretstream_xchacha20poly1305_ABYTES
 
     c3 = crypto_secretstream_xchacha20poly1305_push(
-        state, m3, ad=ad, tag=crypto_secretstream_xchacha20poly1305_TAG_FINAL)
+        state, m3, ad=ad, tag=crypto_secretstream_xchacha20poly1305_TAG_FINAL
+    )
     assert len(c3) == m3_len + crypto_secretstream_xchacha20poly1305_ABYTES
 
     # pull
@@ -133,7 +135,7 @@ def test_it_like_libsodium():
 
     with pytest.raises(RuntimeError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(state, c3)
-    assert str(excinfo.value) == 'Unexpected failure'
+    assert str(excinfo.value) == "Unexpected failure"
     m3, tag = crypto_secretstream_xchacha20poly1305_pull(state, c3, ad)
     assert tag == crypto_secretstream_xchacha20poly1305_TAG_FINAL
     assert m3 == m3_
@@ -142,36 +144,35 @@ def test_it_like_libsodium():
 
     with pytest.raises(RuntimeError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(state, c3, ad)
-    assert str(excinfo.value) == 'Unexpected failure'
+    assert str(excinfo.value) == "Unexpected failure"
 
     # previous without a tag
 
     with pytest.raises(RuntimeError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(state, c2, None)
-    assert str(excinfo.value) == 'Unexpected failure'
+    assert str(excinfo.value) == "Unexpected failure"
 
     # short ciphertext
 
     with pytest.raises(ValueError) as excinfo:
         c2len = random.randint(
-            1,
-            crypto_secretstream_xchacha20poly1305_ABYTES - 1
+            1, crypto_secretstream_xchacha20poly1305_ABYTES - 1
         )
         crypto_secretstream_xchacha20poly1305_pull(state, c2[:c2len])
-    assert str(excinfo.value) == 'Ciphertext is too short'
+    assert str(excinfo.value) == "Ciphertext is too short"
     with pytest.raises(ValueError) as excinfo:
-        crypto_secretstream_xchacha20poly1305_pull(state, b'')
-    assert str(excinfo.value) == 'Ciphertext is too short'
+        crypto_secretstream_xchacha20poly1305_pull(state, b"")
+    assert str(excinfo.value) == "Ciphertext is too short"
 
     # empty ciphertext
 
     with pytest.raises(ValueError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(
             state,
-            c2[:crypto_secretstream_xchacha20poly1305_ABYTES - 1],
+            c2[: crypto_secretstream_xchacha20poly1305_ABYTES - 1],
             None,
         )
-    assert str(excinfo.value) == 'Ciphertext is too short'
+    assert str(excinfo.value) == "Ciphertext is too short"
 
     # without explicit rekeying
 
@@ -213,7 +214,8 @@ def test_it_like_libsodium():
     state_save = ffi.buffer(state.statebuf)[:]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
-        state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_REKEY)
+        state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_REKEY
+    )
 
     c2 = crypto_secretstream_xchacha20poly1305_push(state, m2)
 
@@ -243,7 +245,8 @@ def test_it_like_libsodium():
     header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
-        state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_PUSH)
+        state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_PUSH
+    )
     assert len(c1) == m1_len + crypto_secretstream_xchacha20poly1305_ABYTES
 
     # snip tests that require introspection into the state buffer
@@ -252,17 +255,18 @@ def test_it_like_libsodium():
 
 def test_max_message_size(monkeypatch):
     import nacl.bindings.crypto_secretstream as css
+
     # we want to create an oversized message but don't want to blow out
     # memory so knock it down a bit for this test
     monkeypatch.setattr(
         css,
-        'crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX',
-        2**10 - 1,
+        "crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX",
+        2 ** 10 - 1,
     )
-    m = b'0' * (css.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX + 1)
+    m = b"0" * (css.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX + 1)
     k = crypto_secretstream_xchacha20poly1305_keygen()
     state = crypto_secretstream_xchacha20poly1305_state()
     crypto_secretstream_xchacha20poly1305_init_push(state, k)
     with pytest.raises(ValueError) as excinfo:
         crypto_secretstream_xchacha20poly1305_push(state, m, None, 0)
-    assert str(excinfo.value) == 'Message is too long'
+    assert str(excinfo.value) == "Message is too long"

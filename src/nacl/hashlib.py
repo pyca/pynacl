@@ -39,13 +39,15 @@ class blake2b(object):
     """
     :py:mod:`hashlib` API compatible blake2b algorithm implementation
     """
+
     MAX_DIGEST_SIZE = BYTES
     MAX_KEY_SIZE = KEYBYTES_MAX
     PERSON_SIZE = PERSONALBYTES
     SALT_SIZE = SALTBYTES
 
-    def __init__(self, data=b'', digest_size=BYTES, key=b'',
-                 salt=b'', person=b''):
+    def __init__(
+        self, data=b"", digest_size=BYTES, key=b"", salt=b"", person=b""
+    ):
         """
         :py:class:`.blake2b` algorithm initializer
 
@@ -67,8 +69,9 @@ class blake2b(object):
         :type person: bytes
         """
 
-        self._state = _b2b_init(key=key, salt=salt, person=person,
-                                digest_size=digest_size)
+        self._state = _b2b_init(
+            key=key, salt=salt, person=person, digest_size=digest_size
+        )
         self._digest_size = digest_size
 
         if data:
@@ -84,7 +87,7 @@ class blake2b(object):
 
     @property
     def name(self):
-        return 'blake2b'
+        return "blake2b"
 
     def update(self, data):
         _b2b_update(self._state, data)
@@ -107,12 +110,12 @@ class blake2b(object):
         Raise the same exception as hashlib's blake implementation
         on copy.copy()
         """
-        raise TypeError("can't pickle {} objects".format(
-            self.__class__.__name__))
+        raise TypeError(
+            "can't pickle {} objects".format(self.__class__.__name__)
+        )
 
 
-def scrypt(password, salt='', n=2**20, r=8, p=1,
-           maxmem=2**25, dklen=64):
+def scrypt(password, salt="", n=2 ** 20, r=8, p=1, maxmem=2 ** 25, dklen=64):
     """
     Derive a cryptographic key using the scrypt KDF.
 
@@ -123,4 +126,5 @@ def scrypt(password, salt='', n=2**20, r=8, p=1,
     in cpython version 3.6
     """
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
-        password, salt, n, r, p, maxmem=maxmem, dklen=dklen)
+        password, salt, n, r, p, maxmem=maxmem, dklen=dklen
+    )

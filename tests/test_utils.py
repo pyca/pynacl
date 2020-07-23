@@ -33,17 +33,23 @@ def test_string_fixer():
 
 
 def test_deterministic_random_bytes():
-    expected = b"0d8e6cc68715648926732e7ea73250cfaf2d58422083904c841a8ba" \
-               b"33b986111f346ba50723a68ae283524a6bded09f83be6b80595856f" \
-               b"72e25b86918e8b114bafb94bc8abedd73daab454576b7c5833eb0bf" \
-               b"982a1bb4587a5c970ff0810ca3b791d7e12"
-    seed = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d" \
-           b"\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b" \
-           b"\x1c\x1d\x1e\x1f"
-    assert nacl.utils.randombytes_deterministic(
-        100,
-        seed,
-        encoder=nacl.utils.encoding.HexEncoder) == expected
+    expected = (
+        b"0d8e6cc68715648926732e7ea73250cfaf2d58422083904c841a8ba"
+        b"33b986111f346ba50723a68ae283524a6bded09f83be6b80595856f"
+        b"72e25b86918e8b114bafb94bc8abedd73daab454576b7c5833eb0bf"
+        b"982a1bb4587a5c970ff0810ca3b791d7e12"
+    )
+    seed = (
+        b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d"
+        b"\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b"
+        b"\x1c\x1d\x1e\x1f"
+    )
+    assert (
+        nacl.utils.randombytes_deterministic(
+            100, seed, encoder=nacl.utils.encoding.HexEncoder
+        )
+        == expected
+    )
 
 
 def test_deterministic_random_bytes_invalid_seed_length():

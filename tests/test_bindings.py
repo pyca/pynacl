@@ -38,10 +38,12 @@ def test_hash():
     msg = b"message"
     h1 = c.crypto_hash(msg)
     assert len(h1) == c.crypto_hash_BYTES
-    assert tohex(h1) == ("f8daf57a3347cc4d6b9d575b31fe6077"
-                         "e2cb487f60a96233c08cb479dbf31538"
-                         "cc915ec6d48bdbaa96ddc1a16db4f4f9"
-                         "6f37276cfcb3510b8246241770d5952c")
+    assert tohex(h1) == (
+        "f8daf57a3347cc4d6b9d575b31fe6077"
+        "e2cb487f60a96233c08cb479dbf31538"
+        "cc915ec6d48bdbaa96ddc1a16db4f4f9"
+        "6f37276cfcb3510b8246241770d5952c"
+    )
     assert tohex(h1) == hashlib.sha512(msg).hexdigest()
 
     h2 = c.crypto_hash_sha512(msg)
@@ -50,8 +52,9 @@ def test_hash():
 
     h3 = c.crypto_hash_sha256(msg)
     assert len(h3) == c.crypto_hash_sha256_BYTES
-    assert tohex(h3) == ("ab530a13e45914982b79f9b7e3fba994"
-                         "cfd1f3fb22f71cea1afbf02b460c6d1d")
+    assert tohex(h3) == (
+        "ab530a13e45914982b79f9b7e3fba994" "cfd1f3fb22f71cea1afbf02b460c6d1d"
+    )
     assert tohex(h3) == hashlib.sha256(msg).hexdigest()
 
 
@@ -67,9 +70,7 @@ def test_secretbox():
 
     with pytest.raises(CryptoError):
         c.crypto_secretbox_open(
-            msg + b"!",
-            nonce,
-            key,
+            msg + b"!", nonce, key,
         )
 
 
@@ -82,7 +83,8 @@ def test_secretbox_wrong_length():
         c.crypto_secretbox_open(b"", b"", b"")
     with pytest.raises(ValueError):
         c.crypto_secretbox_open(
-            b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES)
+            b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES
+        )
 
 
 def test_box():
@@ -111,8 +113,7 @@ def test_box():
     assert m2 == message
 
     with pytest.raises(CryptoError):
-        c.crypto_box_open(
-            message + b"!", nonce, A_pubkey, A_secretkey)
+        c.crypto_box_open(message + b"!", nonce, A_pubkey, A_secretkey)
 
 
 def test_box_wrong_lengths():
@@ -121,10 +122,10 @@ def test_box_wrong_lengths():
         c.crypto_box(b"abc", "\x00", A_pubkey, A_secretkey)
     with pytest.raises(ValueError):
         c.crypto_box(
-            b"abc", "\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey)
+            b"abc", "\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey
+        )
     with pytest.raises(ValueError):
-        c.crypto_box(
-            b"abc", "\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
+        c.crypto_box(b"abc", "\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
 
     with pytest.raises(ValueError):
         c.crypto_box_open(b"", b"", b"", b"")
@@ -197,8 +198,9 @@ def test_scalarmult():
 
     z = unhexlify(b"10" * 32)
     bz1 = c.crypto_scalarmult_base(z)
-    assert tohex(bz1) == ("781faab908430150daccdd6f9d6c5086"
-                          "e34f73a93ebbaa271765e5036edfc519")
+    assert tohex(bz1) == (
+        "781faab908430150daccdd6f9d6c5086" "e34f73a93ebbaa271765e5036edfc519"
+    )
     bz2 = c.crypto_scalarmult(z, base)
     assert tohex(bz1) == tohex(bz2)
 
@@ -207,8 +209,9 @@ def test_sign_test_key_conversion():
     """
     Taken from test vectors in libsodium
     """
-    keypair_seed = unhexlify(b"421151a459faeade3d247115f94aedae"
-                             b"42318124095afabe4d1451a559faedee")
+    keypair_seed = unhexlify(
+        b"421151a459faeade3d247115f94aedae" b"42318124095afabe4d1451a559faedee"
+    )
     ed25519_pk, ed25519_sk = c.crypto_sign_seed_keypair(keypair_seed)
 
     assert c.crypto_sign_ed25519_sk_to_pk(ed25519_sk) == ed25519_pk
@@ -228,19 +231,19 @@ def test_sign_test_key_conversion():
 
     curve25519_sk = c.crypto_sign_ed25519_sk_to_curve25519(ed25519_sk)
 
-    assert tohex(curve25519_pk) == ("f1814f0e8ff1043d8a44d25babff3ced"
-                                    "cae6c22c3edaa48f857ae70de2baae50")
-    assert tohex(curve25519_sk) == ("8052030376d47112be7f73ed7a019293"
-                                    "dd12ad910b654455798b4667d73de166")
+    assert tohex(curve25519_pk) == (
+        "f1814f0e8ff1043d8a44d25babff3ced" "cae6c22c3edaa48f857ae70de2baae50"
+    )
+    assert tohex(curve25519_sk) == (
+        "8052030376d47112be7f73ed7a019293" "dd12ad910b654455798b4667d73de166"
+    )
 
 
 def test_box_seal_empty():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
     empty = b""
     msg = c.crypto_box_seal(empty, A_pubkey)
-    decoded = c.crypto_box_seal_open(msg,
-                                     A_pubkey,
-                                     A_secretkey)
+    decoded = c.crypto_box_seal_open(msg, A_pubkey, A_secretkey)
     assert decoded == empty
 
 
@@ -251,9 +254,7 @@ def test_box_seal_empty_is_verified():
     amsg[-1] ^= 1
     msg = bytes(amsg)
     with pytest.raises(CryptoError):
-        c.crypto_box_seal_open(msg,
-                               A_pubkey,
-                               A_secretkey)
+        c.crypto_box_seal_open(msg, A_pubkey, A_secretkey)
 
 
 def test_box_seal_wrong_lengths():
@@ -261,21 +262,12 @@ def test_box_seal_wrong_lengths():
     with pytest.raises(ValueError):
         c.crypto_box_seal(b"abc", A_pubkey[:-1])
     with pytest.raises(ValueError):
-        c.crypto_box_seal_open(b"abc",
-                               b"",
-                               A_secretkey
-                               )
+        c.crypto_box_seal_open(b"abc", b"", A_secretkey)
     with pytest.raises(ValueError):
-        c.crypto_box_seal_open(b"abc",
-                               A_pubkey,
-                               A_secretkey[:-1]
-                               )
+        c.crypto_box_seal_open(b"abc", A_pubkey, A_secretkey[:-1])
     msg = c.crypto_box_seal(b"", A_pubkey)
     with pytest.raises(CryptoError):
-        c.crypto_box_seal_open(msg[:-1],
-                               A_pubkey,
-                               A_secretkey
-                               )
+        c.crypto_box_seal_open(msg[:-1], A_pubkey, A_secretkey)
 
 
 def test_box_seal_wrong_types():
@@ -283,32 +275,29 @@ def test_box_seal_wrong_types():
     with pytest.raises(TypeError):
         c.crypto_box_seal(b"abc", dict())
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(
-            b"abc", None, A_secretkey)
+        c.crypto_box_seal_open(b"abc", None, A_secretkey)
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(
-            b"abc", A_pubkey, None)
+        c.crypto_box_seal_open(b"abc", A_pubkey, None)
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(
-            None, A_pubkey, A_secretkey)
+        c.crypto_box_seal_open(None, A_pubkey, A_secretkey)
 
 
 def _box_from_seed_vectors():
     # Fmt: <seed> <tab> <public_key> || <secret_key>
     DATA = "box_from_seed.txt"
-    lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b'\t')
-    return [(x[0],       # seed
-             x[1][:64],  # derived public key
-             x[1][64:],  # derived secret key
-             )
-            for x in lines]
+    lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b"\t")
+    return [
+        (
+            x[0],  # seed
+            x[1][:64],  # derived public key
+            x[1][64:],  # derived secret key
+        )
+        for x in lines
+    ]
 
 
 @pytest.mark.parametrize(
-    (
-        "seed", "public_key", "secret_key"
-    ),
-    _box_from_seed_vectors()
+    ("seed", "public_key", "secret_key"), _box_from_seed_vectors()
 )
 def test_box_seed_keypair_reference(seed, public_key, secret_key):
     seed = unhexlify(seed)
@@ -332,24 +321,20 @@ def test_box_seed_keypair_short_seed():
         c.crypto_box_seed_keypair(seed)
 
 
-@given(integers(min_value=-2,
-                max_value=0)
-       )
+@given(integers(min_value=-2, max_value=0))
 def test_pad_wrong_blocksize(bl_sz):
     with pytest.raises(ValueError):
-        c.sodium_pad(b'x', bl_sz)
+        c.sodium_pad(b"x", bl_sz)
 
 
 def test_unpad_not_padded():
     with pytest.raises(CryptoError):
-        c.sodium_unpad(b'x', 8)
+        c.sodium_unpad(b"x", 8)
 
 
-@given(binary(min_size=0,
-              max_size=2049),
-       integers(min_value=16,
-                max_value=256)
-       )
+@given(
+    binary(min_size=0, max_size=2049), integers(min_value=16, max_value=256)
+)
 @settings(max_examples=20)
 def test_pad_sizes(msg, bl_sz):
     padded = c.sodium_pad(msg, bl_sz)
@@ -358,11 +343,9 @@ def test_pad_sizes(msg, bl_sz):
     assert len(padded) % bl_sz == 0
 
 
-@given(binary(min_size=0,
-              max_size=2049),
-       integers(min_value=16,
-                max_value=256)
-       )
+@given(
+    binary(min_size=0, max_size=2049), integers(min_value=16, max_value=256)
+)
 @settings(max_examples=20)
 def test_pad_roundtrip(msg, bl_sz):
     padded = c.sodium_pad(msg, bl_sz)
@@ -375,10 +358,10 @@ def test_pad_roundtrip(msg, bl_sz):
 
 
 def test_sodium_increment():
-    maxint = 32 * b'\xff'
-    zero = 32 * b'\x00'
-    one = b'\x01' + 31 * b'\x00'
-    two = b'\x02' + 31 * b'\x00'
+    maxint = 32 * b"\xff"
+    zero = 32 * b"\x00"
+    one = b"\x01" + 31 * b"\x00"
+    two = b"\x02" + 31 * b"\x00"
 
     res = c.sodium_increment(maxint)
     assert res == zero
@@ -391,13 +374,13 @@ def test_sodium_increment():
 
 
 def test_sodium_add():
-    maxint = 32 * b'\xff'
-    zero = 32 * b'\x00'
-    one = b'\x01' + 31 * b'\x00'
-    short_one = b'\x01' + 15 * b'\x00'
-    two = b'\x02' + 31 * b'\x00'
-    three = b'\x03' + 31 * b'\x00'
-    four = b'\x04' + 31 * b'\x00'
+    maxint = 32 * b"\xff"
+    zero = 32 * b"\x00"
+    one = b"\x01" + 31 * b"\x00"
+    short_one = b"\x01" + 15 * b"\x00"
+    two = b"\x02" + 31 * b"\x00"
+    three = b"\x03" + 31 * b"\x00"
+    four = b"\x04" + 31 * b"\x00"
 
     res = c.sodium_add(one, two)
     assert res == three
@@ -415,15 +398,19 @@ def test_sodium_add():
 def test_sign_ed25519ph_rfc8032():
     # sk, pk, msg, exp_sig
     # taken from RFC 8032 section 7.3.  Test Vectors for Ed25519ph
-    sk = unhexlify(b'833fe62409237b9d62ec77587520911e'
-                   b'9a759cec1d19755b7da901b96dca3d42')
-    pk = unhexlify(b'ec172b93ad5e563bf4932c70e1245034'
-                   b'c35467ef2efd4d64ebf819683467e2bf')
-    msg = b'abc'
-    exp_sig = unhexlify(b'98a70222f0b8121aa9d30f813d683f80'
-                        b'9e462b469c7ff87639499bb94e6dae41'
-                        b'31f85042463c2a355a2003d062adf5aa'
-                        b'a10b8c61e636062aaad11c2a26083406')
+    sk = unhexlify(
+        b"833fe62409237b9d62ec77587520911e" b"9a759cec1d19755b7da901b96dca3d42"
+    )
+    pk = unhexlify(
+        b"ec172b93ad5e563bf4932c70e1245034" b"c35467ef2efd4d64ebf819683467e2bf"
+    )
+    msg = b"abc"
+    exp_sig = unhexlify(
+        b"98a70222f0b8121aa9d30f813d683f80"
+        b"9e462b469c7ff87639499bb94e6dae41"
+        b"31f85042463c2a355a2003d062adf5aa"
+        b"a10b8c61e636062aaad11c2a26083406"
+    )
     c_sk = sk + pk
 
     edph = c.crypto_sign_ed25519ph_state()
@@ -449,15 +436,18 @@ def test_sign_ed25519ph_libsodium():
 
     msg = unhexlify(hmsg)
 
-    seed = unhexlify(b'421151a459faeade3d247115f94aedae'
-                     b'42318124095afabe4d1451a559faedee')
+    seed = unhexlify(
+        b"421151a459faeade3d247115f94aedae" b"42318124095afabe4d1451a559faedee"
+    )
 
     pk, sk = c.crypto_sign_seed_keypair(seed)
 
-    exp_sig = unhexlify(b'10c5411e40bd10170fb890d4dfdb6d33'
-                        b'8c8cb11d2764a216ee54df10977dcdef'
-                        b'd8ff755b1eeb3f16fce80e40e7aafc99'
-                        b'083dbff43d5031baf04157b48423960d')
+    exp_sig = unhexlify(
+        b"10c5411e40bd10170fb890d4dfdb6d33"
+        b"8c8cb11d2764a216ee54df10977dcdef"
+        b"d8ff755b1eeb3f16fce80e40e7aafc99"
+        b"083dbff43d5031baf04157b48423960d"
+    )
 
     edph = c.crypto_sign_ed25519ph_state()
     c.crypto_sign_ed25519ph_update(edph, msg)
@@ -466,9 +456,9 @@ def test_sign_ed25519ph_libsodium():
     assert sig == exp_sig
 
     edph_incr = c.crypto_sign_ed25519ph_state()
-    c.crypto_sign_ed25519ph_update(edph_incr, b'')
-    c.crypto_sign_ed25519ph_update(edph_incr, msg[0:len(msg) // 2])
-    c.crypto_sign_ed25519ph_update(edph_incr, msg[len(msg) // 2:])
+    c.crypto_sign_ed25519ph_update(edph_incr, b"")
+    c.crypto_sign_ed25519ph_update(edph_incr, msg[0 : len(msg) // 2])
+    c.crypto_sign_ed25519ph_update(edph_incr, msg[len(msg) // 2 :])
 
     assert c.crypto_sign_ed25519ph_final_verify(edph_incr, exp_sig, pk) is True
 
@@ -483,20 +473,22 @@ def test_sign_ed25519ph_libsodium():
         c.crypto_sign_ed25519ph_final_verify(edph_wrng, exp_sig, pk)
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_is_valid_point():
     """
     Verify crypto_core_ed25519_is_valid_point correctly rejects
     the all-zeros "point"
     """
-    zero = c.crypto_core_ed25519_BYTES * b'\x00'
+    zero = c.crypto_core_ed25519_BYTES * b"\x00"
     res = c.crypto_core_ed25519_is_valid_point(zero)
     assert res is False
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_add_and_sub():
     # the public component of a ed25519 keypair
     # is a point on the ed25519 curve
@@ -510,9 +502,10 @@ def test_ed25519_add_and_sub():
     assert c.crypto_core_ed25519_sub(p3, p2) == p1
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519 or
-                    not c.has_crypto_scalarmult_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519 or not c.has_crypto_scalarmult_ed25519,
+    reason="Requires full build of libsodium",
+)
 def test_scalarmult_ed25519():
     SCALARBYTES = c.crypto_scalarmult_ed25519_SCALARBYTES
 
@@ -560,24 +553,54 @@ def test_scalarmult_ed25519():
     assert c.crypto_scalarmult_ed25519(MIN_P8, p) == _p8
 
 
-@pytest.mark.skipif(not c.has_crypto_scalarmult_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_scalarmult_ed25519,
+    reason="Requires full build of libsodium",
+)
 def test_scalarmult_ed25519_base():
     """
     Verify scalarmult_ed25519_base is congruent to
     scalarmult_ed25519 on the ed25519 base point
     """
 
-    BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66]
-                                )
-                      )
+    BASEPOINT = bytes(
+        bytearray(
+            [
+                0x58,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+            ]
+        )
+    )
 
     sclr = c.randombytes(c.crypto_scalarmult_ed25519_SCALARBYTES)
 
@@ -587,21 +610,51 @@ def test_scalarmult_ed25519_base():
     assert p2 == p
 
 
-@pytest.mark.skipif(not c.has_crypto_scalarmult_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_scalarmult_ed25519,
+    reason="Requires full build of libsodium",
+)
 def test_scalarmult_ed25519_noclamp():
     # An arbitrary scalar which is known to differ once clamped
-    scalar = 32 * b'\x01'
-    BASEPOINT = bytes(bytearray([0x58, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66,
-                                 0x66, 0x66, 0x66, 0x66]
-                                )
-                      )
+    scalar = 32 * b"\x01"
+    BASEPOINT = bytes(
+        bytearray(
+            [
+                0x58,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+                0x66,
+            ]
+        )
+    )
 
     p = c.crypto_scalarmult_ed25519_noclamp(scalar, BASEPOINT)
     pb = c.crypto_scalarmult_ed25519_base_noclamp(scalar)
@@ -620,24 +673,53 @@ def test_scalarmult_ed25519_noclamp():
     assert p1 == p2
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_scalar_add_and_sub():
-    zero = 32 * b'\x00'
-    one = b'\x01' + 31 * b'\x00'
-    two = b'\x02' + 31 * b'\x00'
+    zero = 32 * b"\x00"
+    one = b"\x01" + 31 * b"\x00"
+    two = b"\x02" + 31 * b"\x00"
     # the max integer over l, the order of the main subgroup
     # 2^252+27742317777372353535851937790883648493 - 1
-    max = bytes(bytearray([0xec, 0xd3, 0xf5, 0x5c,
-                           0x1a, 0x63, 0x12, 0x58,
-                           0xd6, 0x9c, 0xf7, 0xa2,
-                           0xde, 0xf9, 0xde, 0x14,
-                           0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x10]
-                          )
-                )
+    max = bytes(
+        bytearray(
+            [
+                0xEC,
+                0xD3,
+                0xF5,
+                0x5C,
+                0x1A,
+                0x63,
+                0x12,
+                0x58,
+                0xD6,
+                0x9C,
+                0xF7,
+                0xA2,
+                0xDE,
+                0xF9,
+                0xDE,
+                0x14,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x00,
+                0x10,
+            ]
+        )
+    )
 
     p1 = c.crypto_core_ed25519_scalar_add(two, max)
     assert p1 == one
@@ -649,11 +731,12 @@ def test_ed25519_scalar_add_and_sub():
     assert p3 == max
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_scalar_mul():
-    zero = 32 * b'\x00'
-    three = b'\x03' + 31 * b'\x00'
+    zero = 32 * b"\x00"
+    three = b"\x03" + 31 * b"\x00"
 
     # random scalar modulo l
     sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
@@ -666,11 +749,12 @@ def test_ed25519_scalar_mul():
     assert p1 == p
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_scalar_invert_negate_complement():
-    zero = 32 * b'\x00'
-    one = b'\x01' + 31 * b'\x00'
+    zero = 32 * b"\x00"
+    one = b"\x01" + 31 * b"\x00"
 
     # random scalar modulo l
     sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
@@ -686,40 +770,73 @@ def test_ed25519_scalar_invert_negate_complement():
     assert c.crypto_core_ed25519_scalar_add(sclr, cp) == one
 
 
-@pytest.mark.skipif(not c.has_crypto_core_ed25519,
-                    reason="Requires full build of libsodium")
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_scalar_reduce():
-    zero = 32 * b'\x00'
+    zero = 32 * b"\x00"
     # 65536 times the order of the main subgroup (which is bigger
     # than 32 bytes), padded to 64 bytes
     # 2^252+27742317777372353535851937790883648493
-    l65536 = bytes(2 * b'\x00') + \
-        bytes(bytearray([0xed, 0xd3, 0xf5, 0x5c,
-                         0x1a, 0x63, 0x12, 0x58,
-                         0xd6, 0x9c, 0xf7, 0xa2,
-                         0xde, 0xf9, 0xde, 0x14,
-                         0x00, 0x00, 0x00, 0x00,
-                         0x00, 0x00, 0x00, 0x00,
-                         0x00, 0x00, 0x00, 0x00,
-                         0x00, 0x00, 0x00, 0x10]
-                        )
-              ) + bytes(30 * b'\x00')
+    l65536 = (
+        bytes(2 * b"\x00")
+        + bytes(
+            bytearray(
+                [
+                    0xED,
+                    0xD3,
+                    0xF5,
+                    0x5C,
+                    0x1A,
+                    0x63,
+                    0x12,
+                    0x58,
+                    0xD6,
+                    0x9C,
+                    0xF7,
+                    0xA2,
+                    0xDE,
+                    0xF9,
+                    0xDE,
+                    0x14,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x00,
+                    0x10,
+                ]
+            )
+        )
+        + bytes(30 * b"\x00")
+    )
 
     # random scalar modulo l
     sclr = c.randombytes(c.crypto_core_ed25519_SCALARBYTES)
     p = c.crypto_core_ed25519_scalar_add(sclr, zero)
 
     # l65536 + p is bigger than 32 bytes
-    big = c.sodium_add(l65536, p + bytes(32 * b'\x00'))
+    big = c.sodium_add(l65536, p + bytes(32 * b"\x00"))
 
     r = c.crypto_core_ed25519_scalar_reduce(big)
     assert r == p
 
 
-@pytest.mark.skipif(c.has_crypto_core_ed25519,
-                    reason="Requires minimal build of libsodium")
+@pytest.mark.skipif(
+    c.has_crypto_core_ed25519, reason="Requires minimal build of libsodium"
+)
 def test_ed25519_unavailable():
-    zero = 32 * b'\x00'
+    zero = 32 * b"\x00"
 
     with pytest.raises(UnavailableError):
         c.crypto_core_ed25519_is_valid_point(zero)
@@ -744,10 +861,12 @@ def test_ed25519_unavailable():
         c.crypto_core_ed25519_scalar_reduce(zero)
 
 
-@pytest.mark.skipif(c.has_crypto_scalarmult_ed25519,
-                    reason="Requires minimal build of libsodium")
+@pytest.mark.skipif(
+    c.has_crypto_scalarmult_ed25519,
+    reason="Requires minimal build of libsodium",
+)
 def test_scalarmult_ed25519_unavailable():
-    zero = 32 * b'\x00'
+    zero = 32 * b"\x00"
 
     with pytest.raises(UnavailableError):
         c.crypto_scalarmult_ed25519_base(zero)

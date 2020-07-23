@@ -85,7 +85,7 @@ HASHES = [
     b"\xe1\x91\x5f\x5c\xb1\xec\xa4\x6c",
     b"\xf3\x25\x96\x5c\xa1\x6d\x62\x9f",
     b"\x57\x5f\xf2\x8e\x60\x38\x1b\xe5",
-    b"\x72\x45\x06\xeb\x4c\x32\x8a\x95"
+    b"\x72\x45\x06\xeb\x4c\x32\x8a\x95",
 ]
 
 MESG = (
@@ -99,10 +99,7 @@ MESG = (
     b"\x38\x39\x3a\x3b\x3c\x3d\x3e"
 )
 
-KEY = (
-    b"\x00\x01\x02\x03\x04\x05\x06\x07"
-    b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
-)
+KEY = b"\x00\x01\x02\x03\x04\x05\x06\x07" b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
 
 XHASHES = [
     b"a3817f04ba25a8e66df67214c7550293",
@@ -168,7 +165,7 @@ XHASHES = [
     b"e3040c00eb28f15366ca73cbd872e740",
     b"7697009a6a831dfecca91c5993670f7a",
     b"5853542321f567a005d547a4f04759bd",
-    b"5150d1772f50834a503e069a973fbd7c"
+    b"5150d1772f50834a503e069a973fbd7c",
 ]
 
 
@@ -195,52 +192,45 @@ def sipx24_vectors():
     return vectors
 
 
-@pytest.mark.parametrize(("inp", "key", "expected"),
-                         sip24_vectors()
-                         )
+@pytest.mark.parametrize(("inp", "key", "expected"), sip24_vectors())
 def test_siphash24(inp, key, expected):
     rs = siphash24(inp, key)
     assert rs == hexlify(expected)
 
 
-@pytest.mark.skipif(not SIPHASHX_AVAILABLE,
-                    reason="Requires full build of libsodium")
-@pytest.mark.parametrize(("inp", "key", "expected"),
-                         sipx24_vectors()
-                         )
+@pytest.mark.skipif(
+    not SIPHASHX_AVAILABLE, reason="Requires full build of libsodium"
+)
+@pytest.mark.parametrize(("inp", "key", "expected"), sipx24_vectors())
 def test_siphashx24(inp, key, expected):
     rs = siphashx24(inp, key)
     assert rs == expected
 
 
-@pytest.mark.parametrize(("inp", "key", "expected"), [
-    (
-        b'\00',
-        b'\x00\x01\x02\x03\x04\x05\x06\x07',
-        b''
-    )
-])
+@pytest.mark.parametrize(
+    ("inp", "key", "expected"),
+    [(b"\00", b"\x00\x01\x02\x03\x04\x05\x06\x07", b"")],
+)
 def test_siphash24_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphash24(inp, key)
 
 
-@pytest.mark.skipif(not SIPHASHX_AVAILABLE,
-                    reason="Requires full build of libsodium")
-@pytest.mark.parametrize(("inp", "key", "expected"), [
-    (
-        b'\00',
-        b'\x00\x01\x02\x03\x04\x05\x06\x07',
-        b''
-    )
-])
+@pytest.mark.skipif(
+    not SIPHASHX_AVAILABLE, reason="Requires full build of libsodium"
+)
+@pytest.mark.parametrize(
+    ("inp", "key", "expected"),
+    [(b"\00", b"\x00\x01\x02\x03\x04\x05\x06\x07", b"")],
+)
 def test_siphashx24_shortened_key(inp, key, expected):
     with pytest.raises(ValueError):
         siphashx24(inp, key)
 
 
-@pytest.mark.skipif(SIPHASHX_AVAILABLE,
-                    reason="Requires minimal build of libsodium")
+@pytest.mark.skipif(
+    SIPHASHX_AVAILABLE, reason="Requires minimal build of libsodium"
+)
 def test_siphashx24_unavailable():
     with pytest.raises(UnavailableError):
-        siphashx24(b'', b'')
+        siphashx24(b"", b"")
