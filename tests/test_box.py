@@ -34,15 +34,19 @@ VECTORS = [
         b"5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb",
         b"de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f",
         b"69696ee955b62b73cd62bda875fc73d68219e0036b7a0b37",
-        (b"be075fc53c81f2d5cf141316ebeb0c7b5228c52a4c62cbd44b66849b64244ffce5e"
-         b"cbaaf33bd751a1ac728d45e6c61296cdc3c01233561f41db66cce314adb310e3be8"
-         b"250c46f06dceea3a7fa1348057e2f6556ad6b1318a024a838f21af1fde048977eb4"
-         b"8f59ffd4924ca1c60902e52f0a089bc76897040e082f937763848645e0705"),
-        (b"f3ffc7703f9400e52a7dfb4b3d3305d98e993b9f48681273c29650ba32fc76ce483"
-         b"32ea7164d96a4476fb8c531a1186ac0dfc17c98dce87b4da7f011ec48c97271d2c2"
-         b"0f9b928fe2270d6fb863d51738b48eeee314a7cc8ab932164548e526ae902243685"
-         b"17acfeabd6bb3732bc0e9da99832b61ca01b6de56244a9e88d5f9b37973f622a43d"
-         b"14a6599b1f654cb45a74e355a5"),
+        (
+            b"be075fc53c81f2d5cf141316ebeb0c7b5228c52a4c62cbd44b66849b64244ffce5e"
+            b"cbaaf33bd751a1ac728d45e6c61296cdc3c01233561f41db66cce314adb310e3be8"
+            b"250c46f06dceea3a7fa1348057e2f6556ad6b1318a024a838f21af1fde048977eb4"
+            b"8f59ffd4924ca1c60902e52f0a089bc76897040e082f937763848645e0705"
+        ),
+        (
+            b"f3ffc7703f9400e52a7dfb4b3d3305d98e993b9f48681273c29650ba32fc76ce483"
+            b"32ea7164d96a4476fb8c531a1186ac0dfc17c98dce87b4da7f011ec48c97271d2c2"
+            b"0f9b928fe2270d6fb863d51738b48eeee314a7cc8ab932164548e526ae902243685"
+            b"17acfeabd6bb3732bc0e9da99832b61ca01b6de56244a9e88d5f9b37973f622a43d"
+            b"14a6599b1f654cb45a74e355a5"
+        ),
     ),
 ]
 
@@ -56,10 +60,7 @@ def test_generate_private_key_from_random_seed():
 
 
 @pytest.mark.parametrize(
-    (
-        "seed", "public_key", "secret_key"
-    ),
-    _box_from_seed_vectors()
+    ("seed", "public_key", "secret_key"), _box_from_seed_vectors()
 )
 def test_generate_private_key_from_seed(seed, public_key, secret_key):
     prvt = PrivateKey.from_seed(seed, encoder=HexEncoder)
@@ -110,13 +111,19 @@ def test_box_bytes():
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_encryption(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubalice = PublicKey(pubalice, encoder=HexEncoder)
     privbob = PrivateKey(privbob, encoder=HexEncoder)
 
@@ -138,13 +145,19 @@ def test_box_encryption(
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_decryption(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
@@ -160,13 +173,19 @@ def test_box_decryption(
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_decryption_combined(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
@@ -182,13 +201,19 @@ def test_box_decryption_combined(
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_optional_nonce(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
@@ -203,36 +228,50 @@ def test_box_optional_nonce(
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_encryption_generates_different_nonces(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
     box = Box(privalice, pubbob)
 
-    nonce_0 = box.encrypt(binascii.unhexlify(plaintext),
-                          encoder=HexEncoder).nonce
+    nonce_0 = box.encrypt(
+        binascii.unhexlify(plaintext), encoder=HexEncoder
+    ).nonce
 
-    nonce_1 = box.encrypt(binascii.unhexlify(plaintext),
-                          encoder=HexEncoder).nonce
+    nonce_1 = box.encrypt(
+        binascii.unhexlify(plaintext), encoder=HexEncoder
+    ).nonce
 
     assert nonce_0 != nonce_1
 
 
 @pytest.mark.parametrize(
     (
-        "privalice", "pubalice", "privbob", "pubbob", "nonce", "plaintext",
+        "privalice",
+        "pubalice",
+        "privbob",
+        "pubbob",
+        "nonce",
+        "plaintext",
         "ciphertext",
     ),
     VECTORS,
 )
 def test_box_failed_decryption(
-        privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext):
+    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+):
     pubbob = PublicKey(pubbob, encoder=HexEncoder)
     privbob = PrivateKey(privbob, encoder=HexEncoder)
 
@@ -274,31 +313,55 @@ def check_type_error(expected, f, *args):
 def test_wrong_types():
     priv = PrivateKey.generate()
 
-    check_type_error(("PrivateKey must be created from a 32 bytes long "
-                      "raw secret key"),
-                     PrivateKey, 12)
-    check_type_error(("PrivateKey must be created from a 32 bytes long "
-                      "raw secret key"),
-                     PrivateKey, priv)
-    check_type_error(("PrivateKey must be created from a 32 bytes long "
-                      "raw secret key"),
-                     PrivateKey, priv.public_key)
+    check_type_error(
+        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        PrivateKey,
+        12,
+    )
+    check_type_error(
+        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        PrivateKey,
+        priv,
+    )
+    check_type_error(
+        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        PrivateKey,
+        priv.public_key,
+    )
 
-    check_type_error("PublicKey must be created from 32 bytes",
-                     PublicKey, 13)
-    check_type_error("PublicKey must be created from 32 bytes",
-                     PublicKey, priv)
-    check_type_error("PublicKey must be created from 32 bytes",
-                     PublicKey, priv.public_key)
+    check_type_error("PublicKey must be created from 32 bytes", PublicKey, 13)
+    check_type_error(
+        "PublicKey must be created from 32 bytes", PublicKey, priv
+    )
+    check_type_error(
+        "PublicKey must be created from 32 bytes", PublicKey, priv.public_key
+    )
 
-    check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, priv, "not a public key")
-    check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, priv.encode(), priv.public_key.encode())
-    check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, priv, priv.public_key.encode())
-    check_type_error("Box must be created from a PrivateKey and a PublicKey",
-                     Box, priv.encode(), priv.public_key)
+    check_type_error(
+        "Box must be created from a PrivateKey and a PublicKey",
+        Box,
+        priv,
+        "not a public key",
+    )
+    check_type_error(
+        "Box must be created from a PrivateKey and a PublicKey",
+        Box,
+        priv.encode(),
+        priv.public_key.encode(),
+    )
+    check_type_error(
+        "Box must be created from a PrivateKey and a PublicKey",
+        Box,
+        priv,
+        priv.public_key.encode(),
+    )
+    check_type_error(
+        "Box must be created from a PrivateKey and a PublicKey",
+        Box,
+        priv.encode(),
+        priv.public_key,
+    )
 
-    check_type_error("seed must be a 32 bytes long",
-                     PrivateKey.from_seed, b"1")
+    check_type_error(
+        "seed must be a 32 bytes long", PrivateKey.from_seed, b"1"
+    )

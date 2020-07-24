@@ -17,8 +17,10 @@ from __future__ import absolute_import, division, print_function
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
-from nacl.public import (PrivateKey as _Curve25519_PrivateKey,
-                         PublicKey as _Curve25519_PublicKey)
+from nacl.public import (
+    PrivateKey as _Curve25519_PrivateKey,
+    PublicKey as _Curve25519_PublicKey,
+)
 from nacl.utils import StringFixer, random
 
 
@@ -67,8 +69,8 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
 
         if len(key) != nacl.bindings.crypto_sign_PUBLICKEYBYTES:
             raise exc.ValueError(
-                "The key must be exactly %s bytes long" %
-                nacl.bindings.crypto_sign_PUBLICKEYBYTES,
+                "The key must be exactly %s bytes long"
+                % nacl.bindings.crypto_sign_PUBLICKEYBYTES,
             )
 
         self._key = key
@@ -106,14 +108,14 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
             #   signature size and combine them.
             if not isinstance(signature, bytes):
                 raise exc.TypeError(
-                    "Verification signature must be created from %d bytes" %
-                    nacl.bindings.crypto_sign_BYTES,
+                    "Verification signature must be created from %d bytes"
+                    % nacl.bindings.crypto_sign_BYTES,
                 )
 
             if len(signature) != nacl.bindings.crypto_sign_BYTES:
                 raise exc.ValueError(
-                    "The signature must be exactly %d bytes long" %
-                    nacl.bindings.crypto_sign_BYTES,
+                    "The signature must be exactly %d bytes long"
+                    % nacl.bindings.crypto_sign_BYTES,
                 )
 
             smessage = signature + encoder.decode(smessage)
@@ -158,13 +160,14 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         seed = encoder.decode(seed)
         if not isinstance(seed, bytes):
             raise exc.TypeError(
-                "SigningKey must be created from a 32 byte seed")
+                "SigningKey must be created from a 32 byte seed"
+            )
 
         # Verify that our seed is the proper size
         if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
             raise exc.ValueError(
-                "The seed must be exactly %d bytes long" %
-                nacl.bindings.crypto_sign_SEEDBYTES
+                "The seed must be exactly %d bytes long"
+                % nacl.bindings.crypto_sign_SEEDBYTES
             )
 
         public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)

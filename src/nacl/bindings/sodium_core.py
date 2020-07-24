@@ -19,9 +19,11 @@ from nacl.exceptions import ensure
 
 
 def _sodium_init():
-    ensure(lib.sodium_init() != -1,
-           "Could not initialize sodium",
-           raising=exc.RuntimeError)
+    ensure(
+        lib.sodium_init() != -1,
+        "Could not initialize sodium",
+        raising=exc.RuntimeError,
+    )
 
 
 def sodium_init():

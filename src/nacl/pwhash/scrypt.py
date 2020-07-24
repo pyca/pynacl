@@ -40,23 +40,31 @@ MEMLIMIT_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_MAX
 OPSLIMIT_MIN = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MIN
 OPSLIMIT_MAX = nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_MAX
 
-OPSLIMIT_INTERACTIVE = \
+OPSLIMIT_INTERACTIVE = (
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
-MEMLIMIT_INTERACTIVE = \
+)
+MEMLIMIT_INTERACTIVE = (
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE
-OPSLIMIT_SENSITIVE = \
+)
+OPSLIMIT_SENSITIVE = (
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_SENSITIVE
-MEMLIMIT_SENSITIVE = \
+)
+MEMLIMIT_SENSITIVE = (
     nacl.bindings.crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_SENSITIVE
+)
 
 OPSLIMIT_MODERATE = 8 * OPSLIMIT_INTERACTIVE
 MEMLIMIT_MODERATE = 8 * MEMLIMIT_INTERACTIVE
 
 
-def kdf(size, password, salt,
-        opslimit=OPSLIMIT_SENSITIVE,
-        memlimit=MEMLIMIT_SENSITIVE,
-        encoder=nacl.encoding.RawEncoder):
+def kdf(
+    size,
+    password,
+    salt,
+    opslimit=OPSLIMIT_SENSITIVE,
+    memlimit=MEMLIMIT_SENSITIVE,
+    encoder=nacl.encoding.RawEncoder,
+):
     """
     Derive a ``size`` bytes long key from a caller-supplied
     ``password`` and ``salt`` pair using the scryptsalsa208sha256
@@ -106,32 +114,34 @@ def kdf(size, password, salt,
 
     .. versionadded:: 1.2
     """
-    ensure(AVAILABLE,
-           'Not available in minimal build',
-           raising=exc.UnavailableError)
+    ensure(
+        AVAILABLE,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
 
     ensure(
         len(salt) == SALTBYTES,
-        "The salt must be exactly %s, not %s bytes long" % (
-            SALTBYTES,
-            len(salt)
-        ),
-        raising=exc.ValueError
+        "The salt must be exactly %s, not %s bytes long"
+        % (SALTBYTES, len(salt)),
+        raising=exc.ValueError,
     )
 
-    n_log2, r, p = nacl.bindings.nacl_bindings_pick_scrypt_params(opslimit,
-                                                                  memlimit)
+    n_log2, r, p = nacl.bindings.nacl_bindings_pick_scrypt_params(
+        opslimit, memlimit
+    )
     maxmem = memlimit + (2 ** 16)
 
     return encoder.encode(
         nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
-            password, salt, 2 ** n_log2, r, p, maxmem=maxmem, dklen=size)
+            password, salt, 2 ** n_log2, r, p, maxmem=maxmem, dklen=size
+        )
     )
 
 
-def str(password,
-        opslimit=OPSLIMIT_INTERACTIVE,
-        memlimit=MEMLIMIT_INTERACTIVE):
+def str(
+    password, opslimit=OPSLIMIT_INTERACTIVE, memlimit=MEMLIMIT_INTERACTIVE
+):
     """
     Hashes a password with a random salt, using the memory-hard
     scryptsalsa208sha256 construct and returning an ascii string
@@ -149,13 +159,15 @@ def str(password,
 
     .. versionadded:: 1.2
     """
-    ensure(AVAILABLE,
-           'Not available in minimal build',
-           raising=exc.UnavailableError)
+    ensure(
+        AVAILABLE,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
 
-    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(password,
-                                                                opslimit,
-                                                                memlimit)
+    return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str(
+        password, opslimit, memlimit
+    )
 
 
 def verify(password_hash, password):
@@ -171,14 +183,18 @@ def verify(password_hash, password):
 
     .. versionadded:: 1.2
     """
-    ensure(AVAILABLE,
-           'Not available in minimal build',
-           raising=exc.UnavailableError)
+    ensure(
+        AVAILABLE,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
 
-    ensure(len(password_hash) == PWHASH_SIZE,
-           "The password hash must be exactly %s bytes long" %
-           nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
-           raising=exc.ValueError)
+    ensure(
+        len(password_hash) == PWHASH_SIZE,
+        "The password hash must be exactly %s bytes long"
+        % nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+        raising=exc.ValueError,
+    )
 
     return nacl.bindings.crypto_pwhash_scryptsalsa208sha256_str_verify(
         password_hash, password

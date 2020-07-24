@@ -69,7 +69,8 @@ def verify(password_hash, password):
     elif scrypt.AVAILABLE and password_hash.startswith(scrypt.STRPREFIX):
         return scrypt.verify(password_hash, password)
     else:
-        raise(CryptPrefixError("given password_hash is not "
-                               "in a supported format"
-                               )
-              )
+        raise (
+            CryptPrefixError(
+                "given password_hash is not " "in a supported format"
+            )
+        )

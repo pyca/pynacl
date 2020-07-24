@@ -42,9 +42,7 @@ def crypto_box_keypair():
     sk = ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
 
     rc = lib.crypto_box_keypair(pk, sk)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return (
         ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
@@ -69,9 +67,7 @@ def crypto_box_seed_keypair(seed):
     :param seed: bytes
     :rtype: (bytes(public_key), bytes(secret_key))
     """
-    ensure(isinstance(seed, bytes),
-           "seed must be bytes",
-           raising=TypeError)
+    ensure(isinstance(seed, bytes), "seed must be bytes", raising=TypeError)
 
     if len(seed) != crypto_box_SEEDBYTES:
         raise exc.ValueError("Invalid seed")
@@ -80,9 +76,7 @@ def crypto_box_seed_keypair(seed):
     sk = ffi.new("unsigned char[]", crypto_box_SECRETKEYBYTES)
 
     rc = lib.crypto_box_seed_keypair(pk, sk, seed)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return (
         ffi.buffer(pk, crypto_box_PUBLICKEYBYTES)[:],
@@ -114,9 +108,7 @@ def crypto_box(message, nonce, pk, sk):
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box(ciphertext, padded, len(padded), nonce, pk, sk)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
@@ -145,8 +137,11 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
     plaintext = ffi.new("unsigned char[]", len(padded))
 
     res = lib.crypto_box_open(plaintext, padded, len(padded), nonce, pk, sk)
-    ensure(res == 0, "An error occurred trying to decrypt the message",
-           raising=exc.CryptoError)
+    ensure(
+        res == 0,
+        "An error occurred trying to decrypt the message",
+        raising=exc.CryptoError,
+    )
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
@@ -170,9 +165,7 @@ def crypto_box_beforenm(pk, sk):
     k = ffi.new("unsigned char[]", crypto_box_BEFORENMBYTES)
 
     rc = lib.crypto_box_beforenm(k, pk, sk)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
 
@@ -197,9 +190,7 @@ def crypto_box_afternm(message, nonce, k):
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
     rc = lib.crypto_box_afternm(ciphertext, padded, len(padded), nonce, k)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
@@ -223,10 +214,12 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     padded = (b"\x00" * crypto_box_BOXZEROBYTES) + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
 
-    res = lib.crypto_box_open_afternm(
-        plaintext, padded, len(padded), nonce, k)
-    ensure(res == 0, "An error occurred trying to decrypt the message",
-           raising=exc.CryptoError)
+    res = lib.crypto_box_open_afternm(plaintext, padded, len(padded), nonce, k)
+    ensure(
+        res == 0,
+        "An error occurred trying to decrypt the message",
+        raising=exc.CryptoError,
+    )
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
@@ -245,13 +238,15 @@ def crypto_box_seal(message, pk):
 
     .. versionadded:: 1.2
     """
-    ensure(isinstance(message, bytes),
-           "input message must be bytes",
-           raising=TypeError)
+    ensure(
+        isinstance(message, bytes),
+        "input message must be bytes",
+        raising=TypeError,
+    )
 
-    ensure(isinstance(pk, bytes),
-           "public key must be bytes",
-           raising=TypeError)
+    ensure(
+        isinstance(pk, bytes), "public key must be bytes", raising=TypeError
+    )
 
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise exc.ValueError("Invalid public key")
@@ -262,9 +257,7 @@ def crypto_box_seal(message, pk):
     ciphertext = ffi.new("unsigned char[]", _clen)
 
     rc = lib.crypto_box_seal(ciphertext, message, _mlen, pk)
-    ensure(rc == 0,
-           'Unexpected library error',
-           raising=exc.RuntimeError)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
     return ffi.buffer(ciphertext, _clen)[:]
 
@@ -283,17 +276,19 @@ def crypto_box_seal_open(ciphertext, pk, sk):
 
     .. versionadded:: 1.2
     """
-    ensure(isinstance(ciphertext, bytes),
-           "input ciphertext must be bytes",
-           raising=TypeError)
+    ensure(
+        isinstance(ciphertext, bytes),
+        "input ciphertext must be bytes",
+        raising=TypeError,
+    )
 
-    ensure(isinstance(pk, bytes),
-           "public key must be bytes",
-           raising=TypeError)
+    ensure(
+        isinstance(pk, bytes), "public key must be bytes", raising=TypeError
+    )
 
-    ensure(isinstance(sk, bytes),
-           "secret key must be bytes",
-           raising=TypeError)
+    ensure(
+        isinstance(sk, bytes), "secret key must be bytes", raising=TypeError
+    )
 
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise exc.ValueError("Invalid public key")
@@ -303,10 +298,13 @@ def crypto_box_seal_open(ciphertext, pk, sk):
 
     _clen = len(ciphertext)
 
-    ensure(_clen >= crypto_box_SEALBYTES,
-           ("Input cyphertext must be "
-            "at least {} long").format(crypto_box_SEALBYTES),
-           raising=exc.TypeError)
+    ensure(
+        _clen >= crypto_box_SEALBYTES,
+        ("Input cyphertext must be " "at least {} long").format(
+            crypto_box_SEALBYTES
+        ),
+        raising=exc.TypeError,
+    )
 
     _mlen = _clen - crypto_box_SEALBYTES
 
@@ -314,7 +312,10 @@ def crypto_box_seal_open(ciphertext, pk, sk):
     plaintext = ffi.new("unsigned char[]", max(1, _mlen))
 
     res = lib.crypto_box_seal_open(plaintext, ciphertext, _clen, pk, sk)
-    ensure(res == 0, "An error occurred trying to decrypt the message",
-           raising=exc.CryptoError)
+    ensure(
+        res == 0,
+        "An error occurred trying to decrypt the message",
+        raising=exc.CryptoError,
+    )
 
     return ffi.buffer(plaintext, _mlen)[:]

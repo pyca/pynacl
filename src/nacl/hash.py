@@ -86,9 +86,14 @@ def sha512(message, encoder=nacl.encoding.HexEncoder):
     return encoder.encode(nacl.bindings.crypto_hash_sha512(message))
 
 
-def blake2b(data, digest_size=BLAKE2B_BYTES, key=b'',
-            salt=b'', person=b'',
-            encoder=nacl.encoding.HexEncoder):
+def blake2b(
+    data,
+    digest_size=BLAKE2B_BYTES,
+    key=b"",
+    salt=b"",
+    person=b"",
+    encoder=nacl.encoding.HexEncoder,
+):
     """
     Hashes ``data`` with blake2b.
 
@@ -116,15 +121,16 @@ def blake2b(data, digest_size=BLAKE2B_BYTES, key=b'',
     :rtype: bytes
     """
 
-    digest = _b2b_hash(data, digest_size=digest_size, key=key,
-                       salt=salt, person=person)
+    digest = _b2b_hash(
+        data, digest_size=digest_size, key=key, salt=salt, person=person
+    )
     return encoder.encode(digest)
 
 
 generichash = blake2b
 
 
-def siphash24(message, key=b'', encoder=nacl.encoding.HexEncoder):
+def siphash24(message, key=b"", encoder=nacl.encoding.HexEncoder):
     """
     Computes a keyed MAC of ``message`` using the short-input-optimized
     siphash-2-4 construction.
@@ -144,7 +150,7 @@ def siphash24(message, key=b'', encoder=nacl.encoding.HexEncoder):
 shorthash = siphash24
 
 
-def siphashx24(message, key=b'', encoder=nacl.encoding.HexEncoder):
+def siphashx24(message, key=b"", encoder=nacl.encoding.HexEncoder):
     """
     Computes a keyed MAC of ``message`` using the 128 bit variant of the
     siphash-2-4 construction.

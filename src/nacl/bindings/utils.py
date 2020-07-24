@@ -24,10 +24,8 @@ def sodium_memcmp(inp1, inp2):
     """
     Compare contents of two memory regions in constant time
     """
-    ensure(isinstance(inp1, bytes),
-           raising=exc.TypeError)
-    ensure(isinstance(inp2, bytes),
-           raising=exc.TypeError)
+    ensure(isinstance(inp1, bytes), raising=exc.TypeError)
+    ensure(isinstance(inp2, bytes), raising=exc.TypeError)
 
     ln = max(len(inp1), len(inp2))
 
@@ -55,10 +53,8 @@ def sodium_pad(s, blocksize):
     :return: padded string
     :rtype: bytes
     """
-    ensure(isinstance(s, bytes),
-           raising=exc.TypeError)
-    ensure(isinstance(blocksize, integer_types),
-           raising=exc.TypeError)
+    ensure(isinstance(s, bytes), raising=exc.TypeError)
+    ensure(isinstance(blocksize, integer_types), raising=exc.TypeError)
     if blocksize <= 0:
         raise exc.ValueError
     s_len = len(s)
@@ -82,16 +78,14 @@ def sodium_unpad(s, blocksize):
     :return: unpadded string
     :rtype: bytes
     """
-    ensure(isinstance(s, bytes),
-           raising=exc.TypeError)
-    ensure(isinstance(blocksize, integer_types),
-           raising=exc.TypeError)
+    ensure(isinstance(s, bytes), raising=exc.TypeError)
+    ensure(isinstance(blocksize, integer_types), raising=exc.TypeError)
     s_len = len(s)
     u_len = ffi.new("size_t []", 1)
     rc = lib.sodium_unpad(u_len, s, s_len, blocksize)
     if rc != 0:
         raise exc.CryptoError("Unpadding failure")
-    return s[:u_len[0]]
+    return s[: u_len[0]]
 
 
 def sodium_increment(inp):
@@ -107,8 +101,7 @@ def sodium_increment(inp):
     :rtype: bytes
 
     """
-    ensure(isinstance(inp, bytes),
-           raising=exc.TypeError)
+    ensure(isinstance(inp, bytes), raising=exc.TypeError)
 
     ln = len(inp)
     buf = ffi.new("unsigned char []", ln)
@@ -135,13 +128,10 @@ def sodium_add(a, b):
              the integer value of ``(to_int(a) + to_int(b)) mod 2^(8*len(a))``
     :rtype: bytes
     """
-    ensure(isinstance(a, bytes),
-           raising=exc.TypeError)
-    ensure(isinstance(b, bytes),
-           raising=exc.TypeError)
+    ensure(isinstance(a, bytes), raising=exc.TypeError)
+    ensure(isinstance(b, bytes), raising=exc.TypeError)
     ln = len(a)
-    ensure(len(b) == ln,
-           raising=exc.TypeError)
+    ensure(len(b) == ln, raising=exc.TypeError)
 
     buf_a = ffi.new("unsigned char []", ln)
     buf_b = ffi.new("unsigned char []", ln)

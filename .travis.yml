@@ -69,7 +69,8 @@ matrix:
           dist: xenial
         - python: 3.6
           env: TOXENV=docs
-        - env: TOXENV=meta
+        - python: 3.8
+          env: TOXENV=meta
         - python: 2.7
           arch: arm64
           env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
