@@ -22,15 +22,19 @@ from nacl.exceptions import ensure
 
 crypto_stream_chacha20_KEYBYTES = lib.crypto_stream_chacha20_keybytes()
 crypto_stream_chacha20_NONCEBYTES = lib.crypto_stream_chacha20_noncebytes()
-crypto_stream_chacha20_MESSAGEBYTES_MAX = \
+crypto_stream_chacha20_MESSAGEBYTES_MAX = (
     lib.crypto_stream_chacha20_messagebytes_max()
+)
 
-crypto_stream_chacha20_ietf_KEYBYTES = \
+crypto_stream_chacha20_ietf_KEYBYTES = (
     lib.crypto_stream_chacha20_ietf_keybytes()
-crypto_stream_chacha20_ietf_NONCEBYTES = \
+)
+crypto_stream_chacha20_ietf_NONCEBYTES = (
     lib.crypto_stream_chacha20_ietf_noncebytes()
-crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX = \
+)
+crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX = (
     lib.crypto_stream_chacha20_ietf_messagebytes_max()
+)
 
 has_crypto_stream_xchacha20 = bool(lib.PYNACL_HAS_CRYPTO_STREAM_XCHACHA20)
 
@@ -40,10 +44,12 @@ crypto_stream_xchacha20_MESSAGEBYTES_MAX = 0
 
 if has_crypto_stream_xchacha20:
     crypto_stream_xchacha20_KEYBYTES = lib.crypto_stream_xchacha20_keybytes()
-    crypto_stream_xchacha20_NONCEBYTES = \
+    crypto_stream_xchacha20_NONCEBYTES = (
         lib.crypto_stream_xchacha20_noncebytes()
-    crypto_stream_xchacha20_MESSAGEBYTES_MAX = \
+    )
+    crypto_stream_xchacha20_MESSAGEBYTES_MAX = (
         lib.crypto_stream_xchacha20_messagebytes_max()
+    )
 
 
 def crypto_stream_chacha20_keygen():
@@ -70,44 +76,36 @@ def crypto_stream_chacha20(clen, nonce, key):
 
     """
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(clen, integer_types),
-        'clen must be an integer.',
-        raising=exc.TypeError
+        "clen must be an integer.",
+        raising=exc.TypeError,
     )
     ensure(
         clen <= crypto_stream_chacha20_MESSAGEBYTES_MAX,
-        'clen cannot be greater than' +
-        'crypto_stream_chacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "clen cannot be greater than"
+        + "crypto_stream_chacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
 
     cbuf = ffi.new("unsigned char[]", clen)
     ret = lib.crypto_stream_chacha20(cbuf, clen, nonce, key)
 
     ensure(
-        ret == 0,
-        'Unexepected failure in encryption',
-        raising=exc.CryptoError
+        ret == 0, "Unexepected failure in encryption", raising=exc.CryptoError
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -126,34 +124,28 @@ def crypto_stream_chacha20_xor(message, nonce, key):
     """
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_chacha20_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_chacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_chacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
 
     clen = len(message)
@@ -162,8 +154,8 @@ def crypto_stream_chacha20_xor(message, nonce, key):
     ret = lib.crypto_stream_chacha20_xor(cbuf, message, clen, nonce, key)
     ensure(
         ret == 0,
-        'Unexpected failure in encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure in encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -183,50 +175,45 @@ def crypto_stream_chacha20_xor_ic(message, nonce, ic, key):
     """
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_chacha20_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_chacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_chacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(ic, integer_types),
-        'ic must be an integer.',
-        raising=exc.TypeError
+        "ic must be an integer.",
+        raising=exc.TypeError,
     )
 
     clen = len(message)
     cbuf = ffi.new("unsigned char[]", clen)
 
     ret = lib.crypto_stream_chacha20_xor_ic(
-        cbuf, message, clen, nonce, ic, key)
+        cbuf, message, clen, nonce, ic, key
+    )
     ensure(
         ret == 0,
-        'Unexpected failure in encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure in encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -256,44 +243,36 @@ def crypto_stream_chacha20_ietf(clen, nonce, key):
 
     """
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_ietf_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_ietf_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_ietf_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_ietf_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(clen, integer_types),
-        'clen must be an integer.',
-        raising=exc.TypeError
+        "clen must be an integer.",
+        raising=exc.TypeError,
     )
     ensure(
         clen <= crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX,
-        'clen cannot be greater than' +
-        'crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "clen cannot be greater than"
+        + "crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
 
     cbuf = ffi.new("unsigned char[]", clen)
     ret = lib.crypto_stream_chacha20_ietf(cbuf, clen, nonce, key)
 
     ensure(
-        ret == 0,
-        'Unexepected failure in encryption',
-        raising=exc.CryptoError
+        ret == 0, "Unexepected failure in encryption", raising=exc.CryptoError
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -312,45 +291,38 @@ def crypto_stream_chacha20_ietf_xor(message, nonce, key):
     """
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_ietf_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_ietf_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_ietf_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_ietf_KEYBYTES.",
+        raising=exc.ValueError,
     )
 
     clen = len(message)
     cbuf = ffi.new("unsigned char[]", clen)
 
-    ret = lib.crypto_stream_chacha20_ietf_xor(
-        cbuf, message, clen, nonce, key)
+    ret = lib.crypto_stream_chacha20_ietf_xor(cbuf, message, clen, nonce, key)
     ensure(
         ret == 0,
-        'Unexpected failure in encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure in encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -371,50 +343,45 @@ def crypto_stream_chacha20_ietf_xor_ic(message, nonce, ic, key):
     """
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_chacha20_ietf_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_chacha20_ietf_NONCEBYTES,
-        'Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_chacha20_ietf_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_chacha20_ietf_KEYBYTES,
-        'Key length must be crypto_stream_chacha20_ietf_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_chacha20_ietf_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(ic, integer_types),
-        'ic must be an integer.',
-        raising=exc.TypeError
+        "ic must be an integer.",
+        raising=exc.TypeError,
     )
 
     clen = len(message)
     cbuf = ffi.new("unsigned char[]", clen)
 
     ret = lib.crypto_stream_chacha20_ietf_xor_ic(
-        cbuf, message, clen, nonce, ic, key)
+        cbuf, message, clen, nonce, ic, key
+    )
     ensure(
         ret == 0,
-        'Unexpected failure in encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure in encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -432,7 +399,7 @@ def crypto_stream_xchacha20_keygen():
     """
     ensure(
         has_crypto_stream_xchacha20,
-        'Not available in minimal build',
+        "Not available in minimal build",
         raising=exc.UnavailableError,
     )
     keybuf = ffi.new("unsigned char[]", crypto_stream_xchacha20_KEYBYTES)
@@ -456,48 +423,40 @@ def crypto_stream_xchacha20(clen, nonce, key):
     """
     ensure(
         has_crypto_stream_xchacha20,
-        'Not available in minimal build',
+        "Not available in minimal build",
         raising=exc.UnavailableError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_xchacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_xchacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_xchacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_xchacha20_KEYBYTES,
-        'Key length must be crypto_stream_xchacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_xchacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(clen, integer_types),
-        'clen must be an integer.',
-        raising=exc.TypeError
+        "clen must be an integer.",
+        raising=exc.TypeError,
     )
     ensure(
         clen <= crypto_stream_xchacha20_MESSAGEBYTES_MAX,
-        'clen cannot be greater than' +
-        'crypto_stream_xchacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "clen cannot be greater than"
+        + "crypto_stream_xchacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
 
     cbuf = ffi.new("unsigned char[]", clen)
     ret = lib.crypto_stream_xchacha20(cbuf, clen, nonce, key)
 
     ensure(
-        ret == 0,
-        'Unexepected failure in encryption',
-        raising=exc.CryptoError
+        ret == 0, "Unexepected failure in encryption", raising=exc.CryptoError
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -519,39 +478,33 @@ def crypto_stream_xchacha20_xor(message, nonce, key):
     """
     ensure(
         has_crypto_stream_xchacha20,
-        'Not available in minimal build',
+        "Not available in minimal build",
         raising=exc.UnavailableError,
     )
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_xchacha20_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_xchacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_xchacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_xchacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_xchacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_xchacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_xchacha20_KEYBYTES,
-        'Key length must be crypto_stream_xchacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_xchacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
 
     clen = len(message)
@@ -560,8 +513,8 @@ def crypto_stream_xchacha20_xor(message, nonce, key):
 
     ensure(
         ret == 0,
-        'Unexpected failure encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]
@@ -584,55 +537,50 @@ def crypto_stream_xchacha20_xor_ic(message, nonce, ic, key):
     """
     ensure(
         has_crypto_stream_xchacha20,
-        'Not available in minimal build',
+        "Not available in minimal build",
         raising=exc.UnavailableError,
     )
     ensure(
         isinstance(message, bytes),
-        'Message must be bytes.',
-        raising=exc.TypeError
+        "Message must be bytes.",
+        raising=exc.TypeError,
     )
     ensure(
         len(message) <= crypto_stream_xchacha20_MESSAGEBYTES_MAX,
-        'Message cannot be greater than' +
-        'crypto_stream_xchacha20_MESSAGEBYTES_MAX.',
-        raising=exc.ValueError
+        "Message cannot be greater than"
+        + "crypto_stream_xchacha20_MESSAGEBYTES_MAX.",
+        raising=exc.ValueError,
     )
     ensure(
-        isinstance(nonce, bytes),
-        'Nonce must be bytes.',
-        raising=exc.TypeError
+        isinstance(nonce, bytes), "Nonce must be bytes.", raising=exc.TypeError
     )
     ensure(
         len(nonce) == crypto_stream_xchacha20_NONCEBYTES,
-        'Nonce length must be crypto_stream_xchacha20_NONCEBYTES.',
-        raising=exc.ValueError
+        "Nonce length must be crypto_stream_xchacha20_NONCEBYTES.",
+        raising=exc.ValueError,
     )
-    ensure(
-        isinstance(key, bytes),
-        'Key must be bytes.',
-        raising=exc.TypeError
-    )
+    ensure(isinstance(key, bytes), "Key must be bytes.", raising=exc.TypeError)
     ensure(
         len(key) == crypto_stream_xchacha20_KEYBYTES,
-        'Key length must be crypto_stream_xchacha20_KEYBYTES.',
-        raising=exc.ValueError
+        "Key length must be crypto_stream_xchacha20_KEYBYTES.",
+        raising=exc.ValueError,
     )
     ensure(
         isinstance(ic, integer_types),
-        'ic must be an integer.',
-        raising=exc.TypeError
+        "ic must be an integer.",
+        raising=exc.TypeError,
     )
 
     clen = len(message)
     cbuf = ffi.new("unsigned char[]", clen)
 
     ret = lib.crypto_stream_xchacha20_xor_ic(
-        cbuf, message, clen, nonce, ic, key)
+        cbuf, message, clen, nonce, ic, key
+    )
     ensure(
         ret == 0,
-        'Unexpected failure in encryption/decryption',
-        raising=exc.CryptoError
+        "Unexpected failure in encryption/decryption",
+        raising=exc.CryptoError,
     )
 
     return ffi.buffer(cbuf, clen)[:]

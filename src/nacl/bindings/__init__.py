@@ -383,7 +383,6 @@ __all__ = [
     "crypto_secretstream_xchacha20poly1305_push",
     "crypto_secretstream_xchacha20poly1305_rekey",
     "crypto_secretstream_xchacha20poly1305_state",
-
     "crypto_stream_chacha20_KEYBYTES",
     "crypto_stream_chacha20_NONCEBYTES",
     "crypto_stream_chacha20_MESSAGEBYTES_MAX",
@@ -406,7 +405,6 @@ __all__ = [
     "crypto_stream_xchacha20",
     "crypto_stream_xchacha20_xor",
     "crypto_stream_xchacha20_xor_ic",
-
     "has_crypto_shorthash_siphashx24",
     "crypto_shorthash_siphash24_BYTES",
     "crypto_shorthash_siphash24_KEYBYTES",
