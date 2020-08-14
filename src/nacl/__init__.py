@@ -48,6 +48,6 @@ if sys.version_info[0] == 2:
         "Python 2 is no longer supported by the Python core team. Support for "
         "it is now deprecated in PyNaCl, and will be removed in the "
         "next release.",
-        UserWarning,
+        DeprecationWarning,
         stacklevel=2,
     )
