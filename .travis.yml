@@ -22,7 +22,7 @@ matrix:
           env: TOXENV=py37 SODIUM_INSTALL=bundled
         - python: 3.8
           env: TOXENV=py38 SODIUM_INSTALL=bundled
-        - python: pypy-7.3.1
+        - python: pypy2.7-7.3.1
           env: TOXENV=pypy SODIUM_INSTALL=bundled
         - python: 3.8
           env: TOXENV=py38 SODIUM_INSTALL=system
