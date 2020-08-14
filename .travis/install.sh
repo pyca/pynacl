@@ -20,14 +20,3 @@ if [[ $SODIUM_INSTALL == 'system' ]]; then
 fi
 
 pip install -U tox coverage
-
-if [[ "${TOXENV}" == "pypy" ]]; then
-    rm -rf ~/.pyenv
-    git clone https://github.com/yyuu/pyenv.git ~/.pyenv
-    git -C  ~/.pyenv reset --hard ${PYENV_COMMIT:-HEAD}
-    PYENV_ROOT="$HOME/.pyenv"
-    PATH="$PYENV_ROOT/bin:$PATH"
-    eval "$(pyenv init -)"
-    pyenv install pypy-5.3.1
-    pyenv global pypy-5.3.1
-fi

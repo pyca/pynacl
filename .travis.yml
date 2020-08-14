@@ -47,7 +47,7 @@ matrix:
 
 install: .travis/install.sh
 
-script: .travis/run.sh
+script: tox
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
