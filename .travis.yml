@@ -1,5 +1,5 @@
 language: python
-python: 2.7
+dist: focal
 
 # Only build master, the version branches (e.g. 1.7.x), and
 # version tags (which are apparently considered branches by travis)
@@ -13,96 +13,37 @@ branches:
 matrix:
     include:
         - python: 2.7
-          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
+          env: TOXENV=py27 SODIUM_INSTALL=bundled
         - python: 3.5
-          env: TOXENV=py35 SODIUM_INSTALL=bundled CC=gcc
+          env: TOXENV=py35 SODIUM_INSTALL=bundled
         - python: 3.6
-          env: TOXENV=py36 SODIUM_INSTALL=bundled CC=gcc
+          env: TOXENV=py36 SODIUM_INSTALL=bundled
         - python: 3.7
-          env: TOXENV=py37 SODIUM_INSTALL=bundled CC=gcc
-          dist: xenial
+          env: TOXENV=py37 SODIUM_INSTALL=bundled
         - python: 3.8
-          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=gcc
-          dist: xenial
-        - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=gcc
-        - python: 2.7
-          env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
-        - python: 3.5
-          env: TOXENV=py35 SODIUM_INSTALL=system CC=gcc
-        - python: 3.6
-          env: TOXENV=py36 SODIUM_INSTALL=system CC=gcc
-        - python: 3.7
-          env: TOXENV=py37 SODIUM_INSTALL=system CC=gcc
-          dist: xenial
+          env: TOXENV=py38 SODIUM_INSTALL=bundled
+        - python: pypy-7.3.1
+          env: TOXENV=pypy SODIUM_INSTALL=bundled
         - python: 3.8
-          env: TOXENV=py38 SODIUM_INSTALL=system CC=gcc
-          dist: xenial
-        - env: TOXENV=pypy SODIUM_INSTALL=system CC=gcc
-        - python: 2.7
-          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
-        - python: 3.5
-          env: TOXENV=py35 SODIUM_INSTALL=bundled CC=clang
-        - python: 3.6
-          env: TOXENV=py36 SODIUM_INSTALL=bundled CC=clang
-        - python: 3.7
-          env: TOXENV=py37 SODIUM_INSTALL=bundled CC=clang
-          dist: xenial
+          env: TOXENV=py38 SODIUM_INSTALL=system
         - python: 3.8
-          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=clang
-          dist: xenial
-        - env: TOXENV=pypy SODIUM_INSTALL=bundled CC=clang
-        - python: 2.7
-          env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
-        - python: 3.5
-          env: TOXENV=py35 SODIUM_INSTALL=system CC=clang
-        - python: 3.6
-          env: TOXENV=py36 SODIUM_INSTALL=system CC=clang
-        - python: 3.7
-          env: TOXENV=py37 SODIUM_INSTALL=system CC=clang
-          dist: xenial
+          env: TOXENV=py38 SODIUM_INSTALL=bundled SODIUM_INSTALL_MINIMAL=1
         - python: 3.8
-          env: TOXENV=py38 SODIUM_INSTALL=system CC=clang
-          dist: xenial
-        - env: TOXENV=pypy SODIUM_INSTALL=system CC=clang
-        - python: 3.8
-          env: TOXENV=py38 SODIUM_INSTALL=bundled SODIUM_INSTALL_MINIMAL=1 CC=gcc
-          dist: xenial
-        - python: 3.6
           env: TOXENV=docs
         - python: 3.8
           env: TOXENV=meta
         - python: 2.7
           arch: arm64
-          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=gcc
+          env: TOXENV=py27 SODIUM_INSTALL=bundled
         - python: 3.8
           arch: arm64
-          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=gcc
-          dist: xenial
-        - python: 2.7
-          arch: arm64
-          env: TOXENV=py27 SODIUM_INSTALL=system CC=gcc
+          env: TOXENV=py38 SODIUM_INSTALL=bundled
         - python: 3.8
           arch: arm64
-          env: TOXENV=py38 SODIUM_INSTALL=system CC=gcc
-          dist: xenial
-        - python: 2.7
-          arch: arm64
-          env: TOXENV=py27 SODIUM_INSTALL=bundled CC=clang
+          env: TOXENV=py38 SODIUM_INSTALL=system
         - python: 3.8
           arch: arm64
-          env: TOXENV=py38 SODIUM_INSTALL=bundled CC=clang
-          dist: xenial
-        - python: 2.7
-          arch: arm64
-          env: TOXENV=py27 SODIUM_INSTALL=system CC=clang
-        - python: 3.8
-          arch: arm64
-          env: TOXENV=py38 SODIUM_INSTALL=system CC=clang
-          dist: xenial
-        - python: 3.8
-          arch: arm64
-          env: TOXENV=py38 SODIUM_INSTALL=bundled SODIUM_INSTALL_MINIMAL=1 CC=gcc
-          dist: xenial
+          env: TOXENV=py38 SODIUM_INSTALL=bundled SODIUM_INSTALL_MINIMAL=1
 
 install: .travis/install.sh
 
