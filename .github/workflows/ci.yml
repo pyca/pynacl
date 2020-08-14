@@ -82,7 +82,7 @@ jobs:
             set SODIUM_INSTALL=system
             set INCLUDE=C:/libsodium/include;%INCLUDE%
             set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
-            tox
+            tox -v
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
         env:
           TOXENV: ${{ matrix.PYTHON.TOXENV }}
