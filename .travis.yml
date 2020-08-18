@@ -32,12 +32,6 @@ matrix:
           env: TOXENV=docs
         - python: 3.8
           env: TOXENV=meta
-        - python: 2.7
-          env: TOXENV=py27 SODIUM_INSTALL=bundled
-          dist: focal
-          arch: arm64-graviton2
-          virt: lxd
-          group: edge
         - python: 3.8
           env: TOXENV=py38 SODIUM_INSTALL=bundled
           dist: focal
