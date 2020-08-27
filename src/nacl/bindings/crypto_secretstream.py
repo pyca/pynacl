@@ -57,7 +57,8 @@ def crypto_secretstream_xchacha20poly1305_keygen():
 
     """
     keybuf = ffi.new(
-        "unsigned char[]", crypto_secretstream_xchacha20poly1305_KEYBYTES,
+        "unsigned char[]",
+        crypto_secretstream_xchacha20poly1305_KEYBYTES,
     )
     lib.crypto_secretstream_xchacha20poly1305_keygen(keybuf)
     return ffi.buffer(keybuf)[:]
@@ -112,7 +113,8 @@ def crypto_secretstream_xchacha20poly1305_init_push(state, key):
     )
 
     headerbuf = ffi.new(
-        "unsigned char []", crypto_secretstream_xchacha20poly1305_HEADERBYTES,
+        "unsigned char []",
+        crypto_secretstream_xchacha20poly1305_HEADERBYTES,
     )
 
     rc = lib.crypto_secretstream_xchacha20poly1305_init_push(
@@ -124,7 +126,10 @@ def crypto_secretstream_xchacha20poly1305_init_push(state, key):
 
 
 def crypto_secretstream_xchacha20poly1305_push(
-    state, m, ad=None, tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+    state,
+    m,
+    ad=None,
+    tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
 ):
     """
     Add an encrypted message to the secret stream.
@@ -173,7 +178,14 @@ def crypto_secretstream_xchacha20poly1305_push(
         adlen = len(ad)
 
     rc = lib.crypto_secretstream_xchacha20poly1305_push(
-        state.statebuf, state.rawbuf, ffi.NULL, m, len(m), ad, adlen, tag,
+        state.statebuf,
+        state.rawbuf,
+        ffi.NULL,
+        m,
+        len(m),
+        ad,
+        adlen,
+        tag,
     )
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
@@ -260,7 +272,9 @@ def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
         raising=exc.ValueError,
     )
     ensure(
-        isinstance(c, bytes), "Ciphertext is not bytes", raising=exc.TypeError,
+        isinstance(c, bytes),
+        "Ciphertext is not bytes",
+        raising=exc.TypeError,
     )
     ensure(
         len(c) >= crypto_secretstream_xchacha20poly1305_ABYTES,

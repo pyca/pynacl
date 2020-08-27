@@ -198,7 +198,12 @@ def test_wrong_salt_length(size, password, salt, opslimit, memlimit):
 )
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
-    [(b"Too short (and wrong) hash", b"a password",)],
+    [
+        (
+            b"Too short (and wrong) hash",
+            b"a password",
+        )
+    ],
 )
 def test_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
@@ -232,7 +237,12 @@ def test_kdf_wrong_salt_length(size, password, salt, opslimit, memlimit):
 )
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
-    [(b"Too short (and wrong) hash", b"another password",)],
+    [
+        (
+            b"Too short (and wrong) hash",
+            b"another password",
+        )
+    ],
 )
 def test_str_verify_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
@@ -325,7 +335,12 @@ def test_wrong_scrypt_salt_length(size, password, salt, opslimit, memlimit):
 )
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
-    [(b"Too short (and wrong) hash", b"a password",)],
+    [
+        (
+            b"Too short (and wrong) hash",
+            b"a password",
+        )
+    ],
 )
 def test_wrong_scrypt_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):
@@ -378,7 +393,12 @@ def test_variable_limits(opslimit, memlimit, n, r, p):
 )
 @pytest.mark.parametrize(
     ("passwd_hash", "password"),
-    [(b"Too short (and wrong) hash", b"another password",)],
+    [
+        (
+            b"Too short (and wrong) hash",
+            b"another password",
+        )
+    ],
 )
 def test_scrypt_str_verify_wrong_hash_length(passwd_hash, password):
     with pytest.raises(exc.ValueError):

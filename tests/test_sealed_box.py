@@ -66,13 +66,19 @@ def test_sealed_box_encryption(privalice, pubalice, plaintext, _encrypted):
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
     box = SealedBox(pubalice)
-    encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder,)
+    encrypted = box.encrypt(
+        binascii.unhexlify(plaintext),
+        encoder=HexEncoder,
+    )
 
     assert encrypted != _encrypted
     # since SealedBox.encrypt uses an ephemeral sender's keypair
 
     box2 = SealedBox(privalice)
-    decrypted = box2.decrypt(encrypted, encoder=HexEncoder,)
+    decrypted = box2.decrypt(
+        encrypted,
+        encoder=HexEncoder,
+    )
     assert binascii.hexlify(decrypted) == plaintext
     assert bytes(box) == bytes(box2)
 
@@ -85,7 +91,10 @@ def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
     privalice = PrivateKey(privalice, encoder=HexEncoder)
 
     box = SealedBox(privalice)
-    decrypted = box.decrypt(encrypted, encoder=HexEncoder,)
+    decrypted = box.decrypt(
+        encrypted,
+        encoder=HexEncoder,
+    )
     assert binascii.hexlify(decrypted) == plaintext
 
 
@@ -123,7 +132,8 @@ def test_sealed_box_public_key_cannot_decrypt(
     box = SealedBox(pubalice)
     with pytest.raises(TypeError):
         box.decrypt(
-            encrypted, encoder=HexEncoder,
+            encrypted,
+            encoder=HexEncoder,
         )
 
 

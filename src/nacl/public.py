@@ -229,7 +229,9 @@ class Box(encoding.Encodable, StringFixer, object):
             )
 
         ciphertext = nacl.bindings.crypto_box_afternm(
-            plaintext, nonce, self._shared_key,
+            plaintext,
+            nonce,
+            self._shared_key,
         )
 
         encoded_nonce = encoder.encode(nonce)
@@ -267,7 +269,9 @@ class Box(encoding.Encodable, StringFixer, object):
             )
 
         plaintext = nacl.bindings.crypto_box_open_afternm(
-            ciphertext, nonce, self._shared_key,
+            ciphertext,
+            nonce,
+            self._shared_key,
         )
 
         return plaintext
@@ -364,7 +368,9 @@ class SealedBox(encoding.Encodable, StringFixer, object):
         ciphertext = encoder.decode(ciphertext)
 
         plaintext = nacl.bindings.crypto_box_seal_open(
-            ciphertext, self._public_key, self._private_key,
+            ciphertext,
+            self._public_key,
+            self._private_key,
         )
 
         return plaintext

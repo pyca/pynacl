@@ -70,7 +70,9 @@ def test_secretbox():
 
     with pytest.raises(CryptoError):
         c.crypto_secretbox_open(
-            msg + b"!", nonce, key,
+            msg + b"!",
+            nonce,
+            key,
         )
 
 

@@ -201,10 +201,12 @@ class build_ext(_build_ext):
                 os.path.join(build_clib.build_clib, "include"),
             )
             self.library_dirs.insert(
-                0, os.path.join(build_clib.build_clib, "lib64"),
+                0,
+                os.path.join(build_clib.build_clib, "lib64"),
             )
             self.library_dirs.insert(
-                0, os.path.join(build_clib.build_clib, "lib"),
+                0,
+                os.path.join(build_clib.build_clib, "lib"),
             )
 
         return _build_ext.run(self)

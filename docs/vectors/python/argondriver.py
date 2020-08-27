@@ -33,8 +33,7 @@ class argonRunner(object):
         self.count = 0
 
     def _runOnce(self, passwd, salt, dgst_len, maxmem, iters):
-        """
-        """
+        """"""
         argv = [
             self.exe,
             salt.encode("ascii"),
@@ -112,7 +111,11 @@ if __name__ == "__main__":
     )
     p.add_argument("-v", "--version", dest="version", type=str, default="13")
     p.add_argument(
-        "-e", "--encoded", dest="encoded", default=False, action="store_true",
+        "-e",
+        "--encoded",
+        dest="encoded",
+        default=False,
+        action="store_true",
     )
     p.add_argument(
         "-s", "--min-salt-len", dest="mnsaltlen", type=int, default=8

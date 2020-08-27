@@ -70,7 +70,8 @@ def read_secretstream_vectors():
 
 
 @pytest.mark.parametrize(
-    ("key", "header", "chunks"), read_secretstream_vectors(),
+    ("key", "header", "chunks"),
+    read_secretstream_vectors(),
 )
 def test_vectors(key, header, chunks):
     state = crypto_secretstream_xchacha20poly1305_state()

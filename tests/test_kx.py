@@ -31,7 +31,8 @@ def test_crypto_kx_keypair():
 
 
 @given(
-    binary(min_size=32, max_size=32), binary(min_size=32, max_size=32),
+    binary(min_size=32, max_size=32),
+    binary(min_size=32, max_size=32),
 )
 @settings(max_examples=100)
 def test_crypto_kx_seed_keypair(seed1, seed2):
@@ -43,14 +44,18 @@ def test_crypto_kx_seed_keypair(seed1, seed2):
         assert seeded == seeded_other
 
 
-@given(binary(min_size=33, max_size=128),)
+@given(
+    binary(min_size=33, max_size=128),
+)
 @settings(max_examples=20, suppress_health_check=[HealthCheck.too_slow])
 def test_crypto_kx_seed_keypair_seed_too_large(seed):
     with pytest.raises(exc.TypeError):
         b.crypto_kx_seed_keypair(seed)
 
 
-@given(binary(min_size=0, max_size=31),)
+@given(
+    binary(min_size=0, max_size=31),
+)
 @settings(max_examples=20)
 def test_crypto_kx_seed_keypair_seed_too_small(seed):
     with pytest.raises(exc.TypeError):
@@ -58,7 +63,8 @@ def test_crypto_kx_seed_keypair_seed_too_small(seed):
 
 
 @given(
-    binary(min_size=32, max_size=32), binary(min_size=32, max_size=32),
+    binary(min_size=32, max_size=32),
+    binary(min_size=32, max_size=32),
 )
 @settings(max_examples=100)
 def test_crypto_kx_session_keys(seed1, seed2):
