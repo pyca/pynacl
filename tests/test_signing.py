@@ -98,9 +98,13 @@ class TestSigningKey:
     def test_message_signing(
         self, seed, _public_key, message, signature, expected
     ):
-        signing_key = SigningKey(seed, encoder=HexEncoder,)
+        signing_key = SigningKey(
+            seed,
+            encoder=HexEncoder,
+        )
         signed = signing_key.sign(
-            binascii.unhexlify(message), encoder=HexEncoder,
+            binascii.unhexlify(message),
+            encoder=HexEncoder,
         )
 
         assert signed == expected
@@ -148,10 +152,15 @@ class TestVerifyKey:
     def test_valid_signed_message(
         self, _seed, public_key, message, signature, signed
     ):
-        key = VerifyKey(public_key, encoder=HexEncoder,)
+        key = VerifyKey(
+            public_key,
+            encoder=HexEncoder,
+        )
 
         assert (
-            binascii.hexlify(key.verify(signed, encoder=HexEncoder),)
+            binascii.hexlify(
+                key.verify(signed, encoder=HexEncoder),
+            )
             == message
         )
         assert (
