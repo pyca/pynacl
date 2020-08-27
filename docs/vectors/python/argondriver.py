@@ -33,7 +33,6 @@ class argonRunner(object):
         self.count = 0
 
     def _runOnce(self, passwd, salt, dgst_len, maxmem, iters):
-        """"""
         argv = [
             self.exe,
             salt.encode("ascii"),
