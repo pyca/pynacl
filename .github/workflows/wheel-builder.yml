@@ -25,7 +25,7 @@ jobs:
               PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
           cd PyNaCl*
-          ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../tmpwheelhouse
+          LIBSODIUM_MAKE_ARGS="-j$(nproc)" ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
@@ -70,7 +70,7 @@ jobs:
             fi
 
             cd PyNaCl*
-            CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
+            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
                 ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../wheelhouse
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
