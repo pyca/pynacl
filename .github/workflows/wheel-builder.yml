@@ -98,7 +98,7 @@ jobs:
           - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
-    name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.AB      I_VERSION }}"
+    name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
