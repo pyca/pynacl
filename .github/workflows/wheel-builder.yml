@@ -93,11 +93,7 @@ jobs:
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
           - {VERSION: "2.7", SODIUM_MSVC_VERSION: "v100"}
-          - {VERSION: "3.5", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.6", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.7", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
+          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp35"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@master
@@ -138,16 +134,6 @@ jobs:
           PYNACL_SODIUM_STATIC: 1
           SODIUM_INSTALL: system
         if: matrix.PYTHON.VERSION == '2.7'
-      - name: Build the wheel (py3 no abi3)
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          cd PyNaCl* && python setup.py bdist_wheel && mv dist/PyNaCl*.whl ../wheelhouse
-        shell: cmd
-        env:
-          PYNACL_SODIUM_LIBRARY_NAME: sodium
-          PYNACL_SODIUM_STATIC: 1
-          SODIUM_INSTALL: system
-        if: matrix.PYTHON.VERSION != '2.7' && matrix.PYTHON.USE_ABI3 != 'true'
       - name: Build the wheel (py3 abi3)
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
@@ -157,7 +143,7 @@ jobs:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
           SODIUM_INSTALL: system
-        if: matrix.PYTHON.USE_ABI3 == 'true'
+        if: matrix.PYTHON.VERSION != '2.7'
 
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
