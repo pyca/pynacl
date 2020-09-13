@@ -1,7 +1,9 @@
 name: Wheel Builder
 on:
-  repository_dispatch:
-    types: [wheel-builder]
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
 
 jobs:
   manylinux:
@@ -22,7 +24,7 @@ jobs:
           if [[ "${{ matrix.PYTHON }}" =~ $REGEX ]]; then
               PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
-          .venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --no-binary pynacl --no-deps --wheel-dir=tmpwheelhouse $PY_LIMITED_API
+          .venv/bin/pip wheel pynacl==${{ github.event.inputs.version }} --no-binary pynacl --no-deps --wheel-dir=tmpwheelhouse $PY_LIMITED_API
       - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
@@ -32,7 +34,7 @@ jobs:
       - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-manylinux1-${{ matrix.PYTHON }}"
+          name: "pynacl-${{ github.event.inputs.version }}-manylinux1-${{ matrix.PYTHON }}"
           path: pynacl-wheelhouse/
   macos:
     runs-on: macos-latest
@@ -68,7 +70,7 @@ jobs:
             fi
 
             CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-                venv/bin/pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+                venv/bin/pip wheel pynacl==${{ github.event.inputs.version }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index pynacl
@@ -79,7 +81,7 @@ jobs:
       - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-macOS-${{ matrix.PYTHON.VERSION }}"
+          name: "pynacl-${{ github.event.inputs.version }}-macOS-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse/
   windows:
     runs-on: windows-latest
@@ -93,12 +95,14 @@ jobs:
           - {VERSION: "3.5", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.6", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.8",  SODIUM_MSVC_VERSION: "v140"}
+          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140"}
+          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
+    name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.AB      I_VERSION }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
           architecture: ${{ matrix.WINDOWS.ARCH }}
@@ -123,25 +127,37 @@ jobs:
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
         if: matrix.PYTHON.VERSION == '2.7'
       - name: Install wheel and our Python dependencies
-        run: pip install wheel cffi six
-
+        run: python -m pip install -U pip wheel cffi six
+      - name: Download the sdist
+        run: pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl* && mkdir wheelhouse
+        shell: bash
       - name: Build the wheel (py2)
-        run: pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
+        run: cd PyNaCl* && python setup.py bdist_wheel && mv dist/PyNaCl*.whl ../wheelhouse
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
           SODIUM_INSTALL: system
         if: matrix.PYTHON.VERSION == '2.7'
-      - name: Build the wheel (py3)
+      - name: Build the wheel (py3 no abi3)
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          pip wheel pynacl==${{ github.event.client_payload.BUILD_VERSION }} --wheel-dir=wheelhouse --no-binary pynacl
+          cd PyNaCl* && python setup.py bdist_wheel && mv dist/PyNaCl*.whl ../wheelhouse
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
           SODIUM_INSTALL: system
-        if: matrix.PYTHON.VERSION != '2.7'
+        if: matrix.PYTHON.VERSION != '2.7' && matrix.PYTHON.USE_ABI3 != 'true'
+      - name: Build the wheel (py3 abi3)
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
+          cd PyNaCl* && python setup.py bdist_wheel  --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
+        shell: cmd
+        env:
+          PYNACL_SODIUM_LIBRARY_NAME: sodium
+          PYNACL_SODIUM_STATIC: 1
+          SODIUM_INSTALL: system
+        if: matrix.PYTHON.USE_ABI3 == 'true'
 
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
@@ -152,5 +168,5 @@ jobs:
       - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v1
         with:
-          name: "pynacl-${{ github.event.client_payload.BUILD_VERSION }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
+          name: "pynacl-${{ github.event.inputs.version }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse\

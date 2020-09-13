@@ -85,18 +85,14 @@ def build_github_actions_wheels(token, version):
     session = requests.Session()
 
     response = session.post(
-        "https://api.github.com/repos/pyca/pynacl/dispatches",
+        "https://api.github.com/repos/pyca/pynacl/actions/workflows/"
+        "wheel-builder.yml/dispatches",
         headers={
             "Content-Type": "application/json",
-            "Accept": "application/vnd.github.everest-preview+json",
+            "Accept": "application/vnd.github.v3+json",
             "Authorization": "token {}".format(token),
         },
-        data=json.dumps(
-            {
-                "event_type": "wheel-builder",
-                "client_payload": {"BUILD_VERSION": version},
-            }
-        ),
+        data=json.dumps({"ref": "master", "inputs": {"version": version}}),
     )
     response.raise_for_status()
 
