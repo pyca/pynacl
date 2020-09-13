@@ -30,7 +30,7 @@ jobs:
       - name: Install tox and coverage
         run: pip install tox coverage
       - name: Run tests
-        run: tox
+        run: LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" tox
         env:
           TOXENV: ${{ matrix.PYTHON.TOXENV }}
           SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
