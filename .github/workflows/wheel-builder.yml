@@ -15,16 +15,17 @@ jobs:
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
-      - name: Downgrade pip, can't remember why
-        run: .venv/bin/pip install -U pip==10.0.1
       - name: Install python dependencies
-        run: .venv/bin/pip install cffi six
+        run: .venv/bin/pip install -U pip cffi six
+      - run: .venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir tmpwheelhouse
+
       - run: |
           REGEX="cp3([0-9])*"
           if [[ "${{ matrix.PYTHON }}" =~ $REGEX ]]; then
               PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
           fi
-          .venv/bin/pip wheel pynacl==${{ github.event.inputs.version }} --no-binary pynacl --no-deps --wheel-dir=tmpwheelhouse $PY_LIMITED_API
+          cd PyNaCl*
+          ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../tmpwheelhouse
       - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
@@ -59,9 +60,8 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      # Downgrade pip, I can't remember why
-      - run: venv/bin/pip install -U pip==10.0.1
-      - run: venv/bin/pip install -U wheel cffi six
+      - run: venv/bin/pip install -U pip wheel cffi six
+      - run: venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir wheelhouse
       - name: Build the wheel
         run: |
             REGEX="3\.([0-9])*"
@@ -69,8 +69,9 @@ jobs:
                 PY_LIMITED_API="--build-option --py-limited-api=cp3${BASH_REMATCH[1]}"
             fi
 
+            cd PyNaCl*
             CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-                venv/bin/pip wheel pynacl==${{ github.event.inputs.version }} --wheel-dir=wheelhouse --no-binary pynacl --no-deps $PY_LIMITED_API
+                ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../wheelhouse
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
       - run: venv/bin/pip install -f wheelhouse --no-index pynacl
@@ -97,7 +98,6 @@ jobs:
           - {VERSION: "3.7", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@master
