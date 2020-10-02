@@ -116,8 +116,9 @@ jobs:
         shell: powershell
       - name: Add sodium to paths
         run: |
-          echo "::set-env name=INCLUDE::C:/libsodium/include;%INCLUDE%"
-          echo "::set-env name=LIB::C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%"
+          echo "INCLUDE=C:/libsodium/include;$INCLUDE" >> $GITHUB_ENV
+          echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
+        shell: bash
 
       - name: Copy stdint.h to include dir (distant weeping)
         run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
