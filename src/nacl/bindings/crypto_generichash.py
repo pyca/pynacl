@@ -38,7 +38,7 @@ _TOOBIG = "{0} greater than {1}"
 
 
 def _checkparams(digest_size, key, salt, person):
-    """Check hash paramters"""
+    """Check hash parameters"""
     ensure(
         isinstance(key, bytes),
         "Key must be a bytes sequence",
