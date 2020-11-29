@@ -9,6 +9,57 @@ on:
       - '*'
 
 jobs:
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PYTHON:
+          - {VERSION: "3.9", TOXENV: "docs", COVERAGE: "false"}
+          - {VERSION: "3.9", TOXENV: "meta", COVERAGE: "false"}
+          - {VERSION: "2.7", TOXENV: "py27"}
+          - {VERSION: "pypy3", TOXENV: "pypy"}
+          - {VERSION: "3.5", TOXENV: "py35"}
+          - {VERSION: "3.6", TOXENV: "py36"}
+          - {VERSION: "3.7", TOXENV: "py37"}
+          - {VERSION: "3.8", TOXENV: "py38"}
+          - {VERSION: "3.9", TOXENV: "py39"}
+          - {VERSION: "3.9", TOXENV: "py39", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.9", TOXENV: "py39", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+    name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup python
+        uses: actions/setup-python@v2.1.4
+        with:
+          python-version: ${{ matrix.PYTHON.VERSION }}
+      - name: Install tox and coverage
+        run: pip install tox coverage
+      - name: Install libsodium (system install only)
+        run: |
+          wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz || \
+          wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz
+          tar zxvf LATEST.tar.gz
+          cd libsodium-*
+          ./configure ${SODIUM_INSTALL_MINIMAL:+--enable-minimal}
+          make
+          make check
+          sudo make install
+          sudo ldconfig
+        env:
+          SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
+        if: matrix.PYTHON.SODIUM_INSTALL == 'system'
+      - name: Run tests
+        run: LIBSODIUM_MAKE_ARGS="-j$(nproc)" tox
+        env:
+          TOXENV: ${{ matrix.PYTHON.TOXENV }}
+          SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
+          SODIUM_INSTALL: ${{ matrix.PYTHON.SODIUM_INSTALL }}
+      - name: Upload coverage
+        run: |
+          curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash
+          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
+        if: matrix.PYTHON.COVERAGE != 'false'
+
   macos:
     runs-on: macos-latest
     strategy:
@@ -16,10 +67,8 @@ jobs:
         PYTHON:
           - {VERSION: "2.7", TOXENV: "py27"}
           - {VERSION: "3.5", TOXENV: "py35"}
-          - {VERSION: "3.6", TOXENV: "py36"}
-          - {VERSION: "3.7", TOXENV: "py37"}
-          - {VERSION: "3.8", TOXENV: "py38"}
-          - {VERSION: "3.8", TOXENV: "py38", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.9", TOXENV: "py39"}
+          - {VERSION: "3.9", TOXENV: "py39", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
     steps:
       - uses: actions/checkout@master
@@ -51,6 +100,7 @@ jobs:
           - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v140"}
+          - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v140"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@master
