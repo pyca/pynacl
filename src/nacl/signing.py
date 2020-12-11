@@ -162,8 +162,9 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
     def __init__(self, seed=None, encoder=encoding.RawEncoder, key=None):
         exc.ensure(
-            (key is not None and seed is None) or (key is None and seed is not None),
-            "SigningKey must be created either from a 32 byte seed or a 64 byte key."
+            (key is not None and seed is None)
+            or (key is None and seed is not None),
+            "SigningKey must be created either from a 32 byte seed or a 64 byte key.",
         )
         if seed is not None:
             # Decode the seed
@@ -180,7 +181,9 @@ class SigningKey(encoding.Encodable, StringFixer, object):
                     % nacl.bindings.crypto_sign_SEEDBYTES
                 )
 
-            public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)
+            public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(
+                seed
+            )
         else:
             # Decode the key
             key = encoder.decode(key)
