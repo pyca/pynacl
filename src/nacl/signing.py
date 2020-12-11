@@ -143,34 +143,61 @@ class SigningKey(encoding.Encodable, StringFixer, object):
     Signing keys are produced from a 32-byte (256-bit) random seed value. This
     value can be passed into the :class:`~nacl.signing.SigningKey` as a
     :func:`bytes` whose length is 32.
+    
+    Alternatively, you can construct :class:`~nacl.signing.SigningKey` directly
+    from a 64-byte Ed25519 private key. You must provide either a seed or a key,
+    but not both.
 
     .. warning:: This **must** be protected and remain secret. Anyone who knows
         the value of your :class:`~nacl.signing.SigningKey` or it's seed can
         masquerade as you.
 
-    :param seed: [:class:`bytes`] Random 32-byte value (i.e. private key)
+    :param seed: [:class:`bytes`] Random 32-byte value for generating Ed25519 private key
     :param encoder: A class that is able to decode the seed
+    :param key: [:class:`bytes`] A previously generated 64-byte Ed25519 private key
 
     :ivar: verify_key: [:class:`~nacl.signing.VerifyKey`] The verify
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed, encoder=encoding.RawEncoder):
-        # Decode the seed
-        seed = encoder.decode(seed)
-        if not isinstance(seed, bytes):
-            raise exc.TypeError(
-                "SigningKey must be created from a 32 byte seed"
-            )
+    def __init__(self, seed=None, encoder=encoding.RawEncoder, key=None):
+        exc.ensure(
+            (key is not None and seed is None) or (key is None and seed is not None),
+            "SigningKey must be created either from a 32 byte seed or a 64 byte key."
+        )
+        if seed is not None:
+            # Decode the seed
+            seed = encoder.decode(seed)
+            if not isinstance(seed, bytes):
+                raise exc.TypeError(
+                    "SigningKey must be created from a 32 byte seed"
+                )
 
-        # Verify that our seed is the proper size
-        if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
-            raise exc.ValueError(
-                "The seed must be exactly %d bytes long"
-                % nacl.bindings.crypto_sign_SEEDBYTES
-            )
+            # Verify that our seed is the proper size
+            if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
+                raise exc.ValueError(
+                    "The seed must be exactly %d bytes long"
+                    % nacl.bindings.crypto_sign_SEEDBYTES
+                )
 
-        public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)
+            public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)
+        else:
+            # Decode the key
+            key = encoder.decode(key)
+            if not isinstance(key, bytes):
+                raise exc.TypeError(
+                    "SigningKey must be created from a 64 byte key"
+                )
+
+            # Verify that our key is the proper size
+            if len(key) != nacl.bindings.crypto_sign_SECRETKEYBYTES:
+                raise exc.ValueError(
+                    "The key must be exactly %d bytes long"
+                    % nacl.bindings.crypto_sign_SECRETKEYBYTES
+                )
+            secret_key = key
+            public_key = nacl.bindings.crypto_sign_ed25519_sk_to_pk(key)
+            seed = nacl.bindings.crypto_sign_ed25519_sk_to_seed(key)
 
         self._seed = seed
         self._signing_key = secret_key
