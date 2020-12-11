@@ -125,8 +125,6 @@ class TestSigningKey:
     def test_wrong_key_type(self):
         with pytest.raises(TypeError):
             SigningKey(key=12)
-        with pytest.raises(TypeError):
-            SigningKey(key="aaa")
 
     @pytest.mark.parametrize(
         ("seed", "_public_key", "message", "signature", "expected"),
