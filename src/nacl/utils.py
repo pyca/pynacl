@@ -86,3 +86,26 @@ def randombytes_deterministic(
     raw_data = nacl.bindings.randombytes_buf_deterministic(size, seed)
 
     return encoder.encode(raw_data)
+
+
+def int_to_little_endian(value, size):
+    if six.PY3:
+        return value.to_bytes(size, "little")
+    else:
+        result = b""
+        for i in range(size):
+            result += chr(value & 0xFF)
+            value >>= 8
+        if value:
+            raise OverflowError
+        return result
+
+
+def little_endian_to_int(value):
+    if six.PY3:
+        return int.from_bytes(value, "little")
+    else:
+        result = 0
+        for byte in reversed(value):
+            result = (result << 8) | ord(byte)
+        return result

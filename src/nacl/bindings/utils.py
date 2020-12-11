@@ -17,6 +17,22 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
+def sodium_is_zero(inp):
+    """
+    Check if all bytes in ``inp`` are zero
+
+    :param inp: input bytes string
+    :type inp: bytes
+    :return: False if any byte is nonzero, else True
+    :rtype: bool
+    """
+    ensure(isinstance(inp, bytes), raising=exc.TypeError)
+    ln = len(inp)
+    rc = lib.sodium_is_zero(inp, ln)
+
+    return rc != 0
+
+
 def sodium_memcmp(inp1: bytes, inp2: bytes) -> bool:
     """
     Compare contents of two memory regions in constant time
@@ -96,7 +112,6 @@ def sodium_increment(inp: bytes) -> bytes:
              unsigned big integer, the value ``to_int(inp)``
              incremented by one.
     :rtype: bytes
-
     """
     ensure(isinstance(inp, bytes), raising=exc.TypeError)
 
