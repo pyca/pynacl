@@ -70,3 +70,27 @@ standard library exception to :py:class:`~nacl.exceptions.CryptoError`.
 
     is a subclass of both CryptoError and standard library's
     ValueError
+
+
+Utility functions for exception handling
+----------------------------------------
+
+.. function:: ensure(cond, *args, raising=nacl.exceptions.AssertionError)
+
+    Returns if a condition is true, otherwise raise a caller-configurable
+    :py:class:`Exception`
+
+    :param cond: the condition to be checked
+    :type cond: bool
+    :param sequence args: the arguments to be passed to the exception's
+                          constructor
+    :param raising: the exception to be raised if `cond` is `False`
+    :type raising: exception
+
+Example usage:
+.. code-block:: python
+
+    nacl.exceptions.ensure(
+        a == 1 or a == 2,
+        "a must be either 1 or 2"
+    )
