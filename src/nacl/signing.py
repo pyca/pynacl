@@ -143,7 +143,7 @@ class SigningKey(encoding.Encodable, StringFixer, object):
     Signing keys are produced from a 32-byte (256-bit) random seed value. This
     value can be passed into the :class:`~nacl.signing.SigningKey` as a
     :func:`bytes` whose length is 32.
-    
+
     Alternatively, you can construct :class:`~nacl.signing.SigningKey` directly
     from a 64-byte Ed25519 private key. You must provide either a seed or a key,
     but not both.
