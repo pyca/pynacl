@@ -90,6 +90,7 @@ Utility functions for exception handling
     :type raising: exception
 
 Example usage:
+
 .. code-block:: python
 
     nacl.exceptions.ensure(
