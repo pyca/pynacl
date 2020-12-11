@@ -20,7 +20,7 @@ import pytest
 
 from utils import assert_equal, assert_not_equal, read_crypto_test_vectors
 
-from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES, crypto_sign_SECRETKEYBYTES
+from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SECRETKEYBYTES, crypto_sign_SEEDBYTES
 from nacl.encoding import Base64Encoder, HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
