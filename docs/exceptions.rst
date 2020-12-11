@@ -1,6 +1,8 @@
 Exceptions
 ==========
 
+.. currentmodule:: nacl.exceptions
+
 All of the exceptions raised from PyNaCl-exposed methods/functions
 are subclasses of :py:exc:`nacl.exceptions.CryptoError`. This means
 downstream users can just wrap cryptographic operations inside a
