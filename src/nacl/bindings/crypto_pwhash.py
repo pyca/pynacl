@@ -15,8 +15,6 @@ from __future__ import absolute_import, division, print_function
 
 import sys
 
-from six import integer_types
-
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
@@ -274,9 +272,9 @@ def crypto_pwhash_scryptsalsa208sha256_ll(
         raising=exc.UnavailableError,
     )
 
-    ensure(isinstance(n, integer_types), raising=TypeError)
-    ensure(isinstance(r, integer_types), raising=TypeError)
-    ensure(isinstance(p, integer_types), raising=TypeError)
+    ensure(isinstance(n, int), raising=TypeError)
+    ensure(isinstance(r, int), raising=TypeError)
+    ensure(isinstance(p, int), raising=TypeError)
 
     ensure(isinstance(passwd, bytes), raising=TypeError)
     ensure(isinstance(salt, bytes), raising=TypeError)
@@ -448,10 +446,10 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     :return: derived key
     :rtype: bytes
     """
-    ensure(isinstance(outlen, integer_types), raising=exc.TypeError)
-    ensure(isinstance(opslimit, integer_types), raising=exc.TypeError)
-    ensure(isinstance(memlimit, integer_types), raising=exc.TypeError)
-    ensure(isinstance(alg, integer_types), raising=exc.TypeError)
+    ensure(isinstance(outlen, int), raising=exc.TypeError)
+    ensure(isinstance(opslimit, int), raising=exc.TypeError)
+    ensure(isinstance(memlimit, int), raising=exc.TypeError)
+    ensure(isinstance(alg, int), raising=exc.TypeError)
     ensure(isinstance(passwd, bytes), raising=exc.TypeError)
 
     if len(salt) != crypto_pwhash_SALTBYTES:
@@ -509,8 +507,8 @@ def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
     :return: serialized derived key and parameters
     :rtype: bytes
     """
-    ensure(isinstance(opslimit, integer_types), raising=TypeError)
-    ensure(isinstance(memlimit, integer_types), raising=TypeError)
+    ensure(isinstance(opslimit, int), raising=TypeError)
+    ensure(isinstance(memlimit, int), raising=TypeError)
     ensure(isinstance(passwd, bytes), raising=TypeError)
 
     _check_argon2_limits_alg(opslimit, memlimit, alg)

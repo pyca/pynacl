@@ -25,14 +25,12 @@ from hypothesis.strategies import integers, text
 
 import pytest
 
-from six import unichr
-
 import nacl.bindings
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.pwhash
 
-_all_unicode = "".join(unichr(i) for i in range(sys.maxunicode))
+_all_unicode = "".join(chr(i) for i in range(sys.maxunicode))
 PASSWD_CHARS = "".join(
     c
     for c in _all_unicode

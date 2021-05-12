@@ -34,7 +34,7 @@ except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
 
-requirements = ["six"]
+requirements = []
 setup_requirements = ["setuptools"]
 test_requirements = ["pytest>=3.2.1,!=3.3.0", "hypothesis>=3.27.0"]
 docs_requirements = ["sphinx>=1.6.5", "sphinx_rtd_theme"]

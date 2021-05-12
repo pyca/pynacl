@@ -14,8 +14,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from six import integer_types
-
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
@@ -58,7 +56,7 @@ def _checkparams(digest_size, key, salt, person):
     )
 
     ensure(
-        isinstance(digest_size, integer_types),
+        isinstance(digest_size, int),
         "Digest size must be an integer number",
         raising=exc.TypeError,
     )

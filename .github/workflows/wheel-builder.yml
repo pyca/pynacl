@@ -16,7 +16,7 @@ jobs:
     steps:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi six
+        run: .venv/bin/pip install -U pip cffi
       - run: .venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir tmpwheelhouse
 
       - run: |
@@ -56,7 +56,7 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      - run: venv/bin/pip install -U pip wheel cffi six
+      - run: venv/bin/pip install -U pip wheel cffi
       - run: venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir wheelhouse
       - name: Build the wheel
         run: |
@@ -108,7 +108,7 @@ jobs:
         shell: bash
 
       - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi six
+        run: python -m pip install -U pip wheel cffi
       - name: Download the sdist
         run: pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl* && mkdir wheelhouse
         shell: bash
