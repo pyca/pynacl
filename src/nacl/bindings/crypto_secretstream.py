@@ -73,7 +73,7 @@ class crypto_secretstream_xchacha20poly1305_state(object):
     __slots__ = ["statebuf", "rawbuf", "tagbuf"]
 
     def __init__(self):
-        """ Initialize a clean state object."""
+        """Initialize a clean state object."""
         self.statebuf = ffi.new(
             "unsigned char[]",
             crypto_secretstream_xchacha20poly1305_STATEBYTES,
