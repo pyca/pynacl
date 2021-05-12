@@ -226,7 +226,7 @@ setup(
     license=nacl.__license__,
     author=nacl.__author__,
     author_email=nacl.__email__,
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    python_requires=">=3.5",
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={"tests": test_requirements, "docs": docs_requirements},
@@ -241,12 +241,11 @@ setup(
     classifiers=[
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
 )
