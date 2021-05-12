@@ -9,4 +9,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 line-length = 79
-target-version = ["py36"]
+target-version = ["py35"]
