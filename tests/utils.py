@@ -16,8 +16,6 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from six import byte2int, int2byte
-
 
 def assert_equal(x, y):
     assert x == y
@@ -67,6 +65,6 @@ def read_kv_test_vectors(fname, delimiter=None, newrecord=None):
 def flip_byte(original, byte_offset):
     return (
         original[:byte_offset]
-        + int2byte(0x01 ^ byte2int(original[byte_offset : byte_offset + 1]))
+        + bytes([0x01 ^ original[byte_offset]])
         + original[byte_offset + 1 :]
     )

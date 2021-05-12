@@ -21,8 +21,6 @@ import random
 
 import pytest
 
-import six
-
 from nacl._sodium import ffi
 from nacl.bindings.crypto_secretstream import (
     crypto_secretstream_xchacha20poly1305_ABYTES,
@@ -234,7 +232,7 @@ def test_it_like_libsodium():
     # avoid using from_buffer until at least cffi >= 1.10 in setup.py
     # state = ffi.from_buffer(state_save)
     for i in range(crypto_secretstream_xchacha20poly1305_STATEBYTES):
-        state.statebuf[i] = six.indexbytes(state_save, i)
+        state.statebuf[i] = state_save[i]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
 
