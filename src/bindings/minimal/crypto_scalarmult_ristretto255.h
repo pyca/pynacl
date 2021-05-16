@@ -13,10 +13,14 @@
  * limitations under the License.
  */
 
-static const int PYNACL_HAS_CRYPTO_SCALARMULT_RISTRETTO25519;
+#ifdef SODIUM_LIBRARY_MINIMAL
+static const int PYNACL_HAS_CRYPTO_SCALARMULT_RISTRETTO25519 = 0;
 
-size_t crypto_scalarmult_ristretto255_bytes(void);
-size_t crypto_scalarmult_ristretto255_scalarbytes(void);
+size_t (*crypto_scalarmult_ristretto255_bytes)(void) = NULL;
+size_t (*crypto_scalarmult_ristretto255_scalarbytes)(void) = NULL;
 
-int crypto_scalarmult_ristretto255_base(unsigned char *q, const unsigned char *n);
-int crypto_scalarmult_ristretto255(unsigned char *q, const unsigned char *n, const unsigned char *p);
+int (*crypto_scalarmult_ristretto255_base)(unsigned char *q, const unsigned char *n) = NULL;
+int (*crypto_scalarmult_ristretto255)(unsigned char *q, const unsigned char *n, const unsigned char *p) = NULL;
+#else
+static const int PYNACL_HAS_CRYPTO_SCALARMULT_RISTRETTO25519 = 1;
+#endif

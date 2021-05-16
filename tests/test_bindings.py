@@ -332,7 +332,7 @@ def test_sodium_is_zero():
     assert c.sodium_is_zero(b"\x00" * 37)
     assert not c.sodium_is_zero(b"\x00" * 13 + b"\xe1" + b"\x00" * 22)
     with pytest.raises(TypeError):
-        c.sodium_is_zero(u"zero")
+        c.sodium_is_zero("zero")
 
 
 @given(integers(min_value=-2, max_value=0))
@@ -890,3 +890,51 @@ def test_scalarmult_ed25519_unavailable():
         c.crypto_scalarmult_ed25519(zero, zero)
     with pytest.raises(UnavailableError):
         c.crypto_scalarmult_ed25519_noclamp(zero, zero)
+
+
+@pytest.mark.skipif(
+    c.has_crypto_core_ristretto25519,
+    reason="Requires minimal build of libsodium",
+)
+def test_core_ristretto25519_unavailable():
+    zero = 32 * b"\x00"
+
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_add(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_complement(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_invert(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_mul(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_negate(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_random()
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_reduce(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_scalar_sub(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_add(zero, zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_from_hash(zero + zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_is_valid_point(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_random()
+    with pytest.raises(UnavailableError):
+        c.crypto_core_ristretto255_sub(zero, zero)
+
+
+@pytest.mark.skipif(
+    c.has_crypto_scalarmult_ristretto25519,
+    reason="Requires minimal build of libsodium",
+)
+def test_scalarmult_ristretto25519_unavailable():
+    zero = 32 * b"\x00"
+
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ristretto255_base(zero)
+    with pytest.raises(UnavailableError):
+        c.crypto_scalarmult_ristretto255(zero, zero)

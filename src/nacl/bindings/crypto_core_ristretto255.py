@@ -1,4 +1,4 @@
-# Copyright 2020 Donald Stufft and individual contributors
+# Copyright 2021 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,21 +18,28 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
+has_crypto_core_ristretto25519 = bool(
+    lib.PYNACL_HAS_CRYPTO_CORE_RISTRETTO25519
+)
 
 # Group order L of both the scalar group and group of points.
 crypto_core_ristretto255_GROUP_ORDER = (
     2 ** 252 + 27742317777372353535851937790883648493
 )
 
-# Size of a Ristretto255 scalar.
-crypto_core_ristretto255_SCALAR_BYTES = (
-    lib.crypto_core_ristretto255_scalarbytes()
-)
+if has_crypto_core_ristretto25519:
+    # Size of a Ristretto255 scalar.
+    crypto_core_ristretto255_SCALAR_BYTES = (
+        lib.crypto_core_ristretto255_scalarbytes()
+    )
 
-# Size of values that are reduced modulo the order to a Ristretto255 scalar.
-crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = (
-    lib.crypto_core_ristretto255_nonreducedscalarbytes()
-)
+    # Size of values that are reduced modulo the order to a Ristretto255 scalar.
+    crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = (
+        lib.crypto_core_ristretto255_nonreducedscalarbytes()
+    )
+else:  # pragma: no cover
+    crypto_core_ristretto255_SCALAR_BYTES = 0
+    crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = 0
 
 
 def crypto_core_ristretto255_scalar_add(x, y):
@@ -46,7 +53,15 @@ def crypto_core_ristretto255_scalar_add(x, y):
               bytes in little endian order representing the second scalar
     :type y: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(x, bytes)
         and len(x) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -79,7 +94,15 @@ def crypto_core_ristretto255_scalar_complement(s):
               bytes in little endian order representing the scalar
     :type s: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(s, bytes)
         and len(s) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -105,7 +128,15 @@ def crypto_core_ristretto255_scalar_invert(s):
     :type s: bytes
     :rtype: bytes
     :raises ValueError: if the value is not invertible
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(s, bytes)
         and len(s) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -134,7 +165,15 @@ def crypto_core_ristretto255_scalar_mul(x, y):
               bytes in little endian order representing the second scalar
     :type y: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(x, bytes)
         and len(x) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -168,7 +207,14 @@ def crypto_core_ristretto255_scalar_negate(s):
               bytes in little endian order representing the scalar
     :type s: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
     ensure(
         isinstance(s, bytes)
         and len(s) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -189,7 +235,15 @@ def crypto_core_ristretto255_scalar_random():
     Generate a random non-zero scalar modulo ``L``.
 
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     r = ffi.new("unsigned char[]", crypto_core_ristretto255_SCALAR_BYTES)
     lib.crypto_core_ristretto255_scalar_random(r)
 
@@ -207,7 +261,15 @@ def crypto_core_ristretto255_scalar_reduce(s):
               to a Ristretto255 scalar
     :type s: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(s, bytes)
         and len(s) == crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES,
@@ -234,7 +296,15 @@ def crypto_core_ristretto255_scalar_sub(x, y):
               bytes in little endian order representing the second scalar
     :type y: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(x, bytes)
         and len(x) == crypto_core_ristretto255_SCALAR_BYTES,
@@ -259,11 +329,17 @@ def crypto_core_ristretto255_scalar_sub(x, y):
     return ffi.buffer(z, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-# Size of a Ristretto255 point.
-crypto_core_ristretto255_BYTES = lib.crypto_core_ristretto255_bytes()
+if has_crypto_core_ristretto25519:
+    # Size of a Ristretto255 point.
+    crypto_core_ristretto255_BYTES = lib.crypto_core_ristretto255_bytes()
 
-# Size of the input to crypto_core_ristretto255_from_hash
-crypto_core_ristretto255_HASH_BYTES = lib.crypto_core_ristretto255_hashbytes()
+    # Size of the input to crypto_core_ristretto255_from_hash
+    crypto_core_ristretto255_HASH_BYTES = (
+        lib.crypto_core_ristretto255_hashbytes()
+    )
+else:  # pragma: no cover
+    crypto_core_ristretto255_BYTES = 0
+    crypto_core_ristretto255_HASH_BYTES = 0
 
 
 def crypto_core_ristretto255_add(p, q):
@@ -277,7 +353,15 @@ def crypto_core_ristretto255_add(p, q):
               bytes representing the second point
     :type q: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(p, bytes) and len(p) == crypto_core_ristretto255_BYTES,
         "First point must be a sequence of {} bytes".format(
@@ -311,7 +395,15 @@ def crypto_core_ristretto255_from_hash(r):
               bytes representing the value to convert
     :type r: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(r, bytes) and len(r) == crypto_core_ristretto255_HASH_BYTES,
         "Input must be a sequence of {} bytes".format(
@@ -337,7 +429,15 @@ def crypto_core_ristretto255_is_valid_point(p):
     :type p: bytes
     :return: False if invalid, True if valid
     :rtype: bool
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(p, bytes) and len(p) == crypto_core_ristretto255_BYTES,
         "Input must be a sequence of {} bytes".format(
@@ -357,7 +457,15 @@ def crypto_core_ristretto255_random():
     although astronomically unlikely, the zero point.
 
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     p = ffi.new("unsigned char[]", crypto_core_ristretto255_BYTES)
     lib.crypto_core_ristretto255_random(p)
 
@@ -375,7 +483,15 @@ def crypto_core_ristretto255_sub(p, q):
               bytes representing the second point
     :type q: bytes
     :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_core_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(p, bytes) and len(p) == crypto_core_ristretto255_BYTES,
         "First point must be a sequence of {} bytes".format(

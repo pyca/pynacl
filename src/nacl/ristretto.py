@@ -1,4 +1,4 @@
-# Copyright 2013 Donald Stufft and individual contributors
+# Copyright 2021 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-from binascii import hexlify
 from fractions import Fraction
-
-import six
 
 import nacl.bindings
 from nacl import exceptions as exc
-from nacl.utils import (
-    bytes_as_string,
-    int_to_little_endian,
-    little_endian_to_int,
-    random,
-)
+from nacl.utils import random
 
 
 class Ristretto255Scalar(object):
@@ -43,9 +35,9 @@ class Ristretto255Scalar(object):
             if len(value) != Ristretto255Scalar.SIZE:
                 raise exc.ValueError
             self._value = value
-        elif isinstance(value, six.integer_types):
-            self._value = int_to_little_endian(
-                value % Ristretto255Scalar.ORDER, Ristretto255Scalar.SIZE
+        elif isinstance(value, int):
+            self._value = (value % Ristretto255Scalar.ORDER).to_bytes(
+                Ristretto255Scalar.SIZE, "little"
             )
         elif isinstance(value, Fraction):
             self._value = (
@@ -167,35 +159,36 @@ class Ristretto255Scalar(object):
         return self._value
 
     def __int__(self):
-        return little_endian_to_int(self._value)
+        return int.from_bytes(self._value, "little")
 
     def __bool__(self):
         return not nacl.bindings.sodium_is_zero(self._value)
-
-    def __nonzero__(self):
-        return self.__bool__()
 
     def __repr__(self):
         return "Ristretto255Scalar({})".format(int(self))
 
     def __str__(self):
-        if six.PY2:
-            return self.__bytes__()
-        else:
-            return repr(self)
-
-    def __unicode__(self):
-        return repr(self).decode()
+        return repr(self)
 
 
-# Neutral additive element
-Ristretto255Scalar.ZERO = Ristretto255Scalar(0)
+if nacl.bindings.has_crypto_core_ristretto25519:
+    # Neutral additive element
+    Ristretto255Scalar.ZERO = Ristretto255Scalar(0)
 
-# Neutral multiplicative element
-Ristretto255Scalar.ONE = Ristretto255Scalar(1)
+    # Neutral multiplicative element
+    Ristretto255Scalar.ONE = Ristretto255Scalar(1)
 
-# Constant needed for inverting points
-Ristretto255Scalar.MINUS_ONE = Ristretto255Scalar(-1)
+    # Constant needed for inverting points
+    Ristretto255Scalar.MINUS_ONE = Ristretto255Scalar(-1)
+else:  # pragma: no cover
+
+    Ristretto255Scalar.ZERO = Ristretto255Scalar(
+        bytes(Ristretto255Scalar.SIZE)
+    )
+    Ristretto255Scalar.ONE = Ristretto255Scalar(bytes(Ristretto255Scalar.SIZE))
+    Ristretto255Scalar.MINUS_ONE = Ristretto255Scalar(
+        bytes(Ristretto255Scalar.SIZE)
+    )
 
 
 class Ristretto255Point(object):
@@ -301,9 +294,6 @@ class Ristretto255Point(object):
         """
         return not nacl.bindings.sodium_is_zero(self._value)
 
-    def __nonzero__(self):
-        return self.__bool__()
-
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -320,21 +310,13 @@ class Ristretto255Point(object):
         return hash(self._value)
 
     def __repr__(self):
-        return "Ristretto255Point('{}')".format(
-            bytes_as_string(hexlify(bytes(self)))
-        )
+        return "Ristretto255Point({!r})".format(bytes(self))
 
     def __str__(self):
-        if six.PY2:
-            return self.__bytes__()
-        else:
-            return repr(self)
-
-    def __unicode__(self):
-        return repr(self).decode()
+        return "Ristretto255Point({})".format(bytes(self).hex())
 
 
 # Neutral element
 Ristretto255Point.ZERO = Ristretto255Point(
-    b"\x00" * Ristretto255Point.SIZE, _assume_valid=True
+    bytes(Ristretto255Point.SIZE), _assume_valid=True
 )

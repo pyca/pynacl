@@ -1,4 +1,4 @@
-# Copyright 2020 Donald Stufft and individual contributors
+# Copyright 2021 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,16 +18,24 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-# Size of a Ristretto255 point.
-# Should equal crypto_core_ristretto255_BYTES
-crypto_scalarmult_ristretto255_BYTES = (
-    lib.crypto_scalarmult_ristretto255_bytes()
+has_crypto_scalarmult_ristretto25519 = bool(
+    lib.PYNACL_HAS_CRYPTO_SCALARMULT_RISTRETTO25519
 )
 
-# Size of scalars for the two functions.
-crypto_scalarmult_ristretto255_SCALAR_BYTES = (
-    lib.crypto_scalarmult_ristretto255_scalarbytes()
-)
+if has_crypto_scalarmult_ristretto25519:
+    # Size of a Ristretto255 point.
+    # Should equal crypto_core_ristretto255_BYTES
+    crypto_scalarmult_ristretto255_BYTES = (
+        lib.crypto_scalarmult_ristretto255_bytes()
+    )
+
+    # Size of scalars for the two functions.
+    crypto_scalarmult_ristretto255_SCALAR_BYTES = (
+        lib.crypto_scalarmult_ristretto255_scalarbytes()
+    )
+else:  # pragma: no cover
+    crypto_scalarmult_ristretto255_BYTES = 0
+    crypto_scalarmult_ristretto255_SCALAR_BYTES = 0
 
 
 def crypto_scalarmult_ristretto255_base(n):
@@ -40,7 +48,15 @@ def crypto_scalarmult_ristretto255_base(n):
     :type n: bytes
     :rtype: bytes
     :raises exc.RuntimeError: on error or if result is zero
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_scalarmult_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(n, bytes)
         and len(n) == crypto_scalarmult_ristretto255_SCALAR_BYTES,
@@ -74,7 +90,15 @@ def crypto_scalarmult_ristretto255(n, p):
     :type p: bytes
     :rtype: bytes
     :raises exc.RuntimeError: on error or if result is zero
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
     """
+    ensure(
+        has_crypto_scalarmult_ristretto25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
     ensure(
         isinstance(n, bytes)
         and len(n) == crypto_scalarmult_ristretto255_SCALAR_BYTES,

@@ -1,4 +1,4 @@
-# Copyright 2020 Donald Stufft and individual contributors
+# Copyright 2021 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ from __future__ import absolute_import, division, print_function
 
 import json
 import os
-from binascii import unhexlify
 from fractions import Fraction
 from functools import reduce
 from hashlib import sha256, sha512
@@ -25,9 +24,11 @@ from random import randrange
 
 import pytest
 
-from six import int2byte
-
 import nacl.exceptions as exc
+from nacl.bindings import (
+    has_crypto_core_ristretto25519,
+    has_crypto_scalarmult_ristretto25519,
+)
 from nacl.ristretto import Ristretto255Point, Ristretto255Scalar
 
 
@@ -41,12 +42,14 @@ def _ristretto255_vectors():
 
     return {
         "encodings_of_small_multiples": [
-            (idx, unhexlify(enc))
+            (idx, bytes.fromhex(enc))
             for idx, enc in enumerate(vectors["encodings_of_small_multiples"])
         ],
-        "bad_encodings": [unhexlify(enc) for enc in vectors["bad_encodings"]],
+        "bad_encodings": [
+            bytes.fromhex(enc) for enc in vectors["bad_encodings"]
+        ],
         "label_hash_to_points": [
-            (label, unhexlify(enc))
+            (label, bytes.fromhex(enc))
             for label, enc in zip(
                 vectors["labels"], vectors["encoded_hash_to_points"]
             )
@@ -56,10 +59,14 @@ def _ristretto255_vectors():
 
 class TestRistretto255Scalar(object):
     order = 7237005577332262213973186563042994240857116359379907606001950938285454250989
-    order_bytes = unhexlify(
+    order_bytes = bytes.fromhex(
         "edd3f55c1a631258d69cf7a2def9de1400000000000000000000000000000010"
     )
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_init(self):
 
         dgst = sha256(b"hello").digest()
@@ -77,7 +84,7 @@ class TestRistretto255Scalar(object):
             bytes(Ristretto255Scalar(Fraction(5, 1))) == b"\x05" + b"\x00" * 31
         )
         # (pow(3, -1, order) * 5 % order).to_bytes(32, "little").hex()
-        five_thirds = unhexlify(
+        five_thirds = bytes.fromhex(
             "a646a7c9082106c89c8952364a534a5c55555555555555555555555555555505"
         )
         assert bytes(Ristretto255Scalar(Fraction(5, 3))) == five_thirds
@@ -88,6 +95,10 @@ class TestRistretto255Scalar(object):
         with pytest.raises(exc.TypeError):
             Ristretto255Scalar(3.14)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_random(self):
         s = Ristretto255Scalar.random()
         t = Ristretto255Scalar.random()
@@ -96,6 +107,10 @@ class TestRistretto255Scalar(object):
         # it can only be a serious bug because of the huge group size.
         assert s != t
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_random_zero(self):
         s = Ristretto255Scalar.random_zero()
         t = Ristretto255Scalar.random_zero()
@@ -104,6 +119,10 @@ class TestRistretto255Scalar(object):
         # it can only be a serious bug because of the huge group size.
         assert s != t
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_reduce(self):
         assert (
             bytes(Ristretto255Scalar.reduce(b"\xcd\xab" + b"\x00" * 62))
@@ -112,26 +131,34 @@ class TestRistretto255Scalar(object):
         dgst = sha512(b"hello").digest()
 
         # (int.from_bytes(sha512(b"hello").digest(), "little") % order).to_bytes(32, "little").hex()
-        reduced_dgst = unhexlify(
+        reduced_dgst = bytes.fromhex(
             "b586c3423482ab97d876ce24cab8bd8ab84e22ac3a52a8dfbb330bbe92a3260f"
         )
 
         assert bytes(Ristretto255Scalar.reduce(dgst)) == reduced_dgst
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_inverse(self):
         assert Ristretto255Scalar(1).inverse == Ristretto255Scalar.ONE
         s = Ristretto255Scalar.random()
         assert s.inverse * s == Ristretto255Scalar.ONE
 
-        t = Ristretto255Scalar(b"".join(int2byte(i) for i in range(32)))
+        t = Ristretto255Scalar(bytes(range(32)))
 
         # pow(int.from_bytes(bytes(range(32)), "little"), -1, order).to_bytes(32, "little").hex()
-        inv = unhexlify(
+        inv = bytes.fromhex(
             "0cf17e6d77775ab76bd4f41cd2ef9ecc9ddd8242185bd685a60b49b5b3f16606"
         )
 
         assert bytes(t.inverse) == inv
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_complement(self):
         assert Ristretto255Scalar(1).complement == Ristretto255Scalar.ZERO
         assert Ristretto255Scalar(0).complement == Ristretto255Scalar.ONE
@@ -139,14 +166,18 @@ class TestRistretto255Scalar(object):
         s = Ristretto255Scalar.random()
         assert s.complement + s == Ristretto255Scalar.ONE
 
-        t = Ristretto255Scalar(b"".join(int2byte(i) for i in range(32)))
+        t = Ristretto255Scalar(bytes(range(32)))
         # ((1 - int.from_bytes(bytes(range(32)), "little")) % order).to_bytes(32, "little").hex()
-        compl = unhexlify(
+        compl = bytes.fromhex(
             "dba6e9b630c11ea9a430e53ab1e6af1af0eeedecebeae9e8e7e6e5e4e3e2e100"
         )
 
         assert bytes(t.complement) == compl
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_add(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(456)
@@ -166,6 +197,10 @@ class TestRistretto255Scalar(object):
 
         assert (a + b) + c == (c + a) + b
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_sub(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(456)
@@ -183,6 +218,10 @@ class TestRistretto255Scalar(object):
 
         assert (a - b) - c == a - (c + b)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_mul(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(456)
@@ -198,7 +237,7 @@ class TestRistretto255Scalar(object):
         v = Ristretto255Scalar(b"\x01" * 32)
         w = Ristretto255Scalar(b"\x02" * 32)
         # (int.from_bytes(b"\x01" * 32, "little") * int.from_bytes(b"\x02" * 32, "little") % order).to_bytes(32, "little").hex()
-        x = unhexlify(
+        x = bytes.fromhex(
             "7d808bf1fafea25f3ee660ef3c1793985190ba1413f9b714edf967ce6b8bdd06"
         )
         assert bytes(v * w) == x
@@ -211,6 +250,10 @@ class TestRistretto255Scalar(object):
         assert a * Ristretto255Scalar.ZERO == Ristretto255Scalar.ZERO
         assert a * Ristretto255Scalar.ONE == a
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_neg(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(-123)
@@ -225,6 +268,10 @@ class TestRistretto255Scalar(object):
         assert -Ristretto255Scalar.ZERO == Ristretto255Scalar.ZERO
         assert -Ristretto255Scalar.ONE == Ristretto255Scalar.MINUS_ONE
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_eq(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(123)
@@ -248,6 +295,10 @@ class TestRistretto255Scalar(object):
         assert a != c
         assert b != c
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_hash(self):
         p = Ristretto255Scalar.random()
         q = Ristretto255Scalar.random()
@@ -257,11 +308,19 @@ class TestRistretto255Scalar(object):
 
         assert h0 == h1
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_bytes(self):
         s = Ristretto255Scalar(123)
         assert type(bytes(s)) is bytes
         assert len(bytes(s)) == 32
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_int(self):
         s = Ristretto255Scalar(123)
         t = -s
@@ -272,6 +331,10 @@ class TestRistretto255Scalar(object):
         assert int(Ristretto255Scalar.ONE) == 1
         assert int(Ristretto255Scalar.MINUS_ONE) == self.order - 1
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_bool(self):
         assert not Ristretto255Scalar.ZERO
         assert Ristretto255Scalar.ONE
@@ -286,23 +349,40 @@ class TestRistretto255Scalar(object):
         assert u - t
         assert not (u - t - s)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_repr(self):
         s = Ristretto255Scalar(123)
         assert repr(s) == "Ristretto255Scalar(123)"
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
+    def test_str(self):
+        s = Ristretto255Scalar(123)
+        text = str(s)
+        assert text == "Ristretto255Scalar(123)"
+
 
 class TestRistretto255Point(object):
     _vectors = _ristretto255_vectors()
+    _base = bytes.fromhex(
+        "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
+    )
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     @pytest.mark.parametrize(
         ("idx", "encoding"), _vectors["encodings_of_small_multiples"]
     )
     def test_small_multiples(self, idx, encoding):
-        base = Ristretto255Point(
-            unhexlify(
-                "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
-            )
-        )
+        base = Ristretto255Point(self._base)
         point = Ristretto255Point.ZERO
 
         for i in range(idx):
@@ -315,11 +395,19 @@ class TestRistretto255Point(object):
             point = Ristretto255Point.base_mul(idx)
             assert bytes(point) == encoding
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     @pytest.mark.parametrize(("encoding"), _vectors["bad_encodings"])
     def test_bad_encodings(self, encoding):
         with pytest.raises(exc.ValueError):
             Ristretto255Point(encoding)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     @pytest.mark.parametrize(
         ("label", "encoding"), _vectors["label_hash_to_points"]
     )
@@ -329,6 +417,10 @@ class TestRistretto255Point(object):
         )
         assert bytes(point) == encoding
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_init(self):
         with pytest.raises(exc.TypeError):
             Ristretto255Point(b"too short")
@@ -338,6 +430,10 @@ class TestRistretto255Point(object):
 
         # good code paths are tested elsewhere.
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_random(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
@@ -346,6 +442,10 @@ class TestRistretto255Point(object):
         # it can only be a serious bug because of the huge group size.
         assert p != q
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_neg(self):
         p = Ristretto255Point.random()
         q = -p
@@ -353,6 +453,10 @@ class TestRistretto255Point(object):
         assert p + q == Ristretto255Point.ZERO
         assert p - q == p + p
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_add(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
@@ -367,6 +471,10 @@ class TestRistretto255Point(object):
         assert (p + q) + r == p + (q + r)
         assert (p + q) + r == (r + p) + q
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_sub(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
@@ -381,6 +489,11 @@ class TestRistretto255Point(object):
         assert p - q != q - p
         assert (p - q) - r == p - (q + r)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_mul(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
@@ -389,7 +502,7 @@ class TestRistretto255Point(object):
             p * q
 
         with pytest.raises(exc.TypeError):
-            p * u"test"
+            p * "test"
 
         assert p * 3 == 3 * p
         assert p + p + p == p * 3
@@ -399,6 +512,11 @@ class TestRistretto255Point(object):
         assert p * Fraction(8, 1) == p * 8
         assert 27 * p * Fraction(-11, 27) == p * -11
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_bool(self):
         p = Ristretto255Point.random()
 
@@ -406,10 +524,15 @@ class TestRistretto255Point(object):
         assert bool(Ristretto255Point.base_mul(1))
         assert not (p - p)
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_eq(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
-        assert p != u"foobar"
+        assert p != "foobar"
         assert p == p
 
         a = p * 17 + q
@@ -420,18 +543,25 @@ class TestRistretto255Point(object):
         assert a != c
         assert b != c
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_bytes(self):
         base = Ristretto255Point.base_mul(1)
-        enc0 = bytes(base)
-        enc1 = unhexlify(
-            "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
-        )
-        assert enc0 == enc1
+        enc = bytes(base)
+        assert enc == self._base
 
         p = Ristretto255Point.random()
         assert type(bytes(p)) is bytes
         assert len(bytes(p)) == 32
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_hash(self):
         p = Ristretto255Point.random()
         q = Ristretto255Point.random()
@@ -441,13 +571,31 @@ class TestRistretto255Point(object):
 
         assert h0 == h1
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_repr(self):
         base = Ristretto255Point.base_mul(1)
-        assert (
-            repr(base)
-            == "Ristretto255Point('e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76')"
-        )
+        assert repr(base) == "Ristretto255Point({})".format(repr(self._base))
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
+    def test_str(self):
+        base = Ristretto255Point.base_mul(1)
+        base_hex = self._base.hex()
+        text = str(base)
+        assert text == "Ristretto255Point({})".format(base_hex)
+
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_library_error(self):
         p = Ristretto255Point(
             self._vectors["bad_encodings"][6], _assume_valid=True
@@ -489,6 +637,11 @@ class TestElGamal(object):
 
         return m
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_el_gamal(self):
         x, h = self.gen_key()
         orig_msg = b"The quick brown fox jumps over the lazy dog.".ljust(64)
@@ -561,6 +714,11 @@ class TestShamir(object):
             Ristretto255Point.ZERO,
         )
 
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519
+        or not has_crypto_scalarmult_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_shamir(self):
         secret0, shares = self.share_secret(5, 3)
 

@@ -1,4 +1,4 @@
-/* Copyright 2020 Donald Stufft and individual contributors
+/* Copyright 2021 Donald Stufft and individual contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+static const int PYNACL_HAS_CRYPTO_CORE_RISTRETTO25519;
 
 size_t crypto_core_ristretto255_scalarbytes(void);
 size_t crypto_core_ristretto255_nonreducedscalarbytes(void);

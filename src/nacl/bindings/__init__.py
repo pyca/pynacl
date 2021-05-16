@@ -90,6 +90,7 @@ from nacl.bindings.crypto_core_ristretto255 import (
     crypto_core_ristretto255_scalar_reduce,
     crypto_core_ristretto255_scalar_sub,
     crypto_core_ristretto255_sub,
+    has_crypto_core_ristretto25519,
 )
 from nacl.bindings.crypto_generichash import (
     crypto_generichash_BYTES,
@@ -198,6 +199,7 @@ from nacl.bindings.crypto_scalarmult_ristretto255 import (
     crypto_scalarmult_ristretto255_BYTES,
     crypto_scalarmult_ristretto255_SCALAR_BYTES,
     crypto_scalarmult_ristretto255_base,
+    has_crypto_scalarmult_ristretto25519,
 )
 from nacl.bindings.crypto_secretbox import (
     crypto_secretbox,
@@ -322,6 +324,7 @@ __all__ = [
     "crypto_core_ed25519_scalar_sub",
     "crypto_core_ed25519_scalar_mul",
     "crypto_core_ed25519_scalar_reduce",
+    "has_crypto_core_ristretto25519",
     "crypto_core_ristretto255_SCALAR_BYTES",
     "crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES",
     "crypto_core_ristretto255_GROUP_ORDER",
@@ -378,6 +381,7 @@ __all__ = [
     "crypto_scalarmult_ed25519_base",
     "crypto_scalarmult_ed25519_noclamp",
     "crypto_scalarmult_ed25519_base_noclamp",
+    "has_crypto_scalarmult_ristretto25519",
     "crypto_scalarmult_ristretto255_BYTES",
     "crypto_scalarmult_ristretto255_SCALAR_BYTES",
     "crypto_scalarmult_ristretto255_base",
