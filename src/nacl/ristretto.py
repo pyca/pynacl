@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
-
 from fractions import Fraction
 
 import nacl.bindings
@@ -21,7 +19,7 @@ from nacl import exceptions as exc
 from nacl.utils import random
 
 
-class Ristretto255Scalar(object):
+class Ristretto255Scalar:
     SIZE = nacl.bindings.crypto_core_ristretto255_SCALAR_BYTES
     NONREDUCED_SIZE = (
         nacl.bindings.crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES
@@ -191,7 +189,7 @@ else:  # pragma: no cover
     )
 
 
-class Ristretto255Point(object):
+class Ristretto255Point:
     SIZE = nacl.bindings.crypto_core_ristretto255_BYTES
     HASH_SIZE = nacl.bindings.crypto_core_ristretto255_HASH_BYTES
     ORDER = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER

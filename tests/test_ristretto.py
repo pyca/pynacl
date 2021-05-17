@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
-
 import json
 import os
 from fractions import Fraction
@@ -57,7 +55,7 @@ def _ristretto255_vectors():
     }
 
 
-class TestRistretto255Scalar(object):
+class TestRistretto255Scalar:
     order = 7237005577332262213973186563042994240857116359379907606001950938285454250989
     order_bytes = bytes.fromhex(
         "edd3f55c1a631258d69cf7a2def9de1400000000000000000000000000000010"
@@ -367,7 +365,7 @@ class TestRistretto255Scalar(object):
         assert text == "Ristretto255Scalar(123)"
 
 
-class TestRistretto255Point(object):
+class TestRistretto255Point:
     _vectors = _ristretto255_vectors()
     _base = bytes.fromhex(
         "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
@@ -385,7 +383,7 @@ class TestRistretto255Point(object):
         base = Ristretto255Point(self._base)
         point = Ristretto255Point.ZERO
 
-        for i in range(idx):
+        for __ in range(idx):
             point += base
 
         assert bytes(point) == encoding
@@ -612,7 +610,7 @@ class TestRistretto255Point(object):
             p * 2
 
 
-class TestElGamal(object):
+class TestElGamal:
     """
     ElGamal encryption.
     """
@@ -661,7 +659,7 @@ class TestElGamal(object):
         assert orig_msg == decr_msg
 
 
-class TestShamir(object):
+class TestShamir:
     """
     Shamir's Secret Sharing
     """

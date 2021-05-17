@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
-
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
