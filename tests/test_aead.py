@@ -15,7 +15,6 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
-import sys
 from collections import namedtuple
 
 from hypothesis import given, settings
@@ -141,10 +140,6 @@ def test_chacha20poly1305_variants_wrong_params(construction):
         c.encrypt(b"", aad, nonce, key.decode("utf-8"))
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3,),
-    reason="Python 2 doesn't distinguish str() from bytes()",
-)
 @pytest.mark.parametrize(
     "construction",
     [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
