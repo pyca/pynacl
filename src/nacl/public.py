@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 from nacl import encoding
@@ -20,7 +19,7 @@ from nacl import exceptions as exc
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
-class PublicKey(encoding.Encodable, StringFixer, object):
+class PublicKey(encoding.Encodable, StringFixer):
     """
     The public key counterpart to an Curve25519 :class:`nacl.public.PrivateKey`
     for encrypting messages.
@@ -40,7 +39,7 @@ class PublicKey(encoding.Encodable, StringFixer, object):
 
         if len(self._public_key) != self.SIZE:
             raise exc.ValueError(
-                "The public key must be exactly {0} bytes long".format(
+                "The public key must be exactly {} bytes long".format(
                     self.SIZE
                 )
             )
@@ -60,7 +59,7 @@ class PublicKey(encoding.Encodable, StringFixer, object):
         return not (self == other)
 
 
-class PrivateKey(encoding.Encodable, StringFixer, object):
+class PrivateKey(encoding.Encodable, StringFixer):
     """
     Private key for decrypting messages using the Curve25519 algorithm.
 
@@ -89,7 +88,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         ):
             raise exc.TypeError(
                 (
-                    "PrivateKey must be created from a {0} "
+                    "PrivateKey must be created from a {} "
                     "bytes long raw secret key"
                 ).format(self.SIZE)
             )
@@ -122,7 +121,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
             raise exc.TypeError(
                 (
-                    "PrivateKey seed must be a {0} bytes long "
+                    "PrivateKey seed must be a {} bytes long "
                     "binary sequence"
                 ).format(cls.SEED_SIZE)
             )
@@ -155,7 +154,7 @@ class PrivateKey(encoding.Encodable, StringFixer, object):
         return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
 
 
-class Box(encoding.Encodable, StringFixer, object):
+class Box(encoding.Encodable, StringFixer):
     """
     The Box class boxes and unboxes messages between a pair of keys
 
@@ -291,7 +290,7 @@ class Box(encoding.Encodable, StringFixer, object):
         return self._shared_key
 
 
-class SealedBox(encoding.Encodable, StringFixer, object):
+class SealedBox(encoding.Encodable, StringFixer):
     """
     The SealedBox class boxes and unboxes messages addressed to
     a specified key-pair by using ephemeral sender's keypairs,

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -71,7 +70,7 @@ def crypto_kx_seed_keypair(seed):
     secret_key = ffi.new("unsigned char[]", crypto_kx_SECRET_KEY_BYTES)
     ensure(
         isinstance(seed, bytes) and len(seed) == crypto_kx_SEED_BYTES,
-        "Seed must be a {0} byte long bytes sequence".format(
+        "Seed must be a {} byte long bytes sequence".format(
             crypto_kx_SEED_BYTES
         ),
         raising=exc.TypeError,
@@ -102,7 +101,7 @@ def crypto_kx_client_session_keys(
     ensure(
         isinstance(client_public_key, bytes)
         and len(client_public_key) == crypto_kx_PUBLIC_KEY_BYTES,
-        "Client public key must be a {0} bytes long bytes sequence".format(
+        "Client public key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,
@@ -110,7 +109,7 @@ def crypto_kx_client_session_keys(
     ensure(
         isinstance(client_secret_key, bytes)
         and len(client_secret_key) == crypto_kx_SECRET_KEY_BYTES,
-        "Client secret key must be a {0} bytes long bytes sequence".format(
+        "Client secret key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,
@@ -118,7 +117,7 @@ def crypto_kx_client_session_keys(
     ensure(
         isinstance(server_public_key, bytes)
         and len(server_public_key) == crypto_kx_PUBLIC_KEY_BYTES,
-        "Server public key must be a {0} bytes long bytes sequence".format(
+        "Server public key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,
@@ -158,7 +157,7 @@ def crypto_kx_server_session_keys(
     ensure(
         isinstance(server_public_key, bytes)
         and len(server_public_key) == crypto_kx_PUBLIC_KEY_BYTES,
-        "Server public key must be a {0} bytes long bytes sequence".format(
+        "Server public key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,
@@ -166,7 +165,7 @@ def crypto_kx_server_session_keys(
     ensure(
         isinstance(server_secret_key, bytes)
         and len(server_secret_key) == crypto_kx_SECRET_KEY_BYTES,
-        "Server secret key must be a {0} bytes long bytes sequence".format(
+        "Server secret key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,
@@ -174,7 +173,7 @@ def crypto_kx_server_session_keys(
     ensure(
         isinstance(client_public_key, bytes)
         and len(client_public_key) == crypto_kx_PUBLIC_KEY_BYTES,
-        "Client public key must be a {0} bytes long bytes sequence".format(
+        "Client public key must be a {} bytes long bytes sequence".format(
             crypto_kx_PUBLIC_KEY_BYTES
         ),
         raising=exc.TypeError,

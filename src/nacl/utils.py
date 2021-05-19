@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import os
 
@@ -48,7 +47,7 @@ class EncryptedMessage(bytes):
         return self._ciphertext
 
 
-class StringFixer(object):
+class StringFixer:
     def __str__(self):
         return str(self.__bytes__())
 

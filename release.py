@@ -2,7 +2,6 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
-from __future__ import absolute_import, division, print_function
 
 import getpass
 import glob
@@ -19,7 +18,7 @@ import requests
 
 
 def run(*args, **kwargs):
-    print("[running] {0}".format(list(args)))
+    print("[running] {}".format(list(args)))
     subprocess.check_call(list(args), **kwargs)
 
 
@@ -122,12 +121,12 @@ def release(version):
     """
     github_token = getpass.getpass("Github person access token: ")
 
-    run("git", "tag", "-s", version, "-m", "{0} release".format(version))
+    run("git", "tag", "-s", version, "-m", "{} release".format(version))
     run("git", "push", "--tags")
 
     run("python", "setup.py", "sdist")
 
-    packages = glob.glob("dist/PyNaCl-{0}*".format(version))
+    packages = glob.glob("dist/PyNaCl-{}*".format(version))
     run("twine", "upload", "-s", *packages)
 
     github_actions_wheel_paths = build_github_actions_wheels(

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -193,7 +192,7 @@ def crypto_sign_ed25519_sk_to_seed(secret_key_bytes):
     return secret_key_bytes[:crypto_sign_SEEDBYTES]
 
 
-class crypto_sign_ed25519ph_state(object):
+class crypto_sign_ed25519ph_state:
     """
     State object wrapping the sha-512 state used in ed25519ph computation
     """
@@ -259,7 +258,7 @@ def crypto_sign_ed25519ph_final_create(edph, sk):
     )
     ensure(
         len(sk) == crypto_sign_SECRETKEYBYTES,
-        ("secret key must be {0} " "bytes long").format(
+        ("secret key must be {} " "bytes long").format(
             crypto_sign_SECRETKEYBYTES
         ),
         raising=exc.TypeError,
@@ -300,7 +299,7 @@ def crypto_sign_ed25519ph_final_verify(edph, signature, pk):
     )
     ensure(
         len(signature) == crypto_sign_BYTES,
-        ("signature must be {0} " "bytes long").format(crypto_sign_BYTES),
+        ("signature must be {} " "bytes long").format(crypto_sign_BYTES),
         raising=exc.TypeError,
     )
     ensure(
@@ -310,7 +309,7 @@ def crypto_sign_ed25519ph_final_verify(edph, signature, pk):
     )
     ensure(
         len(pk) == crypto_sign_PUBLICKEYBYTES,
-        ("public key must be {0} " "bytes long").format(
+        ("public key must be {} " "bytes long").format(
             crypto_sign_PUBLICKEYBYTES
         ),
         raising=exc.TypeError,

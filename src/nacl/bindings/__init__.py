@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl.bindings.crypto_aead import (
     crypto_aead_chacha20poly1305_ABYTES,

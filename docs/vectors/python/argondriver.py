@@ -1,6 +1,5 @@
 #!/usr/bin/python
 #
-from __future__ import division, print_function
 
 import argparse
 import json
@@ -10,7 +9,7 @@ import subprocess
 import sys
 
 
-class argonRunner(object):
+class argonRunner:
     GOODCHARS = string.ascii_letters + string.digits
 
     def __init__(self, args):
@@ -37,11 +36,11 @@ class argonRunner(object):
             self.exe,
             salt.encode("ascii"),
             "-t",
-            "{0:2d}".format(iters),
+            "{:2d}".format(iters),
             "-m",
-            "{0:2d}".format(maxmem),
+            "{:2d}".format(maxmem),
             "-l",
-            "{0:3d}".format(dgst_len),
+            "{:3d}".format(dgst_len),
             "-v",
             self.version,
         ]

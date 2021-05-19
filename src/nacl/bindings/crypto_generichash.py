@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -137,7 +136,7 @@ def generichash_blake2b_salt_personal(
     return ffi.buffer(digest, digest_size)[:]
 
 
-class Blake2State(object):
+class Blake2State:
     """
     Python-level wrapper for the crypto_generichash_blake2b state buffer
     """
