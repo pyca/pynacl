@@ -299,7 +299,7 @@ def crypto_box_seal_open(ciphertext, pk, sk):
 
     ensure(
         _clen >= crypto_box_SEALBYTES,
-        ("Input cyphertext must be " "at least {} long").format(
+        ("Input cyphertext must be at least {} long").format(
             crypto_box_SEALBYTES
         ),
         raising=exc.TypeError,

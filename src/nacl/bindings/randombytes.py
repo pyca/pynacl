@@ -43,7 +43,7 @@ def randombytes_buf_deterministic(size, seed):
     """
     if len(seed) != randombytes_SEEDBYTES:
         raise exc.TypeError(
-            "Deterministic random bytes must be generated " "from 32 bytes"
+            "Deterministic random bytes must be generated from 32 bytes"
         )
 
     buf = ffi.new("unsigned char[]", size)

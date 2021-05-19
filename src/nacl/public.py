@@ -182,7 +182,7 @@ class Box(encoding.Encodable, StringFixer):
                 public_key, PublicKey
             ):
                 raise exc.TypeError(
-                    "Box must be created from " "a PrivateKey and a PublicKey"
+                    "Box must be created from a PrivateKey and a PublicKey"
                 )
             self._shared_key = nacl.bindings.crypto_box_beforenm(
                 public_key.encode(encoder=encoding.RawEncoder),
@@ -325,7 +325,7 @@ class SealedBox(encoding.Encodable, StringFixer):
             )
         else:
             raise exc.TypeError(
-                "SealedBox must be created from " "a PublicKey or a PrivateKey"
+                "SealedBox must be created from a PublicKey or a PrivateKey"
             )
 
     def __bytes__(self):

@@ -313,17 +313,17 @@ def test_wrong_types():
     priv = PrivateKey.generate()
 
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         12,
     )
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         priv,
     )
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         priv.public_key,
     )

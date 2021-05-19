@@ -70,6 +70,6 @@ def verify(password_hash, password):
     else:
         raise (
             CryptPrefixError(
-                "given password_hash is not " "in a supported format"
+                "given password_hash is not in a supported format"
             )
         )

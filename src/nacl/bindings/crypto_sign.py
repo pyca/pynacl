@@ -258,7 +258,7 @@ def crypto_sign_ed25519ph_final_create(edph, sk):
     )
     ensure(
         len(sk) == crypto_sign_SECRETKEYBYTES,
-        ("secret key must be {} " "bytes long").format(
+        ("secret key must be {} bytes long").format(
             crypto_sign_SECRETKEYBYTES
         ),
         raising=exc.TypeError,
@@ -299,7 +299,7 @@ def crypto_sign_ed25519ph_final_verify(edph, signature, pk):
     )
     ensure(
         len(signature) == crypto_sign_BYTES,
-        ("signature must be {} " "bytes long").format(crypto_sign_BYTES),
+        ("signature must be {} bytes long").format(crypto_sign_BYTES),
         raising=exc.TypeError,
     )
     ensure(
@@ -309,7 +309,7 @@ def crypto_sign_ed25519ph_final_verify(edph, signature, pk):
     )
     ensure(
         len(pk) == crypto_sign_PUBLICKEYBYTES,
-        ("public key must be {} " "bytes long").format(
+        ("public key must be {} bytes long").format(
             crypto_sign_PUBLICKEYBYTES
         ),
         raising=exc.TypeError,

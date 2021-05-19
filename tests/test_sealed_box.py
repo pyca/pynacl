@@ -107,12 +107,12 @@ def test_wrong_types():
     priv = PrivateKey.generate()
 
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.encode(),
     )
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.public_key.encode(),
     )

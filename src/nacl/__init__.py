@@ -26,7 +26,7 @@ __all__ = [
 
 __title__ = "PyNaCl"
 __summary__ = (
-    "Python binding to the Networking and Cryptography (NaCl) " "library"
+    "Python binding to the Networking and Cryptography (NaCl) library"
 )
 __uri__ = "https://github.com/pyca/pynacl/"
 
