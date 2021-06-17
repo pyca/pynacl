@@ -21,6 +21,7 @@ import glob
 import os
 import os.path
 import platform
+import shutil
 import subprocess
 import sys
 from distutils.sysconfig import get_config_vars
@@ -66,23 +67,6 @@ sys.path.insert(0, abshere("src"))
 
 
 import nacl  # noqa
-
-
-def which(name, flags=os.X_OK):  # Taken from twisted
-    result = []
-    exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
-    path = os.environ.get("PATH", None)
-    if path is None:
-        return []
-    for p in os.environ.get("PATH", "").split(os.pathsep):
-        p = os.path.join(p, name)
-        if os.access(p, flags):
-            result.append(p)
-        for e in exts:
-            pext = p + e
-            if os.access(pext, flags):
-                result.append(pext)
-    return result
 
 
 def use_system():
@@ -155,7 +139,7 @@ class build_clib(_build_clib):
         ]:
             os.chmod(here(filename), 0o755)
 
-        if not which("make"):
+        if not shutil.which("make"):
             raise Exception("ERROR: The 'make' utility is missing from PATH")
 
         # Locate our configure script
