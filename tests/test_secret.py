@@ -23,7 +23,7 @@ from utils import flip_byte
 
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
-from nacl.secret import SecretBox
+from nacl.secret import Aead, SecretBox
 
 
 VECTORS = [
@@ -52,9 +52,23 @@ def hex_key(m):
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(binascii.hexlify)
 
 
-def box():
-    return st.binary(min_size=SecretBox.KEY_SIZE, max_size=SecretBox.KEY_SIZE).map(SecretBox)
+def box(m):
+    return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(m)
 
+
+@given(k=hex_key(Aead))
+def test_aead_creation(k):
+    Aead(k, encoder=HexEncoder)
+
+
+@given(k=hex_key(Aead))
+def test_aead_bytes(k):
+    s = Aead(k, encoder=HexEncoder)
+    assert bytes(s) == s._key == binascii.unhexlify(k)
+
+@given(box=box(Aead), plaintext=st.binary(), aad=st.binary())
+def test_aead_roundtrip(box, plaintext, aad):
+    assert plaintext == box.decrypt(box.encrypt(plaintext, aad), aad)
 
 @given(k=hex_key(SecretBox))
 def test_secret_box_creation(k):
@@ -141,12 +155,27 @@ def wrong_length(l: int):
     return st.binary().filter(lambda s: len(s) != l)
 
 
+@given(key=wrong_length(Aead.KEY_SIZE))
+def test_aead_wrong_key_length(key):
+    with pytest.raises(ValueError, match=r'key must be exactly \d+ bytes long'):
+        Aead(key)
+
+
+@given(box=box(Aead), nonce=wrong_length(Aead.NONCE_SIZE))
+def test_aead_wrong_nonce_length(box, nonce):
+    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
+        box.encrypt(b"", aad=b'', nonce=nonce)
+    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
+        box.decrypt(b"", aad=b'', nonce=nonce)
+
+
 @given(key=wrong_length(SecretBox.KEY_SIZE))
 def test_secret_box_wrong_key_length(key):
     with pytest.raises(ValueError, match=r'key must be exactly \d+ bytes long'):
         SecretBox(key)
 
-@given(box=box(), nonce=wrong_length(SecretBox.NONCE_SIZE))
+
+@given(box=box(SecretBox), nonce=wrong_length(SecretBox.NONCE_SIZE))
 def test_secret_box_wrong_nonce_length(box, nonce):
     with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
         box.encrypt(b"", nonce)
@@ -165,6 +194,33 @@ def test_wrong_types():
 
     check_type_error("SecretBox must be created from 32 bytes", SecretBox, 12)
     check_type_error("SecretBox must be created from 32 bytes", SecretBox, box)
+
+
+def test_aead_bad_decryption():
+    box = Aead(b"\x11" * Aead.KEY_SIZE)
+    aad = b"some data"
+    ciphertext = box.encrypt(b"hello")
+
+    with pytest.raises(CryptoError):
+        # changes the nonce
+        box.decrypt(flip_byte(ciphertext, 0), aad)
+    with pytest.raises(CryptoError):
+        # changes ciphertext
+        box.decrypt(flip_byte(ciphertext, 24), aad)
+    with pytest.raises(CryptoError):
+        # changes MAC tag
+        box.decrypt(flip_byte(ciphertext, len(ciphertext) - 1), aad)
+
+    with pytest.raises(CryptoError):
+        # completely changes ciphertext and tag
+        box.decrypt(ciphertext + b"\x00", aad)
+    with pytest.raises(CryptoError):
+        # completely changes everything
+        box.decrypt(b"\x00" + ciphertext, aad)
+
+    with pytest.raises(CryptoError):
+        # changes the AAD
+        box.decrypt(ciphertext, flip_byte(aad, 0))
 
 
 def test_secret_box_bad_decryption():
