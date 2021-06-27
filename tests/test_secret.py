@@ -143,14 +143,14 @@ def wrong_length(l: int):
 
 @given(key=wrong_length(SecretBox.KEY_SIZE))
 def test_secret_box_wrong_key_length(key):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'key must be exactly \d+ bytes long'):
         SecretBox(key)
 
 @given(box=box(), nonce=wrong_length(SecretBox.NONCE_SIZE))
 def test_secret_box_wrong_nonce_length(box, nonce):
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
         box.encrypt(b"", nonce)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
         box.decrypt(b"", nonce)
 
 
