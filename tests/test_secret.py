@@ -52,6 +52,10 @@ def hex_key(m):
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(binascii.hexlify)
 
 
+def box():
+    return st.binary(min_size=SecretBox.KEY_SIZE, max_size=SecretBox.KEY_SIZE).map(SecretBox)
+
+
 @given(k=hex_key(SecretBox))
 def test_secret_box_creation(k):
     SecretBox(k, encoder=HexEncoder)
@@ -133,18 +137,21 @@ def test_secret_box_encryption_generates_different_nonces(
     assert nonce_0 != nonce_1
 
 
-def test_secret_box_wrong_lengths():
-    with pytest.raises(ValueError):
-        SecretBox(b"")
+def wrong_length(l: int):
+    return st.binary().filter(lambda s: len(s) != l)
 
-    box = SecretBox(
-        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
-        encoder=HexEncoder,
-    )
+
+@given(key=wrong_length(SecretBox.KEY_SIZE))
+def test_secret_box_wrong_key_length(key):
     with pytest.raises(ValueError):
-        box.encrypt(b"", b"")
+        SecretBox(key)
+
+@given(box=box(), nonce=wrong_length(SecretBox.NONCE_SIZE))
+def test_secret_box_wrong_nonce_length(box, nonce):
     with pytest.raises(ValueError):
-        box.decrypt(b"", b"")
+        box.encrypt(b"", nonce)
+    with pytest.raises(ValueError):
+        box.decrypt(b"", nonce)
 
 
 def check_type_error(expected, f, *args):
