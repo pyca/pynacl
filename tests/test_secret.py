@@ -17,6 +17,7 @@ from __future__ import absolute_import, division, print_function
 import binascii
 
 import pytest
+from hypothesis import given, strategies as st
 
 from utils import flip_byte
 
@@ -47,19 +48,19 @@ VECTORS = [
 ]
 
 
-def test_secret_box_creation():
-    SecretBox(
-        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
-        encoder=HexEncoder,
-    )
+def hex_key(m):
+    return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(binascii.hexlify)
 
 
-def test_secret_box_bytes():
-    s = SecretBox(
-        b"ec2bee2d5be613ca82e377c96a0bf2220d823ce980cdff6279473edc52862798",
-        encoder=HexEncoder,
-    )
-    assert bytes(s) == s._key
+@given(k=hex_key(SecretBox))
+def test_secret_box_creation(k):
+    SecretBox(k, encoder=HexEncoder)
+
+
+@given(k=hex_key(SecretBox))
+def test_secret_box_bytes(k):
+    s = SecretBox(k, encoder=HexEncoder)
+    assert bytes(s) == s._key == binascii.unhexlify(k)
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
