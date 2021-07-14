@@ -188,11 +188,18 @@ class Aead(encoding.Encodable, StringFixer, object):
         one randomly if omitted) and returns the ciphertext encoded with the
         encoder.
 
-        .. warning:: It is **VITALLY** important that the nonce is a nonce,
-            i.e. it is a number used only once for any given key. If you fail
-            to do this, you compromise the privacy of the messages encrypted.
-            Give your nonces a different prefix, or have one side use an odd
-            counter and one an even counter. Just make sure they are different.
+        .. warning:: It is vitally important for :param nonce: to be unique.
+            By default, it is generated randomly; [:class:`Aead`] uses XChacha20
+            for extended (192b) nonce size, so the risk of reusing random nonces
+            is negligible.  It is *strongly recommended* to keep this behaviour,
+            as nonce reuse will compromise the privacy of encrypted messages.
+            Should implicit nonces be inadequate for your application, the
+            second best option is using split counters; e.g. if sending messages
+            encrypted under a shared key between 2 users, each user can use the
+            number of messages it sent so far, prefixed or suffixed with a 1bit
+            user id.  Note that the counter must **never** be rolled back (due
+            to overflow, on-disk state being rolled back to an earlier backup,
+            ...)
 
         :param plaintext: [:class:`bytes`] The plaintext message to encrypt
         :param nonce: [:class:`bytes`] The nonce to use in the encryption
