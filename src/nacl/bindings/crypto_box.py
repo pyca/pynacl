@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -300,7 +299,7 @@ def crypto_box_seal_open(ciphertext, pk, sk):
 
     ensure(
         _clen >= crypto_box_SEALBYTES,
-        ("Input cyphertext must be " "at least {} long").format(
+        ("Input cyphertext must be at least {} long").format(
             crypto_box_SEALBYTES
         ),
         raising=exc.TypeError,

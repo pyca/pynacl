@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import, division, print_function
 
 import sys
 
@@ -187,7 +186,7 @@ def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
 
     ensure(
         p <= SCRYPT_PR_MAX / r,
-        "p*r is greater than {0}".format(SCRYPT_PR_MAX),
+        "p*r is greater than {}".format(SCRYPT_PR_MAX),
         raising=exc.ValueError,
     )
 
@@ -376,25 +375,25 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
     if alg == crypto_pwhash_ALG_ARGON2I13:
         if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {0} bytes".format(
+                "memlimit must be at least {} bytes".format(
                     crypto_pwhash_argon2i_MEMLIMIT_MIN
                 )
             )
         elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {0} bytes".format(
+                "memlimit must be at most {} bytes".format(
                     crypto_pwhash_argon2i_MEMLIMIT_MAX
                 )
             )
         if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {0}".format(
+                "opslimit must be at least {}".format(
                     crypto_pwhash_argon2i_OPSLIMIT_MIN
                 )
             )
         elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {0}".format(
+                "opslimit must be at most {}".format(
                     crypto_pwhash_argon2i_OPSLIMIT_MAX
                 )
             )
@@ -402,25 +401,25 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
     elif alg == crypto_pwhash_ALG_ARGON2ID13:
         if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {0} bytes".format(
+                "memlimit must be at least {} bytes".format(
                     crypto_pwhash_argon2id_MEMLIMIT_MIN
                 )
             )
         elif memlimit > crypto_pwhash_argon2id_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {0} bytes".format(
+                "memlimit must be at most {} bytes".format(
                     crypto_pwhash_argon2id_MEMLIMIT_MAX
                 )
             )
         if opslimit < crypto_pwhash_argon2id_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {0}".format(
+                "opslimit must be at least {}".format(
                     crypto_pwhash_argon2id_OPSLIMIT_MIN
                 )
             )
         elif opslimit > crypto_pwhash_argon2id_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {0}".format(
+                "opslimit must be at most {}".format(
                     crypto_pwhash_argon2id_OPSLIMIT_MAX
                 )
             )
@@ -454,21 +453,21 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
 
     if len(salt) != crypto_pwhash_SALTBYTES:
         raise exc.ValueError(
-            "salt must be exactly {0} bytes long".format(
+            "salt must be exactly {} bytes long".format(
                 crypto_pwhash_SALTBYTES
             )
         )
 
     if outlen < crypto_pwhash_BYTES_MIN:
         raise exc.ValueError(
-            "derived key must be at least {0} bytes long".format(
+            "derived key must be at least {} bytes long".format(
                 crypto_pwhash_BYTES_MIN
             )
         )
 
     elif outlen > crypto_pwhash_BYTES_MAX:
         raise exc.ValueError(
-            "derived key must be at most {0} bytes long".format(
+            "derived key must be at most {} bytes long".format(
                 crypto_pwhash_BYTES_MAX
             )
         )

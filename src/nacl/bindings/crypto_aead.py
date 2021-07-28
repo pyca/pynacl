@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -109,7 +108,7 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(message, aad, nonce, key):
 
     ensure(
         mlen <= crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX,
-        "Message must be at most {0} bytes long".format(
+        "Message must be at most {} bytes long".format(
             crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -124,7 +123,7 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_ietf_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -133,7 +132,7 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_ietf_KEYBYTES
         ),
         raising=exc.TypeError,
@@ -186,7 +185,7 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
 
     ensure(
         clen <= _aead_chacha20poly1305_ietf_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {0} bytes long".format(
+        "Ciphertext must be at most {} bytes long".format(
             _aead_chacha20poly1305_ietf_CRYPTBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -201,7 +200,7 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_ietf_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -210,7 +209,7 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_ietf_KEYBYTES
         ),
         raising=exc.TypeError,
@@ -263,7 +262,7 @@ def crypto_aead_chacha20poly1305_encrypt(message, aad, nonce, key):
 
     ensure(
         mlen <= crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX,
-        "Message must be at most {0} bytes long".format(
+        "Message must be at most {} bytes long".format(
             crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -278,7 +277,7 @@ def crypto_aead_chacha20poly1305_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -287,7 +286,7 @@ def crypto_aead_chacha20poly1305_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_KEYBYTES
         ),
         raising=exc.TypeError,
@@ -341,7 +340,7 @@ def crypto_aead_chacha20poly1305_decrypt(ciphertext, aad, nonce, key):
 
     ensure(
         clen <= _aead_chacha20poly1305_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {0} bytes long".format(
+        "Ciphertext must be at most {} bytes long".format(
             _aead_chacha20poly1305_CRYPTBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -356,7 +355,7 @@ def crypto_aead_chacha20poly1305_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -365,7 +364,7 @@ def crypto_aead_chacha20poly1305_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_chacha20poly1305_KEYBYTES
         ),
         raising=exc.TypeError,
@@ -418,7 +417,7 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(message, aad, nonce, key):
 
     ensure(
         mlen <= crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX,
-        "Message must be at most {0} bytes long".format(
+        "Message must be at most {} bytes long".format(
             crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -433,7 +432,7 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -442,7 +441,7 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_xchacha20poly1305_ietf_KEYBYTES
         ),
         raising=exc.TypeError,
@@ -496,7 +495,7 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
 
     ensure(
         clen <= _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {0} bytes long".format(
+        "Ciphertext must be at most {} bytes long".format(
             _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX
         ),
         raising=exc.ValueError,
@@ -511,7 +510,7 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {0} bytes long bytes sequence".format(
+        "Nonce must be a {} bytes long bytes sequence".format(
             crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
         ),
         raising=exc.TypeError,
@@ -520,7 +519,7 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {0} bytes long bytes sequence".format(
+        "Key must be a {} bytes long bytes sequence".format(
             crypto_aead_xchacha20poly1305_ietf_KEYBYTES
         ),
         raising=exc.TypeError,

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 
@@ -35,7 +34,7 @@ _b2b_final = nacl.bindings.crypto_generichash_blake2b_final
 _b2b_update = nacl.bindings.crypto_generichash_blake2b_update
 
 
-class blake2b(object):
+class blake2b:
     """
     :py:mod:`hashlib` API compatible blake2b algorithm implementation
     """

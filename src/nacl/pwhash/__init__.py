@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
 
 from nacl.exceptions import CryptPrefixError
 
@@ -71,6 +70,6 @@ def verify(password_hash, password):
     else:
         raise (
             CryptPrefixError(
-                "given password_hash is not " "in a supported format"
+                "given password_hash is not in a supported format"
             )
         )

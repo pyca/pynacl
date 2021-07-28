@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import hashlib
 from binascii import hexlify, unhexlify
@@ -53,7 +52,7 @@ def test_hash():
     h3 = c.crypto_hash_sha256(msg)
     assert len(h3) == c.crypto_hash_sha256_BYTES
     assert tohex(h3) == (
-        "ab530a13e45914982b79f9b7e3fba994" "cfd1f3fb22f71cea1afbf02b460c6d1d"
+        "ab530a13e45914982b79f9b7e3fba994cfd1f3fb22f71cea1afbf02b460c6d1d"
     )
     assert tohex(h3) == hashlib.sha256(msg).hexdigest()
 
@@ -201,7 +200,7 @@ def test_scalarmult():
     z = unhexlify(b"10" * 32)
     bz1 = c.crypto_scalarmult_base(z)
     assert tohex(bz1) == (
-        "781faab908430150daccdd6f9d6c5086" "e34f73a93ebbaa271765e5036edfc519"
+        "781faab908430150daccdd6f9d6c5086e34f73a93ebbaa271765e5036edfc519"
     )
     bz2 = c.crypto_scalarmult(z, base)
     assert tohex(bz1) == tohex(bz2)
@@ -212,7 +211,7 @@ def test_sign_test_key_conversion():
     Taken from test vectors in libsodium
     """
     keypair_seed = unhexlify(
-        b"421151a459faeade3d247115f94aedae" b"42318124095afabe4d1451a559faedee"
+        b"421151a459faeade3d247115f94aedae42318124095afabe4d1451a559faedee"
     )
     ed25519_pk, ed25519_sk = c.crypto_sign_seed_keypair(keypair_seed)
 
@@ -234,10 +233,10 @@ def test_sign_test_key_conversion():
     curve25519_sk = c.crypto_sign_ed25519_sk_to_curve25519(ed25519_sk)
 
     assert tohex(curve25519_pk) == (
-        "f1814f0e8ff1043d8a44d25babff3ced" "cae6c22c3edaa48f857ae70de2baae50"
+        "f1814f0e8ff1043d8a44d25babff3cedcae6c22c3edaa48f857ae70de2baae50"
     )
     assert tohex(curve25519_sk) == (
-        "8052030376d47112be7f73ed7a019293" "dd12ad910b654455798b4667d73de166"
+        "8052030376d47112be7f73ed7a019293dd12ad910b654455798b4667d73de166"
     )
 
 
@@ -401,10 +400,10 @@ def test_sign_ed25519ph_rfc8032():
     # sk, pk, msg, exp_sig
     # taken from RFC 8032 section 7.3.  Test Vectors for Ed25519ph
     sk = unhexlify(
-        b"833fe62409237b9d62ec77587520911e" b"9a759cec1d19755b7da901b96dca3d42"
+        b"833fe62409237b9d62ec77587520911e9a759cec1d19755b7da901b96dca3d42"
     )
     pk = unhexlify(
-        b"ec172b93ad5e563bf4932c70e1245034" b"c35467ef2efd4d64ebf819683467e2bf"
+        b"ec172b93ad5e563bf4932c70e1245034c35467ef2efd4d64ebf819683467e2bf"
     )
     msg = b"abc"
     exp_sig = unhexlify(
@@ -439,7 +438,7 @@ def test_sign_ed25519ph_libsodium():
     msg = unhexlify(hmsg)
 
     seed = unhexlify(
-        b"421151a459faeade3d247115f94aedae" b"42318124095afabe4d1451a559faedee"
+        b"421151a459faeade3d247115f94aedae42318124095afabe4d1451a559faedee"
     )
 
     pk, sk = c.crypto_sign_seed_keypair(seed)

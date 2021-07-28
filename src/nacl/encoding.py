@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import base64
 import binascii
 
 
-class RawEncoder(object):
+class RawEncoder:
     @staticmethod
     def encode(data):
         return data
@@ -28,7 +27,7 @@ class RawEncoder(object):
         return data
 
 
-class HexEncoder(object):
+class HexEncoder:
     @staticmethod
     def encode(data):
         return binascii.hexlify(data)
@@ -38,7 +37,7 @@ class HexEncoder(object):
         return binascii.unhexlify(data)
 
 
-class Base16Encoder(object):
+class Base16Encoder:
     @staticmethod
     def encode(data):
         return base64.b16encode(data)
@@ -48,7 +47,7 @@ class Base16Encoder(object):
         return base64.b16decode(data)
 
 
-class Base32Encoder(object):
+class Base32Encoder:
     @staticmethod
     def encode(data):
         return base64.b32encode(data)
@@ -58,7 +57,7 @@ class Base32Encoder(object):
         return base64.b32decode(data)
 
 
-class Base64Encoder(object):
+class Base64Encoder:
     @staticmethod
     def encode(data):
         return base64.b64encode(data)
@@ -68,7 +67,7 @@ class Base64Encoder(object):
         return base64.b64decode(data)
 
 
-class URLSafeBase64Encoder(object):
+class URLSafeBase64Encoder:
     @staticmethod
     def encode(data):
         return base64.urlsafe_b64encode(data)
@@ -78,6 +77,6 @@ class URLSafeBase64Encoder(object):
         return base64.urlsafe_b64decode(data)
 
 
-class Encodable(object):
+class Encodable:
     def encode(self, encoder=RawEncoder):
         return encoder.encode(bytes(self))

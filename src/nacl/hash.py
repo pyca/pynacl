@@ -17,7 +17,6 @@ for libsodium selected hash primitives and the constants needed
 for their usage.
 """
 
-from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 import nacl.encoding

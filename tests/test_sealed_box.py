@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 
@@ -108,12 +107,12 @@ def test_wrong_types():
     priv = PrivateKey.generate()
 
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.encode(),
     )
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.public_key.encode(),
     )

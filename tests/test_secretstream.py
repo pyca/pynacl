@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 import json
@@ -45,7 +44,7 @@ from nacl.utils import random as randombytes
 def read_secretstream_vectors():
     DATA = "secretstream-test-vectors.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    with open(path, "r") as fp:
+    with open(path) as fp:
         jvectors = json.load(fp)
     unhex = binascii.unhexlify
     vectors = [

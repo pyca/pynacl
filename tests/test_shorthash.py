@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 from binascii import hexlify
 
@@ -99,7 +98,7 @@ MESG = (
     b"\x38\x39\x3a\x3b\x3c\x3d\x3e"
 )
 
-KEY = b"\x00\x01\x02\x03\x04\x05\x06\x07" b"\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
+KEY = b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f"
 
 XHASHES = [
     b"a3817f04ba25a8e66df67214c7550293",

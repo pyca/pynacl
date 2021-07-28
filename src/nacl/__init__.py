@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 __all__ = [
     "__title__",
@@ -27,7 +26,7 @@ __all__ = [
 
 __title__ = "PyNaCl"
 __summary__ = (
-    "Python binding to the Networking and Cryptography (NaCl) " "library"
+    "Python binding to the Networking and Cryptography (NaCl) library"
 )
 __uri__ = "https://github.com/pyca/pynacl/"
 
@@ -37,4 +36,4 @@ __author__ = "The PyNaCl developers"
 __email__ = "cryptography-dev@python.org"
 
 __license__ = "Apache License 2.0"
-__copyright__ = "Copyright 2013-2018 {0}".format(__author__)
+__copyright__ = "Copyright 2013-2018 {}".format(__author__)

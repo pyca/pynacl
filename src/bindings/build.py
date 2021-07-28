@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import, division, print_function
 
 import glob
 import os.path
@@ -36,7 +35,7 @@ MINIMAL_HEADERS = glob.glob(
 ffi = FFI()
 
 for header in HEADERS:
-    with open(header, "r") as hfile:
+    with open(header) as hfile:
         ffi.cdef(hfile.read())
 
 source = []
@@ -51,7 +50,7 @@ if os.getenv("PYNACL_SODIUM_STATIC") is not None:
 source.append("#include <sodium.h>")
 
 for header in MINIMAL_HEADERS:
-    with open(header, "r") as hfile:
+    with open(header) as hfile:
         source.append(hfile.read())
 
 if sys.platform == "win32":
