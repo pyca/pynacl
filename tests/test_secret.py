@@ -239,17 +239,14 @@ def test_secret_box_wrong_nonce_length(box, nonce):
         box.decrypt(b"", nonce)
 
 
-def check_type_error(expected, f, *args):
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
-
-
 def test_wrong_types():
-    box = SecretBox(b"11" * 32, encoder=HexEncoder)
+    expected = "SecretBox must be created from 32 bytes"
+    with pytest.raises(TypeError, match=expected):
+        SecretBox(12)
 
-    check_type_error("SecretBox must be created from 32 bytes", SecretBox, 12)
-    check_type_error("SecretBox must be created from 32 bytes", SecretBox, box)
+    box = SecretBox(b"11" * 32, encoder=HexEncoder)
+    with pytest.raises(TypeError, match=expected):
+        SecretBox(box)
 
 
 def test_aead_bad_decryption():
