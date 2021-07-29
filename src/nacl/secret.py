@@ -33,6 +33,12 @@ class SecretBox(encoding.Encodable, StringFixer, object):
     send are repudiable. For non-repudiable messages, sign them after
     encryption.
 
+    Encryption is done using `XSalsa20-Poly1305`_, and there are no practical
+    limits on the number or size of messages (up to 2⁶⁴ messages, each up to 2⁶⁴
+    bytes).
+
+    .. _XSalsa20-Poly1305: https://doc.libsodium.org/secret-key_cryptography/secretbox#algorithm-details
+
     :param key: The secret key used to encrypt and decrypt messages
     :param encoder: The encoder class used to decode the given key
 
