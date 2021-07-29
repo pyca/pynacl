@@ -90,7 +90,7 @@ AEAD_VECTORS = [
 ]
 
 
-@pytest.mark.parametrize("kv", AEAD_VECTORS)
+@pytest.mark.parametrize("kv", AEAD_VECTORS, ids=range(0, len(AEAD_VECTORS)))
 def test_aead_vectors(kv):
     box = Aead(kv["KEY"])
     combined = kv["CT"] + kv["TAG"]
@@ -101,7 +101,11 @@ def test_aead_vectors(kv):
     assert box.decrypt(nonce + combined, aad) == plaintext
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+@pytest.mark.parametrize(
+    ("key", "nonce", "plaintext", "ciphertext"),
+    VECTORS,
+    ids=range(0, len(VECTORS)),
+)
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
     encrypted = box.encrypt(
@@ -119,7 +123,11 @@ def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     assert encrypted.ciphertext == ciphertext
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+@pytest.mark.parametrize(
+    ("key", "nonce", "plaintext", "ciphertext"),
+    VECTORS,
+    ids=range(0, len(VECTORS)),
+)
 def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
@@ -131,7 +139,11 @@ def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     assert decrypted == plaintext
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+@pytest.mark.parametrize(
+    ("key", "nonce", "plaintext", "ciphertext"),
+    VECTORS,
+    ids=range(0, len(VECTORS)),
+)
 def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
@@ -143,7 +155,11 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     assert decrypted == plaintext
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+@pytest.mark.parametrize(
+    ("key", "nonce", "plaintext", "ciphertext"),
+    VECTORS,
+    ids=range(0, len(VECTORS)),
+)
 def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
 
@@ -154,7 +170,11 @@ def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     assert decrypted == plaintext
 
 
-@pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
+@pytest.mark.parametrize(
+    ("key", "nonce", "plaintext", "ciphertext"),
+    VECTORS,
+    ids=range(0, len(VECTORS)),
+)
 def test_secret_box_encryption_generates_different_nonces(
     key, nonce, plaintext, ciphertext
 ):
