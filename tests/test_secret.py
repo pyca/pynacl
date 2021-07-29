@@ -67,9 +67,11 @@ def test_aead_bytes(k):
     s = Aead(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
 
+
 @given(box=boxes(Aead), plaintext=st.binary(), aad=st.binary())
 def test_aead_roundtrip(box, plaintext, aad):
     assert plaintext == box.decrypt(box.encrypt(plaintext, aad), aad)
+
 
 @given(k=hex_keys(SecretBox))
 def test_secret_box_creation(k):
