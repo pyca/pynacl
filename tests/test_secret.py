@@ -24,6 +24,7 @@ from utils import flip_byte
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.secret import Aead, SecretBox
+from test_aead import xchacha20poly1305_ietf_vectors
 
 
 VECTORS = [
@@ -79,6 +80,23 @@ def test_secret_box_creation(k):
 def test_secret_box_bytes(k):
     s = SecretBox(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
+
+
+AEAD_VECTORS = [
+    {k: binascii.unhexlify(v) for (k, v) in d.items() if k != "AEAD"}
+    for d in xchacha20poly1305_ietf_vectors()
+]
+
+
+@pytest.mark.parametrize("kv", AEAD_VECTORS)
+def test_aead_vectors(kv):
+    box = Aead(kv["KEY"])
+    combined = kv["CT"] + kv["TAG"]
+    aad, nonce, plaintext = kv["AD"], kv["NONCE"], kv["IN"]
+
+    assert box.encrypt(plaintext, aad, nonce) == nonce + combined
+    assert box.decrypt(combined, aad, nonce) == plaintext
+    assert box.decrypt(nonce + combined, aad) == plaintext
 
 
 @pytest.mark.parametrize(("key", "nonce", "plaintext", "ciphertext"), VECTORS)
