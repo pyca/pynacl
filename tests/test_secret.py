@@ -15,6 +15,7 @@
 from __future__ import absolute_import, division, print_function
 
 import binascii
+import re
 
 from hypothesis import given, strategies as st
 
@@ -239,14 +240,17 @@ def test_secret_box_wrong_nonce_length(box, nonce):
         box.decrypt(b"", nonce)
 
 
-def test_wrong_types():
-    expected = "SecretBox must be created from 32 bytes"
+@pytest.mark.parametrize("cls", (SecretBox, Aead))
+def test_wrong_types(cls):
+    expected = re.compile(
+        f"{cls.__name__} must be created from 32 bytes", re.IGNORECASE
+    )
     with pytest.raises(TypeError, match=expected):
-        SecretBox(12)
+        cls(12)
 
     box = SecretBox(b"11" * 32, encoder=HexEncoder)
     with pytest.raises(TypeError, match=expected):
-        SecretBox(box)
+        cls(box)
 
 
 def test_aead_bad_decryption():
