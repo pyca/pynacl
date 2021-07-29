@@ -169,8 +169,8 @@ def test_secret_box_encryption_generates_different_nonces(
     assert nonce_0 != nonce_1
 
 
-def wrong_length(l: int):
-    return st.binary().filter(lambda s: len(s) != l)
+def wrong_length(length: int):
+    return st.binary().filter(lambda s: len(s) != length)
 
 
 @given(key=wrong_length(Aead.KEY_SIZE))
