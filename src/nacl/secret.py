@@ -180,7 +180,9 @@ class Aead(encoding.Encodable, StringFixer, object):
     KEY_SIZE = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_KEYBYTES
     NONCE_SIZE = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
     MACBYTES = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_ABYTES
-    MESSAGEBYTES_MAX = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX
+    MESSAGEBYTES_MAX = (
+        nacl.bindings.crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX
+    )
 
     def __init__(self, key, encoder=encoding.RawEncoder):
         key = encoder.decode(key)
@@ -197,7 +199,9 @@ class Aead(encoding.Encodable, StringFixer, object):
     def __bytes__(self):
         return self._key
 
-    def encrypt(self, plaintext, aad=b'', nonce=None, encoder=encoding.RawEncoder):
+    def encrypt(
+        self, plaintext, aad=b"", nonce=None, encoder=encoding.RawEncoder
+    ):
         """
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -242,7 +246,9 @@ class Aead(encoding.Encodable, StringFixer, object):
             encoder.encode(nonce + ciphertext),
         )
 
-    def decrypt(self, ciphertext, aad=b'', nonce=None, encoder=encoding.RawEncoder):
+    def decrypt(
+        self, ciphertext, aad=b"", nonce=None, encoder=encoding.RawEncoder
+    ):
         """
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and

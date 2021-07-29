@@ -52,7 +52,9 @@ VECTORS = [
 
 
 def hex_keys(m):
-    return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(binascii.hexlify)
+    return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(
+        binascii.hexlify
+    )
 
 
 def boxes(m):
@@ -199,29 +201,41 @@ def wrong_length(length: int):
 
 @given(key=wrong_length(Aead.KEY_SIZE))
 def test_aead_wrong_key_length(key):
-    with pytest.raises(ValueError, match=r'key must be exactly \d+ bytes long'):
+    with pytest.raises(
+        ValueError, match=r"key must be exactly \d+ bytes long"
+    ):
         Aead(key)
 
 
 @given(box=boxes(Aead), nonce=wrong_length(Aead.NONCE_SIZE))
 def test_aead_wrong_nonce_length(box, nonce):
-    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
-        box.encrypt(b"", aad=b'', nonce=nonce)
-    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
-        box.decrypt(b"", aad=b'', nonce=nonce)
+    with pytest.raises(
+        ValueError, match=r"nonce must be exactly \d+ bytes long"
+    ):
+        box.encrypt(b"", aad=b"", nonce=nonce)
+    with pytest.raises(
+        ValueError, match=r"nonce must be exactly \d+ bytes long"
+    ):
+        box.decrypt(b"", aad=b"", nonce=nonce)
 
 
 @given(key=wrong_length(SecretBox.KEY_SIZE))
 def test_secret_box_wrong_key_length(key):
-    with pytest.raises(ValueError, match=r'key must be exactly \d+ bytes long'):
+    with pytest.raises(
+        ValueError, match=r"key must be exactly \d+ bytes long"
+    ):
         SecretBox(key)
 
 
 @given(box=boxes(SecretBox), nonce=wrong_length(SecretBox.NONCE_SIZE))
 def test_secret_box_wrong_nonce_length(box, nonce):
-    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
+    with pytest.raises(
+        ValueError, match=r"nonce must be exactly \d+ bytes long"
+    ):
         box.encrypt(b"", nonce)
-    with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
+    with pytest.raises(
+        ValueError, match=r"nonce must be exactly \d+ bytes long"
+    ):
         box.decrypt(b"", nonce)
 
 
