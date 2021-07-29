@@ -48,34 +48,34 @@ VECTORS = [
 ]
 
 
-def hex_key(m):
+def hex_keys(m):
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(binascii.hexlify)
 
 
-def box(m):
+def boxes(m):
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(m)
 
 
-@given(k=hex_key(Aead))
+@given(k=hex_keys(Aead))
 def test_aead_creation(k):
     Aead(k, encoder=HexEncoder)
 
 
-@given(k=hex_key(Aead))
+@given(k=hex_keys(Aead))
 def test_aead_bytes(k):
     s = Aead(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
 
-@given(box=box(Aead), plaintext=st.binary(), aad=st.binary())
+@given(box=boxes(Aead), plaintext=st.binary(), aad=st.binary())
 def test_aead_roundtrip(box, plaintext, aad):
     assert plaintext == box.decrypt(box.encrypt(plaintext, aad), aad)
 
-@given(k=hex_key(SecretBox))
+@given(k=hex_keys(SecretBox))
 def test_secret_box_creation(k):
     SecretBox(k, encoder=HexEncoder)
 
 
-@given(k=hex_key(SecretBox))
+@given(k=hex_keys(SecretBox))
 def test_secret_box_bytes(k):
     s = SecretBox(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
@@ -161,7 +161,7 @@ def test_aead_wrong_key_length(key):
         Aead(key)
 
 
-@given(box=box(Aead), nonce=wrong_length(Aead.NONCE_SIZE))
+@given(box=boxes(Aead), nonce=wrong_length(Aead.NONCE_SIZE))
 def test_aead_wrong_nonce_length(box, nonce):
     with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
         box.encrypt(b"", aad=b'', nonce=nonce)
@@ -175,7 +175,7 @@ def test_secret_box_wrong_key_length(key):
         SecretBox(key)
 
 
-@given(box=box(SecretBox), nonce=wrong_length(SecretBox.NONCE_SIZE))
+@given(box=boxes(SecretBox), nonce=wrong_length(SecretBox.NONCE_SIZE))
 def test_secret_box_wrong_nonce_length(box, nonce):
     with pytest.raises(ValueError, match=r'nonce must be exactly \d+ bytes long'):
         box.encrypt(b"", nonce)
