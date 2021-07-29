@@ -151,6 +151,15 @@ class Aead(encoding.Encodable, StringFixer, object):
     creating arbitrary valid message; in particular, this means AEAD messages
     are repudiable. For non-repudiable messages, sign them after encryption.
 
+    The cryptosystem used is `XChacha20-Poly1305`_ as specified for
+    `standardization`_. There are `no practical limits`_ to how much can safely
+    be encrypted under a given key (up to 2⁶⁴ messages each containing up
+    to 2⁶⁴ bytes).
+
+    .. _standardization: https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-xchacha
+    .. _XChacha20-Poly1305: https://doc.libsodium.org/secret-key_cryptography/aead#xchacha-20-poly1305
+    .. _no practical limits: https://doc.libsodium.org/secret-key_cryptography/aead#limitations
+
     :param key: The secret key used to encrypt and decrypt messages
     :param encoder: The encoder class used to decode the given key
 
