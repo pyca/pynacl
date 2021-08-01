@@ -139,6 +139,11 @@ case $1 in
 				basic_machine=$field1
 				os=$maybe_os
 				;;
+			arm64-apple)
+				cpu=arm64
+				vendor=apple
+				os=darwin
+				;;
 			android-linux)
 				basic_machine=$field1-unknown
 				os=linux-android
@@ -1164,6 +1169,7 @@ case $cpu-$vendor in
 			| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] \
 			| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] \
 			| alphapca5[67] | alpha64pca5[67] \
+			| arm64 \
 			| am33_2.0 \
 			| amdgcn \
 			| arc | arceb \
