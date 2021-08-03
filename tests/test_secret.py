@@ -95,7 +95,7 @@ AEAD_VECTORS = [
 ]
 
 
-@pytest.mark.parametrize("kv", AEAD_VECTORS, ids=range(0, len(AEAD_VECTORS)))
+@pytest.mark.parametrize("kv", AEAD_VECTORS, ids=range(len(AEAD_VECTORS)))
 def test_aead_vectors(kv):
     box = Aead(kv["KEY"])
     combined = kv["CT"] + kv["TAG"]
@@ -109,7 +109,7 @@ def test_aead_vectors(kv):
 @pytest.mark.parametrize(
     ("key", "nonce", "plaintext", "ciphertext"),
     VECTORS,
-    ids=range(0, len(VECTORS)),
+    ids=range(len(VECTORS)),
 )
 def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
@@ -131,7 +131,7 @@ def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
 @pytest.mark.parametrize(
     ("key", "nonce", "plaintext", "ciphertext"),
     VECTORS,
-    ids=range(0, len(VECTORS)),
+    ids=range(len(VECTORS)),
 )
 def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
@@ -147,7 +147,7 @@ def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
 @pytest.mark.parametrize(
     ("key", "nonce", "plaintext", "ciphertext"),
     VECTORS,
-    ids=range(0, len(VECTORS)),
+    ids=range(len(VECTORS)),
 )
 def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
@@ -163,7 +163,7 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
 @pytest.mark.parametrize(
     ("key", "nonce", "plaintext", "ciphertext"),
     VECTORS,
-    ids=range(0, len(VECTORS)),
+    ids=range(len(VECTORS)),
 )
 def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     box = SecretBox(key, encoder=HexEncoder)
@@ -178,7 +178,7 @@ def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
 @pytest.mark.parametrize(
     ("key", "nonce", "plaintext", "ciphertext"),
     VECTORS,
-    ids=range(0, len(VECTORS)),
+    ids=range(len(VECTORS)),
 )
 def test_secret_box_encryption_generates_different_nonces(
     key, nonce, plaintext, ciphertext
