@@ -17,7 +17,6 @@ jobs:
           - {VERSION: "3.9", TOXENV: "docs", COVERAGE: "false"}
           - {VERSION: "3.9", TOXENV: "meta", COVERAGE: "false"}
           - {VERSION: "pypy3", TOXENV: "pypy"}
-          - {VERSION: "3.5", TOXENV: "py35"}
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
@@ -64,7 +63,7 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - {VERSION: "3.5", TOXENV: "py35"}
+          - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.9", TOXENV: "py39"}
           - {VERSION: "3.9", TOXENV: "py39", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
@@ -93,7 +92,6 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.5", TOXENV: "py35", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v140"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v140"}
