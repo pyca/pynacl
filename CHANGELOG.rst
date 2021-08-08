@@ -4,7 +4,7 @@ Changelog
 1.5.0 (UNRELEASED)
 ------------------
 
-* **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7.
+* **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7 and Python 3.5.
 
 1.4.0 (2020-05-25)
 ------------------
