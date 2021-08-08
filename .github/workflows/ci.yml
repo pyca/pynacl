@@ -92,10 +92,10 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v140"}
-          - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v140"}
+          - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@master
@@ -106,7 +106,7 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: 'Extract libsodium libraries'
         run: |
-          Expand-Archive src/libsodium-1.0.18-msvc.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.18-stable-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Install tox and coverage
         run: pip install tox coverage
