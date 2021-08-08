@@ -81,8 +81,7 @@ fe25519_invert(fe25519 out, const fe25519 z)
         fe25519_sq(t3, t3);
     }
     fe25519_mul(t2, t3, t2);
-    fe25519_sq(t2, t2);
-    for (i = 1; i < 10; ++i) {
+    for (i = 1; i < 11; ++i) {
         fe25519_sq(t2, t2);
     }
     fe25519_mul(t1, t2, t1);
@@ -96,13 +95,11 @@ fe25519_invert(fe25519 out, const fe25519 z)
         fe25519_sq(t3, t3);
     }
     fe25519_mul(t2, t3, t2);
-    fe25519_sq(t2, t2);
-    for (i = 1; i < 50; ++i) {
+    for (i = 1; i < 51; ++i) {
         fe25519_sq(t2, t2);
     }
     fe25519_mul(t1, t2, t1);
-    fe25519_sq(t1, t1);
-    for (i = 1; i < 5; ++i) {
+    for (i = 1; i < 6; ++i) {
         fe25519_sq(t1, t1);
     }
     fe25519_mul(out, t1, t0);
@@ -138,8 +135,7 @@ fe25519_pow22523(fe25519 out, const fe25519 z)
         fe25519_sq(t2, t2);
     }
     fe25519_mul(t1, t2, t1);
-    fe25519_sq(t1, t1);
-    for (i = 1; i < 10; ++i) {
+    for (i = 1; i < 11; ++i) {
         fe25519_sq(t1, t1);
     }
     fe25519_mul(t0, t1, t0);
@@ -153,8 +149,7 @@ fe25519_pow22523(fe25519 out, const fe25519 z)
         fe25519_sq(t2, t2);
     }
     fe25519_mul(t1, t2, t1);
-    fe25519_sq(t1, t1);
-    for (i = 1; i < 50; ++i) {
+    for (i = 1; i < 51; ++i) {
         fe25519_sq(t1, t1);
     }
     fe25519_mul(t0, t1, t0);
@@ -177,6 +172,55 @@ static inline void
 fe25519_abs(fe25519 h, const fe25519 f)
 {
     fe25519_cneg(h, f, fe25519_isnegative(f));
+}
+
+static inline void
+fe25519_sqmul(fe25519 s, const int n, const fe25519 a)
+{
+    int i;
+
+    for (i = 0; i < n; i++) {
+        fe25519_sq(s, s);
+    }
+    fe25519_mul(s, s, a);
+}
+
+static unsigned int
+fe25519_notsquare(const fe25519 x)
+{
+    fe25519       _10, _11, _1100, _1111, _11110000, _11111111;
+    fe25519       t, u, v;
+    unsigned char s[32];
+
+    /* Jacobi symbol - x^((p-1)/2) */
+    fe25519_mul(_10, x, x);
+    fe25519_mul(_11, x, _10);
+    fe25519_sq(_1100, _11);
+    fe25519_sq(_1100, _1100);
+    fe25519_mul(_1111, _11, _1100);
+    fe25519_sq(_11110000, _1111);
+    fe25519_sq(_11110000, _11110000);
+    fe25519_sq(_11110000, _11110000);
+    fe25519_sq(_11110000, _11110000);
+    fe25519_mul(_11111111, _1111, _11110000);
+    fe25519_copy(t, _11111111);
+    fe25519_sqmul(t, 2, _11);
+    fe25519_copy(u, t);
+    fe25519_sqmul(t, 10, u);
+    fe25519_sqmul(t, 10, u);
+    fe25519_copy(v, t);
+    fe25519_sqmul(t, 30, v);
+    fe25519_copy(v, t);
+    fe25519_sqmul(t, 60, v);
+    fe25519_copy(v, t);
+    fe25519_sqmul(t, 120, v);
+    fe25519_sqmul(t, 10, u);
+    fe25519_sqmul(t, 3, _11);
+    fe25519_sq(t, t);
+
+    fe25519_tobytes(s, t);
+
+    return s[1] & 1;
 }
 
 /*
@@ -2071,46 +2115,52 @@ sc25519_sqmul(unsigned char s[32], const int n, const unsigned char a[32])
 void
 sc25519_invert(unsigned char recip[32], const unsigned char s[32])
 {
-    unsigned char _10[32], _100[32], _11[32], _101[32], _111[32],
-        _1001[32], _1011[32], _1111[32];
+    unsigned char _10[32], _100[32], _1000[32], _10000[32], _100000[32],
+        _1000000[32], _10010011[32], _10010111[32], _100110[32], _1010[32],
+        _1010000[32], _1010011[32], _1011[32], _10110[32], _10111101[32],
+        _11[32], _1100011[32], _1100111[32], _11010011[32], _1101011[32],
+        _11100111[32], _11101011[32], _11110101[32];
 
     sc25519_sq(_10, s);
-    sc25519_sq(_100, _10);
-    sc25519_mul(_11, _10, s);
-    sc25519_mul(_101, _10, _11);
-    sc25519_mul(_111, _10, _101);
-    sc25519_mul(_1001, _10, _111);
-    sc25519_mul(_1011, _10, _1001);
-    sc25519_mul(_1111, _100, _1011);
-    sc25519_mul(recip, _1111, s);
+    sc25519_mul(_11, s, _10);
+    sc25519_mul(_100, s, _11);
+    sc25519_sq(_1000, _100);
+    sc25519_mul(_1010, _10, _1000);
+    sc25519_mul(_1011, s, _1010);
+    sc25519_sq(_10000, _1000);
+    sc25519_sq(_10110, _1011);
+    sc25519_mul(_100000, _1010, _10110);
+    sc25519_mul(_100110, _10000, _10110);
+    sc25519_sq(_1000000, _100000);
+    sc25519_mul(_1010000, _10000, _1000000);
+    sc25519_mul(_1010011, _11, _1010000);
+    sc25519_mul(_1100011, _10000, _1010011);
+    sc25519_mul(_1100111, _100, _1100011);
+    sc25519_mul(_1101011, _100, _1100111);
+    sc25519_mul(_10010011, _1000000, _1010011);
+    sc25519_mul(_10010111, _100, _10010011);
+    sc25519_mul(_10111101, _100110, _10010111);
+    sc25519_mul(_11010011, _10110, _10111101);
+    sc25519_mul(_11100111, _1010000, _10010111);
+    sc25519_mul(_11101011, _100, _11100111);
+    sc25519_mul(_11110101, _1010, _11101011);
 
-    sc25519_sqmul(recip, 123 + 3, _101);
-    sc25519_sqmul(recip, 2 + 2, _11);
-    sc25519_sqmul(recip, 1 + 4, _1111);
-    sc25519_sqmul(recip, 1 + 4, _1111);
-    sc25519_sqmul(recip, 4, _1001);
-    sc25519_sqmul(recip, 2, _11);
-    sc25519_sqmul(recip, 1 + 4, _1111);
-    sc25519_sqmul(recip, 1 + 3, _101);
-    sc25519_sqmul(recip, 3 + 3, _101);
-    sc25519_sqmul(recip, 3, _111);
-    sc25519_sqmul(recip, 1 + 4, _1111);
-    sc25519_sqmul(recip, 2 + 3, _111);
-    sc25519_sqmul(recip, 2 + 2, _11);
-    sc25519_sqmul(recip, 1 + 4, _1011);
-    sc25519_sqmul(recip, 2 + 4, _1011);
-    sc25519_sqmul(recip, 6 + 4, _1001);
-    sc25519_sqmul(recip, 2 + 2, _11);
-    sc25519_sqmul(recip, 3 + 2, _11);
-    sc25519_sqmul(recip, 3 + 2, _11);
-    sc25519_sqmul(recip, 1 + 4, _1001);
-    sc25519_sqmul(recip, 1 + 3, _111);
-    sc25519_sqmul(recip, 2 + 4, _1111);
-    sc25519_sqmul(recip, 1 + 4, _1011);
-    sc25519_sqmul(recip, 3, _101);
-    sc25519_sqmul(recip, 2 + 4, _1111);
-    sc25519_sqmul(recip, 3, _101);
-    sc25519_sqmul(recip, 1 + 2, _11);
+    sc25519_mul(recip, _1011, _11110101);
+    sc25519_sqmul(recip, 126, _1010011);
+    sc25519_sqmul(recip, 9, _10);
+    sc25519_mul(recip, recip, _11110101);
+    sc25519_sqmul(recip, 7, _1100111);
+    sc25519_sqmul(recip, 9, _11110101);
+    sc25519_sqmul(recip, 11, _10111101);
+    sc25519_sqmul(recip, 8, _11100111);
+    sc25519_sqmul(recip, 9, _1101011);
+    sc25519_sqmul(recip, 6, _1011);
+    sc25519_sqmul(recip, 14, _10010011);
+    sc25519_sqmul(recip, 10, _1100011);
+    sc25519_sqmul(recip, 9, _10010111);
+    sc25519_sqmul(recip, 10, _11110101);
+    sc25519_sqmul(recip, 8, _11010011);
+    sc25519_sqmul(recip, 8, _11101011);
 }
 
 /*
@@ -2470,93 +2520,34 @@ sc25519_is_canonical(const unsigned char s[32])
 }
 
 static void
-chi25519(fe25519 out, const fe25519 z)
-{
-    fe25519 t0, t1, t2, t3;
-    int     i;
-
-    fe25519_sq(t0, z);
-    fe25519_mul(t1, t0, z);
-    fe25519_sq(t0, t1);
-    fe25519_sq(t2, t0);
-    fe25519_sq(t2, t2);
-    fe25519_mul(t2, t2, t0);
-    fe25519_mul(t1, t2, z);
-    fe25519_sq(t2, t1);
-
-    for (i = 1; i < 5; i++) {
-        fe25519_sq(t2, t2);
-    }
-    fe25519_mul(t1, t2, t1);
-    fe25519_sq(t2, t1);
-    for (i = 1; i < 10; i++) {
-        fe25519_sq(t2, t2);
-    }
-    fe25519_mul(t2, t2, t1);
-    fe25519_sq(t3, t2);
-    for (i = 1; i < 20; i++) {
-        fe25519_sq(t3, t3);
-    }
-    fe25519_mul(t2, t3, t2);
-    fe25519_sq(t2, t2);
-    for (i = 1; i < 10; i++) {
-        fe25519_sq(t2, t2);
-    }
-    fe25519_mul(t1, t2, t1);
-    fe25519_sq(t2, t1);
-    for (i = 1; i < 50; i++) {
-        fe25519_sq(t2, t2);
-    }
-    fe25519_mul(t2, t2, t1);
-    fe25519_sq(t3, t2);
-    for (i = 1; i < 100; i++) {
-        fe25519_sq(t3, t3);
-    }
-    fe25519_mul(t2, t3, t2);
-    fe25519_sq(t2, t2);
-    for (i = 1; i < 50; i++) {
-        fe25519_sq(t2, t2);
-    }
-    fe25519_mul(t1, t2, t1);
-    fe25519_sq(t1, t1);
-    for (i = 1; i < 4; i++) {
-        fe25519_sq(t1, t1);
-    }
-    fe25519_mul(out, t1, t0);
-}
-
-static void
 ge25519_elligator2(unsigned char s[32], const fe25519 r, const unsigned char x_sign)
 {
-    fe25519      e;
+    fe25519      gx;
     fe25519      negx;
     fe25519      rr2;
     fe25519      x, x2, x3;
     ge25519_p3   p3;
     ge25519_p1p1 p1;
     ge25519_p2   p2;
-    unsigned int e_is_minus_1;
+    unsigned int notsquare;
 
     fe25519_sq2(rr2, r);
     rr2[0]++;
     fe25519_invert(rr2, rr2);
-    fe25519_mul(x, curve25519_A, rr2);
+    fe25519_mul32(x, rr2, curve25519_A[0]);
     fe25519_neg(x, x);
 
     fe25519_sq(x2, x);
     fe25519_mul(x3, x, x2);
-    fe25519_add(e, x3, x);
-    fe25519_mul(x2, x2, curve25519_A);
-    fe25519_add(e, x2, e);
+    fe25519_add(gx, x3, x);
+    fe25519_mul32(x2, x2, curve25519_A[0]);
+    fe25519_add(gx, x2, gx);
 
-    chi25519(e, e);
-
-    fe25519_tobytes(s, e);
-    e_is_minus_1 = s[1] & 1;
+    notsquare = fe25519_notsquare(gx);
     fe25519_neg(negx, x);
-    fe25519_cmov(x, negx, e_is_minus_1);
+    fe25519_cmov(x, negx, notsquare);
     fe25519_0(x2);
-    fe25519_cmov(x2, curve25519_A, e_is_minus_1);
+    fe25519_cmov(x2, curve25519_A, notsquare);
     fe25519_sub(x, x, x2);
 
     /* yed = (x-1)/(x+1) */
@@ -2675,6 +2666,7 @@ ristretto255_is_canonical(const unsigned char *s)
 {
     unsigned char c;
     unsigned char d;
+    unsigned char e;
     unsigned int  i;
 
     c = (s[31] & 0x7f) ^ 0x7f;
@@ -2683,8 +2675,9 @@ ristretto255_is_canonical(const unsigned char *s)
     }
     c = (((unsigned int) c) - 1U) >> 8;
     d = (0xed - 1U - (unsigned int) s[0]) >> 8;
+    e = s[31] >> 7;
 
-    return 1 - (((c & d) | s[0]) & 1);
+    return 1 - (((c & d) | e | s[0]) & 1);
 }
 
 int
@@ -2773,7 +2766,7 @@ ristretto255_p3_tobytes(unsigned char *s, const ge25519_p3 *h)
 
     fe25519_mul(ix, h->X, sqrtm1);     /* ix = X*sqrt(-1) */
     fe25519_mul(iy, h->Y, sqrtm1);     /* iy = Y*sqrt(-1) */
-    fe25519_mul(eden, den1, invsqrtamd); /* eden = den1*sqrt(a-d) */
+    fe25519_mul(eden, den1, invsqrtamd); /* eden = den1/sqrt(a-d) */
 
     fe25519_mul(t_z_inv, h->T, z_inv); /* t_z_inv = T*z_inv */
     rotate = fe25519_isnegative(t_z_inv);
@@ -2816,7 +2809,7 @@ ristretto255_elligator(ge25519_p3 *p, const fe25519 t)
     fe25519_mul(u, u, onemsqd);        /* u = (r+1)*(1-d^2) */
     fe25519_1(c);
     fe25519_neg(c, c);                 /* c = -1 */
-    fe25519_add(rpd, r, d);            /* rpd = r*d */
+    fe25519_add(rpd, r, d);            /* rpd = r+d */
     fe25519_mul(v, r, d);              /* v = r*d */
     fe25519_sub(v, c, v);              /* v = c-r*d */
     fe25519_mul(v, v, rpd);            /* v = (c-r*d)*(r+d) */
