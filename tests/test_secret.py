@@ -21,13 +21,12 @@ from hypothesis import given, strategies as st
 
 import pytest
 
-from utils import flip_byte
-
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.secret import Aead, SecretBox
 
-from test_aead import xchacha20poly1305_ietf_vectors
+from .test_aead import xchacha20poly1305_ietf_vectors
+from .utils import flip_byte
 
 
 VECTORS = [

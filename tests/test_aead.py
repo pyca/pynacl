@@ -23,10 +23,10 @@ from hypothesis.strategies import binary, sampled_from
 
 import pytest
 
-from utils import read_kv_test_vectors
-
 import nacl.bindings as b
 import nacl.exceptions as exc
+
+from .utils import read_kv_test_vectors
 
 
 def chacha20poly1305_agl_vectors():
