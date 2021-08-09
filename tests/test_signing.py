@@ -120,7 +120,7 @@ class TestSigningKey:
 
     def test_wrong_key_length(self):
         with pytest.raises(ValueError):
-            SigningKey(key=b"\x00" * 5)
+            SigningKey(secret_key=b"\x00" * 5)
 
     def test_wrong_secret_key_type(self):
         with pytest.raises(TypeError):
