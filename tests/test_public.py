@@ -16,11 +16,11 @@ import binascii
 
 import pytest
 
-from utils import assert_equal, assert_not_equal
-
 from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
 from nacl.public import Box, PrivateKey, PublicKey
 from nacl.utils import random
+
+from .utils import assert_equal, assert_not_equal
 
 
 class TestPublicKey:

@@ -17,11 +17,11 @@ import binascii
 
 import pytest
 
-from utils import read_crypto_test_vectors
-
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import PrivateKey, PublicKey, SealedBox
+
+from .utils import read_crypto_test_vectors
 
 
 def sealbox_vectors():

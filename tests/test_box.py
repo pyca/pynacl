@@ -17,12 +17,12 @@ import binascii
 
 import pytest
 
-from test_bindings import _box_from_seed_vectors
-
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import Box, PrivateKey, PublicKey
 from nacl.utils import random
+
+from .test_bindings import _box_from_seed_vectors
 
 
 VECTORS = [

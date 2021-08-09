@@ -21,12 +21,11 @@ from hypothesis.strategies import binary, integers
 
 import pytest
 
-from test_signing import ed25519_known_answers
-
-from utils import flip_byte, read_crypto_test_vectors
-
 from nacl import bindings as c
 from nacl.exceptions import BadSignatureError, CryptoError, UnavailableError
+
+from .test_signing import ed25519_known_answers
+from .utils import flip_byte, read_crypto_test_vectors
 
 
 def tohex(b):
