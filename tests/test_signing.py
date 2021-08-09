@@ -95,26 +95,26 @@ class TestSigningKey:
     def test_initialization_with_seed(self, seed):
         SigningKey(seed, encoder=HexEncoder)
 
-    def test_initialize_with_key(self):
+    def test_initialize_with_secret_key(self):
         k = SigningKey.generate()
         seed_bytes = k._seed
-        key_bytes = k._signing_key
+        secret_key_bytes = k._signing_key
         k_from_seed = SigningKey(seed=seed_bytes)
-        k_from_key = SigningKey(key=key_bytes)
+        k_from_secret_key = SigningKey(secret_key=key_bytes)
         assert_equal(k, k_from_seed)
-        assert_equal(k, k_from_key)
+        assert_equal(k, k_from_secret_key)
         assert id(k) != id(k_from_seed)
-        assert id(k) != id(k_from_key)
-        assert id(k_from_key) != id(k_from_seed)
+        assert id(k) != id(k_from_secret_key)
+        assert id(k_from_secret_key) != id(k_from_seed)
 
-    def test_initialization_with_key_and_seed(self):
+    def test_initialization_with_secret_key_and_seed(self):
         with pytest.raises(AssertionError):
             SigningKey(
                 seed=b"\x00" * crypto_sign_SEEDBYTES,
-                key=b"\x00" * crypto_sign_SECRETKEYBYTES,
+                secret_key=b"\x00" * crypto_sign_SECRETKEYBYTES,
             )
 
-    def test_initialization_without_key_and_seed(self):
+    def test_initialization_without_arguments(self):
         with pytest.raises(AssertionError):
             SigningKey()
 
@@ -122,9 +122,9 @@ class TestSigningKey:
         with pytest.raises(ValueError):
             SigningKey(key=b"\x00" * 5)
 
-    def test_wrong_key_type(self):
+    def test_wrong_secret_key_type(self):
         with pytest.raises(TypeError):
-            SigningKey(key=12)
+            SigningKey(secret_key=12)
 
     @pytest.mark.parametrize(
         ("seed", "_public_key", "message", "signature", "expected"),

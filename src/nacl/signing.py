@@ -154,16 +154,16 @@ class SigningKey(encoding.Encodable, StringFixer, object):
 
     :param seed: [:class:`bytes`] Random 32-byte value for generating Ed25519 private key
     :param encoder: A class that is able to decode the seed
-    :param key: [:class:`bytes`] A previously generated 64-byte Ed25519 private key
+    :param secret_key: [:class:`bytes`] A previously generated 64-byte Ed25519 private key
 
     :ivar: verify_key: [:class:`~nacl.signing.VerifyKey`] The verify
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed=None, encoder=encoding.RawEncoder, key=None):
+    def __init__(self, seed=None, encoder=encoding.RawEncoder, secret_key=None):
         exc.ensure(
-            (key is not None and seed is None)
-            or (key is None and seed is not None),
+            (secret_key is not None and seed is None)
+            or (secret_key is None and seed is not None),
             "SigningKey must be created either from a 32 byte seed or a 64 byte key.",
         )
         if seed is not None:
@@ -186,21 +186,20 @@ class SigningKey(encoding.Encodable, StringFixer, object):
             )
         else:
             # Decode the key
-            key = encoder.decode(key)
-            if not isinstance(key, bytes):
+            secret_key = encoder.decode(secret_key)
+            if not isinstance(secret_key, bytes):
                 raise exc.TypeError(
                     "SigningKey must be created from a 64 byte key"
                 )
 
             # Verify that our key is the proper size
-            if len(key) != nacl.bindings.crypto_sign_SECRETKEYBYTES:
+            if len(secret_key) != nacl.bindings.crypto_sign_SECRETKEYBYTES:
                 raise exc.ValueError(
                     "The key must be exactly %d bytes long"
                     % nacl.bindings.crypto_sign_SECRETKEYBYTES
                 )
-            secret_key = key
-            public_key = nacl.bindings.crypto_sign_ed25519_sk_to_pk(key)
-            seed = nacl.bindings.crypto_sign_ed25519_sk_to_seed(key)
+            public_key = nacl.bindings.crypto_sign_ed25519_sk_to_pk(secret_key)
+            seed = nacl.bindings.crypto_sign_ed25519_sk_to_seed(secret_key)
 
         self._seed = seed
         self._signing_key = secret_key
