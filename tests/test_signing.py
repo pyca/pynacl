@@ -100,7 +100,7 @@ class TestSigningKey:
         seed_bytes = k._seed
         secret_key_bytes = k._signing_key
         k_from_seed = SigningKey(seed=seed_bytes)
-        k_from_secret_key = SigningKey(secret_key=key_bytes)
+        k_from_secret_key = SigningKey(secret_key=secret_key_bytes)
         assert_equal(k, k_from_seed)
         assert_equal(k, k_from_secret_key)
         assert id(k) != id(k_from_seed)
