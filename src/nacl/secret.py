@@ -139,7 +139,7 @@ class SecretBox(encoding.Encodable, StringFixer):
         return plaintext
 
 
-class Aead(encoding.Encodable, StringFixer, object):
+class Aead(encoding.Encodable, StringFixer):
     """
     The AEAD class encrypts and decrypts messages using the given secret key.
 
