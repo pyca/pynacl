@@ -160,7 +160,9 @@ class SigningKey(encoding.Encodable, StringFixer, object):
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed=None, encoder=encoding.RawEncoder, secret_key=None):
+    def __init__(
+        self, seed=None, encoder=encoding.RawEncoder, secret_key=None
+    ):
         exc.ensure(
             (secret_key is not None and seed is None)
             or (secret_key is None and seed is not None),
