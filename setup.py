@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import errno
 import functools
@@ -21,6 +20,7 @@ import glob
 import os
 import os.path
 import platform
+import shutil
 import subprocess
 import sys
 from distutils.sysconfig import get_config_vars
@@ -34,7 +34,7 @@ except ImportError:
     from distutils.command.build_clib import build_clib as _build_clib
 
 
-requirements = ["six"]
+requirements = []
 setup_requirements = ["setuptools"]
 test_requirements = ["pytest>=3.2.1,!=3.3.0", "hypothesis>=3.27.0"]
 docs_requirements = ["sphinx>=1.6.5", "sphinx_rtd_theme"]
@@ -66,23 +66,6 @@ sys.path.insert(0, abshere("src"))
 
 
 import nacl  # noqa
-
-
-def which(name, flags=os.X_OK):  # Taken from twisted
-    result = []
-    exts = filter(None, os.environ.get("PATHEXT", "").split(os.pathsep))
-    path = os.environ.get("PATH", None)
-    if path is None:
-        return []
-    for p in os.environ.get("PATH", "").split(os.pathsep):
-        p = os.path.join(p, name)
-        if os.access(p, flags):
-            result.append(p)
-        for e in exts:
-            pext = p + e
-            if os.access(pext, flags):
-                result.append(pext)
-    return result
 
 
 def use_system():
@@ -155,7 +138,7 @@ class build_clib(_build_clib):
         ]:
             os.chmod(here(filename), 0o755)
 
-        if not which("make"):
+        if not shutil.which("make"):
             raise Exception("ERROR: The 'make' utility is missing from PATH")
 
         # Locate our configure script
@@ -226,7 +209,7 @@ setup(
     license=nacl.__license__,
     author=nacl.__author__,
     author_email=nacl.__email__,
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    python_requires=">=3.6",
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={"tests": test_requirements, "docs": docs_requirements},
@@ -241,12 +224,10 @@ setup(
     classifiers=[
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
 )

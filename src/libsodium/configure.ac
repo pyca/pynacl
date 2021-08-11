@@ -1,12 +1,10 @@
-AC_PREREQ([2.65])
-AC_INIT([libsodium],[1.0.18],
-  [https://github.com/jedisct1/libsodium/issues],
-  [libsodium],
-  [https://github.com/jedisct1/libsodium])
+AC_PREREQ([2.69])
+AC_INIT([libsodium],[1.0.18],[https://github.com/jedisct1/libsodium/issues],[libsodium],[https://libsodium.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/libsodium/sodium/version.c])
 AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.11 dist-bzip2 tar-ustar foreign subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AM_MAINTAINER_MODE
@@ -43,6 +41,10 @@ dnl Path check
 AS_IF([pwd | fgrep ' ' > /dev/null 2>&1],
   [AC_MSG_ERROR([The build directory contains whitespaces - This can cause tests/installation to fail due to limitations of some libtool versions])]
 )
+
+AC_PROG_CC
+AM_PROG_AS
+AC_USE_SYSTEM_EXTENSIONS
 
 dnl Switches
 
@@ -87,7 +89,7 @@ AC_ARG_ENABLE(pie,
 [AS_HELP_STRING(--disable-pie,Do not produce position independent executables)],
  enable_pie=$enableval, enable_pie="maybe")
 
-AS_CASE([$host_os], [mingw*|cygwin*|msys], [enable_pie="no"])
+AS_CASE([$host_os], [mingw*|cygwin*|msys|eabi*], [enable_pie="no"])
 
 AC_ARG_ENABLE(blocking-random,
 [AS_HELP_STRING(--enable-blocking-random,Enable this switch only if /dev/urandom is totally broken on the target platform)],
@@ -115,7 +117,7 @@ AC_ARG_ENABLE(minimal,
 AM_CONDITIONAL([MINIMAL], [test x$enable_minimal = xyes])
 AC_SUBST(SODIUM_LIBRARY_MINIMAL_DEF)
 
-AC_ARG_WITH(pthreads, AC_HELP_STRING([--with-pthreads],
+AC_ARG_WITH(pthreads, AS_HELP_STRING([--with-pthreads],
  [use pthreads library, or --without-pthreads to disable threading support.]),
  [ ], [withval="yes"])
 
@@ -210,22 +212,16 @@ AX_VALGRIND_CHECK
 
 dnl Checks
 
-AC_PROG_CC_C99
-AM_PROG_AS
-AC_USE_SYSTEM_EXTENSIONS
 AC_C_VARARRAYS
 
 AC_CHECK_DEFINE([__wasi__], [WASI="yes"], [])
 
-AC_CHECK_DEFINE([_FORTIFY_SOURCE], [], [
-  AX_CHECK_COMPILE_FLAG([-D_FORTIFY_SOURCE=2],
-    [CPPFLAGS="$CPPFLAGS -D_FORTIFY_SOURCE=2"])
-])
+AS_CASE([$host_os], [linux-gnu], [AX_ADD_FORTIFY_SOURCE], [ ])
 
 AX_CHECK_COMPILE_FLAG([-fvisibility=hidden],
   [CFLAGS="$CFLAGS -fvisibility=hidden"])
 
-AS_CASE([$host_os], [cygwin*|mingw*|msys|pw32*|cegcc*], [ ], [
+AS_CASE([$host_os], [cygwin*|mingw*|msys|pw32*|cegcc*|eabi*], [ ], [
   AX_CHECK_COMPILE_FLAG([-fPIC], [CFLAGS="$CFLAGS -fPIC"])
 ])
 
@@ -262,7 +258,7 @@ int main(void) { return 0; }
 LIBTOOL_OLD_FLAGS="$LIBTOOL_EXTRA_FLAGS"
 LIBTOOL_EXTRA_FLAGS="$LIBTOOL_EXTRA_FLAGS -version-info $SODIUM_LIBRARY_VERSION"
 AC_ARG_ENABLE(soname-versions,
-  [AC_HELP_STRING([--enable-soname-versions], [enable soname versions (must be disabled for Android) (default: enabled)])],
+  [AS_HELP_STRING([--enable-soname-versions], [enable soname versions (must be disabled for Android) (default: enabled)])],
     [
         AS_IF([test "x$enableval" = "xno"], [
           LIBTOOL_EXTRA_FLAGS="$LIBTOOL_OLD_FLAGS -avoid-version"
@@ -278,16 +274,33 @@ AS_CASE([$host_os],
   ])
 
 AS_CASE([$host_os],
-  [cygwin*|mingw*|msys|pw32*|cegcc*], [
+  [cygwin*|mingw*|msys|pw32*|cegcc*|eabi*], [
     AX_CHECK_COMPILE_FLAG([-fno-asynchronous-unwind-tables], [
       [CFLAGS="$CFLAGS -fno-asynchronous-unwind-tables"]
     ])
 ])
 
+AC_MSG_CHECKING(for a broken Xcode version)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
+#if !defined(__APPLE_CC__) || __APPLE_CC__ != 6000
+#error Not Apple
+#endif
+#if !defined(__clang_major__) || __clang_major__ != 11
+#error Not Xcode 11
+#endif
+]])],
+  [AC_MSG_RESULT(yes)
+   AC_MSG_WARN([Using unsupported Xcode version])
+   AX_CHECK_COMPILE_FLAG([$CFLAGS -fno-stack-check],
+     [CFLAGS="$CFLAGS -fno-stack-check"])
+  ],
+  [AC_MSG_RESULT(no)
+])
+
 AS_IF([test "x$enable_ssp" != "xno"],[
 
 AS_CASE([$host_os],
-  [cygwin*|mingw*|msys|pw32*|cegcc*|haiku|none], [ ],
+  [cygwin*|mingw*|msys|pw32*|cegcc*|haiku|none|eabi*], [ ],
   [*], [
     AX_CHECK_COMPILE_FLAG([-fstack-protector], [
       AX_CHECK_LINK_FLAG([-fstack-protector],
@@ -343,9 +356,11 @@ AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wswitch-enum], [CWFLAGS="$CWFLAGS -Wswitch-enum
 AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wvariable-decl], [CWFLAGS="$CWFLAGS -Wvariable-decl"])
 AX_CHECK_COMPILE_FLAG([$CWFLAGS -Wwrite-strings], [CWFLAGS="$CWFLAGS -Wwrite-strings"])
 
-AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
-AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
-AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
+AS_IF([test "x$EMSCRIPTEN" = "x"], [
+  AX_CHECK_LINK_FLAG([-Wl,-z,relro], [LDFLAGS="$LDFLAGS -Wl,-z,relro"])
+  AX_CHECK_LINK_FLAG([-Wl,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,now"])
+  AX_CHECK_LINK_FLAG([-Wl,-z,noexecstack], [LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"])
+])
 
 AX_CHECK_CATCHABLE_SEGV
 AX_CHECK_CATCHABLE_ABRT
@@ -605,7 +620,7 @@ __asm__ __volatile__ ("" : : "r"(pnt) : "memory");
 HAVE_AMD64_ASM_V=0
 AS_IF([test "$enable_asm" != "no"],[
   AC_MSG_CHECKING(whether we can use x86_64 asm code)
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
   ]], [[
 #if defined(__amd64) || defined(__amd64__) || defined(__x86_64__)
 # if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) || defined(_WIN32) || defined(_WIN64)
@@ -634,7 +649,7 @@ AC_SUBST(HAVE_AMD64_ASM_V)
 HAVE_AVX_ASM_V=0
 AS_IF([test "$enable_asm" != "no"],[
   AC_MSG_CHECKING(whether we can assemble AVX opcodes)
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
   ]], [[
 #if defined(__amd64) || defined(__amd64__) || defined(__x86_64__)
 # if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) || defined(_WIN32) || defined(_WIN64)
@@ -694,7 +709,7 @@ AC_SUBST(HAVE_TI_MODE_V)
 HAVE_CPUID_V=0
 AS_IF([test "$enable_asm" != "no"],[
   AC_MSG_CHECKING(for cpuid instruction)
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[ ]], [[
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[ ]], [[
 unsigned int cpu_info[4];
 __asm__ __volatile__ ("xchgl %%ebx, %k1; cpuid; xchgl %%ebx, %k1" :
                       "=a" (cpu_info[0]), "=&r" (cpu_info[1]),
@@ -795,7 +810,9 @@ dnl Checks for functions and headers
 AC_FUNC_ALLOCA
 AS_IF([test "x$EMSCRIPTEN" = "x"],[
   AC_CHECK_FUNCS([arc4random arc4random_buf])
-  AC_CHECK_FUNCS([mmap mlock madvise mprotect])
+  AS_IF([test "x$WASI" = "x"],[
+    AC_CHECK_FUNCS([mmap mlock madvise mprotect])
+  ])
 
   AC_MSG_CHECKING(for getrandom with a standard API)
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[
@@ -805,6 +822,9 @@ AS_IF([test "x$EMSCRIPTEN" = "x"],[
 #endif
 #ifdef HAVE_SYS_RANDOM_H
 # include <sys/random.h>
+#endif
+#ifdef __SANITIZE_ADDRESS__
+# error A recent libasan version on an old system may intercept nonexistent functions
 #endif
 ]], [[
 unsigned char buf;
@@ -824,21 +844,32 @@ unsigned char buf;
 #ifdef HAVE_SYS_RANDOM_H
 # include <sys/random.h>
 #endif
-]], [[
-#ifdef __APPLE__
-# error getentropy() is currently disabled on Apple operating systems
+#ifdef __SANITIZE_ADDRESS__
+# error A recent libasan version on an old system may intercept nonexistent functions
 #endif
-
+]], [[
 unsigned char buf;
-(void) getentropy((void *) &buf, 1U);
+
+if (&getentropy != NULL) {
+  (void) getentropy((void *) &buf, 1U);
+}
   ]])],
   [AC_MSG_RESULT(yes)
    AC_CHECK_FUNCS([getentropy])],
   [AC_MSG_RESULT(no)
   ])
 ])
-AC_CHECK_FUNCS([posix_memalign getpid nanosleep])
-AC_CHECK_FUNCS([memset_s explicit_bzero explicit_memset])
+
+AS_IF([test "x$WASI" = "x"],[
+  AC_CHECK_FUNCS([getpid])
+  AC_CHECK_FUNCS([getauxva elf_aux_info])
+])
+
+AC_CHECK_FUNCS([posix_memalign nanosleep])
+
+AS_IF([test "x$WASI" = "x"],[
+  AC_CHECK_FUNCS([memset_s explicit_bzero explicit_memset])
+])
 
 AC_SUBST([LIBTOOL_EXTRA_FLAGS])
 
@@ -855,8 +886,7 @@ AC_DEFINE([CONFIGURED], [1], [the build system was properly configured])
 
 dnl Libtool.
 
-LT_INIT([dlopen])
-AC_LIBTOOL_WIN32_DLL
+LT_INIT([dlopen win32-dll])
 gl_LD_OUTPUT_DEF
 
 dnl Output.

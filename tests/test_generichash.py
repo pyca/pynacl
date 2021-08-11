@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 import copy
@@ -21,12 +20,13 @@ import os
 
 import pytest
 
-from utils import read_crypto_test_vectors
-
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.hash
 import nacl.hashlib
+
+from .utils import read_crypto_test_vectors
+
 
 OVERLONG_PARAMS_VECTORS = [
     (b"key", 65 * b"\xaa", 16 * b"\xaa", 16 * b"\x55", 64, b"will raise"),

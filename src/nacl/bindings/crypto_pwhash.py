@@ -11,11 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import, division, print_function
 
 import sys
-
-from six import integer_types
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
@@ -189,7 +186,7 @@ def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
 
     ensure(
         p <= SCRYPT_PR_MAX / r,
-        "p*r is greater than {0}".format(SCRYPT_PR_MAX),
+        "p*r is greater than {}".format(SCRYPT_PR_MAX),
         raising=exc.ValueError,
     )
 
@@ -274,9 +271,9 @@ def crypto_pwhash_scryptsalsa208sha256_ll(
         raising=exc.UnavailableError,
     )
 
-    ensure(isinstance(n, integer_types), raising=TypeError)
-    ensure(isinstance(r, integer_types), raising=TypeError)
-    ensure(isinstance(p, integer_types), raising=TypeError)
+    ensure(isinstance(n, int), raising=TypeError)
+    ensure(isinstance(r, int), raising=TypeError)
+    ensure(isinstance(p, int), raising=TypeError)
 
     ensure(isinstance(passwd, bytes), raising=TypeError)
     ensure(isinstance(salt, bytes), raising=TypeError)
@@ -378,25 +375,25 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
     if alg == crypto_pwhash_ALG_ARGON2I13:
         if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {0} bytes".format(
+                "memlimit must be at least {} bytes".format(
                     crypto_pwhash_argon2i_MEMLIMIT_MIN
                 )
             )
         elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {0} bytes".format(
+                "memlimit must be at most {} bytes".format(
                     crypto_pwhash_argon2i_MEMLIMIT_MAX
                 )
             )
         if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {0}".format(
+                "opslimit must be at least {}".format(
                     crypto_pwhash_argon2i_OPSLIMIT_MIN
                 )
             )
         elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {0}".format(
+                "opslimit must be at most {}".format(
                     crypto_pwhash_argon2i_OPSLIMIT_MAX
                 )
             )
@@ -404,25 +401,25 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
     elif alg == crypto_pwhash_ALG_ARGON2ID13:
         if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {0} bytes".format(
+                "memlimit must be at least {} bytes".format(
                     crypto_pwhash_argon2id_MEMLIMIT_MIN
                 )
             )
         elif memlimit > crypto_pwhash_argon2id_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {0} bytes".format(
+                "memlimit must be at most {} bytes".format(
                     crypto_pwhash_argon2id_MEMLIMIT_MAX
                 )
             )
         if opslimit < crypto_pwhash_argon2id_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {0}".format(
+                "opslimit must be at least {}".format(
                     crypto_pwhash_argon2id_OPSLIMIT_MIN
                 )
             )
         elif opslimit > crypto_pwhash_argon2id_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {0}".format(
+                "opslimit must be at most {}".format(
                     crypto_pwhash_argon2id_OPSLIMIT_MAX
                 )
             )
@@ -448,29 +445,29 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     :return: derived key
     :rtype: bytes
     """
-    ensure(isinstance(outlen, integer_types), raising=exc.TypeError)
-    ensure(isinstance(opslimit, integer_types), raising=exc.TypeError)
-    ensure(isinstance(memlimit, integer_types), raising=exc.TypeError)
-    ensure(isinstance(alg, integer_types), raising=exc.TypeError)
+    ensure(isinstance(outlen, int), raising=exc.TypeError)
+    ensure(isinstance(opslimit, int), raising=exc.TypeError)
+    ensure(isinstance(memlimit, int), raising=exc.TypeError)
+    ensure(isinstance(alg, int), raising=exc.TypeError)
     ensure(isinstance(passwd, bytes), raising=exc.TypeError)
 
     if len(salt) != crypto_pwhash_SALTBYTES:
         raise exc.ValueError(
-            "salt must be exactly {0} bytes long".format(
+            "salt must be exactly {} bytes long".format(
                 crypto_pwhash_SALTBYTES
             )
         )
 
     if outlen < crypto_pwhash_BYTES_MIN:
         raise exc.ValueError(
-            "derived key must be at least {0} bytes long".format(
+            "derived key must be at least {} bytes long".format(
                 crypto_pwhash_BYTES_MIN
             )
         )
 
     elif outlen > crypto_pwhash_BYTES_MAX:
         raise exc.ValueError(
-            "derived key must be at most {0} bytes long".format(
+            "derived key must be at most {} bytes long".format(
                 crypto_pwhash_BYTES_MAX
             )
         )
@@ -509,8 +506,8 @@ def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
     :return: serialized derived key and parameters
     :rtype: bytes
     """
-    ensure(isinstance(opslimit, integer_types), raising=TypeError)
-    ensure(isinstance(memlimit, integer_types), raising=TypeError)
+    ensure(isinstance(opslimit, int), raising=TypeError)
+    ensure(isinstance(memlimit, int), raising=TypeError)
     ensure(isinstance(passwd, bytes), raising=TypeError)
 
     _check_argon2_limits_alg(opslimit, memlimit, alg)

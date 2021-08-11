@@ -12,18 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 
 import pytest
 
-from test_bindings import _box_from_seed_vectors
-
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import Box, PrivateKey, PublicKey
 from nacl.utils import random
+
+from .test_bindings import _box_from_seed_vectors
 
 
 VECTORS = [
@@ -314,17 +313,17 @@ def test_wrong_types():
     priv = PrivateKey.generate()
 
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         12,
     )
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         priv,
     )
     check_type_error(
-        ("PrivateKey must be created from a 32 bytes long " "raw secret key"),
+        ("PrivateKey must be created from a 32 bytes long raw secret key"),
         PrivateKey,
         priv.public_key,
     )

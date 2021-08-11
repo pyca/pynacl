@@ -14,6 +14,8 @@ export LDFLAGS="${LDFLAGS} -s ASSERTIONS=0"
 export LDFLAGS="${LDFLAGS} -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s ALIASING_FUNCTION_POINTERS=1"
 export LDFLAGS="${LDFLAGS} -s DISABLE_EXCEPTION_CATCHING=1"
 export LDFLAGS="${LDFLAGS} -s ELIMINATE_DUPLICATE_FUNCTIONS=1"
+export LDFLAGS="${LDFLAGS} -s NODEJS_CATCH_EXIT=0"
+export LDFLAGS="${LDFLAGS} -s NODEJS_CATCH_REJECTION=0"
 export CFLAGS="-Os"
 
 echo
@@ -34,6 +36,7 @@ elif [ "x$1" = "x--sumo" ]; then
   echo "Building a sumo distribution in [${PREFIX}]"
 elif [ "x$1" = "x--browser-tests" ]; then
   export EXPORTED_FUNCTIONS="$EXPORTED_FUNCTIONS_SUMO"
+  export CPPFLAGS="${CPPFLAGS} -s FORCE_FILESYSTEM=1"
   export LDFLAGS="${LDFLAGS} -s TOTAL_MEMORY=${MAX_MEMORY_TESTS}"
   export PREFIX="$(pwd)/libsodium-js-tests"
   export DONE_FILE="$(pwd)/js-tests-browser.done"
@@ -43,7 +46,7 @@ elif [ "x$1" = "x--browser-tests" ]; then
 elif [ "x$1" = "x--tests" ]; then
   echo "Building for testing"
   export EXPORTED_FUNCTIONS="$EXPORTED_FUNCTIONS_SUMO"
-  export CPPFLAGS="${CPPFLAGS} -DBENCHMARKS -DITERATIONS=10"
+  export CPPFLAGS="${CPPFLAGS} -s FORCE_FILESYSTEM=1 -DBENCHMARKS -DITERATIONS=10"
   export LDFLAGS="${LDFLAGS} -s TOTAL_MEMORY=${MAX_MEMORY_TESTS}"
   export PREFIX="$(pwd)/libsodium-js-tests"
   export DONE_FILE="$(pwd)/js-tests.done"
@@ -76,7 +79,7 @@ if [ "$DIST" = yes ]; then
       "${PREFIX}/lib/libsodium.a" -o "${outFile}" || exit 1
   }
   emmake make $MAKE_FLAGS install || exit 1
-  emccLibsodium "${PREFIX}/lib/libsodium.asm.tmp.js" -Oz -s WASM=0 -s RUNNING_JS_OPTS=1
+  emccLibsodium "${PREFIX}/lib/libsodium.asm.tmp.js" -Oz -s WASM=0
   emccLibsodium "${PREFIX}/lib/libsodium.wasm.tmp.js" -O3 -s WASM=1
 
   cat > "${PREFIX}/lib/libsodium.js" <<- EOM
@@ -115,17 +118,28 @@ if [ "$DIST" = yes ]; then
         }
       };
       Module.useBackupModule = function() {
-        var Module = _Module;
-        Object.keys(Module).forEach(function(k) {
-          if (k !== 'getRandomValue') {
-            delete Module[k];
-          }
+        return new Promise(function(resolve, reject) {
+          var Module = {};
+          Module.onAbort = reject;
+
+          Module.onRuntimeInitialized = function() {
+            Object.keys(_Module).forEach(function(k) {
+              if (k !== 'getRandomValue') {
+                delete _Module[k];
+              }
+            });
+            Object.keys(Module).forEach(function(k) {
+              _Module[k] = Module[k];
+            });
+            resolve();
+          };
+
+          $(cat "${PREFIX}/lib/libsodium.asm.tmp.js" | sed 's|use asm||g')
         });
-        $(cat "${PREFIX}/lib/libsodium.asm.tmp.js" | sed 's|use asm||g')
       };
       $(cat "${PREFIX}/lib/libsodium.wasm.tmp.js")
     }).catch(function() {
-      _Module.useBackupModule();
+      return _Module.useBackupModule();
     });
 EOM
 

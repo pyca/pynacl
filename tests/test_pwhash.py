@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 import json
@@ -25,15 +24,13 @@ from hypothesis.strategies import integers, text
 
 import pytest
 
-from six import unichr
-
 import nacl.bindings
 import nacl.encoding
 import nacl.exceptions as exc
 import nacl.pwhash
 
-_all_unicode = u"".join(unichr(i) for i in range(sys.maxunicode))
-PASSWD_CHARS = u"".join(
+_all_unicode = "".join(chr(i) for i in range(sys.maxunicode))
+PASSWD_CHARS = "".join(
     c
     for c in _all_unicode
     if (

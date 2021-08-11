@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import os
-
-import six
 
 import nacl.bindings
 from nacl import encoding
@@ -50,19 +47,13 @@ class EncryptedMessage(bytes):
         return self._ciphertext
 
 
-class StringFixer(object):
+class StringFixer:
     def __str__(self):
-        if six.PY3:
-            return str(self.__bytes__())
-        else:
-            return self.__bytes__()
+        return str(self.__bytes__())
 
 
 def bytes_as_string(bytes_in):
-    if six.PY3:
-        return bytes_in.decode("ascii")
-    else:
-        return bytes_in
+    return bytes_in.decode("ascii")
 
 
 def random(size=32):

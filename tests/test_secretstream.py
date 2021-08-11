@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 import json
@@ -20,8 +19,6 @@ import os
 import random
 
 import pytest
-
-import six
 
 from nacl._sodium import ffi
 from nacl.bindings.crypto_secretstream import (
@@ -47,7 +44,7 @@ from nacl.utils import random as randombytes
 def read_secretstream_vectors():
     DATA = "secretstream-test-vectors.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    with open(path, "r") as fp:
+    with open(path) as fp:
         jvectors = json.load(fp)
     unhex = binascii.unhexlify
     vectors = [
@@ -234,7 +231,7 @@ def test_it_like_libsodium():
     # avoid using from_buffer until at least cffi >= 1.10 in setup.py
     # state = ffi.from_buffer(state_save)
     for i in range(crypto_secretstream_xchacha20poly1305_STATEBYTES):
-        state.statebuf[i] = six.indexbytes(state_save, i)
+        state.statebuf[i] = state_save[i]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
 

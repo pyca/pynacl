@@ -12,17 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
 
 import pytest
 
-from utils import read_crypto_test_vectors
-
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import PrivateKey, PublicKey, SealedBox
+
+from .utils import read_crypto_test_vectors
 
 
 def sealbox_vectors():
@@ -108,12 +107,12 @@ def test_wrong_types():
     priv = PrivateKey.generate()
 
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.encode(),
     )
     check_type_error(
-        ("SealedBox must be created from a PublicKey" " or a PrivateKey"),
+        ("SealedBox must be created from a PublicKey or a PrivateKey"),
         SealedBox,
         priv.public_key.encode(),
     )

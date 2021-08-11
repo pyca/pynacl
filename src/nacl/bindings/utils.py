@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import absolute_import, division, print_function
-
-from six import integer_types
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
@@ -54,7 +51,7 @@ def sodium_pad(s, blocksize):
     :rtype: bytes
     """
     ensure(isinstance(s, bytes), raising=exc.TypeError)
-    ensure(isinstance(blocksize, integer_types), raising=exc.TypeError)
+    ensure(isinstance(blocksize, int), raising=exc.TypeError)
     if blocksize <= 0:
         raise exc.ValueError
     s_len = len(s)
@@ -79,7 +76,7 @@ def sodium_unpad(s, blocksize):
     :rtype: bytes
     """
     ensure(isinstance(s, bytes), raising=exc.TypeError)
-    ensure(isinstance(blocksize, integer_types), raising=exc.TypeError)
+    ensure(isinstance(blocksize, int), raising=exc.TypeError)
     s_len = len(s)
     u_len = ffi.new("size_t []", 1)
     rc = lib.sodium_unpad(u_len, s, s_len, blocksize)

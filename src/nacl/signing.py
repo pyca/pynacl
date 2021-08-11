@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import nacl.bindings
 from nacl import encoding
@@ -52,7 +51,7 @@ class SignedMessage(bytes):
         return self._message
 
 
-class VerifyKey(encoding.Encodable, StringFixer, object):
+class VerifyKey(encoding.Encodable, StringFixer):
     """
     The public key counterpart to an Ed25519 SigningKey for producing digital
     signatures.
@@ -136,7 +135,7 @@ class VerifyKey(encoding.Encodable, StringFixer, object):
         return _Curve25519_PublicKey(raw_pk)
 
 
-class SigningKey(encoding.Encodable, StringFixer, object):
+class SigningKey(encoding.Encodable, StringFixer):
     """
     Private key for producing digital signatures using the Ed25519 algorithm.
 

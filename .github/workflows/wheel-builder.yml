@@ -11,12 +11,12 @@ jobs:
     container: pyca/cryptography-manylinux1:x86_64
     strategy:
       matrix:
-        PYTHON: ["cp27-cp27m", "cp27-cp27mu", "cp35-cp35m"]
+        PYTHON: ["cp36-cp36m"]
     name: "Python ${{ matrix.PYTHON }} for manylinux1"
     steps:
       - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
       - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi six
+        run: .venv/bin/pip install -U pip cffi
       - run: .venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir tmpwheelhouse
 
       - run: |
@@ -42,12 +42,8 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - VERSION: '2.7'
-            ABI_VERSION: '2.7'
-            DOWNLOAD_URL: 'https://www.python.org/ftp/python/2.7.17/python-2.7.17-macosx10.9.pkg'
-            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/2.7/bin/python'
           - VERSION: '3.8'
-            ABI_VERSION: '3.5'
+            ABI_VERSION: '3.6'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
     name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
@@ -60,7 +56,7 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      - run: venv/bin/pip install -U pip wheel cffi six
+      - run: venv/bin/pip install -U pip wheel cffi
       - run: venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir wheelhouse
       - name: Build the wheel
         run: |
@@ -92,27 +88,18 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
-          - {VERSION: "2.7", SODIUM_MSVC_VERSION: "v100"}
-          - {VERSION: "3.8", SODIUM_MSVC_VERSION: "v140", "USE_ABI3": "true", "ABI_VERSION": "cp35"}
+          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@master
       - name: Setup python
-        uses: actions/setup-python@v2.1.4
+        uses: actions/setup-python@v2.2.2
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
           architecture: ${{ matrix.WINDOWS.ARCH }}
-      - name: Install MSVC for Python 2.7
-        run: |
-            Invoke-WebRequest -Uri https://download.microsoft.com/download/7/9/6/796EF2E4-801B-4FC4-AB28-B59FBF6D907B/VCForPython27.msi -OutFile VCForPython27.msi
-            Start-Process msiexec -Wait -ArgumentList @('/i', 'VCForPython27.msi', '/qn', 'ALLUSERS=1')
-            Remove-Item VCForPython27.msi -Force
-        shell: powershell
-        if: matrix.PYTHON.VERSION == '2.7'
-
       - name: Extract libsodium libraries
         run: |
-          Expand-Archive src/libsodium-1.0.18-msvc.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.18-stable-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Add sodium to paths
         run: |
@@ -120,22 +107,12 @@ jobs:
           echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
         shell: bash
 
-      - name: Copy stdint.h to include dir (distant weeping)
-        run: mv .github/stdint-nonsense/stdint.h C:/libsodium/include/stdint.h
-        if: matrix.PYTHON.VERSION == '2.7'
       - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi six
+        run: python -m pip install -U pip wheel cffi
       - name: Download the sdist
         run: pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl* && mkdir wheelhouse
         shell: bash
-      - name: Build the wheel (py2)
-        run: cd PyNaCl* && python setup.py bdist_wheel && mv dist/PyNaCl*.whl ../wheelhouse
-        env:
-          PYNACL_SODIUM_LIBRARY_NAME: sodium
-          PYNACL_SODIUM_STATIC: 1
-          SODIUM_INSTALL: system
-        if: matrix.PYTHON.VERSION == '2.7'
-      - name: Build the wheel (py3 abi3)
+      - name: Build the wheel
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           cd PyNaCl* && python setup.py bdist_wheel  --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
@@ -144,8 +121,6 @@ jobs:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
           PYNACL_SODIUM_STATIC: 1
           SODIUM_INSTALL: system
-        if: matrix.PYTHON.VERSION != '2.7'
-
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
       - name: Test the installed wheel

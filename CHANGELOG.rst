@@ -4,8 +4,8 @@ Changelog
 1.5.0 (UNRELEASED)
 ------------------
 
-* Deprecated support for Python 2.7. Support for this version will be removed
-  in the next release.
+* **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7 and Python 3.5.
+* Update ``libsodium`` to 1.0.18-stable (July 25, 2021 release).
 
 1.4.0 (2020-05-25)
 ------------------

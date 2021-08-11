@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import, division, print_function
 
 import binascii
-import sys
 from collections import namedtuple
 
 from hypothesis import given, settings
@@ -23,10 +21,10 @@ from hypothesis.strategies import binary, sampled_from
 
 import pytest
 
-from utils import read_kv_test_vectors
-
 import nacl.bindings as b
 import nacl.exceptions as exc
+
+from .utils import read_kv_test_vectors
 
 
 def chacha20poly1305_agl_vectors():
@@ -141,10 +139,6 @@ def test_chacha20poly1305_variants_wrong_params(construction):
         c.encrypt(b"", aad, nonce, key.decode("utf-8"))
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3,),
-    reason="Python 2 doesn't distinguish str() from bytes()",
-)
 @pytest.mark.parametrize(
     "construction",
     [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
