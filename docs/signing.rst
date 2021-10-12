@@ -229,9 +229,9 @@ Reference
         Verifies the signature of a signed message.
 
         :param bytes smessage: The signed message to verify. This is either
-            the original message or the concated signature and message.
+            the original message or the concatenated signature and message.
         :param bytes signature: The signature of the message to verify against.
-            If the value of ``smessage`` is the concated signature and message,
+            If the value of ``smessage`` is the concatenated signature and message,
             this parameter can be ``None``.
         :param encoder: A class that is able to decode the secret message and
             signature.
