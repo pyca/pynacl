@@ -26,7 +26,7 @@ crypto_secretbox_MACBYTES = lib.crypto_secretbox_macbytes()
 crypto_secretbox_MESSAGEBYTES_MAX = lib.crypto_secretbox_messagebytes_max()
 
 
-def crypto_secretbox(message, nonce, key):
+def crypto_secretbox(message: bytes, nonce: bytes, key: bytes) -> bytes:
     """
     Encrypts and returns the message ``message`` with the secret ``key`` and
     the nonce ``nonce``.
@@ -52,7 +52,7 @@ def crypto_secretbox(message, nonce, key):
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
 
 
-def crypto_secretbox_open(ciphertext, nonce, key):
+def crypto_secretbox_open(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
     """
     Decrypt and returns the encrypted message ``ciphertext`` with the secret
     ``key`` and the nonce ``nonce``.

@@ -17,7 +17,7 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-def sodium_memcmp(inp1, inp2):
+def sodium_memcmp(inp1: bytes, inp2: bytes) -> bool:
     """
     Compare contents of two memory regions in constant time
     """
@@ -38,7 +38,7 @@ def sodium_memcmp(inp1, inp2):
     return eqL and eqC
 
 
-def sodium_pad(s, blocksize):
+def sodium_pad(s: bytes, blocksize: int) -> bytes:
     """
     Pad the input bytearray ``s`` to a multiple of ``blocksize``
     using the ISO/IEC 7816-4 algorithm
@@ -64,7 +64,7 @@ def sodium_pad(s, blocksize):
     return ffi.buffer(buf, p_len[0])[:]
 
 
-def sodium_unpad(s, blocksize):
+def sodium_unpad(s: bytes, blocksize: int) -> bytes:
     """
     Remove ISO/IEC 7816-4 padding from the input byte array ``s``
 
@@ -85,7 +85,7 @@ def sodium_unpad(s, blocksize):
     return s[: u_len[0]]
 
 
-def sodium_increment(inp):
+def sodium_increment(inp: bytes) -> bytes:
     """
     Increment the value of a byte-sequence interpreted
     as the little-endian representation of a unsigned big integer.
@@ -110,7 +110,7 @@ def sodium_increment(inp):
     return ffi.buffer(buf, ln)[:]
 
 
-def sodium_add(a, b):
+def sodium_add(a: bytes, b: bytes) -> bytes:
     """
     Given a couple of *same-sized* byte sequences, interpreted as the
     little-endian representation of two unsigned integers, compute

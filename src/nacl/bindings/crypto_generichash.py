@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import NoReturn
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -34,7 +34,9 @@ _OVERLONG = "{0} length greater than {1} bytes"
 _TOOBIG = "{0} greater than {1}"
 
 
-def _checkparams(digest_size, key, salt, person):
+def _checkparams(
+    digest_size: int, key: bytes, salt: bytes, person: bytes
+) -> None:
     """Check hash parameters"""
     ensure(
         isinstance(key, bytes),
@@ -86,11 +88,16 @@ def _checkparams(digest_size, key, salt, person):
 
 
 def generichash_blake2b_salt_personal(
-    data, digest_size=crypto_generichash_BYTES, key=b"", salt=b"", person=b""
-):
+    data: bytes,
+    digest_size: int = crypto_generichash_BYTES,
+    key: bytes = b"",
+    salt: bytes = b"",
+    person: bytes = b"",
+) -> bytes:
     """One shot hash interface
 
     :param data: the input data to the hash function
+    :type data: bytes
     :param digest_size: must be at most
                         :py:data:`.crypto_generichash_BYTES_MAX`;
                         the default digest size is
@@ -143,13 +150,13 @@ class Blake2State:
 
     __slots__ = ["_statebuf", "digest_size"]
 
-    def __init__(self, digest_size):
+    def __init__(self, digest_size: int):
         self._statebuf = ffi.new(
             "unsigned char[]", crypto_generichash_STATEBYTES
         )
         self.digest_size = digest_size
 
-    def __reduce__(self):
+    def __reduce__(self) -> NoReturn:
         """
         Raise the same exception as hashlib's blake implementation
         on copy.copy()
@@ -158,7 +165,7 @@ class Blake2State:
             "can't pickle {} objects".format(self.__class__.__name__)
         )
 
-    def copy(self):
+    def copy(self) -> "Blake2State":
         _st = self.__class__(self.digest_size)
         ffi.memmove(
             _st._statebuf, self._statebuf, crypto_generichash_STATEBYTES
@@ -167,8 +174,11 @@ class Blake2State:
 
 
 def generichash_blake2b_init(
-    key=b"", salt=b"", person=b"", digest_size=crypto_generichash_BYTES
-):
+    key: bytes = b"",
+    salt: bytes = b"",
+    person: bytes = b"",
+    digest_size: int = crypto_generichash_BYTES,
+) -> Blake2State:
     """
     Create a new initialized blake2b hash state
 
@@ -211,7 +221,7 @@ def generichash_blake2b_init(
     return state
 
 
-def generichash_blake2b_update(state, data):
+def generichash_blake2b_update(state: Blake2State, data: bytes) -> None:
     """Update the blake2b hash state
 
     :param state: a initialized Blake2bState object as returned from
@@ -239,7 +249,7 @@ def generichash_blake2b_update(state, data):
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
 
-def generichash_blake2b_final(state):
+def generichash_blake2b_final(state: Blake2State) -> bytes:
     """Finalize the blake2b hash state and return the digest.
 
     :param state: a initialized Blake2bState object as returned from

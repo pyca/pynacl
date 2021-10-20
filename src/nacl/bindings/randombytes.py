@@ -19,7 +19,7 @@ from nacl._sodium import ffi, lib
 randombytes_SEEDBYTES = lib.randombytes_seedbytes()
 
 
-def randombytes(size):
+def randombytes(size: int) -> bytes:
     """
     Returns ``size`` number of random bytes from a cryptographically secure
     random source.
@@ -32,7 +32,7 @@ def randombytes(size):
     return ffi.buffer(buf, size)[:]
 
 
-def randombytes_buf_deterministic(size, seed):
+def randombytes_buf_deterministic(size: int, seed: bytes) -> bytes:
     """
     Returns ``size`` number of deterministically generated pseudorandom bytes
     from a seed

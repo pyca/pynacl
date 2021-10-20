@@ -6,11 +6,6 @@
 #
 # http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 
 from nacl import exceptions as exc
@@ -82,7 +77,9 @@ _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX = (
 )
 
 
-def crypto_aead_chacha20poly1305_ietf_encrypt(message, aad, nonce, key):
+def crypto_aead_chacha20poly1305_ietf_encrypt(
+    message: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Encrypt the given ``message`` using the IETF ratified chacha20poly1305
     construction described in RFC7539.
@@ -159,7 +156,9 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     return ffi.buffer(ciphertext, clen[0])[:]
 
 
-def crypto_aead_chacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
+def crypto_aead_chacha20poly1305_ietf_decrypt(
+    ciphertext: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the IETF ratified chacha20poly1305
     construction described in RFC7539.
@@ -236,7 +235,9 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
     return ffi.buffer(message, mlen[0])[:]
 
 
-def crypto_aead_chacha20poly1305_encrypt(message, aad, nonce, key):
+def crypto_aead_chacha20poly1305_encrypt(
+    message: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Encrypt the given ``message`` using the "legacy" construction
     described in draft-agl-tls-chacha20poly1305.
@@ -314,7 +315,9 @@ def crypto_aead_chacha20poly1305_encrypt(message, aad, nonce, key):
     return ffi.buffer(ciphertext, clen[0])[:]
 
 
-def crypto_aead_chacha20poly1305_decrypt(ciphertext, aad, nonce, key):
+def crypto_aead_chacha20poly1305_decrypt(
+    ciphertext: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the "legacy" construction
     described in draft-agl-tls-chacha20poly1305.
@@ -391,7 +394,9 @@ def crypto_aead_chacha20poly1305_decrypt(ciphertext, aad, nonce, key):
     return ffi.buffer(message, mlen[0])[:]
 
 
-def crypto_aead_xchacha20poly1305_ietf_encrypt(message, aad, nonce, key):
+def crypto_aead_xchacha20poly1305_ietf_encrypt(
+    message: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Encrypt the given ``message`` using the long-nonces xchacha20poly1305
     construction.
@@ -469,7 +474,9 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(message, aad, nonce, key):
     return ffi.buffer(ciphertext, clen[0])[:]
 
 
-def crypto_aead_xchacha20poly1305_ietf_decrypt(ciphertext, aad, nonce, key):
+def crypto_aead_xchacha20poly1305_ietf_decrypt(
+    ciphertext: bytes, aad: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the long-nonces xchacha20poly1305
     construction.

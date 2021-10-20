@@ -32,7 +32,7 @@ if has_crypto_core_ed25519:
     )
 
 
-def crypto_core_ed25519_is_valid_point(p):
+def crypto_core_ed25519_is_valid_point(p: bytes) -> bool:
     """
     Check if ``p`` represents a point on the edwards25519 curve, in canonical
     form, on the main subgroup, and that the point doesn't have a small order.
@@ -61,7 +61,7 @@ def crypto_core_ed25519_is_valid_point(p):
     return rc == 1
 
 
-def crypto_core_ed25519_add(p, q):
+def crypto_core_ed25519_add(p: bytes, q: bytes) -> bytes:
     """
     Add two points on the edwards25519 curve.
 
@@ -102,7 +102,7 @@ def crypto_core_ed25519_add(p, q):
     return ffi.buffer(r, crypto_core_ed25519_BYTES)[:]
 
 
-def crypto_core_ed25519_sub(p, q):
+def crypto_core_ed25519_sub(p: bytes, q: bytes) -> bytes:
     """
     Subtract a point from another on the edwards25519 curve.
 
@@ -143,7 +143,7 @@ def crypto_core_ed25519_sub(p, q):
     return ffi.buffer(r, crypto_core_ed25519_BYTES)[:]
 
 
-def crypto_core_ed25519_scalar_invert(s):
+def crypto_core_ed25519_scalar_invert(s: bytes) -> bytes:
     """
     Return the multiplicative inverse of integer ``s`` modulo ``L``,
     i.e an integer ``i`` such that ``s * i = 1 (mod L)``, where ``L``
@@ -182,7 +182,7 @@ def crypto_core_ed25519_scalar_invert(s):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_negate(s):
+def crypto_core_ed25519_scalar_negate(s: bytes) -> bytes:
     """
     Return the integer ``n`` such that ``s + n = 0 (mod L)``, where ``L``
     is the order of the main subgroup.
@@ -217,7 +217,7 @@ def crypto_core_ed25519_scalar_negate(s):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_complement(s):
+def crypto_core_ed25519_scalar_complement(s: bytes) -> bytes:
     """
     Return the complement of integer ``s`` modulo ``L``, i.e. an integer
     ``c`` such that ``s + c = 1 (mod L)``, where ``L`` is the order of
@@ -253,7 +253,7 @@ def crypto_core_ed25519_scalar_complement(s):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_add(p, q):
+def crypto_core_ed25519_scalar_add(p: bytes, q: bytes) -> bytes:
     """
     Add integers ``p`` and ``q`` modulo ``L``, where ``L`` is the order of
     the main subgroup.
@@ -294,7 +294,7 @@ def crypto_core_ed25519_scalar_add(p, q):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_sub(p, q):
+def crypto_core_ed25519_scalar_sub(p: bytes, q: bytes) -> bytes:
     """
     Subtract integers ``p`` and ``q`` modulo ``L``, where ``L`` is the
     order of the main subgroup.
@@ -335,7 +335,7 @@ def crypto_core_ed25519_scalar_sub(p, q):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_mul(p, q):
+def crypto_core_ed25519_scalar_mul(p: bytes, q: bytes) -> bytes:
     """
     Multiply integers ``p`` and ``q`` modulo ``L``, where ``L`` is the
     order of the main subgroup.
@@ -376,7 +376,7 @@ def crypto_core_ed25519_scalar_mul(p, q):
     return ffi.buffer(r, crypto_core_ed25519_SCALARBYTES)[:]
 
 
-def crypto_core_ed25519_scalar_reduce(s):
+def crypto_core_ed25519_scalar_reduce(s: bytes) -> bytes:
     """
     Reduce integer ``s`` to ``s`` modulo ``L``, where ``L`` is the order
     of the main subgroup.

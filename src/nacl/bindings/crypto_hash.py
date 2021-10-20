@@ -24,7 +24,7 @@ crypto_hash_sha256_BYTES = lib.crypto_hash_sha256_bytes()
 crypto_hash_sha512_BYTES = lib.crypto_hash_sha512_bytes()
 
 
-def crypto_hash(message):
+def crypto_hash(message: bytes) -> bytes:
     """
     Hashes and returns the message ``message``.
 
@@ -37,7 +37,7 @@ def crypto_hash(message):
     return ffi.buffer(digest, crypto_hash_BYTES)[:]
 
 
-def crypto_hash_sha256(message):
+def crypto_hash_sha256(message: bytes) -> bytes:
     """
     Hashes and returns the message ``message``.
 
@@ -50,7 +50,7 @@ def crypto_hash_sha256(message):
     return ffi.buffer(digest, crypto_hash_sha256_BYTES)[:]
 
 
-def crypto_hash_sha512(message):
+def crypto_hash_sha512(message: bytes) -> bytes:
     """
     Hashes and returns the message ``message``.
 
