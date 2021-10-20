@@ -113,7 +113,7 @@ def kdf(
 def str(
     password: bytes,
     opslimit: int = OPSLIMIT_INTERACTIVE,
-    memlimit: int =MEMLIMIT_INTERACTIVE,
+    memlimit: int = MEMLIMIT_INTERACTIVE,
 ) -> bytes:
     """
     Hashes a password with a random salt, using the memory-hard

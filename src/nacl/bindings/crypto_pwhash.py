@@ -216,7 +216,7 @@ def _check_memory_occupation(
 
 def nacl_bindings_pick_scrypt_params(
     opslimit: int, memlimit: int
-)-> Tuple[int, int, int]:
+) -> Tuple[int, int, int]:
     """Python implementation of libsodium's pickparams"""
 
     if opslimit < 32768:

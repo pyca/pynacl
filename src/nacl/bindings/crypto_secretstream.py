@@ -130,7 +130,7 @@ def crypto_secretstream_xchacha20poly1305_push(
     state: crypto_secretstream_xchacha20poly1305_state,
     m: bytes,
     ad: Optional[bytes] = None,
-    tag: int =crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+    tag: int = crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
 ) -> bytes:
     """
     Add an encrypted message to the secret stream.
