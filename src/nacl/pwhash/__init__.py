@@ -54,7 +54,7 @@ scryptsalsa208sha256_str = scrypt.str
 verify_scryptsalsa208sha256 = scrypt.verify
 
 
-def verify(password_hash, password):
+def verify(password_hash: bytes, password: bytes) -> bool:
     """
     Takes a modular crypt encoded stored password hash derived using one
     of the algorithms supported by `libsodium` and checks if the user provided
