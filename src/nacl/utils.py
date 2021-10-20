@@ -25,22 +25,27 @@ class EncryptedMessage(bytes):
     :class:`SecretBox`.
     """
 
+    _nonce: bytes
+    _ciphertext: bytes
+
     @classmethod
-    def _from_parts(cls, nonce, ciphertext, combined):
+    def _from_parts(
+        cls, nonce: bytes, ciphertext: bytes, combined: bytes
+    ) -> "EncryptedMessage":
         obj = cls(combined)
         obj._nonce = nonce
         obj._ciphertext = ciphertext
         return obj
 
     @property
-    def nonce(self):
+    def nonce(self) -> bytes:
         """
         The nonce used during the encryption of the :class:`EncryptedMessage`.
         """
         return self._nonce
 
     @property
-    def ciphertext(self):
+    def ciphertext(self) -> bytes:
         """
         The ciphertext contained within the :class:`EncryptedMessage`.
         """
@@ -48,19 +53,21 @@ class EncryptedMessage(bytes):
 
 
 class StringFixer:
-    def __str__(self):
+    def __str__(self: encoding.SupportsBytes) -> str:
         return str(self.__bytes__())
 
 
-def bytes_as_string(bytes_in):
+def bytes_as_string(bytes_in: bytes) -> str:
     return bytes_in.decode("ascii")
 
 
-def random(size=32):
+def random(size: int = 32) -> bytes:
     return os.urandom(size)
 
 
-def randombytes_deterministic(size, seed, encoder=encoding.RawEncoder):
+def randombytes_deterministic(
+    size: int, seed: bytes, encoder: encoding.Encoder = encoding.RawEncoder
+) -> bytes:
     """
     Returns ``size`` number of deterministically generated pseudorandom bytes
     from a seed

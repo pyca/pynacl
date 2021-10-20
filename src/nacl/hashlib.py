@@ -14,6 +14,7 @@
 
 
 import binascii
+from typing import NoReturn
 
 import nacl.bindings
 from nacl.utils import bytes_as_string
@@ -45,7 +46,12 @@ class blake2b:
     SALT_SIZE = SALTBYTES
 
     def __init__(
-        self, data=b"", digest_size=BYTES, key=b"", salt=b"", person=b""
+        self,
+        data: bytes = b"",
+        digest_size: int = BYTES,
+        key: bytes = b"",
+        salt: bytes = b"",
+        person: bytes = b""
     ):
         """
         :py:class:`.blake2b` algorithm initializer
@@ -77,34 +83,34 @@ class blake2b:
             self.update(data)
 
     @property
-    def digest_size(self):
+    def digest_size(self) -> int:
         return self._digest_size
 
     @property
-    def block_size(self):
+    def block_size(self) -> int:
         return 128
 
     @property
-    def name(self):
+    def name(self) -> str:
         return "blake2b"
 
-    def update(self, data):
+    def update(self, data: bytes) -> None:
         _b2b_update(self._state, data)
 
-    def digest(self):
+    def digest(self) -> bytes:
         _st = self._state.copy()
         return _b2b_final(_st)
 
-    def hexdigest(self):
+    def hexdigest(self) -> str:
         return bytes_as_string(binascii.hexlify(self.digest()))
 
-    def copy(self):
+    def copy(self) -> "blake2b":
         _cp = type(self)(digest_size=self.digest_size)
         _st = self._state.copy()
         _cp._state = _st
         return _cp
 
-    def __reduce__(self):
+    def __reduce__(self) -> NoReturn:
         """
         Raise the same exception as hashlib's blake implementation
         on copy.copy()
@@ -114,7 +120,15 @@ class blake2b:
         )
 
 
-def scrypt(password, salt="", n=2 ** 20, r=8, p=1, maxmem=2 ** 25, dklen=64):
+def scrypt(
+    password: bytes,
+    salt: bytes = b"",
+    n: int = 2 ** 20,
+    r: int = 8,
+    p: int = 1,
+    maxmem: int = 2 ** 25,
+    dklen: int = 64,
+) -> bytes:
     """
     Derive a cryptographic key using the scrypt KDF.
 

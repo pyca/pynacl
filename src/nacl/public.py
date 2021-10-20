@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Optional, Union
 
 import nacl.bindings
 from nacl import encoding
@@ -32,7 +32,11 @@ class PublicKey(encoding.Encodable, StringFixer):
 
     SIZE = nacl.bindings.crypto_box_PUBLICKEYBYTES
 
-    def __init__(self, public_key, encoder=encoding.RawEncoder):
+    def __init__(
+        self,
+        public_key: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ):
         self._public_key = encoder.decode(public_key)
         if not isinstance(self._public_key, bytes):
             raise exc.TypeError("PublicKey must be created from 32 bytes")
@@ -44,18 +48,18 @@ class PublicKey(encoding.Encodable, StringFixer):
                 )
             )
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._public_key
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(bytes(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not (self == other)
 
 
@@ -79,7 +83,11 @@ class PrivateKey(encoding.Encodable, StringFixer):
     SIZE = nacl.bindings.crypto_box_SECRETKEYBYTES
     SEED_SIZE = nacl.bindings.crypto_box_SEEDBYTES
 
-    def __init__(self, private_key, encoder=encoding.RawEncoder):
+    def __init__(
+        self,
+        private_key: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder
+    ):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
         # verify the given secret key type and size are correct
@@ -99,7 +107,11 @@ class PrivateKey(encoding.Encodable, StringFixer):
         self.public_key = PublicKey(raw_public_key)
 
     @classmethod
-    def from_seed(cls, seed, encoder=encoding.RawEncoder):
+    def from_seed(
+        cls,
+        seed: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> "PrivateKey":
         """
         Generate a PrivateKey using a deterministic construction
         starting from a caller-provided seed
@@ -130,22 +142,22 @@ class PrivateKey(encoding.Encodable, StringFixer):
         # construct a instance from the raw secret key
         return cls(raw_sk)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._private_key
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash((type(self), bytes(self.public_key)))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return self.public_key == other.public_key
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not (self == other)
 
     @classmethod
-    def generate(cls):
+    def generate(cls) -> "PrivateKey":
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
@@ -176,7 +188,11 @@ class Box(encoding.Encodable, StringFixer):
 
     NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
 
-    def __init__(self, private_key, public_key):
+    def __init__(
+        self,
+        private_key: PrivateKey,
+        public_key: PublicKey,
+    ):
         if private_key and public_key:
             if not isinstance(private_key, PrivateKey) or not isinstance(
                 public_key, PublicKey
@@ -191,11 +207,15 @@ class Box(encoding.Encodable, StringFixer):
         else:
             self._shared_key = None
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._shared_key
 
     @classmethod
-    def decode(cls, encoded, encoder=encoding.RawEncoder):
+    def decode(
+        cls,
+        encoded: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder
+    ) -> "Box":
         # Create an empty box
         box = cls(None, None)
 
@@ -204,7 +224,12 @@ class Box(encoding.Encodable, StringFixer):
 
         return box
 
-    def encrypt(self, plaintext, nonce=None, encoder=encoding.RawEncoder):
+    def encrypt(
+        self,
+        plaintext: bytes,
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> EncryptedMessage:
         """
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -242,7 +267,12 @@ class Box(encoding.Encodable, StringFixer):
             encoder.encode(nonce + ciphertext),
         )
 
-    def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
+    def decrypt(
+        self,
+        ciphertext: bytes,
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and
@@ -275,7 +305,7 @@ class Box(encoding.Encodable, StringFixer):
 
         return plaintext
 
-    def shared_key(self):
+    def shared_key(self) -> bytes:
         """
         Returns the Curve25519 shared secret, that can then be used as a key in
         other symmetric ciphers.
@@ -309,7 +339,7 @@ class SealedBox(encoding.Encodable, StringFixer):
     .. versionadded:: 1.2
     """
 
-    def __init__(self, recipient_key):
+    def __init__(self, recipient_key: Union[PublicKey, PrivateKey]):
 
         if isinstance(recipient_key, PublicKey):
             self._public_key = recipient_key.encode(
@@ -328,10 +358,14 @@ class SealedBox(encoding.Encodable, StringFixer):
                 "SealedBox must be created from a PublicKey or a PrivateKey"
             )
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._public_key
 
-    def encrypt(self, plaintext, encoder=encoding.RawEncoder):
+    def encrypt(
+        self,
+        plaintext: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Encrypts the plaintext message using a random-generated ephemeral
         keypair and returns a "composed ciphertext", containing both
@@ -353,7 +387,11 @@ class SealedBox(encoding.Encodable, StringFixer):
 
         return encoded_ciphertext
 
-    def decrypt(self, ciphertext, encoder=encoding.RawEncoder):
+    def decrypt(
+        self,
+        ciphertext: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Decrypts the ciphertext using the ephemeral public key enclosed
         in the ciphertext and the SealedBox private key, returning

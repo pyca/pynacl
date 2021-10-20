@@ -15,68 +15,86 @@
 
 import base64
 import binascii
+from typing import Type
+
+from typing_extensions import Protocol
+
+
+class _Encoder(Protocol):
+    @staticmethod
+    def encode(data: bytes) -> bytes: ...
+
+    @staticmethod
+    def decode(data: bytes) -> bytes: ...
+
+
+Encoder = Type[_Encoder]
+
+
+class SupportsBytes(Protocol):
+    def __bytes__(self) -> bytes: ...
 
 
 class RawEncoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return data
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return data
 
 
 class HexEncoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return binascii.hexlify(data)
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return binascii.unhexlify(data)
 
 
 class Base16Encoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return base64.b16encode(data)
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return base64.b16decode(data)
 
 
 class Base32Encoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return base64.b32encode(data)
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return base64.b32decode(data)
 
 
 class Base64Encoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return base64.b64encode(data)
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return base64.b64decode(data)
 
 
 class URLSafeBase64Encoder:
     @staticmethod
-    def encode(data):
+    def encode(data: bytes) -> bytes:
         return base64.urlsafe_b64encode(data)
 
     @staticmethod
-    def decode(data):
+    def decode(data: bytes) -> bytes:
         return base64.urlsafe_b64decode(data)
 
 
 class Encodable:
-    def encode(self, encoder=RawEncoder):
+    def encode(self: SupportsBytes, encoder: Encoder = RawEncoder) -> bytes:
         return encoder.encode(bytes(self))

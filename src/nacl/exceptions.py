@@ -13,7 +13,11 @@
 # limitations under the License.
 
 
-class CryptoError(Exception):
+import builtins
+from typing import Any, Type
+
+
+class CryptoError(builtins.Exception):
     """
     Base exception for all nacl related errors
     """
@@ -25,19 +29,19 @@ class BadSignatureError(CryptoError):
     """
 
 
-class RuntimeError(RuntimeError, CryptoError):
+class RuntimeError(builtins.RuntimeError, CryptoError):
     pass
 
 
-class AssertionError(AssertionError, CryptoError):
+class AssertionError(builtins.AssertionError, CryptoError):
     pass
 
 
-class TypeError(TypeError, CryptoError):
+class TypeError(builtins.TypeError, CryptoError):
     pass
 
 
-class ValueError(ValueError, CryptoError):
+class ValueError(builtins.ValueError, CryptoError):
     pass
 
 
@@ -59,7 +63,7 @@ class UnavailableError(RuntimeError):
     pass
 
 
-def ensure(cond, *args, **kwds):
+def ensure(cond: bool, *args: Any, **kwds: Type[Exception]) -> None:
     """
     Return if a condition is true, otherwise raise a caller-configurable
     :py:class:`Exception`
