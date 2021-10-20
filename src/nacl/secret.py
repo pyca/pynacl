@@ -55,9 +55,7 @@ class SecretBox(encoding.Encodable, StringFixer):
     MESSAGEBYTES_MAX = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
 
     def __init__(
-        self,
-        key: bytes,
-        encoder: encoding.Encoder = encoding.RawEncoder
+        self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
     ):
         key = encoder.decode(key)
         if not isinstance(key, bytes):

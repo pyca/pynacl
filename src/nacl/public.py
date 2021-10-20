@@ -86,7 +86,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
     def __init__(
         self,
         private_key: bytes,
-        encoder: encoding.Encoder = encoding.RawEncoder
+        encoder: encoding.Encoder = encoding.RawEncoder,
     ):
         # Decode the secret_key
         private_key = encoder.decode(private_key)
@@ -212,9 +212,7 @@ class Box(encoding.Encodable, StringFixer):
 
     @classmethod
     def decode(
-        cls,
-        encoded: bytes,
-        encoder: encoding.Encoder = encoding.RawEncoder
+        cls, encoded: bytes, encoder: encoding.Encoder = encoding.RawEncoder
     ) -> "Box":
         # Create an empty box
         box = cls(None, None)

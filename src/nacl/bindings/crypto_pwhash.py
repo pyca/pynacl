@@ -351,8 +351,7 @@ def crypto_pwhash_scryptsalsa208sha256_str(
 
 
 def crypto_pwhash_scryptsalsa208sha256_str_verify(
-    passwd_hash: bytes,
-    passwd: bytes
+    passwd_hash: bytes, passwd: bytes
 ) -> bool:
     """
     Verifies the ``passwd`` against the ``passwd_hash`` that was generated.
@@ -447,7 +446,7 @@ def crypto_pwhash_alg(
     salt: bytes,
     opslimit: int,
     memlimit: int,
-    alg: int
+    alg: int,
 ) -> bytes:
     """
     Derive a raw cryptographic key using the ``passwd`` and the ``salt``

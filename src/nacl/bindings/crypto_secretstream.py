@@ -83,7 +83,7 @@ class crypto_secretstream_xchacha20poly1305_state:
 
 
 def crypto_secretstream_xchacha20poly1305_init_push(
-        state: crypto_secretstream_xchacha20poly1305_state, key: bytes
+    state: crypto_secretstream_xchacha20poly1305_state, key: bytes
 ) -> bytes:
     """
     Initialize a crypto_secretstream_xchacha20poly1305 encryption buffer.
@@ -249,7 +249,7 @@ def crypto_secretstream_xchacha20poly1305_init_pull(
 def crypto_secretstream_xchacha20poly1305_pull(
     state: crypto_secretstream_xchacha20poly1305_state,
     c: bytes,
-    ad: Optional[bytes] = None
+    ad: Optional[bytes] = None,
 ) -> Tuple[bytes, int]:
     """
     Read a decrypted message from the secret stream.

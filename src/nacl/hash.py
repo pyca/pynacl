@@ -60,8 +60,7 @@ _sip_hashx = nacl.bindings.crypto_shorthash_siphashx24
 
 
 def sha256(
-    message: bytes,
-    encoder: nacl.encoding.Encoder = nacl.encoding.HexEncoder
+    message: bytes, encoder: nacl.encoding.Encoder = nacl.encoding.HexEncoder
 ) -> bytes:
     """
     Hashes ``message`` with SHA256.
@@ -76,8 +75,7 @@ def sha256(
 
 
 def sha512(
-    message: bytes,
-    encoder: nacl.encoding.Encoder = nacl.encoding.HexEncoder
+    message: bytes, encoder: nacl.encoding.Encoder = nacl.encoding.HexEncoder
 ) -> bytes:
     """
     Hashes ``message`` with SHA512.

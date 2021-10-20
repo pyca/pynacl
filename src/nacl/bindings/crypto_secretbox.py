@@ -52,7 +52,9 @@ def crypto_secretbox(message: bytes, nonce: bytes, key: bytes) -> bytes:
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
 
 
-def crypto_secretbox_open(ciphertext: bytes, nonce: bytes, key: bytes) -> bytes:
+def crypto_secretbox_open(
+    ciphertext: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Decrypt and returns the encrypted message ``ciphertext`` with the secret
     ``key`` and the nonce ``nonce``.

@@ -209,7 +209,9 @@ class crypto_sign_ed25519ph_state:
         ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
 
-def crypto_sign_ed25519ph_update(edph: crypto_sign_ed25519ph_state, pmsg: bytes) -> None:
+def crypto_sign_ed25519ph_update(
+    edph: crypto_sign_ed25519ph_state, pmsg: bytes
+) -> None:
     """
     Update the hash state wrapped in edph
 
@@ -233,7 +235,9 @@ def crypto_sign_ed25519ph_update(edph: crypto_sign_ed25519ph_state, pmsg: bytes)
     ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
 
 
-def crypto_sign_ed25519ph_final_create(edph: crypto_sign_ed25519ph_state, sk: bytes) -> bytes:
+def crypto_sign_ed25519ph_final_create(
+    edph: crypto_sign_ed25519ph_state, sk: bytes
+) -> bytes:
     """
     Create a signature for the data hashed in edph
     using the secret key sk
@@ -272,7 +276,9 @@ def crypto_sign_ed25519ph_final_create(edph: crypto_sign_ed25519ph_state, sk: by
     return ffi.buffer(signature, crypto_sign_BYTES)[:]
 
 
-def crypto_sign_ed25519ph_final_verify(edph: crypto_sign_ed25519ph_state, signature: bytes, pk: bytes) -> bool:
+def crypto_sign_ed25519ph_final_verify(
+    edph: crypto_sign_ed25519ph_state, signature: bytes, pk: bytes
+) -> bool:
     """
     Verify a prehashed signature using the public key pk
 

@@ -66,9 +66,7 @@ class VerifyKey(encoding.Encodable, StringFixer):
     """
 
     def __init__(
-        self,
-        key: bytes,
-        encoder: encoding.Encoder = encoding.RawEncoder
+        self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
     ):
         # Decode the key
         key = encoder.decode(key)

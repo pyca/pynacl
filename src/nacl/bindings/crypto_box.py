@@ -196,7 +196,9 @@ def crypto_box_afternm(message: bytes, nonce: bytes, k: bytes) -> bytes:
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
 
-def crypto_box_open_afternm(ciphertext: bytes, nonce: bytes, k: bytes) -> bytes:
+def crypto_box_open_afternm(
+    ciphertext: bytes, nonce: bytes, k: bytes
+) -> bytes:
     """
     Decrypts and returns the encrypted message ``ciphertext``, using the shared
     key ``k`` and the nonce ``nonce``.

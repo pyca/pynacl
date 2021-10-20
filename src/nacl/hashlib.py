@@ -51,7 +51,7 @@ class blake2b:
         digest_size: int = BYTES,
         key: bytes = b"",
         salt: bytes = b"",
-        person: bytes = b""
+        person: bytes = b"",
     ):
         """
         :py:class:`.blake2b` algorithm initializer
