@@ -43,3 +43,6 @@ src/libsodium/libtool
 
 # whitelist libsodium's build directory
 !src/libsodium/builds/msvc/build
+
+# mypy's cache
+.mypy_cache
