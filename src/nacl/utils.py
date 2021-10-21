@@ -25,6 +25,9 @@ class EncryptedMessage(bytes):
     :class:`SecretBox`.
     """
 
+    _nonce = object
+    _ciphertext = object
+
     @classmethod
     def _from_parts(cls, nonce, ciphertext, combined):
         obj = cls(combined)

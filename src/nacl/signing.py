@@ -29,6 +29,9 @@ class SignedMessage(bytes):
     :class:`SigningKey`.
     """
 
+    _signature: object
+    _message: object
+
     @classmethod
     def _from_parts(cls, signature, message, combined):
         obj = cls(combined)
