@@ -17,6 +17,7 @@ import os
 
 import nacl.bindings
 from nacl import encoding
+from nacl.types import SupportsBytes
 
 
 class EncryptedMessage(bytes):
@@ -51,7 +52,7 @@ class EncryptedMessage(bytes):
 
 
 class StringFixer:
-    def __str__(self):
+    def __str__(self: SupportsBytes):
         return str(self.__bytes__())
 
 
