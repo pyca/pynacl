@@ -14,9 +14,9 @@
 
 
 # We create a clone of various builtin Exception types which additionally
-# inherits from CryptoError. Below, we refer to the parent types via the
+# inherit from CryptoError. Below, we refer to the parent types via the
 # `builtins` namespace, so mypy can distinguish between (e.g.)
-# ``nacl.exceptions.RuntimeError` and `builtins.RuntimeError`.
+# `nacl.exceptions.RuntimeError` and `builtins.RuntimeError`.
 import builtins
 
 
