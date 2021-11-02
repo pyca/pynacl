@@ -39,7 +39,6 @@ setup_requirements = ["setuptools"]
 test_requirements = [
     "pytest>=3.2.1,!=3.3.0",
     "hypothesis>=3.27.0",
-    'mypy==0.910; implementation_name == "cpython"',
 ]
 docs_requirements = ["sphinx>=1.6.5", "sphinx_rtd_theme"]
 
