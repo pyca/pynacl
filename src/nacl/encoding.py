@@ -15,7 +15,6 @@
 
 import base64
 import binascii
-
 from typing import SupportsBytes
 
 
