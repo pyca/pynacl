@@ -14,6 +14,7 @@
 
 
 import os
+from typing import SupportsBytes
 
 import nacl.bindings
 from nacl import encoding
@@ -24,6 +25,9 @@ class EncryptedMessage(bytes):
     A bytes subclass that holds a messaged that has been encrypted by a
     :class:`SecretBox`.
     """
+
+    _nonce = object
+    _ciphertext = object
 
     @classmethod
     def _from_parts(cls, nonce, ciphertext, combined):
@@ -48,7 +52,7 @@ class EncryptedMessage(bytes):
 
 
 class StringFixer:
-    def __str__(self):
+    def __str__(self: SupportsBytes):
         return str(self.__bytes__())
 
 

@@ -13,6 +13,13 @@
 # limitations under the License.
 
 
+# We create a clone of various builtin Exception types which additionally
+# inherit from CryptoError. Below, we refer to the parent types via the
+# `builtins` namespace, so mypy can distinguish between (e.g.)
+# `nacl.exceptions.RuntimeError` and `builtins.RuntimeError`.
+import builtins
+
+
 class CryptoError(Exception):
     """
     Base exception for all nacl related errors
@@ -25,19 +32,19 @@ class BadSignatureError(CryptoError):
     """
 
 
-class RuntimeError(RuntimeError, CryptoError):
+class RuntimeError(builtins.RuntimeError, CryptoError):
     pass
 
 
-class AssertionError(AssertionError, CryptoError):
+class AssertionError(builtins.AssertionError, CryptoError):
     pass
 
 
-class TypeError(TypeError, CryptoError):
+class TypeError(builtins.TypeError, CryptoError):
     pass
 
 
-class ValueError(ValueError, CryptoError):
+class ValueError(builtins.ValueError, CryptoError):
     pass
 
 

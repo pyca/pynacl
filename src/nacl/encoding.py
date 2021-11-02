@@ -15,6 +15,7 @@
 
 import base64
 import binascii
+from typing import SupportsBytes
 
 
 class RawEncoder:
@@ -78,5 +79,5 @@ class URLSafeBase64Encoder:
 
 
 class Encodable:
-    def encode(self, encoder=RawEncoder):
+    def encode(self: SupportsBytes, encoder=RawEncoder):
         return encoder.encode(bytes(self))
