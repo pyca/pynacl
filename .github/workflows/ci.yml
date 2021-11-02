@@ -16,6 +16,7 @@ jobs:
         PYTHON:
           - {VERSION: "3.9", TOXENV: "docs", COVERAGE: "false"}
           - {VERSION: "3.9", TOXENV: "meta", COVERAGE: "false"}
+          - {VERSION: "3.9", TOXENV: "mypy", COVERAGE: "false"}
           - {VERSION: "pypy3", TOXENV: "pypy"}
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
