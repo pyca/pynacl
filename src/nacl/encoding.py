@@ -16,7 +16,7 @@
 import base64
 import binascii
 
-from nacl.types import SupportsBytes
+from typing import SupportsBytes
 
 
 class RawEncoder:

@@ -14,10 +14,10 @@
 
 
 import os
+from typing import SupportsBytes
 
 import nacl.bindings
 from nacl import encoding
-from nacl.types import SupportsBytes
 
 
 class EncryptedMessage(bytes):
