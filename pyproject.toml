@@ -27,6 +27,7 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = [
+    "nacl.encoding",
     "nacl.exceptions",
 ]
 disallow_any_unimported = true
