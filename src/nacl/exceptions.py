@@ -18,6 +18,7 @@
 # `builtins` namespace, so mypy can distinguish between (e.g.)
 # `nacl.exceptions.RuntimeError` and `builtins.RuntimeError`.
 import builtins
+from typing import Type
 
 
 class CryptoError(Exception):
@@ -66,7 +67,7 @@ class UnavailableError(RuntimeError):
     pass
 
 
-def ensure(cond, *args, **kwds):
+def ensure(cond: bool, *args: object, **kwds: Type[Exception]) -> None:
     """
     Return if a condition is true, otherwise raise a caller-configurable
     :py:class:`Exception`

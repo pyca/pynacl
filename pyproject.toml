@@ -15,6 +15,7 @@ target-version = ["py36"]
 show_error_codes = true
 check_untyped_defs = true
 no_implicit_reexport = true
+warn_redundant_casts = true
 
 files = ["src/nacl"]
 
@@ -23,3 +24,30 @@ module = [
     "nacl._sodium",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "nacl.exceptions",
+]
+disallow_any_unimported = true
+disallow_any_expr = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+# check_untyped_defs enabled globally
+disallow_untyped_decorators = true
+
+no_implicit_optional = true
+
+warn_unused_ignores = true
+warn_no_return = true
+warn_return_any = true
+warn_unreachable = true
+
+# no-implicit-reexport enabled globally
+strict_equality = true
