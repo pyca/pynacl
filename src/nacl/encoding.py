@@ -98,7 +98,5 @@ class URLSafeBase64Encoder(_Encoder):
 
 
 class Encodable:
-    def encode(
-        self: SupportsBytes, encoder: Encoder = RawEncoder
-    ) -> bytes:
+    def encode(self: SupportsBytes, encoder: Encoder = RawEncoder) -> bytes:
         return encoder.encode(bytes(self))
