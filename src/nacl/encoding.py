@@ -23,12 +23,15 @@ class _Encoder(metaclass=ABCMeta):
     @staticmethod
     @abstractmethod
     def encode(data: bytes) -> bytes:
-        pass
+        """Transform raw data to encoded data."""
 
     @staticmethod
     @abstractmethod
     def decode(data: bytes) -> bytes:
-        pass
+        """Transform encoded data back to raw data.
+
+        Decoding after encoding should be a no-op, i.e. `decode(encode(x)) == x`.
+        """
 
 
 # Functions that use encoders are passed a subclass of _Encoder, not an instance
