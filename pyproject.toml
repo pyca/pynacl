@@ -29,6 +29,7 @@ ignore_missing_imports = true
 module = [
     "nacl.encoding",
     "nacl.exceptions",
+    "nacl.utils",
 ]
 disallow_any_unimported = true
 disallow_any_expr = true

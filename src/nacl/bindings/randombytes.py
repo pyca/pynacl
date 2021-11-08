@@ -32,7 +32,7 @@ def randombytes(size):
     return ffi.buffer(buf, size)[:]
 
 
-def randombytes_buf_deterministic(size, seed):
+def randombytes_buf_deterministic(size: int, seed: bytes) -> bytes:
     """
     Returns ``size`` number of deterministically generated pseudorandom bytes
     from a seed
