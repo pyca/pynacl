@@ -19,7 +19,7 @@ from typing import SupportsBytes, Type, TypeVar
 import nacl.bindings
 from nacl import encoding
 
-C = TypeVar("C", bound="EncryptedMessage")
+_EncryptedMessage = TypeVar("_EncryptedMessage", bound="EncryptedMessage")
 
 
 class EncryptedMessage(bytes):
@@ -33,8 +33,8 @@ class EncryptedMessage(bytes):
 
     @classmethod
     def _from_parts(
-        cls: Type[C], nonce: bytes, ciphertext: bytes, combined: bytes
-    ) -> C:
+        cls: Type[_EncryptedMessage], nonce: bytes, ciphertext: bytes, combined: bytes
+    ) -> _EncryptedMessage:
         obj = cls(combined)
         obj._nonce = nonce
         obj._ciphertext = ciphertext
