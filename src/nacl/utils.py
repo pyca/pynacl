@@ -33,7 +33,10 @@ class EncryptedMessage(bytes):
 
     @classmethod
     def _from_parts(
-        cls: Type[_EncryptedMessage], nonce: bytes, ciphertext: bytes, combined: bytes
+        cls: Type[_EncryptedMessage],
+        nonce: bytes,
+        ciphertext: bytes,
+        combined: bytes,
     ) -> _EncryptedMessage:
         obj = cls(combined)
         obj._nonce = nonce
