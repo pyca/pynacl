@@ -14,7 +14,7 @@ target-version = ["py36"]
 [tool.mypy]
 show_error_codes = true
 check_untyped_defs = true
-implicit_reexport = false
+no_implicit_reexport = true
 warn_redundant_casts = true
 
 files = ["src/nacl"]
