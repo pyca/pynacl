@@ -17,7 +17,7 @@ jobs:
           - {VERSION: "3.10", TOXENV: "docs", COVERAGE: "false"}
           - {VERSION: "3.10", TOXENV: "meta", COVERAGE: "false"}
           - {VERSION: "3.10", TOXENV: "mypy", COVERAGE: "false"}
-          - {VERSION: "pypy3", TOXENV: "pypy"}
+          - {VERSION: "pypy-3.7", TOXENV: "pypy"}
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
