@@ -48,6 +48,7 @@ disallow_untyped_decorators = true
 
 no_implicit_optional = true
 
+warn_incomplete_stub = true
 warn_unused_ignores = true
 warn_no_return = true
 # warn_return_any: true outside of `bindings`
