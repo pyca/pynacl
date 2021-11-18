@@ -93,7 +93,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Setup python
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v2.3.0
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
           architecture: ${{ matrix.WINDOWS.ARCH }}
