@@ -14,16 +14,17 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - {VERSION: "3.9", TOXENV: "docs", COVERAGE: "false"}
-          - {VERSION: "3.9", TOXENV: "meta", COVERAGE: "false"}
-          - {VERSION: "3.9", TOXENV: "mypy", COVERAGE: "false"}
-          - {VERSION: "pypy3", TOXENV: "pypy"}
+          - {VERSION: "3.10", TOXENV: "docs", COVERAGE: "false"}
+          - {VERSION: "3.10", TOXENV: "meta", COVERAGE: "false"}
+          - {VERSION: "3.10", TOXENV: "mypy", COVERAGE: "false"}
+          - {VERSION: "pypy-3.7", TOXENV: "pypy"}
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
           - {VERSION: "3.9", TOXENV: "py39"}
-          - {VERSION: "3.9", TOXENV: "py39", NOTE: "system", SODIUM_INSTALL: "system"}
-          - {VERSION: "3.9", TOXENV: "py39", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.10", TOXENV: "py310"}
+          - {VERSION: "3.10", TOXENV: "py310", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.10", TOXENV: "py310", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
     steps:
       - uses: actions/checkout@master
@@ -65,8 +66,8 @@ jobs:
       matrix:
         PYTHON:
           - {VERSION: "3.6", TOXENV: "py36"}
-          - {VERSION: "3.9", TOXENV: "py39"}
-          - {VERSION: "3.9", TOXENV: "py39", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.10", TOXENV: "py310"}
+          - {VERSION: "3.10", TOXENV: "py310", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
     steps:
       - uses: actions/checkout@master
@@ -97,6 +98,7 @@ jobs:
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.10", TOXENV: "py310", SODIUM_MSVC_VERSION: "v142"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@master
