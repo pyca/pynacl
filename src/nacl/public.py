@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Optional
 
 import nacl.bindings
 from nacl import encoding
@@ -175,6 +175,7 @@ class Box(encoding.Encodable, StringFixer):
     """
 
     NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
+    _shared_key: Optional[bytes]
 
     def __init__(self, private_key, public_key):
         if private_key and public_key:
@@ -227,10 +228,12 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
+        # Type safety: if self._shared_key is None, crypto_box_afternm will
+        # raise TypeError.
         ciphertext = nacl.bindings.crypto_box_afternm(
             plaintext,
             nonce,
-            self._shared_key,
+            self._shared_key,  # type: ignore[arg-type]
         )
 
         encoded_nonce = encoder.encode(nonce)
@@ -267,10 +270,12 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
+        # Type safety: if self._shared_key is None, crypto_box_open_afternm will
+        # raise TypeError.
         plaintext = nacl.bindings.crypto_box_open_afternm(
             ciphertext,
             nonce,
-            self._shared_key,
+            self._shared_key,  # type: ignore[arg-type]
         )
 
         return plaintext
@@ -301,13 +306,15 @@ class SealedBox(encoding.Encodable, StringFixer):
     the public part of the ephemeral key before the :class:`~nacl.public.Box`
     ciphertext.
 
-    :param public_key: :class:`~nacl.public.PublicKey` used to encrypt
-        messages and derive nonces
-    :param private_key: :class:`~nacl.public.PrivateKey` used to decrypt
-        messages
+    :param recipient_key: a :class:`~nacl.public.PublicKey` used to encrypt
+        messages and derive nonces, or a :class:`~nacl.public.PrivateKey` used
+        to decrypt messages.
 
     .. versionadded:: 1.2
     """
+
+    _public_key: bytes
+    _private_key: Optional[bytes]
 
     def __init__(self, recipient_key):
 
@@ -362,14 +369,22 @@ class SealedBox(encoding.Encodable, StringFixer):
         :param ciphertext: [:class:`bytes`] The encrypted message to decrypt
         :param encoder: The encoder used to decode the ciphertext.
         :return bytes: The original plaintext
+        :raises TypeError: if this SealedBox was created with a
+            :class:`~nacl.public.PublicKey` rather than a
+            :class:`~nacl.public.PrivateKey`.
         """
         # Decode our ciphertext
         ciphertext = encoder.decode(ciphertext)
 
+        # Type ignore: self._private_key is an Optional[bytes], but
+        # crypto_box_seal_open expects it to be a bytes object. It's safe to
+        # ignore this: if it is None, crypto_box_seal_open will raise a
+        # TypeError. This is enforced by
+        # test_sealed_box_public_key_cannot_decrypt.
         plaintext = nacl.bindings.crypto_box_seal_open(
             ciphertext,
             self._public_key,
-            self._private_key,
+            self._private_key,  # type: ignore[arg-type]
         )
 
         return plaintext

@@ -29,6 +29,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = [
     "nacl.bindings.crypto_aead",
+    "nacl.bindings.crypto_box",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",

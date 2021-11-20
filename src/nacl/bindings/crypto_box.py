@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Tuple
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -21,17 +21,17 @@ from nacl.exceptions import ensure
 __all__ = ["crypto_box_keypair", "crypto_box"]
 
 
-crypto_box_SECRETKEYBYTES = lib.crypto_box_secretkeybytes()
-crypto_box_PUBLICKEYBYTES = lib.crypto_box_publickeybytes()
-crypto_box_SEEDBYTES = lib.crypto_box_seedbytes()
-crypto_box_NONCEBYTES = lib.crypto_box_noncebytes()
-crypto_box_ZEROBYTES = lib.crypto_box_zerobytes()
-crypto_box_BOXZEROBYTES = lib.crypto_box_boxzerobytes()
-crypto_box_BEFORENMBYTES = lib.crypto_box_beforenmbytes()
-crypto_box_SEALBYTES = lib.crypto_box_sealbytes()
+crypto_box_SECRETKEYBYTES: int = lib.crypto_box_secretkeybytes()
+crypto_box_PUBLICKEYBYTES: int = lib.crypto_box_publickeybytes()
+crypto_box_SEEDBYTES: int = lib.crypto_box_seedbytes()
+crypto_box_NONCEBYTES: int = lib.crypto_box_noncebytes()
+crypto_box_ZEROBYTES: int = lib.crypto_box_zerobytes()
+crypto_box_BOXZEROBYTES: int = lib.crypto_box_boxzerobytes()
+crypto_box_BEFORENMBYTES: int = lib.crypto_box_beforenmbytes()
+crypto_box_SEALBYTES: int = lib.crypto_box_sealbytes()
 
 
-def crypto_box_keypair():
+def crypto_box_keypair() -> Tuple[bytes, bytes]:
     """
     Returns a randomly generated public and secret key.
 
@@ -49,7 +49,7 @@ def crypto_box_keypair():
     )
 
 
-def crypto_box_seed_keypair(seed):
+def crypto_box_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
     """
     Returns a (public, secret) keypair deterministically generated
     from an input ``seed``.
@@ -83,7 +83,7 @@ def crypto_box_seed_keypair(seed):
     )
 
 
-def crypto_box(message, nonce, pk, sk):
+def crypto_box(message: bytes, nonce: bytes, pk: bytes, sk: bytes) -> bytes:
     """
     Encrypts and returns a message ``message`` using the secret key ``sk``,
     public key ``pk``, and the nonce ``nonce``.
@@ -112,7 +112,9 @@ def crypto_box(message, nonce, pk, sk):
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
 
-def crypto_box_open(ciphertext, nonce, pk, sk):
+def crypto_box_open(
+    ciphertext: bytes, nonce: bytes, pk: bytes, sk: bytes
+) -> bytes:
     """
     Decrypts and returns an encrypted message ``ciphertext``, using the secret
     key ``sk``, public key ``pk``, and the nonce ``nonce``.
@@ -145,7 +147,7 @@ def crypto_box_open(ciphertext, nonce, pk, sk):
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
 
-def crypto_box_beforenm(pk, sk):
+def crypto_box_beforenm(pk: bytes, sk: bytes) -> bytes:
     """
     Computes and returns the shared key for the public key ``pk`` and the
     secret key ``sk``. This can be used to speed up operations where the same
@@ -169,7 +171,7 @@ def crypto_box_beforenm(pk, sk):
     return ffi.buffer(k, crypto_box_BEFORENMBYTES)[:]
 
 
-def crypto_box_afternm(message, nonce, k):
+def crypto_box_afternm(message: bytes, nonce: bytes, k: bytes) -> bytes:
     """
     Encrypts and returns the message ``message`` using the shared key ``k`` and
     the nonce ``nonce``.
@@ -194,7 +196,9 @@ def crypto_box_afternm(message, nonce, k):
     return ffi.buffer(ciphertext, len(padded))[crypto_box_BOXZEROBYTES:]
 
 
-def crypto_box_open_afternm(ciphertext, nonce, k):
+def crypto_box_open_afternm(
+    ciphertext: bytes, nonce: bytes, k: bytes
+) -> bytes:
     """
     Decrypts and returns the encrypted message ``ciphertext``, using the shared
     key ``k`` and the nonce ``nonce``.
@@ -223,7 +227,7 @@ def crypto_box_open_afternm(ciphertext, nonce, k):
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
 
 
-def crypto_box_seal(message, pk):
+def crypto_box_seal(message: bytes, pk: bytes) -> bytes:
     """
     Encrypts and returns a message ``message`` using an ephemeral secret key
     and the public key ``pk``.
@@ -261,7 +265,7 @@ def crypto_box_seal(message, pk):
     return ffi.buffer(ciphertext, _clen)[:]
 
 
-def crypto_box_seal_open(ciphertext, pk, sk):
+def crypto_box_seal_open(ciphertext: bytes, pk: bytes, sk: bytes) -> bytes:
     """
     Decrypts and returns an encrypted message ``ciphertext``, using the
     recipent's secret key ``sk`` and the sender's ephemeral public key
