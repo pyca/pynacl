@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+from typing import Generic, Optional, Type, TypeVar
 
 import nacl.bindings
 from nacl import encoding
@@ -152,6 +152,9 @@ class PrivateKey(encoding.Encodable, StringFixer):
         :rtype: :class:`~nacl.public.PrivateKey`
         """
         return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
+
+
+_Box = TypeVar("_Box", bound="Box")
 
 
 class Box(encoding.Encodable, StringFixer):
@@ -295,7 +298,10 @@ class Box(encoding.Encodable, StringFixer):
         return self._shared_key
 
 
-class SealedBox(encoding.Encodable, StringFixer):
+_Key = TypeVar("_Key", PublicKey, PrivateKey)
+
+
+class SealedBox(Generic[_Key], encoding.Encodable, StringFixer):
     """
     The SealedBox class boxes and unboxes messages addressed to
     a specified key-pair by using ephemeral sender's keypairs,
@@ -316,7 +322,7 @@ class SealedBox(encoding.Encodable, StringFixer):
     _public_key: bytes
     _private_key: Optional[bytes]
 
-    def __init__(self, recipient_key):
+    def __init__(self, recipient_key: _Key):
 
         if isinstance(recipient_key, PublicKey):
             self._public_key = recipient_key.encode(
@@ -360,7 +366,11 @@ class SealedBox(encoding.Encodable, StringFixer):
 
         return encoded_ciphertext
 
-    def decrypt(self, ciphertext, encoder=encoding.RawEncoder):
+    def decrypt(
+        self: "SealedBox[PrivateKey]",
+        ciphertext: bytes,
+        encoder: Encoder = encoding.RawEncoder,
+    ):
         """
         Decrypts the ciphertext using the ephemeral public key enclosed
         in the ciphertext and the SealedBox private key, returning
