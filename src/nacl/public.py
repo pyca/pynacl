@@ -16,6 +16,7 @@ from typing import Generic, Optional, Type, TypeVar
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
+from nacl.encoding import Encoder
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
@@ -178,30 +179,32 @@ class Box(encoding.Encodable, StringFixer):
     """
 
     NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
-    _shared_key: Optional[bytes]
+    _shared_key: bytes
 
-    def __init__(self, private_key, public_key):
-        if private_key and public_key:
-            if not isinstance(private_key, PrivateKey) or not isinstance(
-                public_key, PublicKey
-            ):
-                raise exc.TypeError(
-                    "Box must be created from a PrivateKey and a PublicKey"
-                )
-            self._shared_key = nacl.bindings.crypto_box_beforenm(
-                public_key.encode(encoder=encoding.RawEncoder),
-                private_key.encode(encoder=encoding.RawEncoder),
+    def __init__(self, private_key: PrivateKey, public_key: PublicKey):
+        if not isinstance(private_key, PrivateKey) or not isinstance(
+            public_key, PublicKey
+        ):
+            raise exc.TypeError(
+                "Box must be created from a PrivateKey and a PublicKey"
             )
-        else:
-            self._shared_key = None
+        self._shared_key = nacl.bindings.crypto_box_beforenm(
+            public_key.encode(encoder=encoding.RawEncoder),
+            private_key.encode(encoder=encoding.RawEncoder),
+        )
 
     def __bytes__(self):
         return self._shared_key
 
     @classmethod
-    def decode(cls, encoded, encoder=encoding.RawEncoder):
+    def decode(
+        cls: Type[_Box], encoded: bytes, encoder: Encoder = encoding.RawEncoder
+    ) -> _Box:
+        """
+        Alternative constructor. Creates a Box from an existing Box's shared key.
+        """
         # Create an empty box
-        box = cls(None, None)
+        box = cls.__new__(cls)
 
         # Assign our decoded value to the shared key of the box
         box._shared_key = encoder.decode(encoded)
