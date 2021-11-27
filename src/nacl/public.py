@@ -376,15 +376,14 @@ class SealedBox(encoding.Encodable, StringFixer):
         # Decode our ciphertext
         ciphertext = encoder.decode(ciphertext)
 
-        # Type ignore: self._private_key is an Optional[bytes], but
-        # crypto_box_seal_open expects it to be a bytes object. It's safe to
-        # ignore this: if it is None, crypto_box_seal_open will raise a
-        # TypeError. This is enforced by
-        # test_sealed_box_public_key_cannot_decrypt.
+        if self._private_key is None:
+            raise TypeError(
+                "SealedBoxes created with a public key cannot decrypt"
+            )
         plaintext = nacl.bindings.crypto_box_seal_open(
             ciphertext,
             self._public_key,
-            self._private_key,  # type: ignore[arg-type]
+            self._private_key,
         )
 
         return plaintext
