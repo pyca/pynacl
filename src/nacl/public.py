@@ -11,11 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Generic, Optional, Type, TypeVar
 
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
+from nacl.encoding import Encoder
 from nacl.utils import EncryptedMessage, StringFixer, random
 
 
@@ -154,6 +155,9 @@ class PrivateKey(encoding.Encodable, StringFixer):
         return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
 
 
+_Box = TypeVar("_Box", bound="Box")
+
+
 class Box(encoding.Encodable, StringFixer):
     """
     The Box class boxes and unboxes messages between a pair of keys
@@ -175,29 +179,32 @@ class Box(encoding.Encodable, StringFixer):
     """
 
     NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
+    _shared_key: bytes
 
-    def __init__(self, private_key, public_key):
-        if private_key and public_key:
-            if not isinstance(private_key, PrivateKey) or not isinstance(
-                public_key, PublicKey
-            ):
-                raise exc.TypeError(
-                    "Box must be created from a PrivateKey and a PublicKey"
-                )
-            self._shared_key = nacl.bindings.crypto_box_beforenm(
-                public_key.encode(encoder=encoding.RawEncoder),
-                private_key.encode(encoder=encoding.RawEncoder),
+    def __init__(self, private_key: PrivateKey, public_key: PublicKey):
+        if not isinstance(private_key, PrivateKey) or not isinstance(
+            public_key, PublicKey
+        ):
+            raise exc.TypeError(
+                "Box must be created from a PrivateKey and a PublicKey"
             )
-        else:
-            self._shared_key = None
+        self._shared_key = nacl.bindings.crypto_box_beforenm(
+            public_key.encode(encoder=encoding.RawEncoder),
+            private_key.encode(encoder=encoding.RawEncoder),
+        )
 
     def __bytes__(self):
         return self._shared_key
 
     @classmethod
-    def decode(cls, encoded, encoder=encoding.RawEncoder):
+    def decode(
+        cls: Type[_Box], encoded: bytes, encoder: Encoder = encoding.RawEncoder
+    ) -> _Box:
+        """
+        Alternative constructor. Creates a Box from an existing Box's shared key.
+        """
         # Create an empty box
-        box = cls(None, None)
+        box = cls.__new__(cls)
 
         # Assign our decoded value to the shared key of the box
         box._shared_key = encoder.decode(encoded)
@@ -227,10 +234,12 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
+        # Type safety: if self._shared_key is None, crypto_box_afternm will
+        # raise TypeError.
         ciphertext = nacl.bindings.crypto_box_afternm(
             plaintext,
             nonce,
-            self._shared_key,
+            self._shared_key,  # type: ignore[arg-type]
         )
 
         encoded_nonce = encoder.encode(nonce)
@@ -267,10 +276,12 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
+        # Type safety: if self._shared_key is None, crypto_box_open_afternm will
+        # raise TypeError.
         plaintext = nacl.bindings.crypto_box_open_afternm(
             ciphertext,
             nonce,
-            self._shared_key,
+            self._shared_key,  # type: ignore[arg-type]
         )
 
         return plaintext
@@ -290,7 +301,10 @@ class Box(encoding.Encodable, StringFixer):
         return self._shared_key
 
 
-class SealedBox(encoding.Encodable, StringFixer):
+_Key = TypeVar("_Key", PublicKey, PrivateKey)
+
+
+class SealedBox(Generic[_Key], encoding.Encodable, StringFixer):
     """
     The SealedBox class boxes and unboxes messages addressed to
     a specified key-pair by using ephemeral sender's keypairs,
@@ -301,15 +315,17 @@ class SealedBox(encoding.Encodable, StringFixer):
     the public part of the ephemeral key before the :class:`~nacl.public.Box`
     ciphertext.
 
-    :param public_key: :class:`~nacl.public.PublicKey` used to encrypt
-        messages and derive nonces
-    :param private_key: :class:`~nacl.public.PrivateKey` used to decrypt
-        messages
+    :param recipient_key: a :class:`~nacl.public.PublicKey` used to encrypt
+        messages and derive nonces, or a :class:`~nacl.public.PrivateKey` used
+        to decrypt messages.
 
     .. versionadded:: 1.2
     """
 
-    def __init__(self, recipient_key):
+    _public_key: bytes
+    _private_key: Optional[bytes]
+
+    def __init__(self, recipient_key: _Key):
 
         if isinstance(recipient_key, PublicKey):
             self._public_key = recipient_key.encode(
@@ -353,7 +369,11 @@ class SealedBox(encoding.Encodable, StringFixer):
 
         return encoded_ciphertext
 
-    def decrypt(self, ciphertext, encoder=encoding.RawEncoder):
+    def decrypt(
+        self: "SealedBox[PrivateKey]",
+        ciphertext: bytes,
+        encoder: Encoder = encoding.RawEncoder,
+    ):
         """
         Decrypts the ciphertext using the ephemeral public key enclosed
         in the ciphertext and the SealedBox private key, returning
@@ -362,10 +382,17 @@ class SealedBox(encoding.Encodable, StringFixer):
         :param ciphertext: [:class:`bytes`] The encrypted message to decrypt
         :param encoder: The encoder used to decode the ciphertext.
         :return bytes: The original plaintext
+        :raises TypeError: if this SealedBox was created with a
+            :class:`~nacl.public.PublicKey` rather than a
+            :class:`~nacl.public.PrivateKey`.
         """
         # Decode our ciphertext
         ciphertext = encoder.decode(ciphertext)
 
+        if self._private_key is None:
+            raise TypeError(
+                "SealedBoxes created with a public key cannot decrypt"
+            )
         plaintext = nacl.bindings.crypto_box_seal_open(
             ciphertext,
             self._public_key,
