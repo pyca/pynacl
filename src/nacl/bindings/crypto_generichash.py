@@ -22,8 +22,12 @@ crypto_generichash_BYTES: int = lib.crypto_generichash_blake2b_bytes()
 crypto_generichash_BYTES_MIN: int = lib.crypto_generichash_blake2b_bytes_min()
 crypto_generichash_BYTES_MAX: int = lib.crypto_generichash_blake2b_bytes_max()
 crypto_generichash_KEYBYTES: int = lib.crypto_generichash_blake2b_keybytes()
-crypto_generichash_KEYBYTES_MIN: int = lib.crypto_generichash_blake2b_keybytes_min()
-crypto_generichash_KEYBYTES_MAX: int = lib.crypto_generichash_blake2b_keybytes_max()
+crypto_generichash_KEYBYTES_MIN: int = (
+    lib.crypto_generichash_blake2b_keybytes_min()
+)
+crypto_generichash_KEYBYTES_MAX: int = (
+    lib.crypto_generichash_blake2b_keybytes_max()
+)
 crypto_generichash_SALTBYTES: int = lib.crypto_generichash_blake2b_saltbytes()
 crypto_generichash_PERSONALBYTES: int = (
     lib.crypto_generichash_blake2b_personalbytes()
@@ -144,6 +148,8 @@ def generichash_blake2b_salt_personal(
 
 
 _Blake2State = TypeVar("_Blake2State", bound="Blake2State")
+
+
 class Blake2State:
     """
     Python-level wrapper for the crypto_generichash_blake2b state buffer
