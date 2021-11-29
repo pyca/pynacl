@@ -31,6 +31,7 @@ ignore_missing_imports = true
 module = [
     "nacl.bindings.crypto_aead",
     "nacl.bindings.crypto_box",
+    "nacl.bindings.crypto_core",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
