@@ -32,6 +32,7 @@ module = [
     "nacl.bindings.crypto_aead",
     "nacl.bindings.crypto_box",
     "nacl.bindings.crypto_core",
+    "nacl.bindings.crypto_kx",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",

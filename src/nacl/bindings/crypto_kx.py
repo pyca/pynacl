@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Tuple
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -30,13 +30,13 @@ __all__ = [
 """
 Implementations of client, server key exchange
 """
-crypto_kx_PUBLIC_KEY_BYTES = lib.crypto_kx_publickeybytes()
-crypto_kx_SECRET_KEY_BYTES = lib.crypto_kx_secretkeybytes()
-crypto_kx_SEED_BYTES = lib.crypto_kx_seedbytes()
-crypto_kx_SESSION_KEY_BYTES = lib.crypto_kx_sessionkeybytes()
+crypto_kx_PUBLIC_KEY_BYTES: int = lib.crypto_kx_publickeybytes()
+crypto_kx_SECRET_KEY_BYTES: int = lib.crypto_kx_secretkeybytes()
+crypto_kx_SEED_BYTES: int = lib.crypto_kx_seedbytes()
+crypto_kx_SESSION_KEY_BYTES: int = lib.crypto_kx_sessionkeybytes()
 
 
-def crypto_kx_keypair():
+def crypto_kx_keypair() -> Tuple[bytes, bytes]:
     """
     Generate a keypair.
     This is a duplicate crypto_box_keypair, but
@@ -55,7 +55,7 @@ def crypto_kx_keypair():
     )
 
 
-def crypto_kx_seed_keypair(seed):
+def crypto_kx_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
     """
     Generate a keypair with a given seed.
     This is functionally the same as crypto_box_seed_keypair, however
@@ -85,8 +85,10 @@ def crypto_kx_seed_keypair(seed):
 
 
 def crypto_kx_client_session_keys(
-    client_public_key, client_secret_key, server_public_key
-):
+    client_public_key: bytes,
+    client_secret_key: bytes,
+    server_public_key: bytes,
+) -> Tuple[bytes, bytes]:
     """
     Generate session keys for the client.
     :param client_public_key:
@@ -141,8 +143,10 @@ def crypto_kx_client_session_keys(
 
 
 def crypto_kx_server_session_keys(
-    server_public_key, server_secret_key, client_public_key
-):
+    server_public_key: bytes,
+    server_secret_key: bytes,
+    client_public_key: bytes,
+) -> Tuple[bytes, bytes]:
     """
     Generate session keys for the server.
     :param server_public_key:
