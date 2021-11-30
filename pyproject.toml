@@ -31,6 +31,7 @@ ignore_missing_imports = true
 module = [
     "nacl.bindings.crypto_aead",
     "nacl.bindings.crypto_box",
+    "nacl.bindings.crypto_core",
     "nacl.bindings.crypto_generichash",
     "nacl.encoding",
     "nacl.exceptions",
@@ -69,6 +70,7 @@ strict_equality = true
 module = [
     "nacl.encoding",
     "nacl.exceptions",
+    "nacl.utils",
 ]
 disallow_any_expr = true
 warn_return_any = true
