@@ -22,8 +22,8 @@ has_crypto_shorthash_siphashx24 = bool(
     lib.PYNACL_HAS_CRYPTO_SHORTHASH_SIPHASHX24
 )
 
-BYTES = lib.crypto_shorthash_siphash24_bytes()
-KEYBYTES = lib.crypto_shorthash_siphash24_keybytes()
+BYTES: int = lib.crypto_shorthash_siphash24_bytes()
+KEYBYTES: int = lib.crypto_shorthash_siphash24_keybytes()
 
 XBYTES = 0
 XKEYBYTES = 0
@@ -33,7 +33,7 @@ if has_crypto_shorthash_siphashx24:
     XKEYBYTES = lib.crypto_shorthash_siphashx24_keybytes()
 
 
-def crypto_shorthash_siphash24(data, key):
+def crypto_shorthash_siphash24(data: bytes, key: bytes) -> bytes:
     """Compute a fast, cryptographic quality, keyed hash of the input data
 
     :param data:
@@ -53,7 +53,7 @@ def crypto_shorthash_siphash24(data, key):
     return ffi.buffer(digest, BYTES)[:]
 
 
-def crypto_shorthash_siphashx24(data, key):
+def crypto_shorthash_siphashx24(data: bytes, key: bytes) -> bytes:
     """Compute a fast, cryptographic quality, keyed hash of the input data
 
     :param data:

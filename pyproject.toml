@@ -39,6 +39,7 @@ module = [
     "nacl.bindings.crypto_scalarmult",
     "nacl.bindings.crypto_secretbox",
     "nacl.bindings.crypto_secretstream",
+    "nacl.bindings.crypto_shorthash",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
