@@ -42,6 +42,7 @@ module = [
     "nacl.bindings.crypto_shorthash",
     "nacl.bindings.crypto_sign",
     "nacl.bindings.randombytes",
+    "nacl.bindings.sodium_core",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
