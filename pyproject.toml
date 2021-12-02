@@ -35,6 +35,7 @@ module = [
     "nacl.bindings.crypto_hash",
     "nacl.bindings.crypto_generichash",
     "nacl.bindings.crypto_kx",
+    "nacl.bindings.crypto_pwhash",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
