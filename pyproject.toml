@@ -38,6 +38,7 @@ module = [
     "nacl.bindings.crypto_pwhash",
     "nacl.bindings.crypto_scalarmult",
     "nacl.bindings.crypto_secretbox",
+    "nacl.bindings.crypto_secretstream",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
