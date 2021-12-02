@@ -29,21 +29,7 @@ ignore_missing_imports = true
 # Most options can be applied across the entire project.
 [[tool.mypy.overrides]]
 module = [
-    "nacl.bindings.crypto_aead",
-    "nacl.bindings.crypto_box",
-    "nacl.bindings.crypto_core",
-    "nacl.bindings.crypto_hash",
-    "nacl.bindings.crypto_generichash",
-    "nacl.bindings.crypto_kx",
-    "nacl.bindings.crypto_pwhash",
-    "nacl.bindings.crypto_scalarmult",
-    "nacl.bindings.crypto_secretbox",
-    "nacl.bindings.crypto_secretstream",
-    "nacl.bindings.crypto_shorthash",
-    "nacl.bindings.crypto_sign",
-    "nacl.bindings.randombytes",
-    "nacl.bindings.sodium_core",
-    "nacl.bindings.utils",
+    "nacl.bindings",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
