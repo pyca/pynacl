@@ -33,7 +33,7 @@ if has_crypto_scalarmult_ed25519:
     )
 
 
-def crypto_scalarmult_base(n):
+def crypto_scalarmult_base(n: bytes) -> bytes:
     """
     Computes and returns the scalar product of a standard group element and an
     integer ``n``.
@@ -49,7 +49,7 @@ def crypto_scalarmult_base(n):
     return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
 
 
-def crypto_scalarmult(n, p):
+def crypto_scalarmult(n: bytes, p: bytes) -> bytes:
     """
     Computes and returns the scalar product of the given group element and an
     integer ``n``.
@@ -66,7 +66,7 @@ def crypto_scalarmult(n, p):
     return ffi.buffer(q, crypto_scalarmult_SCALARBYTES)[:]
 
 
-def crypto_scalarmult_ed25519_base(n):
+def crypto_scalarmult_ed25519_base(n: bytes) -> bytes:
     """
     Computes and returns the scalar product of a standard group element and an
     integer ``n`` on the edwards25519 curve.
@@ -103,7 +103,7 @@ def crypto_scalarmult_ed25519_base(n):
     return ffi.buffer(q, crypto_scalarmult_ed25519_BYTES)[:]
 
 
-def crypto_scalarmult_ed25519_base_noclamp(n):
+def crypto_scalarmult_ed25519_base_noclamp(n: bytes) -> bytes:
     """
     Computes and returns the scalar product of a standard group element and an
     integer ``n`` on the edwards25519 curve. The integer ``n`` is not clamped.
@@ -140,7 +140,7 @@ def crypto_scalarmult_ed25519_base_noclamp(n):
     return ffi.buffer(q, crypto_scalarmult_ed25519_BYTES)[:]
 
 
-def crypto_scalarmult_ed25519(n, p):
+def crypto_scalarmult_ed25519(n: bytes, p: bytes) -> bytes:
     """
     Computes and returns the scalar product of a *clamped* integer ``n``
     and the given group element on the edwards25519 curve.
@@ -191,7 +191,7 @@ def crypto_scalarmult_ed25519(n, p):
     return ffi.buffer(q, crypto_scalarmult_ed25519_BYTES)[:]
 
 
-def crypto_scalarmult_ed25519_noclamp(n, p):
+def crypto_scalarmult_ed25519_noclamp(n: bytes, p: bytes) -> bytes:
     """
     Computes and returns the scalar product of an integer ``n``
     and the given group element on the edwards25519 curve. The integer

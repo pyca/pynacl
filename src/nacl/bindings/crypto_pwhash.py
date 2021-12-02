@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import sys
+from typing import Tuple
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
@@ -86,67 +87,83 @@ if has_crypto_pwhash_scryptsalsa208sha256:
         lib.crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive()
     )
 
-crypto_pwhash_ALG_ARGON2I13 = lib.crypto_pwhash_alg_argon2i13()
-crypto_pwhash_ALG_ARGON2ID13 = lib.crypto_pwhash_alg_argon2id13()
-crypto_pwhash_ALG_DEFAULT = lib.crypto_pwhash_alg_default()
+crypto_pwhash_ALG_ARGON2I13: int = lib.crypto_pwhash_alg_argon2i13()
+crypto_pwhash_ALG_ARGON2ID13: int = lib.crypto_pwhash_alg_argon2id13()
+crypto_pwhash_ALG_DEFAULT: int = lib.crypto_pwhash_alg_default()
 
-crypto_pwhash_SALTBYTES = lib.crypto_pwhash_saltbytes()
-crypto_pwhash_STRBYTES = lib.crypto_pwhash_strbytes()
+crypto_pwhash_SALTBYTES: int = lib.crypto_pwhash_saltbytes()
+crypto_pwhash_STRBYTES: int = lib.crypto_pwhash_strbytes()
 
-crypto_pwhash_PASSWD_MIN = lib.crypto_pwhash_passwd_min()
-crypto_pwhash_PASSWD_MAX = lib.crypto_pwhash_passwd_max()
-crypto_pwhash_BYTES_MIN = lib.crypto_pwhash_bytes_min()
-crypto_pwhash_BYTES_MAX = lib.crypto_pwhash_bytes_max()
+crypto_pwhash_PASSWD_MIN: int = lib.crypto_pwhash_passwd_min()
+crypto_pwhash_PASSWD_MAX: int = lib.crypto_pwhash_passwd_max()
+crypto_pwhash_BYTES_MIN: int = lib.crypto_pwhash_bytes_min()
+crypto_pwhash_BYTES_MAX: int = lib.crypto_pwhash_bytes_max()
 
-crypto_pwhash_argon2i_STRPREFIX = ffi.string(
+crypto_pwhash_argon2i_STRPREFIX: str = ffi.string(
     ffi.cast("char *", lib.crypto_pwhash_argon2i_strprefix())
 )[:]
-crypto_pwhash_argon2i_MEMLIMIT_MIN = lib.crypto_pwhash_argon2i_memlimit_min()
-crypto_pwhash_argon2i_MEMLIMIT_MAX = lib.crypto_pwhash_argon2i_memlimit_max()
-crypto_pwhash_argon2i_OPSLIMIT_MIN = lib.crypto_pwhash_argon2i_opslimit_min()
-crypto_pwhash_argon2i_OPSLIMIT_MAX = lib.crypto_pwhash_argon2i_opslimit_max()
-crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE = (
+crypto_pwhash_argon2i_MEMLIMIT_MIN: int = (
+    lib.crypto_pwhash_argon2i_memlimit_min()
+)
+crypto_pwhash_argon2i_MEMLIMIT_MAX: int = (
+    lib.crypto_pwhash_argon2i_memlimit_max()
+)
+crypto_pwhash_argon2i_OPSLIMIT_MIN: int = (
+    lib.crypto_pwhash_argon2i_opslimit_min()
+)
+crypto_pwhash_argon2i_OPSLIMIT_MAX: int = (
+    lib.crypto_pwhash_argon2i_opslimit_max()
+)
+crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE: int = (
     lib.crypto_pwhash_argon2i_opslimit_interactive()
 )
-crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE = (
+crypto_pwhash_argon2i_MEMLIMIT_INTERACTIVE: int = (
     lib.crypto_pwhash_argon2i_memlimit_interactive()
 )
-crypto_pwhash_argon2i_OPSLIMIT_MODERATE = (
+crypto_pwhash_argon2i_OPSLIMIT_MODERATE: int = (
     lib.crypto_pwhash_argon2i_opslimit_moderate()
 )
-crypto_pwhash_argon2i_MEMLIMIT_MODERATE = (
+crypto_pwhash_argon2i_MEMLIMIT_MODERATE: int = (
     lib.crypto_pwhash_argon2i_memlimit_moderate()
 )
-crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE = (
+crypto_pwhash_argon2i_OPSLIMIT_SENSITIVE: int = (
     lib.crypto_pwhash_argon2i_opslimit_sensitive()
 )
-crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE = (
+crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE: int = (
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 )
 
-crypto_pwhash_argon2id_STRPREFIX = ffi.string(
+crypto_pwhash_argon2id_STRPREFIX: str = ffi.string(
     ffi.cast("char *", lib.crypto_pwhash_argon2id_strprefix())
 )[:]
-crypto_pwhash_argon2id_MEMLIMIT_MIN = lib.crypto_pwhash_argon2id_memlimit_min()
-crypto_pwhash_argon2id_MEMLIMIT_MAX = lib.crypto_pwhash_argon2id_memlimit_max()
-crypto_pwhash_argon2id_OPSLIMIT_MIN = lib.crypto_pwhash_argon2id_opslimit_min()
-crypto_pwhash_argon2id_OPSLIMIT_MAX = lib.crypto_pwhash_argon2id_opslimit_max()
-crypto_pwhash_argon2id_OPSLIMIT_INTERACTIVE = (
+crypto_pwhash_argon2id_MEMLIMIT_MIN: int = (
+    lib.crypto_pwhash_argon2id_memlimit_min()
+)
+crypto_pwhash_argon2id_MEMLIMIT_MAX: int = (
+    lib.crypto_pwhash_argon2id_memlimit_max()
+)
+crypto_pwhash_argon2id_OPSLIMIT_MIN: int = (
+    lib.crypto_pwhash_argon2id_opslimit_min()
+)
+crypto_pwhash_argon2id_OPSLIMIT_MAX: int = (
+    lib.crypto_pwhash_argon2id_opslimit_max()
+)
+crypto_pwhash_argon2id_OPSLIMIT_INTERACTIVE: int = (
     lib.crypto_pwhash_argon2id_opslimit_interactive()
 )
-crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE = (
+crypto_pwhash_argon2id_MEMLIMIT_INTERACTIVE: int = (
     lib.crypto_pwhash_argon2id_memlimit_interactive()
 )
-crypto_pwhash_argon2id_OPSLIMIT_MODERATE = (
+crypto_pwhash_argon2id_OPSLIMIT_MODERATE: int = (
     lib.crypto_pwhash_argon2id_opslimit_moderate()
 )
-crypto_pwhash_argon2id_MEMLIMIT_MODERATE = (
+crypto_pwhash_argon2id_MEMLIMIT_MODERATE: int = (
     lib.crypto_pwhash_argon2id_memlimit_moderate()
 )
-crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE = (
+crypto_pwhash_argon2id_OPSLIMIT_SENSITIVE: int = (
     lib.crypto_pwhash_argon2id_opslimit_sensitive()
 )
-crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE = (
+crypto_pwhash_argon2id_MEMLIMIT_SENSITIVE: int = (
     lib.crypto_pwhash_argon2id_memlimit_sensitive()
 )
 
@@ -171,7 +188,9 @@ UINT64_MAX = (1 << 64) - 1
 SCRYPT_MAX_MEM = 32 * (1024 * 1024)
 
 
-def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
+def _check_memory_occupation(
+    n: int, r: int, p: int, maxmem: int = SCRYPT_MAX_MEM
+) -> None:
     ensure(r != 0, "Invalid block size", raising=exc.ValueError)
 
     ensure(p != 0, "Invalid parallelization factor", raising=exc.ValueError)
@@ -211,7 +230,9 @@ def _check_memory_occupation(n, r, p, maxmem=SCRYPT_MAX_MEM):
     )
 
 
-def nacl_bindings_pick_scrypt_params(opslimit, memlimit):
+def nacl_bindings_pick_scrypt_params(
+    opslimit: int, memlimit: int
+) -> Tuple[int, int, int]:
     """Python implementation of libsodium's pickparams"""
 
     if opslimit < 32768:
@@ -242,8 +263,14 @@ def nacl_bindings_pick_scrypt_params(opslimit, memlimit):
 
 
 def crypto_pwhash_scryptsalsa208sha256_ll(
-    passwd, salt, n, r, p, dklen=64, maxmem=SCRYPT_MAX_MEM
-):
+    passwd: bytes,
+    salt: bytes,
+    n: int,
+    r: int,
+    p: int,
+    dklen: int = 64,
+    maxmem: int = SCRYPT_MAX_MEM,
+) -> bytes:
     """
     Derive a cryptographic key using the ``passwd`` and ``salt``
     given as input.
@@ -296,10 +323,10 @@ def crypto_pwhash_scryptsalsa208sha256_ll(
 
 
 def crypto_pwhash_scryptsalsa208sha256_str(
-    passwd,
-    opslimit=SCRYPT_OPSLIMIT_INTERACTIVE,
-    memlimit=SCRYPT_MEMLIMIT_INTERACTIVE,
-):
+    passwd: bytes,
+    opslimit: int = SCRYPT_OPSLIMIT_INTERACTIVE,
+    memlimit: int = SCRYPT_MEMLIMIT_INTERACTIVE,
+) -> bytes:
     """
     Derive a cryptographic key using the ``passwd`` and ``salt``
     given as input, returning a string representation which includes
@@ -339,7 +366,9 @@ def crypto_pwhash_scryptsalsa208sha256_str(
     return ffi.string(buf)
 
 
-def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
+def crypto_pwhash_scryptsalsa208sha256_str_verify(
+    passwd_hash: bytes, passwd: bytes
+) -> bool:
     """
     Verifies the ``passwd`` against the ``passwd_hash`` that was generated.
     Returns True or False depending on the success
@@ -370,7 +399,7 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(passwd_hash, passwd):
     return True
 
 
-def _check_argon2_limits_alg(opslimit, memlimit, alg):
+def _check_argon2_limits_alg(opslimit: int, memlimit: int, alg: int) -> None:
 
     if alg == crypto_pwhash_ALG_ARGON2I13:
         if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
@@ -427,7 +456,14 @@ def _check_argon2_limits_alg(opslimit, memlimit, alg):
         raise exc.TypeError("Unsupported algorithm")
 
 
-def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
+def crypto_pwhash_alg(
+    outlen: int,
+    passwd: bytes,
+    salt: bytes,
+    opslimit: int,
+    memlimit: int,
+    alg: int,
+) -> bytes:
     """
     Derive a raw cryptographic key using the ``passwd`` and the ``salt``
     given as input to the ``alg`` algorithm.
@@ -436,6 +472,8 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     :type outlen: int
     :param passwd: The input password
     :type passwd: bytes
+    :param salt:
+    :type salt: bytes
     :param opslimit: computational cost
     :type opslimit: int
     :param memlimit: memory cost
@@ -489,10 +527,15 @@ def crypto_pwhash_alg(outlen, passwd, salt, opslimit, memlimit, alg):
     return ffi.buffer(outbuf, outlen)[:]
 
 
-def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
+def crypto_pwhash_str_alg(
+    passwd: bytes,
+    opslimit: int,
+    memlimit: int,
+    alg: int,
+) -> bytes:
     """
     Derive a cryptographic key using the ``passwd`` given as input
-    and a random ``salt``, returning a string representation which
+    and a random salt, returning a string representation which
     includes the salt, the tuning parameters and the used algorithm.
 
     :param passwd: The input password
@@ -527,7 +570,7 @@ def crypto_pwhash_str_alg(passwd, opslimit, memlimit, alg):
     return ffi.string(outbuf)
 
 
-def crypto_pwhash_str_verify(passwd_hash, passwd):
+def crypto_pwhash_str_verify(passwd_hash: bytes, passwd: bytes) -> bool:
     """
     Verifies the ``passwd`` against a given password hash.
 
