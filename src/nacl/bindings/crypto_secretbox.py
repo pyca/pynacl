@@ -18,15 +18,17 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-crypto_secretbox_KEYBYTES = lib.crypto_secretbox_keybytes()
-crypto_secretbox_NONCEBYTES = lib.crypto_secretbox_noncebytes()
-crypto_secretbox_ZEROBYTES = lib.crypto_secretbox_zerobytes()
-crypto_secretbox_BOXZEROBYTES = lib.crypto_secretbox_boxzerobytes()
-crypto_secretbox_MACBYTES = lib.crypto_secretbox_macbytes()
-crypto_secretbox_MESSAGEBYTES_MAX = lib.crypto_secretbox_messagebytes_max()
+crypto_secretbox_KEYBYTES: int = lib.crypto_secretbox_keybytes()
+crypto_secretbox_NONCEBYTES: int = lib.crypto_secretbox_noncebytes()
+crypto_secretbox_ZEROBYTES: int = lib.crypto_secretbox_zerobytes()
+crypto_secretbox_BOXZEROBYTES: int = lib.crypto_secretbox_boxzerobytes()
+crypto_secretbox_MACBYTES: int = lib.crypto_secretbox_macbytes()
+crypto_secretbox_MESSAGEBYTES_MAX: int = (
+    lib.crypto_secretbox_messagebytes_max()
+)
 
 
-def crypto_secretbox(message, nonce, key):
+def crypto_secretbox(message: bytes, nonce: bytes, key: bytes) -> bytes:
     """
     Encrypts and returns the message ``message`` with the secret ``key`` and
     the nonce ``nonce``.
@@ -52,7 +54,9 @@ def crypto_secretbox(message, nonce, key):
     return ciphertext[crypto_secretbox_BOXZEROBYTES:]
 
 
-def crypto_secretbox_open(ciphertext, nonce, key):
+def crypto_secretbox_open(
+    ciphertext: bytes, nonce: bytes, key: bytes
+) -> bytes:
     """
     Decrypt and returns the encrypted message ``ciphertext`` with the secret
     ``key`` and the nonce ``nonce``.
