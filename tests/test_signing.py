@@ -17,7 +17,11 @@ import binascii
 
 import pytest
 
-from nacl.bindings import crypto_sign_PUBLICKEYBYTES, crypto_sign_SEEDBYTES
+from nacl.bindings import (
+    crypto_sign_PUBLICKEYBYTES,
+    crypto_sign_SECRETKEYBYTES,
+    crypto_sign_SEEDBYTES,
+)
 from nacl.encoding import Base64Encoder, HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
@@ -89,6 +93,37 @@ class TestSigningKey:
     )
     def test_initialization_with_seed(self, seed):
         SigningKey(seed, encoder=HexEncoder)
+
+    def test_initialize_with_secret_key(self):
+        k = SigningKey.generate()
+        seed_bytes = k._seed
+        secret_key_bytes = k._signing_key
+        k_from_seed = SigningKey(seed=seed_bytes)
+        k_from_secret_key = SigningKey(secret_key=secret_key_bytes)
+        assert_equal(k, k_from_seed)
+        assert_equal(k, k_from_secret_key)
+        assert id(k) != id(k_from_seed)
+        assert id(k) != id(k_from_secret_key)
+        assert id(k_from_secret_key) != id(k_from_seed)
+
+    def test_initialization_with_secret_key_and_seed(self):
+        with pytest.raises(AssertionError):
+            SigningKey(
+                seed=b"\x00" * crypto_sign_SEEDBYTES,
+                secret_key=b"\x00" * crypto_sign_SECRETKEYBYTES,
+            )
+
+    def test_initialization_without_arguments(self):
+        with pytest.raises(AssertionError):
+            SigningKey()
+
+    def test_wrong_key_length(self):
+        with pytest.raises(ValueError):
+            SigningKey(secret_key=b"\x00" * 5)
+
+    def test_wrong_secret_key_type(self):
+        with pytest.raises(TypeError):
+            SigningKey(secret_key=12)
 
     @pytest.mark.parametrize(
         ("seed", "_public_key", "message", "signature", "expected"),
