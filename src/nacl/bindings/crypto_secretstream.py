@@ -11,45 +11,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Optional, Tuple, cast
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-crypto_secretstream_xchacha20poly1305_ABYTES = (
+crypto_secretstream_xchacha20poly1305_ABYTES: int = (
     lib.crypto_secretstream_xchacha20poly1305_abytes()
 )
-crypto_secretstream_xchacha20poly1305_HEADERBYTES = (
+crypto_secretstream_xchacha20poly1305_HEADERBYTES: int = (
     lib.crypto_secretstream_xchacha20poly1305_headerbytes()
 )
-crypto_secretstream_xchacha20poly1305_KEYBYTES = (
+crypto_secretstream_xchacha20poly1305_KEYBYTES: int = (
     lib.crypto_secretstream_xchacha20poly1305_keybytes()
 )
-crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX = (
+crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX: int = (
     lib.crypto_secretstream_xchacha20poly1305_messagebytes_max()
 )
-crypto_secretstream_xchacha20poly1305_STATEBYTES = (
+crypto_secretstream_xchacha20poly1305_STATEBYTES: int = (
     lib.crypto_secretstream_xchacha20poly1305_statebytes()
 )
 
 
-crypto_secretstream_xchacha20poly1305_TAG_MESSAGE = (
+crypto_secretstream_xchacha20poly1305_TAG_MESSAGE: int = (
     lib.crypto_secretstream_xchacha20poly1305_tag_message()
 )
-crypto_secretstream_xchacha20poly1305_TAG_PUSH = (
+crypto_secretstream_xchacha20poly1305_TAG_PUSH: int = (
     lib.crypto_secretstream_xchacha20poly1305_tag_push()
 )
-crypto_secretstream_xchacha20poly1305_TAG_REKEY = (
+crypto_secretstream_xchacha20poly1305_TAG_REKEY: int = (
     lib.crypto_secretstream_xchacha20poly1305_tag_rekey()
 )
-crypto_secretstream_xchacha20poly1305_TAG_FINAL = (
+crypto_secretstream_xchacha20poly1305_TAG_FINAL: int = (
     lib.crypto_secretstream_xchacha20poly1305_tag_final()
 )
 
 
-def crypto_secretstream_xchacha20poly1305_keygen():
+def crypto_secretstream_xchacha20poly1305_keygen() -> bytes:
     """
     Generate a key for use with
     :func:`.crypto_secretstream_xchacha20poly1305_init_push`.
@@ -71,18 +71,20 @@ class crypto_secretstream_xchacha20poly1305_state:
 
     __slots__ = ["statebuf", "rawbuf", "tagbuf"]
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize a clean state object."""
         self.statebuf = ffi.new(
             "unsigned char[]",
             crypto_secretstream_xchacha20poly1305_STATEBYTES,
         )
 
-        self.rawbuf = None
-        self.tagbuf = None
+        self.rawbuf: Optional[bytes] = None
+        self.tagbuf: Optional[bytes] = None
 
 
-def crypto_secretstream_xchacha20poly1305_init_push(state, key):
+def crypto_secretstream_xchacha20poly1305_init_push(
+    state: crypto_secretstream_xchacha20poly1305_state, key: bytes
+) -> bytes:
     """
     Initialize a crypto_secretstream_xchacha20poly1305 encryption buffer.
 
@@ -125,11 +127,11 @@ def crypto_secretstream_xchacha20poly1305_init_push(state, key):
 
 
 def crypto_secretstream_xchacha20poly1305_push(
-    state,
-    m,
-    ad=None,
-    tag=crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
-):
+    state: crypto_secretstream_xchacha20poly1305_state,
+    m: bytes,
+    ad: Optional[bytes] = None,
+    tag: int = crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+) -> bytes:
     """
     Add an encrypted message to the secret stream.
 
@@ -191,7 +193,11 @@ def crypto_secretstream_xchacha20poly1305_push(
     return ffi.buffer(state.rawbuf, clen)[:]
 
 
-def crypto_secretstream_xchacha20poly1305_init_pull(state, header, key):
+def crypto_secretstream_xchacha20poly1305_init_pull(
+    state: crypto_secretstream_xchacha20poly1305_state,
+    header: bytes,
+    key: bytes,
+) -> None:
     """
     Initialize a crypto_secretstream_xchacha20poly1305 decryption buffer.
 
@@ -240,7 +246,11 @@ def crypto_secretstream_xchacha20poly1305_init_pull(state, header, key):
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
 
-def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
+def crypto_secretstream_xchacha20poly1305_pull(
+    state: crypto_secretstream_xchacha20poly1305_state,
+    c: bytes,
+    ad: Optional[bytes] = None,
+) -> Tuple[bytes, int]:
     """
     Read a decrypted message from the secret stream.
 
@@ -317,10 +327,16 @@ def crypto_secretstream_xchacha20poly1305_pull(state, c, ad=None):
     )
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
-    return (ffi.buffer(state.rawbuf, mlen)[:], int(state.tagbuf[0]))
+    # Cast safety: we `ensure` above that `state.tagbuf is not None`.
+    return (
+        ffi.buffer(state.rawbuf, mlen)[:],
+        int(cast(bytes, state.tagbuf)[0]),
+    )
 
 
-def crypto_secretstream_xchacha20poly1305_rekey(state):
+def crypto_secretstream_xchacha20poly1305_rekey(
+    state: crypto_secretstream_xchacha20poly1305_state,
+) -> None:
     """
     Explicitly change the encryption key in the stream.
 

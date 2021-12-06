@@ -16,10 +16,10 @@
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 
-randombytes_SEEDBYTES = lib.randombytes_seedbytes()
+randombytes_SEEDBYTES: int = lib.randombytes_seedbytes()
 
 
-def randombytes(size):
+def randombytes(size: int) -> bytes:
     """
     Returns ``size`` number of random bytes from a cryptographically secure
     random source.
