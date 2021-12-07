@@ -47,13 +47,13 @@ MEMLIMIT_MODERATE = nacl.bindings.crypto_pwhash_argon2i_MEMLIMIT_MODERATE
 
 
 def kdf(
-    size,
-    password,
-    salt,
-    opslimit=OPSLIMIT_SENSITIVE,
-    memlimit=MEMLIMIT_SENSITIVE,
-    encoder=nacl.encoding.RawEncoder,
-):
+    size: int,
+    password: bytes,
+    salt: bytes,
+    opslimit: int = OPSLIMIT_SENSITIVE,
+    memlimit: int = MEMLIMIT_SENSITIVE,
+    encoder: nacl.encoding.Encoder = nacl.encoding.RawEncoder,
+) -> bytes:
     """
     Derive a ``size`` bytes long key from a caller-supplied
     ``password`` and ``salt`` pair using the argon2i
@@ -107,8 +107,10 @@ def kdf(
 
 
 def str(
-    password, opslimit=OPSLIMIT_INTERACTIVE, memlimit=MEMLIMIT_INTERACTIVE
-):
+    password: bytes,
+    opslimit: int = OPSLIMIT_INTERACTIVE,
+    memlimit: int = MEMLIMIT_INTERACTIVE,
+) -> bytes:
     """
     Hashes a password with a random salt, using the memory-hard
     argon2i construct and returning an ascii string that has all
