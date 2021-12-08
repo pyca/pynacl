@@ -99,7 +99,7 @@ crypto_pwhash_PASSWD_MAX: int = lib.crypto_pwhash_passwd_max()
 crypto_pwhash_BYTES_MIN: int = lib.crypto_pwhash_bytes_min()
 crypto_pwhash_BYTES_MAX: int = lib.crypto_pwhash_bytes_max()
 
-crypto_pwhash_argon2i_STRPREFIX: str = ffi.string(
+crypto_pwhash_argon2i_STRPREFIX: bytes = ffi.string(
     ffi.cast("char *", lib.crypto_pwhash_argon2i_strprefix())
 )[:]
 crypto_pwhash_argon2i_MEMLIMIT_MIN: int = (
@@ -133,7 +133,7 @@ crypto_pwhash_argon2i_MEMLIMIT_SENSITIVE: int = (
     lib.crypto_pwhash_argon2i_memlimit_sensitive()
 )
 
-crypto_pwhash_argon2id_STRPREFIX: str = ffi.string(
+crypto_pwhash_argon2id_STRPREFIX: bytes = ffi.string(
     ffi.cast("char *", lib.crypto_pwhash_argon2id_strprefix())
 )[:]
 crypto_pwhash_argon2id_MEMLIMIT_MIN: int = (
