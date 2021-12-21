@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import cast
 
 import nacl.bindings
 import nacl.encoding
@@ -132,7 +133,16 @@ def kdf(
 
     return encoder.encode(
         nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
-            password, salt, 2 ** n_log2, r, p, maxmem=maxmem, dklen=size
+            password,
+            salt,
+            # Cast safety: n_log2 is a positive integer, and so 2 ** n_log2 is also
+            # a positive integer. Mypy+typeshed can't deduce this, because there's no
+            # way to for them to know that n_log2: int is positive.
+            cast(int, 2 ** n_log2),
+            r,
+            p,
+            maxmem=maxmem,
+            dklen=size,
         )
     )
 

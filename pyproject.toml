@@ -13,10 +13,31 @@ target-version = ["py36"]
 
 [tool.mypy]
 show_error_codes = true
-check_untyped_defs = true
-no_implicit_reexport = true
 warn_redundant_casts = true
 warn_incomplete_stub = true
+
+disallow_any_unimported = true
+disallow_any_expr = true  # overridden to `false` inside `nacl.bindings`
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+
+no_implicit_optional = true
+
+warn_unused_ignores = true
+warn_no_return = true
+warn_return_any = true  # overridden to `false` inside `nacl.bindings`
+warn_unreachable = true
+
+no_implicit_reexport = true
+strict_equality = true
 
 files = ["src/nacl"]
 
@@ -26,38 +47,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-# Most options can be applied across the entire project.
-[[tool.mypy.overrides]]
-module = [
-    "nacl.bindings",
-    "nacl.encoding",
-    "nacl.exceptions",
-    "nacl.pwhash",
-    "nacl.utils",
-]
-disallow_any_unimported = true
-# disallow_any_expr: true outside of `bindings`
-disallow_any_decorated = true
-disallow_any_explicit = true
-disallow_any_generics = true
-disallow_subclassing_any = true
-
-disallow_untyped_calls = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-# check_untyped_defs enabled globally
-disallow_untyped_decorators = true
-
-no_implicit_optional = true
-
-warn_unused_ignores = true
-warn_no_return = true
-# warn_return_any: true outside of `bindings`
-warn_unreachable = true
-
-# no-implicit-reexport enabled globally
-strict_equality = true
-
 # Within `nacl.bindings`, all of the C functions exposed via cffi in
 # nacl._sodium return `Any` as far as mypy is concerned. It's not worth it to
 # stub the C functions or cast() their uses. But this means there are more
@@ -66,11 +55,8 @@ strict_equality = true
 
 [[tool.mypy.overrides]]
 module = [
-    "nacl.encoding",
-    "nacl.exceptions",
-    "nacl.utils",
-    "nacl.pwhash",
+    "nacl.bindings.*",
 ]
-disallow_any_expr = true
-warn_return_any = true
+disallow_any_expr = false
+warn_return_any = false
 

@@ -219,6 +219,7 @@ setup(
     tests_require=test_requirements,
     package_dir={"": "src"},
     packages=["nacl", "nacl.pwhash", "nacl.bindings"],
+    package_data={"nacl": ["py.typed"]},
     ext_package="nacl",
     cffi_modules=["src/bindings/build.py:ffi"],
     cmdclass={"build_clib": build_clib, "build_ext": build_ext},

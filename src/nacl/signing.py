@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Optional
 
 import nacl.bindings
 from nacl import encoding
@@ -29,25 +29,27 @@ class SignedMessage(bytes):
     :class:`SigningKey`.
     """
 
-    _signature: object
-    _message: object
+    _signature: bytes
+    _message: bytes
 
     @classmethod
-    def _from_parts(cls, signature, message, combined):
+    def _from_parts(
+        cls, signature: bytes, message: bytes, combined: bytes
+    ) -> "SignedMessage":
         obj = cls(combined)
         obj._signature = signature
         obj._message = message
         return obj
 
     @property
-    def signature(self):
+    def signature(self) -> bytes:
         """
         The signature contained within the :class:`SignedMessage`.
         """
         return self._signature
 
     @property
-    def message(self):
+    def message(self) -> bytes:
         """
         The message contained within the :class:`SignedMessage`.
         """
@@ -63,7 +65,9 @@ class VerifyKey(encoding.Encodable, StringFixer):
     :param encoder: A class that is able to decode the `key`
     """
 
-    def __init__(self, key, encoder=encoding.RawEncoder):
+    def __init__(
+        self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
+    ):
         # Decode the key
         key = encoder.decode(key)
         if not isinstance(key, bytes):
@@ -77,21 +81,26 @@ class VerifyKey(encoding.Encodable, StringFixer):
 
         self._key = key
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._key
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(bytes(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not (self == other)
 
-    def verify(self, smessage, signature=None, encoder=encoding.RawEncoder):
+    def verify(
+        self,
+        smessage: bytes,
+        signature: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Verifies the signature of a signed message, returning the message
         if it has not been tampered with else raising
@@ -127,7 +136,7 @@ class VerifyKey(encoding.Encodable, StringFixer):
 
         return nacl.bindings.crypto_sign_open(smessage, self._key)
 
-    def to_curve25519_public_key(self):
+    def to_curve25519_public_key(self) -> _Curve25519_PublicKey:
         """
         Converts a :class:`~nacl.signing.VerifyKey` to a
         :class:`~nacl.public.PublicKey`
@@ -157,7 +166,11 @@ class SigningKey(encoding.Encodable, StringFixer):
         (i.e. public) key that corresponds with this signing key.
     """
 
-    def __init__(self, seed, encoder=encoding.RawEncoder):
+    def __init__(
+        self,
+        seed: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ):
         # Decode the seed
         seed = encoder.decode(seed)
         if not isinstance(seed, bytes):
@@ -178,22 +191,22 @@ class SigningKey(encoding.Encodable, StringFixer):
         self._signing_key = secret_key
         self.verify_key = VerifyKey(public_key)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._seed
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(bytes(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
         return nacl.bindings.sodium_memcmp(bytes(self), bytes(other))
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
         return not (self == other)
 
     @classmethod
-    def generate(cls):
+    def generate(cls) -> "SigningKey":
         """
         Generates a random :class:`~nacl.signing.SigningKey` object.
 
@@ -204,7 +217,11 @@ class SigningKey(encoding.Encodable, StringFixer):
             encoder=encoding.RawEncoder,
         )
 
-    def sign(self, message, encoder=encoding.RawEncoder):
+    def sign(
+        self,
+        message: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> SignedMessage:
         """
         Sign a message using this key.
 
@@ -221,7 +238,7 @@ class SigningKey(encoding.Encodable, StringFixer):
 
         return SignedMessage._from_parts(signature, message, signed)
 
-    def to_curve25519_private_key(self):
+    def to_curve25519_private_key(self) -> _Curve25519_PrivateKey:
         """
         Converts a :class:`~nacl.signing.SigningKey` to a
         :class:`~nacl.public.PrivateKey`
