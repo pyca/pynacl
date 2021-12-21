@@ -37,6 +37,7 @@ module = [
     "nacl.hashlib",
     "nacl.public",
     "nacl.secret",
+    "nacl.signing",
     "nacl.utils",
 ]
 disallow_any_unimported = true
@@ -77,6 +78,7 @@ module = [
     "nacl.hashlib",
     "nacl.public",
     "nacl.secret",
+    "nacl.signing",
     "nacl.utils",
 ]
 disallow_any_expr = true
