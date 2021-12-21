@@ -33,6 +33,7 @@ module = [
     "nacl.pwhash",
     "nacl.encoding",
     "nacl.exceptions",
+    "nacl.hash",
     "nacl.utils",
 ]
 disallow_any_unimported = true
@@ -69,6 +70,7 @@ module = [
     "nacl.pwhash",
     "nacl.encoding",
     "nacl.exceptions",
+    "nacl.hash",
     "nacl.utils",
 ]
 disallow_any_expr = true
