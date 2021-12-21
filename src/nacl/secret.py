@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from typing import Optional
 
 import nacl.bindings
 from nacl import encoding
@@ -54,7 +54,9 @@ class SecretBox(encoding.Encodable, StringFixer):
     MACBYTES = nacl.bindings.crypto_secretbox_MACBYTES
     MESSAGEBYTES_MAX = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
 
-    def __init__(self, key, encoder=encoding.RawEncoder):
+    def __init__(
+        self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
+    ):
         key = encoder.decode(key)
         if not isinstance(key, bytes):
             raise exc.TypeError("SecretBox must be created from 32 bytes")
@@ -66,10 +68,15 @@ class SecretBox(encoding.Encodable, StringFixer):
 
         self._key = key
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._key
 
-    def encrypt(self, plaintext, nonce=None, encoder=encoding.RawEncoder):
+    def encrypt(
+        self,
+        plaintext: bytes,
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> EncryptedMessage:
         """
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -107,7 +114,12 @@ class SecretBox(encoding.Encodable, StringFixer):
             encoder.encode(nonce + ciphertext),
         )
 
-    def decrypt(self, ciphertext, nonce=None, encoder=encoding.RawEncoder):
+    def decrypt(
+        self,
+        ciphertext: bytes,
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and
@@ -183,7 +195,11 @@ class Aead(encoding.Encodable, StringFixer):
         nacl.bindings.crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX
     )
 
-    def __init__(self, key, encoder=encoding.RawEncoder):
+    def __init__(
+        self,
+        key: bytes,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ):
         key = encoder.decode(key)
         if not isinstance(key, bytes):
             raise exc.TypeError("AEAD must be created from 32 bytes")
@@ -195,12 +211,16 @@ class Aead(encoding.Encodable, StringFixer):
 
         self._key = key
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self._key
 
     def encrypt(
-        self, plaintext, aad=b"", nonce=None, encoder=encoding.RawEncoder
-    ):
+        self,
+        plaintext: bytes,
+        aad: bytes = b"",
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> EncryptedMessage:
         """
         Encrypts the plaintext message using the given `nonce` (or generates
         one randomly if omitted) and returns the ciphertext encoded with the
@@ -246,8 +266,12 @@ class Aead(encoding.Encodable, StringFixer):
         )
 
     def decrypt(
-        self, ciphertext, aad=b"", nonce=None, encoder=encoding.RawEncoder
-    ):
+        self,
+        ciphertext: bytes,
+        aad: bytes = b"",
+        nonce: Optional[bytes] = None,
+        encoder: encoding.Encoder = encoding.RawEncoder,
+    ) -> bytes:
         """
         Decrypts the ciphertext using the `nonce` (explicitly, when passed as a
         parameter or implicitly, when omitted, as part of the ciphertext) and

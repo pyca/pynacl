@@ -35,6 +35,7 @@ module = [
     "nacl.exceptions",
     "nacl.hash",
     "nacl.hashlib",
+    "nacl.secret",
     "nacl.utils",
 ]
 disallow_any_unimported = true
@@ -73,6 +74,7 @@ module = [
     "nacl.exceptions",
     "nacl.hash",
     "nacl.hashlib",
+    "nacl.secret",
     "nacl.utils",
 ]
 disallow_any_expr = true
