@@ -30,9 +30,9 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = [
     "nacl.bindings",
+    "nacl.pwhash",
     "nacl.encoding",
     "nacl.exceptions",
-    "nacl.pwhash",
     "nacl.utils",
 ]
 disallow_any_unimported = true
@@ -66,10 +66,10 @@ strict_equality = true
 
 [[tool.mypy.overrides]]
 module = [
+    "nacl.pwhash",
     "nacl.encoding",
     "nacl.exceptions",
     "nacl.utils",
-    "nacl.pwhash",
 ]
 disallow_any_expr = true
 warn_return_any = true
