@@ -39,7 +39,15 @@ warn_unreachable = true
 no_implicit_reexport = true
 strict_equality = true
 
-files = ["src/nacl"]
+# Include test files manually for now. Can tidy up later.
+files = [
+    "src/nacl",
+    "tests/test_aead.py",
+    "tests/test_bindings.py",
+    "tests/test_box.py",
+    "tests/test_signing.py",
+    "tests/utils.py",
+]
 
 [[tool.mypy.overrides]]
 module = [
@@ -51,7 +59,7 @@ ignore_missing_imports = true
 # nacl._sodium return `Any` as far as mypy is concerned. It's not worth it to
 # stub the C functions or cast() their uses. But this means there are more
 # `Any`s floating around. So the more restrictive any checks we'd like to use
-# should only be turned out outside of `bindings`.
+# should only be turned on outside of `bindings`.
 
 [[tool.mypy.overrides]]
 module = [
@@ -60,3 +68,23 @@ module = [
 disallow_any_expr = false
 warn_return_any = false
 
+# Loosen some of the checks within the tests.
+# For now this is an explicit list rather than a wildcard "test.*", to make
+# it a little easier to run the strict checks on modules first. We can clean
+# this up later. Note that we _do_ run the strict checks on `test.utils`.
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.test_aead",
+    "tests.test_bindings",
+    "tests.test_box",
+    "tests.test_signing",
+]
+# Some library helpers types' involve `Any`, in particular `pytest.mark.parameterize`
+# and `hypothesis.strategies.sampledfrom`.
+disallow_any_expr = false
+disallow_any_decorated = false
+
+# It's not useful to annotate each test function as `-> None`.
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
