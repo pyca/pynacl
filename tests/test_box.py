@@ -23,7 +23,7 @@ from nacl.public import Box, PrivateKey, PublicKey
 from nacl.utils import random
 
 from .test_bindings import _box_from_seed_vectors
-
+from .utils import check_type_error
 
 VECTORS = [
     # privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
@@ -340,12 +340,6 @@ def test_box_wrong_length():
         b.encrypt(b"", b"")
     with pytest.raises(ValueError):
         b.decrypt(b"", b"")
-
-
-def check_type_error(expected, f, *args):
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
 
 
 def test_wrong_types():

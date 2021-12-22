@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import binascii
-from typing import Callable, List, Tuple, Union
+from typing import List, Tuple, Union
 
 import pytest
 
@@ -21,7 +21,12 @@ from nacl.encoding import Base64Encoder, HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
-from .utils import assert_equal, assert_not_equal, read_crypto_test_vectors
+from .utils import (
+    assert_equal,
+    assert_not_equal,
+    check_type_error,
+    read_crypto_test_vectors,
+)
 
 
 def tohex(b: bytes) -> str:
@@ -267,16 +272,6 @@ class TestVerifyKey:
             "f1814f0e8ff1043d8a44d25babff3ced"
             "cae6c22c3edaa48f857ae70de2baae50"
         )
-
-
-# Type safety: it's fine to use `...` here, but mypy config doesn't like it because it's
-# an explict `Any`.
-def check_type_error(  # type: ignore[misc]
-    expected: str, f: Callable[..., object], *args: object
-) -> None:
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
 
 
 def test_wrong_types():

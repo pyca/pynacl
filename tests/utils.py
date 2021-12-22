@@ -14,7 +14,9 @@
 
 
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
+
+import pytest
 
 
 def assert_equal(x: object, y: object) -> None:
@@ -74,3 +76,13 @@ def flip_byte(original: bytes, byte_offset: int) -> bytes:
         + bytes([0x01 ^ original[byte_offset]])
         + original[byte_offset + 1 :]
     )
+
+
+# Type safety: it's fine to use `...` here, but mypy config doesn't like it because it's
+# an explict `Any`.
+def check_type_error(  # type: ignore[misc]
+    expected: str, f: Callable[..., object], *args: object
+) -> None:
+    with pytest.raises(TypeError) as e:
+        f(*args)
+    assert expected in str(e.value)
