@@ -14,19 +14,22 @@
 
 
 import os
+from typing import Dict, List, Optional, Tuple
 
 
-def assert_equal(x, y):
+def assert_equal(x: object, y: object) -> None:
     assert x == y
     assert not (x != y)
 
 
-def assert_not_equal(x, y):
+def assert_not_equal(x: object, y: object) -> None:
     assert x != y
     assert not (x == y)
 
 
-def read_crypto_test_vectors(fname, maxels=0, delimiter=None):
+def read_crypto_test_vectors(
+    fname: str, maxels: int = 0, delimiter: Optional[bytes] = None
+) -> List[Tuple[bytes, ...]]:
     assert delimiter is not None and isinstance(delimiter, bytes)
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
@@ -41,12 +44,16 @@ def read_crypto_test_vectors(fname, maxels=0, delimiter=None):
     return vectors
 
 
-def read_kv_test_vectors(fname, delimiter=None, newrecord=None):
+def read_kv_test_vectors(
+    fname: str,
+    delimiter: Optional[bytes] = None,
+    newrecord: Optional[bytes] = None,
+) -> List[Dict[str, bytes]]:
     assert delimiter is not None and isinstance(delimiter, bytes)
     assert newrecord is not None and isinstance(newrecord, bytes)
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
-    vector = {}
+    vector: Dict[str, bytes] = {}
     with open(path, "rb") as fp:
         for line in fp:
             line = line.rstrip()
@@ -61,7 +68,7 @@ def read_kv_test_vectors(fname, delimiter=None, newrecord=None):
     return vectors
 
 
-def flip_byte(original, byte_offset):
+def flip_byte(original: bytes, byte_offset: int) -> bytes:
     return (
         original[:byte_offset]
         + bytes([0x01 ^ original[byte_offset]])
