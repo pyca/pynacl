@@ -20,8 +20,8 @@ from nacl.exceptions import ensure
 
 has_crypto_scalarmult_ed25519 = bool(lib.PYNACL_HAS_CRYPTO_SCALARMULT_ED25519)
 
-crypto_scalarmult_BYTES = lib.crypto_scalarmult_bytes()
-crypto_scalarmult_SCALARBYTES = lib.crypto_scalarmult_scalarbytes()
+crypto_scalarmult_BYTES: int = lib.crypto_scalarmult_bytes()
+crypto_scalarmult_SCALARBYTES: int = lib.crypto_scalarmult_scalarbytes()
 
 crypto_scalarmult_ed25519_BYTES = 0
 crypto_scalarmult_ed25519_SCALARBYTES = 0
