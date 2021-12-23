@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import binascii
 import copy
 import json
 import os
+from typing import AnyStr, Dict, List, Tuple, Union
 
 import pytest
 
@@ -36,23 +36,29 @@ OVERLONG_PARAMS_VECTORS = [
 ]
 
 
-def generichash_vectors():
+def generichash_vectors() -> List[Tuple[bytes, bytes, bytes, bytes]]:
     # Format: <message> <tab> <key> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-nosalt-nopersonalization.txt"
-    return read_crypto_test_vectors(DATA, delimiter=b"\t")
+    # Type safety: read_crypto_test_vectors returns an arbitrary length tuple, but we
+    # know this file's test entries contain exactly four fields.
+    return read_crypto_test_vectors(DATA, delimiter=b"\t")  # type: ignore[return-value]
 
 
-def blake2_salt_pers_vectors():
+def blake2_salt_pers_vectors() -> List[
+    Tuple[bytes, bytes, bytes, bytes, bytes, bytes]
+]:
     # Format: <message> <tab> <key> <tab> <salt> <tab>
     # <personalization> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-salt-personalization.txt"
-    return read_crypto_test_vectors(DATA, delimiter=b"\t")
+    # Type safety: read_crypto_test_vectors returns an arbitrary length tuple, but we
+    # know this file's test entries contain exactly six fields.
+    return read_crypto_test_vectors(DATA, delimiter=b"\t")  # type: ignore[return-value]
 
 
-def blake2_reference_vectors():
+def blake2_reference_vectors() -> List[Tuple[str, str, int, str]]:
     DATA = "blake2-kat.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors = json.load(open(path))
+    jvectors: List[Dict[str, str]] = json.load(open(path))
     vectors = [
         (x["in"], x["key"], len(x["out"]) // 2, x["out"])
         for x in jvectors
@@ -64,13 +70,15 @@ def blake2_reference_vectors():
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], generichash_vectors()
 )
-def test_generichash(message, key, outlen, output):
+def test_generichash(
+    message: AnyStr, key: AnyStr, outlen: Union[AnyStr, int], output: AnyStr
+):
     msg = binascii.unhexlify(message)
-    output = binascii.hexlify(binascii.unhexlify(output))
+    output_bytes = binascii.hexlify(binascii.unhexlify(output))
     k = binascii.unhexlify(key)
-    outlen = int(outlen)
-    out = nacl.hash.generichash(msg, digest_size=outlen, key=k)
-    assert out == output
+    outlen_parsed = int(outlen)
+    out = nacl.hash.generichash(msg, digest_size=outlen_parsed, key=k)
+    assert out == output_bytes
 
 
 @pytest.mark.parametrize(
@@ -78,7 +86,12 @@ def test_generichash(message, key, outlen, output):
     OVERLONG_PARAMS_VECTORS,
 )
 def test_overlong_blake2b_oneshot_params(
-    message, key, salt, person, outlen, output
+    message: bytes,
+    key: bytes,
+    salt: bytes,
+    person: bytes,
+    outlen: int,
+    output: bytes,
 ):
     with pytest.raises(exc.ValueError):
         nacl.hash.blake2b(
@@ -89,7 +102,9 @@ def test_overlong_blake2b_oneshot_params(
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )
-def test_generichash_blake2_ref(message, key, outlen, output):
+def test_generichash_blake2_ref(
+    message: str, key: str, outlen: int, output: str
+):
     test_generichash(message, key, outlen, output)
 
 
@@ -97,15 +112,22 @@ def test_generichash_blake2_ref(message, key, outlen, output):
     ["message", "key", "salt", "person", "outlen", "output"],
     blake2_salt_pers_vectors(),
 )
-def test_hash_blake2b(message, key, salt, person, outlen, output):
+def test_hash_blake2b(
+    message: bytes,
+    key: bytes,
+    salt: bytes,
+    person: bytes,
+    outlen: bytes,
+    output: bytes,
+):
     msg = binascii.unhexlify(message)
     output = binascii.hexlify(binascii.unhexlify(output))
     k = binascii.unhexlify(key)
     slt = binascii.unhexlify(salt)
     pers = binascii.unhexlify(person)
-    outlen = int(outlen)
+    outlen_parsed = int(outlen)
     out = nacl.hash.blake2b(
-        msg, digest_size=outlen, key=k, salt=slt, person=pers
+        msg, digest_size=outlen_parsed, key=k, salt=slt, person=pers
     )
     assert out == output
 
@@ -134,7 +156,9 @@ def test_expected_bindings_level_pickle_and_copy_failures():
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )
-def test_hashlib_blake2_ref_vectors(message, key, outlen, output):
+def test_hashlib_blake2_ref_vectors(
+    message: str, key: str, outlen: int, output: str
+):
     msg = binascii.unhexlify(message)
     k = binascii.unhexlify(key)
     outlen = int(outlen)
@@ -147,7 +171,9 @@ def test_hashlib_blake2_ref_vectors(message, key, outlen, output):
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )
-def test_hashlib_blake2_iuf_ref_vectors(message, key, outlen, output):
+def test_hashlib_blake2_iuf_ref_vectors(
+    message: str, key: str, outlen: int, output: str
+):
     msg = binascii.unhexlify(message)
     k = binascii.unhexlify(key)
     outlen = int(outlen)
@@ -165,7 +191,9 @@ def test_hashlib_blake2_iuf_ref_vectors(message, key, outlen, output):
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )
-def test_hashlib_blake2_iuf_cp_ref_vectors(message, key, outlen, output):
+def test_hashlib_blake2_iuf_cp_ref_vectors(
+    message: str, key: str, outlen: int, output: str
+):
     msg = binascii.unhexlify(message)
     msglen = len(msg)
     if msglen < 2:
@@ -190,7 +218,12 @@ def test_hashlib_blake2_iuf_cp_ref_vectors(message, key, outlen, output):
     OVERLONG_PARAMS_VECTORS,
 )
 def test_overlong_blake2b_iuf_params(
-    message, key, salt, person, outlen, output
+    message: bytes,
+    key: bytes,
+    salt: bytes,
+    person: bytes,
+    outlen: int,
+    output: bytes,
 ):
     with pytest.raises(exc.ValueError):
         nacl.hashlib.blake2b(
@@ -201,12 +234,12 @@ def test_overlong_blake2b_iuf_params(
 def test_blake2_descriptors_presence():
     h = nacl.hashlib.blake2b()
     assert h.name == "blake2b"
-    h.block_size == 128
-    h.digest_size == 32  # this is the default digest_size
+    assert h.block_size == 128
+    assert h.digest_size == 32  # this is the default digest_size
 
 
 def test_blake2_digest_size_descriptor_coherence():
     h = nacl.hashlib.blake2b(digest_size=64)
     assert h.name == "blake2b"
-    h.block_size == 128
-    h.digest_size == 64
+    assert h.block_size == 128
+    assert h.digest_size == 64
