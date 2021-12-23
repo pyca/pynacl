@@ -50,6 +50,7 @@ files = [
     "tests/test_generichash.py",
     "tests/test_hash.py",
     "tests/test_hashlib_scrypt.py",
+    "tests/test_kx.py",
     "tests/test_signing.py",
     "tests/utils.py",
 ]
@@ -88,6 +89,7 @@ module = [
     "tests.test_generichash",
     "tests.test_hash",
     "tests.test_hashlib_scrypt",
+    "tests.test_kx",
     "tests.test_signing",
 ]
 # Some library helpers types' involve `Any`, in particular `pytest.mark.parameterize`

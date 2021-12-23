@@ -34,7 +34,7 @@ def test_crypto_kx_keypair():
     binary(min_size=32, max_size=32),
 )
 @settings(max_examples=100)
-def test_crypto_kx_seed_keypair(seed1, seed2):
+def test_crypto_kx_seed_keypair(seed1: bytes, seed2: bytes):
     seeded = b.crypto_kx_seed_keypair(seed1)
     seeded_other = b.crypto_kx_seed_keypair(seed2)
     if seed1 != seed2:
@@ -47,7 +47,7 @@ def test_crypto_kx_seed_keypair(seed1, seed2):
     binary(min_size=33, max_size=128),
 )
 @settings(max_examples=20, suppress_health_check=[HealthCheck.too_slow])
-def test_crypto_kx_seed_keypair_seed_too_large(seed):
+def test_crypto_kx_seed_keypair_seed_too_large(seed: bytes):
     with pytest.raises(exc.TypeError):
         b.crypto_kx_seed_keypair(seed)
 
@@ -56,7 +56,7 @@ def test_crypto_kx_seed_keypair_seed_too_large(seed):
     binary(min_size=0, max_size=31),
 )
 @settings(max_examples=20)
-def test_crypto_kx_seed_keypair_seed_too_small(seed):
+def test_crypto_kx_seed_keypair_seed_too_small(seed: bytes):
     with pytest.raises(exc.TypeError):
         b.crypto_kx_seed_keypair(seed)
 
@@ -66,7 +66,7 @@ def test_crypto_kx_seed_keypair_seed_too_small(seed):
     binary(min_size=32, max_size=32),
 )
 @settings(max_examples=100)
-def test_crypto_kx_session_keys(seed1, seed2):
+def test_crypto_kx_session_keys(seed1: bytes, seed2: bytes):
     s_keys = b.crypto_kx_seed_keypair(seed1)
     c_keys = b.crypto_kx_seed_keypair(seed2)
 
@@ -85,6 +85,7 @@ def test_crypto_kx_session_wrong_key_lengths():
     s_keys = b.crypto_kx_keypair()
     c_keys = b.crypto_kx_keypair()
 
+    # TODO: should invalid argument lengths (but correct types) raise ValueError?
     with pytest.raises(exc.TypeError):
         b.crypto_kx_server_session_keys(s_keys[0][:-1], s_keys[1], c_keys[0])
 
