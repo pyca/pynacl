@@ -23,15 +23,11 @@ import platform
 import shutil
 import subprocess
 import sys
-from distutils.sysconfig import get_config_vars
+from sysconfig import get_config_vars
 
 from setuptools import Distribution, setup
+from setuptools.command.build_clib import build_clib as _build_clib
 from setuptools.command.build_ext import build_ext as _build_ext
-
-try:
-    from setuptools.command.build_clib import build_clib as _build_clib
-except ImportError:
-    from distutils.command.build_clib import build_clib as _build_clib
 
 
 requirements = []
