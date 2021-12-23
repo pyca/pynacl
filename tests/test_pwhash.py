@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import unicodedata as ud
-from typing import List, Tuple, TypedDict
+from typing import List, Tuple
 
 from hypothesis import given, settings
 from hypothesis.strategies import integers, text
@@ -41,24 +41,10 @@ PASSWD_CHARS = "".join(
 # Select Letters, number representations and spacing characters
 
 
-class Argon2iRef(TypedDict):
-    passwd: str
-    mode: str
-    dgst_len: int
-    iters: int
-    salt: str
-    pwhash: str
-    maxmem: int
-
-
-class Argon2idRef(Argon2iRef):
-    construct: str
-
-
 def argon2i_modular_crypt_ref() -> List[Tuple[str, str]]:
     DATA = "modular_crypt_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors: List[Argon2iRef] = json.load(open(path))
+    jvectors = json.load(open(path))
     vectors = [
         (x["pwhash"], x["passwd"]) for x in jvectors if x["mode"] == "crypt"
     ]
@@ -68,7 +54,7 @@ def argon2i_modular_crypt_ref() -> List[Tuple[str, str]]:
 def argon2i_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors: List[Argon2iRef] = json.load(open(path))
+    jvectors = json.load(open(path))
     vectors = [
         (
             x["dgst_len"],
@@ -87,7 +73,7 @@ def argon2i_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
 def argon2id_modular_crypt_ref() -> List[Tuple[str, str]]:
     DATA = "modular_crypt_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors: List[Argon2idRef] = json.load(open(path))
+    jvectors = json.load(open(path))
     vectors = [
         (x["pwhash"], x["passwd"])
         for x in jvectors
@@ -99,7 +85,7 @@ def argon2id_modular_crypt_ref() -> List[Tuple[str, str]]:
 def argon2id_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors: List[Argon2idRef] = json.load(open(path))
+    jvectors = json.load(open(path))
     vectors = [
         (
             x["dgst_len"],
