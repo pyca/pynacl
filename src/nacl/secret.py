@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+from typing import ClassVar, Optional
 
 import nacl.bindings
 from nacl import encoding
@@ -49,10 +49,12 @@ class SecretBox(encoding.Encodable, StringFixer):
                             pair.
     """
 
-    KEY_SIZE = nacl.bindings.crypto_secretbox_KEYBYTES
-    NONCE_SIZE = nacl.bindings.crypto_secretbox_NONCEBYTES
-    MACBYTES = nacl.bindings.crypto_secretbox_MACBYTES
-    MESSAGEBYTES_MAX = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
+    KEY_SIZE: ClassVar[int] = nacl.bindings.crypto_secretbox_KEYBYTES
+    NONCE_SIZE: ClassVar[int] = nacl.bindings.crypto_secretbox_NONCEBYTES
+    MACBYTES: ClassVar[int] = nacl.bindings.crypto_secretbox_MACBYTES
+    MESSAGEBYTES_MAX: ClassVar[
+        int
+    ] = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
 
     def __init__(
         self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
