@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import binascii
 import json
 import os
 import random
+from typing import List, Optional, Tuple
+
+from _pytest._code import ExceptionInfo
+from _pytest.monkeypatch import MonkeyPatch
 
 import pytest
 
@@ -40,27 +43,29 @@ from nacl.bindings.crypto_secretstream import (
 )
 from nacl.utils import random as randombytes
 
+Chunk = Tuple[int, Optional[bytes], bytes, bytes]
 
-def read_secretstream_vectors():
+
+def read_secretstream_vectors() -> List[Tuple[bytes, bytes, List[Chunk]]]:
     DATA = "secretstream-test-vectors.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     with open(path) as fp:
         jvectors = json.load(fp)
     unhex = binascii.unhexlify
     vectors = [
-        [
+        (
             unhex(v["key"]),
             unhex(v["header"]),
             [
-                [
+                (
                     c["tag"],
                     unhex(c["ad"]) if c["ad"] is not None else None,
                     unhex(c["message"]),
                     unhex(c["ciphertext"]),
-                ]
+                )
                 for c in v["chunks"]
             ],
-        ]
+        )
         for v in jvectors
     ]
     return vectors
@@ -70,7 +75,7 @@ def read_secretstream_vectors():
     ("key", "header", "chunks"),
     read_secretstream_vectors(),
 )
-def test_vectors(key, header, chunks):
+def test_vectors(key: bytes, header: bytes, chunks: List[Chunk]):
     state = crypto_secretstream_xchacha20poly1305_state()
     crypto_secretstream_xchacha20poly1305_init_pull(state, header, key)
     for tag, ad, message, ciphertext in chunks:
@@ -130,6 +135,11 @@ def test_it_like_libsodium():
     m2, tag = crypto_secretstream_xchacha20poly1305_pull(state, c2, ad)
     assert tag == crypto_secretstream_xchacha20poly1305_TAG_MESSAGE
     assert m2 == m2_
+
+    # Mark this as taking a generic Exception, or else mypy will later complain
+    # that we can't write an ExceptionInfo[ValueError] value to an expression of type
+    # ExceptionInfo[RuntimeError].
+    excinfo: ExceptionInfo[Exception]
 
     with pytest.raises(RuntimeError) as excinfo:
         crypto_secretstream_xchacha20poly1305_pull(state, c3)
@@ -209,7 +219,8 @@ def test_it_like_libsodium():
 
     header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
-    state_save = ffi.buffer(state.statebuf)[:]
+    # TODO: not strictly a bytes object: see crypto_secretstream_xchacha20poly1305_state
+    state_save: bytearray = ffi.buffer(state.statebuf)[:]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
         state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_REKEY
@@ -251,7 +262,7 @@ def test_it_like_libsodium():
     # to test the nonce as we're using an opaque pointer
 
 
-def test_max_message_size(monkeypatch):
+def test_max_message_size(monkeypatch: MonkeyPatch):
     import nacl.bindings.crypto_secretstream as css
 
     # we want to create an oversized message but don't want to blow out

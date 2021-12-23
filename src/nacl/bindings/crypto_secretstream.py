@@ -73,13 +73,15 @@ class crypto_secretstream_xchacha20poly1305_state:
 
     def __init__(self) -> None:
         """Initialize a clean state object."""
-        self.statebuf = ffi.new(
+        # NOTE: the members below aren't `bytearray` objects, but cffi `cdata` objects
+        # which own an array of unsigned chars. Is there a better annotation?
+        self.statebuf: bytearray = ffi.new(
             "unsigned char[]",
             crypto_secretstream_xchacha20poly1305_STATEBYTES,
         )
 
-        self.rawbuf: Optional[bytes] = None
-        self.tagbuf: Optional[bytes] = None
+        self.rawbuf: Optional[bytearray] = None
+        self.tagbuf: Optional[bytearray] = None
 
 
 def crypto_secretstream_xchacha20poly1305_init_push(
