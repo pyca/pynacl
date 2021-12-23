@@ -56,6 +56,7 @@ files = [
     "tests/test_sealed_box.py",
     "tests/test_secret.py",
     "tests/test_secretstream.py",
+    "tests/test_shorthash.py",
     "tests/test_signing.py",
     "tests/utils.py",
 ]
@@ -101,6 +102,7 @@ module = [
     "tests.test_sealed_box",
     "tests.test_secret",
     "tests.test_secretstream",
+    "tests.test_shorthash",
 ]
 # Some library helpers types' involve `Any`, in particular `pytest.mark.parameterize`
 # and `hypothesis.strategies.sampledfrom`.
