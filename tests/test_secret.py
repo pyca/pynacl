@@ -15,6 +15,7 @@
 
 import binascii
 import re
+from typing import Dict, Type, TypeVar
 
 from hypothesis import given, strategies as st
 
@@ -48,41 +49,42 @@ VECTORS = [
         ),
     ),
 ]
+_BoxType = TypeVar("_BoxType", Aead, SecretBox)
 
 
-def hex_keys(m):
+def hex_keys(m: Type[_BoxType]) -> st.SearchStrategy[bytes]:
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(
         binascii.hexlify
     )
 
 
-def boxes(m):
+def boxes(m: Type[_BoxType]) -> st.SearchStrategy[_BoxType]:
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(m)
 
 
 @given(k=hex_keys(Aead))
-def test_aead_creation(k):
+def test_aead_creation(k: bytes):
     Aead(k, encoder=HexEncoder)
 
 
 @given(k=hex_keys(Aead))
-def test_aead_bytes(k):
+def test_aead_bytes(k: bytes):
     s = Aead(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
 
 
 @given(box=boxes(Aead), plaintext=st.binary(), aad=st.binary())
-def test_aead_roundtrip(box, plaintext, aad):
+def test_aead_roundtrip(box: Aead, plaintext: bytes, aad: bytes):
     assert plaintext == box.decrypt(box.encrypt(plaintext, aad), aad)
 
 
 @given(k=hex_keys(SecretBox))
-def test_secret_box_creation(k):
+def test_secret_box_creation(k: bytes):
     SecretBox(k, encoder=HexEncoder)
 
 
 @given(k=hex_keys(SecretBox))
-def test_secret_box_bytes(k):
+def test_secret_box_bytes(k: bytes):
     s = SecretBox(k, encoder=HexEncoder)
     assert bytes(s) == s._key == binascii.unhexlify(k)
 
@@ -94,7 +96,7 @@ AEAD_VECTORS = [
 
 
 @pytest.mark.parametrize("kv", AEAD_VECTORS, ids=range(len(AEAD_VECTORS)))
-def test_aead_vectors(kv):
+def test_aead_vectors(kv: Dict[str, bytes]):
     box = Aead(kv["KEY"])
     combined = kv["CT"] + kv["TAG"]
     aad, nonce, plaintext = kv["AD"], kv["NONCE"], kv["IN"]
@@ -109,7 +111,9 @@ def test_aead_vectors(kv):
     VECTORS,
     ids=range(len(VECTORS)),
 )
-def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
+def test_secret_box_encryption(
+    key: bytes, nonce: bytes, plaintext: bytes, ciphertext: bytes
+):
     box = SecretBox(key, encoder=HexEncoder)
     encrypted = box.encrypt(
         binascii.unhexlify(plaintext),
@@ -131,7 +135,9 @@ def test_secret_box_encryption(key, nonce, plaintext, ciphertext):
     VECTORS,
     ids=range(len(VECTORS)),
 )
-def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
+def test_secret_box_decryption(
+    key: bytes, nonce: bytes, plaintext: bytes, ciphertext: bytes
+):
     box = SecretBox(key, encoder=HexEncoder)
 
     nonce = binascii.unhexlify(nonce)
@@ -147,7 +153,9 @@ def test_secret_box_decryption(key, nonce, plaintext, ciphertext):
     VECTORS,
     ids=range(len(VECTORS)),
 )
-def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
+def test_secret_box_decryption_combined(
+    key: bytes, nonce: bytes, plaintext: bytes, ciphertext: bytes
+):
     box = SecretBox(key, encoder=HexEncoder)
 
     combined = binascii.hexlify(
@@ -163,7 +171,9 @@ def test_secret_box_decryption_combined(key, nonce, plaintext, ciphertext):
     VECTORS,
     ids=range(len(VECTORS)),
 )
-def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
+def test_secret_box_optional_nonce(
+    key: bytes, nonce: bytes, plaintext: bytes, ciphertext: bytes
+):
     box = SecretBox(key, encoder=HexEncoder)
 
     encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder)
@@ -179,7 +189,7 @@ def test_secret_box_optional_nonce(key, nonce, plaintext, ciphertext):
     ids=range(len(VECTORS)),
 )
 def test_secret_box_encryption_generates_different_nonces(
-    key, nonce, plaintext, ciphertext
+    key: bytes, nonce: bytes, plaintext: bytes, ciphertext: bytes
 ):
     box = SecretBox(key, encoder=HexEncoder)
 
@@ -194,12 +204,12 @@ def test_secret_box_encryption_generates_different_nonces(
     assert nonce_0 != nonce_1
 
 
-def wrong_length(length: int):
+def wrong_length(length: int) -> st.SearchStrategy[bytes]:
     return st.binary().filter(lambda s: len(s) != length)
 
 
 @given(key=wrong_length(Aead.KEY_SIZE))
-def test_aead_wrong_key_length(key):
+def test_aead_wrong_key_length(key: bytes):
     with pytest.raises(
         ValueError, match=r"key must be exactly \d+ bytes long"
     ):
@@ -207,7 +217,7 @@ def test_aead_wrong_key_length(key):
 
 
 @given(box=boxes(Aead), nonce=wrong_length(Aead.NONCE_SIZE))
-def test_aead_wrong_nonce_length(box, nonce):
+def test_aead_wrong_nonce_length(box: Aead, nonce: bytes):
     with pytest.raises(
         ValueError, match=r"nonce must be exactly \d+ bytes long"
     ):
@@ -219,7 +229,7 @@ def test_aead_wrong_nonce_length(box, nonce):
 
 
 @given(key=wrong_length(SecretBox.KEY_SIZE))
-def test_secret_box_wrong_key_length(key):
+def test_secret_box_wrong_key_length(key: bytes):
     with pytest.raises(
         ValueError, match=r"key must be exactly \d+ bytes long"
     ):
@@ -227,7 +237,7 @@ def test_secret_box_wrong_key_length(key):
 
 
 @given(box=boxes(SecretBox), nonce=wrong_length(SecretBox.NONCE_SIZE))
-def test_secret_box_wrong_nonce_length(box, nonce):
+def test_secret_box_wrong_nonce_length(box: SecretBox, nonce: bytes):
     with pytest.raises(
         ValueError, match=r"nonce must be exactly \d+ bytes long"
     ):
@@ -239,16 +249,17 @@ def test_secret_box_wrong_nonce_length(box, nonce):
 
 
 @pytest.mark.parametrize("cls", (SecretBox, Aead))
-def test_wrong_types(cls):
+def test_wrong_types(cls: Type[_BoxType]):
     expected = re.compile(
         cls.__name__ + " must be created from 32 bytes", re.IGNORECASE
     )
+    # Type saftey: we're checking these type errors are detected at runtime.
     with pytest.raises(TypeError, match=expected):
-        cls(12)
+        cls(12)  # type: ignore[arg-type]
 
     box = SecretBox(b"11" * 32, encoder=HexEncoder)
     with pytest.raises(TypeError, match=expected):
-        cls(box)
+        cls(box)  # type: ignore[arg-type]
 
 
 def test_aead_bad_decryption():
