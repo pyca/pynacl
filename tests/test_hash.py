@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 import pytest
 
 import nacl.encoding
@@ -32,7 +30,7 @@ import nacl.hash
         ),
     ],
 )
-def test_sha256_hex(inp, expected):
+def test_sha256_hex(inp: bytes, expected: bytes):
     assert nacl.hash.sha256(inp) == expected
 
 
@@ -55,7 +53,7 @@ def test_sha256_hex(inp, expected):
         ),
     ],
 )
-def test_sha256_binary(inp, expected):
+def test_sha256_binary(inp: bytes, expected: bytes):
     assert nacl.hash.sha256(inp, encoder=nacl.encoding.RawEncoder) == expected
 
 
@@ -78,7 +76,7 @@ def test_sha256_binary(inp, expected):
         ),
     ],
 )
-def test_sha512_hex(inp, expected):
+def test_sha512_hex(inp: bytes, expected: bytes):
     assert nacl.hash.sha512(inp) == expected
 
 
@@ -104,5 +102,5 @@ def test_sha512_hex(inp, expected):
         ),
     ],
 )
-def test_sha512_binary(inp, expected):
+def test_sha512_binary(inp: bytes, expected: bytes):
     assert nacl.hash.sha512(inp, encoder=nacl.encoding.RawEncoder) == expected

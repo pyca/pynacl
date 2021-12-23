@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import binascii
+from typing import Tuple, Union
 
 import pytest
 
@@ -44,7 +44,7 @@ class TestPublicKey:
             PublicKey(b"\x00" * (crypto_box_PUBLICKEYBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2):
+    def test_different_keys_are_not_equal(self, k2: Union[bytes, PublicKey]):
         k1 = PublicKey(b"\x00" * crypto_box_PUBLICKEYBYTES)
         assert_not_equal(k1, k2)
 
@@ -62,7 +62,7 @@ class TestPrivateKey:
         assert_equal(k1, k1)
         assert_equal(k1, k2)
 
-    def _gen_equivalent_raw_keys_couple(self):
+    def _gen_equivalent_raw_keys_couple(self) -> Tuple[PrivateKey, PrivateKey]:
         rwk1 = bytearray(random(crypto_box_SECRETKEYBYTES))
         rwk2 = bytearray(rwk1)
         # mask rwk1 bits
@@ -99,7 +99,7 @@ class TestPrivateKey:
             PrivateKey(b"\x00" * (crypto_box_SECRETKEYBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2):
+    def test_different_keys_are_not_equal(self, k2: Union[bytes, PrivateKey]):
         k1 = PrivateKey(b"\x00" * crypto_box_SECRETKEYBYTES)
         assert_not_equal(k1, k2)
 

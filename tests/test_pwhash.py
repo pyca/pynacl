@@ -11,13 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 import binascii
 import json
 import os
 import sys
 import unicodedata as ud
+from typing import List, Tuple
 
 from hypothesis import given, settings
 from hypothesis.strategies import integers, text
@@ -42,7 +41,7 @@ PASSWD_CHARS = "".join(
 # Select Letters, number representations and spacing characters
 
 
-def argon2i_modular_crypt_ref():
+def argon2i_modular_crypt_ref() -> List[Tuple[str, str]]:
     DATA = "modular_crypt_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     jvectors = json.load(open(path))
@@ -52,7 +51,7 @@ def argon2i_modular_crypt_ref():
     return vectors
 
 
-def argon2i_raw_ref():
+def argon2i_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     jvectors = json.load(open(path))
@@ -71,7 +70,7 @@ def argon2i_raw_ref():
     return vectors
 
 
-def argon2id_modular_crypt_ref():
+def argon2id_modular_crypt_ref() -> List[Tuple[str, str]]:
     DATA = "modular_crypt_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     jvectors = json.load(open(path))
@@ -83,7 +82,7 @@ def argon2id_modular_crypt_ref():
     return vectors
 
 
-def argon2id_raw_ref():
+def argon2id_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     jvectors = json.load(open(path))
@@ -122,7 +121,12 @@ def argon2id_raw_ref():
     ],
 )
 def test_kdf_scryptsalsa208sha256(
-    size, password, salt, opslimit, memlimit, expected
+    size: int,
+    password: bytes,
+    salt: bytes,
+    opslimit: int,
+    memlimit: int,
+    expected: bytes,
 ):
     res = nacl.pwhash.kdf_scryptsalsa208sha256(
         size, password, salt, opslimit, memlimit
@@ -136,7 +140,7 @@ def test_kdf_scryptsalsa208sha256(
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scryptsalsa208sha256_random(password):
+def test_scryptsalsa208sha256_random(password: bytes):
     h1 = nacl.pwhash.scryptsalsa208sha256_str(password)
     h2 = nacl.pwhash.scryptsalsa208sha256_str(password)
     assert h1 != h2
@@ -148,7 +152,7 @@ def test_scryptsalsa208sha256_random(password):
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scryptsalsa208sha256_verify(password):
+def test_scryptsalsa208sha256_verify(password: bytes):
     assert nacl.pwhash.verify_scryptsalsa208sha256(
         nacl.pwhash.scryptsalsa208sha256_str(password), password
     )
@@ -160,7 +164,7 @@ def test_scryptsalsa208sha256_verify(password):
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scryptsalsa208sha256_verify_incorrect(password):
+def test_scryptsalsa208sha256_verify_incorrect(password: bytes):
     with pytest.raises(exc.InvalidkeyError):
         nacl.pwhash.verify_scryptsalsa208sha256(
             nacl.pwhash.scryptsalsa208sha256_str(password),
@@ -183,7 +187,9 @@ def test_scryptsalsa208sha256_verify_incorrect(password):
         ),
     ],
 )
-def test_wrong_salt_length(size, password, salt, opslimit, memlimit):
+def test_wrong_salt_length(
+    size: int, password: bytes, salt: bytes, opslimit: int, memlimit: int
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.kdf_scryptsalsa208sha256(
             size, password, salt, opslimit, memlimit
@@ -202,7 +208,7 @@ def test_wrong_salt_length(size, password, salt, opslimit, memlimit):
         )
     ],
 )
-def test_wrong_hash_length(passwd_hash, password):
+def test_wrong_hash_length(passwd_hash: bytes, password: bytes):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.verify_scryptsalsa208sha256(passwd_hash, password)
 
@@ -222,7 +228,9 @@ def test_wrong_hash_length(passwd_hash, password):
         ),
     ],
 )
-def test_kdf_wrong_salt_length(size, password, salt, opslimit, memlimit):
+def test_kdf_wrong_salt_length(
+    size: int, password: bytes, salt: bytes, opslimit: int, memlimit: int
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.kdf_scryptsalsa208sha256(
             size, password, salt, opslimit, memlimit
@@ -241,7 +249,7 @@ def test_kdf_wrong_salt_length(size, password, salt, opslimit, memlimit):
         )
     ],
 )
-def test_str_verify_wrong_hash_length(passwd_hash, password):
+def test_str_verify_wrong_hash_length(passwd_hash: bytes, password: bytes):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.verify_scryptsalsa208sha256(passwd_hash, password)
 
@@ -265,7 +273,14 @@ def test_str_verify_wrong_hash_length(passwd_hash, password):
         ),
     ],
 )
-def test_scrypt_kdf(size, password, salt, opslimit, memlimit, expected):
+def test_scrypt_kdf(
+    size: int,
+    password: bytes,
+    salt: bytes,
+    opslimit: int,
+    memlimit: int,
+    expected: bytes,
+):
     res = nacl.pwhash.scrypt.kdf(size, password, salt, opslimit, memlimit)
     assert res == expected
 
@@ -276,7 +291,7 @@ def test_scrypt_kdf(size, password, salt, opslimit, memlimit, expected):
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scrypt_random(password):
+def test_scrypt_random(password: bytes):
     h1 = nacl.pwhash.scrypt.str(password)
     h2 = nacl.pwhash.scrypt.str(password)
     assert h1 != h2
@@ -288,7 +303,7 @@ def test_scrypt_random(password):
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scrypt_verify(password):
+def test_scrypt_verify(password: bytes):
     assert nacl.pwhash.scrypt.verify(
         nacl.pwhash.scrypt.str(password), password
     )
@@ -300,7 +315,7 @@ def test_scrypt_verify(password):
 @pytest.mark.parametrize(
     ("password",), [(b"The quick brown fox jumps over the lazy dog.",)]
 )
-def test_scrypt_verify_incorrect(password):
+def test_scrypt_verify_incorrect(password: bytes):
     with pytest.raises(exc.InvalidkeyError):
         nacl.pwhash.scrypt.verify(
             nacl.pwhash.scrypt.str(password), password.replace(b"dog", b"cat")
@@ -322,7 +337,9 @@ def test_scrypt_verify_incorrect(password):
         ),
     ],
 )
-def test_wrong_scrypt_salt_length(size, password, salt, opslimit, memlimit):
+def test_wrong_scrypt_salt_length(
+    size: int, password: bytes, salt: bytes, opslimit: int, memlimit: int
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.scrypt.kdf(size, password, salt, opslimit, memlimit)
 
@@ -339,7 +356,7 @@ def test_wrong_scrypt_salt_length(size, password, salt, opslimit, memlimit):
         )
     ],
 )
-def test_wrong_scrypt_hash_length(passwd_hash, password):
+def test_wrong_scrypt_hash_length(passwd_hash: bytes, password: bytes):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.scrypt.verify(passwd_hash, password)
 
@@ -360,7 +377,7 @@ def test_wrong_scrypt_hash_length(passwd_hash, password):
     ],
 )
 def test_scrypt_kdf_wrong_salt_length(
-    size, password, salt, opslimit, memlimit
+    size: int, password: bytes, salt: bytes, opslimit: int, memlimit: int
 ):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.scrypt.kdf(size, password, salt, opslimit, memlimit)
@@ -376,7 +393,7 @@ def test_scrypt_kdf_wrong_salt_length(
         (2 * (2 ** 20), 2 * (2 ** 20), 11, 8, 32),
     ],
 )
-def test_variable_limits(opslimit, memlimit, n, r, p):
+def test_variable_limits(opslimit: int, memlimit: int, n: int, r: int, p: int):
     rn, rr, rp = nacl.bindings.nacl_bindings_pick_scrypt_params(
         opslimit, memlimit
     )
@@ -397,7 +414,9 @@ def test_variable_limits(opslimit, memlimit, n, r, p):
         )
     ],
 )
-def test_scrypt_str_verify_wrong_hash_length(passwd_hash, password):
+def test_scrypt_str_verify_wrong_hash_length(
+    passwd_hash: bytes, password: bytes
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.scrypt.verify(passwd_hash, password)
 
@@ -406,7 +425,7 @@ def test_scrypt_str_verify_wrong_hash_length(passwd_hash, password):
     ("password_hash", "password"),
     argon2i_modular_crypt_ref() + argon2id_modular_crypt_ref(),
 )
-def test_str_verify_argon2_ref(password_hash, password):
+def test_str_verify_argon2_ref(password_hash: str, password: str):
     pw_hash = password_hash.encode("ascii")
     pw = password.encode("ascii")
     res = nacl.pwhash.argon2id.verify(pw_hash, pw)
@@ -417,7 +436,7 @@ def test_str_verify_argon2_ref(password_hash, password):
     ("password_hash", "password"),
     argon2i_modular_crypt_ref() + argon2id_modular_crypt_ref(),
 )
-def test_str_verify_argon2_ref_fail(password_hash, password):
+def test_str_verify_argon2_ref_fail(password_hash: str, password: str):
     pw_hash = password_hash.encode("ascii")
     pw = ("a" + password).encode("ascii")
     with pytest.raises(exc.InvalidkeyError):
@@ -430,7 +449,7 @@ def test_str_verify_argon2_ref_fail(password_hash, password):
     integers(min_value=1024 * 1024, max_value=16 * 1024 * 1024),
 )
 @settings(deadline=None, max_examples=20)
-def test_argon2i_str_and_verify(password, ops, mem):
+def test_argon2i_str_and_verify(password: str, ops: int, mem: int):
     _psw = password.encode("utf-8")
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
     res = nacl.pwhash.argon2i.verify(pw_hash, _psw)
@@ -443,7 +462,7 @@ def test_argon2i_str_and_verify(password, ops, mem):
     integers(min_value=1024 * 1024, max_value=16 * 1024 * 1024),
 )
 @settings(deadline=None, max_examples=20)
-def test_argon2id_str_and_verify(password, ops, mem):
+def test_argon2id_str_and_verify(password: str, ops: int, mem: int):
     _psw = password.encode("utf-8")
     pw_hash = nacl.pwhash.argon2id.str(_psw, opslimit=ops, memlimit=mem)
     res = nacl.pwhash.argon2id.verify(pw_hash, _psw)
@@ -456,7 +475,7 @@ def test_argon2id_str_and_verify(password, ops, mem):
     integers(min_value=1024 * 1024, max_value=16 * 1024 * 1024),
 )
 @settings(deadline=None, max_examples=20)
-def test_argon2i_str_and_verify_fail(password, ops, mem):
+def test_argon2i_str_and_verify_fail(password: str, ops: int, mem: int):
     _psw = password.encode("utf-8")
     pw_hash = nacl.pwhash.argon2i.str(_psw, opslimit=ops, memlimit=mem)
     with pytest.raises(exc.InvalidkeyError):
@@ -465,7 +484,7 @@ def test_argon2i_str_and_verify_fail(password, ops, mem):
 
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
 @settings(deadline=None, max_examples=5)
-def test_pwhash_str_and_verify(password):
+def test_pwhash_str_and_verify(password: str):
     _psw = password.encode("utf-8")
 
     a2i_hash = nacl.pwhash.argon2i.str(
@@ -490,7 +509,7 @@ def test_pwhash_str_and_verify(password):
 )
 @given(text(alphabet=PASSWD_CHARS, min_size=5, max_size=20))
 @settings(deadline=None, max_examples=5)
-def test_pwhash_scrypt_str_and_verify(password):
+def test_pwhash_scrypt_str_and_verify(password: str):
     _psw = password.encode("utf-8")
 
     scrypt_hash = nacl.pwhash.scrypt.str(
@@ -520,7 +539,14 @@ def test_crypt_prefix_error():
     ("dk_size", "password", "salt", "iters", "mem_kb", "pwhash"),
     argon2i_raw_ref(),
 )
-def test_argon2i_kdf(dk_size, password, salt, iters, mem_kb, pwhash):
+def test_argon2i_kdf(
+    dk_size: int,
+    password: str,
+    salt: str,
+    iters: int,
+    mem_kb: int,
+    pwhash: str,
+):
     dk = nacl.pwhash.argon2i.kdf(
         dk_size,
         password.encode("utf-8"),
@@ -537,7 +563,12 @@ def test_argon2i_kdf(dk_size, password, salt, iters, mem_kb, pwhash):
     argon2id_raw_ref(),
 )
 def test_argon2_kdf_alg_argon2id(
-    dk_size, password, salt, iters, mem_kb, pwhash
+    dk_size: int,
+    password: str,
+    salt: str,
+    iters: int,
+    mem_kb: int,
+    pwhash: str,
 ):
     dk = nacl.pwhash.argon2id.kdf(
         dk_size,
@@ -574,7 +605,9 @@ raising_argon2_parameters = [
         (20, "aPassword", 4 * "salt", 1, 256),
     ],
 )
-def test_argon2i_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
+def test_argon2i_kdf_invalid_parms(
+    dk_size: int, password: str, salt: str, iters: int, mem_kb: int
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.argon2i.kdf(
             dk_size,
@@ -593,7 +626,9 @@ def test_argon2i_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
         (20, "aPassword", 4 * "salt", 0, 256),
     ],
 )
-def test_argon2id_kdf_invalid_parms(dk_size, password, salt, iters, mem_kb):
+def test_argon2id_kdf_invalid_parms(
+    dk_size: int, password: str, salt: str, iters: int, mem_kb: int
+):
     with pytest.raises(exc.ValueError):
         nacl.pwhash.argon2id.kdf(
             dk_size,

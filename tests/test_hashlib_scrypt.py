@@ -119,7 +119,15 @@ RFC_7914_VECTORS = [
 @pytest.mark.parametrize(
     ("password", "salt", "n", "r", "p", "dklen", "expected"), RFC_7914_VECTORS
 )
-def test_hashlib_scrypt_api(password, salt, n, r, p, dklen, expected):
+def test_hashlib_scrypt_api(
+    password: bytes,
+    salt: bytes,
+    n: int,
+    r: int,
+    p: int,
+    dklen: int,
+    expected: bytes,
+):
     _exp = unhexlify(expected.replace(b" ", b""))
     dgst = nacl.hashlib.scrypt(
         password, salt=salt, n=n, r=r, p=p, dklen=dklen, maxmem=2 * (1024 ** 3)

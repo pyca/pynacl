@@ -74,7 +74,7 @@ VECTORS = [
 
 
 @pytest.mark.parametrize(("encoder", "ciphertext"), VECTORS)
-def test_encoders(encoder, ciphertext):
+def test_encoders(encoder: nacl.encoding.Encoder, ciphertext: bytes):
     box = nacl.secret.SecretBox(KEY)
 
     test_ciphertext = box.encrypt(TEXT, NONCE, encoder=encoder)
