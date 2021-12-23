@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic, Optional, Type, TypeVar
+from typing import ClassVar, Generic, Optional, Type, TypeVar
 
 import nacl.bindings
 from nacl import encoding
@@ -31,7 +31,7 @@ class PublicKey(encoding.Encodable, StringFixer):
     :cvar SIZE: The size that the public key is required to be
     """
 
-    SIZE = nacl.bindings.crypto_box_PUBLICKEYBYTES
+    SIZE: ClassVar[int] = nacl.bindings.crypto_box_PUBLICKEYBYTES
 
     def __init__(
         self,
@@ -81,8 +81,8 @@ class PrivateKey(encoding.Encodable, StringFixer):
                      private key is required to be
     """
 
-    SIZE = nacl.bindings.crypto_box_SECRETKEYBYTES
-    SEED_SIZE = nacl.bindings.crypto_box_SEEDBYTES
+    SIZE: ClassVar[int] = nacl.bindings.crypto_box_SECRETKEYBYTES
+    SEED_SIZE: ClassVar[int] = nacl.bindings.crypto_box_SEEDBYTES
 
     def __init__(
         self,
@@ -190,7 +190,7 @@ class Box(encoding.Encodable, StringFixer):
     :cvar NONCE_SIZE: The size that the nonce is required to be.
     """
 
-    NONCE_SIZE = nacl.bindings.crypto_box_NONCEBYTES
+    NONCE_SIZE: ClassVar[int] = nacl.bindings.crypto_box_NONCEBYTES
     _shared_key: bytes
 
     def __init__(self, private_key: PrivateKey, public_key: PublicKey):
