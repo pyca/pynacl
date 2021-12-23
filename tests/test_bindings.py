@@ -15,6 +15,7 @@
 
 import hashlib
 from binascii import hexlify, unhexlify
+from typing import List, Tuple
 
 from hypothesis import given, settings
 from hypothesis.strategies import binary, integers
@@ -28,7 +29,7 @@ from .test_signing import ed25519_known_answers
 from .utils import flip_byte, read_crypto_test_vectors
 
 
-def tohex(b):
+def tohex(b: bytes) -> str:
     return hexlify(b).decode("ascii")
 
 
@@ -119,20 +120,22 @@ def test_box():
 def test_box_wrong_lengths():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
     with pytest.raises(ValueError):
-        c.crypto_box(b"abc", "\x00", A_pubkey, A_secretkey)
+        c.crypto_box(b"abc", b"\x00", A_pubkey, A_secretkey)
     with pytest.raises(ValueError):
         c.crypto_box(
-            b"abc", "\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey
+            b"abc", b"\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey
         )
     with pytest.raises(ValueError):
-        c.crypto_box(b"abc", "\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
+        c.crypto_box(b"abc", b"\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
 
     with pytest.raises(ValueError):
         c.crypto_box_open(b"", b"", b"", b"")
     with pytest.raises(ValueError):
-        c.crypto_box_open(b"", "\x00" * c.crypto_box_NONCEBYTES, b"", b"")
+        c.crypto_box_open(b"", b"\x00" * c.crypto_box_NONCEBYTES, b"", b"")
     with pytest.raises(ValueError):
-        c.crypto_box_open(b"", "\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b"")
+        c.crypto_box_open(
+            b"", b"\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b""
+        )
 
     with pytest.raises(ValueError):
         c.crypto_box_beforenm(b"", b"")
@@ -173,7 +176,7 @@ def test_sign_wrong_lengths():
         c.crypto_sign_seed_keypair(b"")
 
 
-def secret_scalar():
+def secret_scalar() -> Tuple[bytes, bytes]:
     pubkey, secretkey = c.crypto_box_keypair()
     assert len(secretkey) == c.crypto_box_SECRETKEYBYTES
     assert c.crypto_box_SECRETKEYBYTES == c.crypto_scalarmult_BYTES
@@ -272,17 +275,18 @@ def test_box_seal_wrong_lengths():
 
 def test_box_seal_wrong_types():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
+    # type safety: mypy can spot these errors, but we want to spot them at runtime too.
     with pytest.raises(TypeError):
-        c.crypto_box_seal(b"abc", dict())
+        c.crypto_box_seal(b"abc", dict())  # type: ignore[arg-type]
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(b"abc", None, A_secretkey)
+        c.crypto_box_seal_open(b"abc", None, A_secretkey)  # type: ignore[arg-type]
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(b"abc", A_pubkey, None)
+        c.crypto_box_seal_open(b"abc", A_pubkey, None)  # type: ignore[arg-type]
     with pytest.raises(TypeError):
-        c.crypto_box_seal_open(None, A_pubkey, A_secretkey)
+        c.crypto_box_seal_open(None, A_pubkey, A_secretkey)  # type: ignore[arg-type]
 
 
-def _box_from_seed_vectors():
+def _box_from_seed_vectors() -> List[Tuple[bytes, bytes, bytes]]:
     # Fmt: <seed> <tab> <public_key> || <secret_key>
     DATA = "box_from_seed.txt"
     lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b"\t")
@@ -299,7 +303,9 @@ def _box_from_seed_vectors():
 @pytest.mark.parametrize(
     ("seed", "public_key", "secret_key"), _box_from_seed_vectors()
 )
-def test_box_seed_keypair_reference(seed, public_key, secret_key):
+def test_box_seed_keypair_reference(
+    seed: bytes, public_key: bytes, secret_key: bytes
+):
     seed = unhexlify(seed)
     pk, sk = c.crypto_box_seed_keypair(seed)
     assert pk == unhexlify(public_key)
@@ -336,7 +342,7 @@ def test_unpad_not_padded():
     binary(min_size=0, max_size=2049), integers(min_value=16, max_value=256)
 )
 @settings(max_examples=20)
-def test_pad_sizes(msg, bl_sz):
+def test_pad_sizes(msg: bytes, bl_sz: int):
     padded = c.sodium_pad(msg, bl_sz)
     assert len(padded) > len(msg)
     assert len(padded) >= bl_sz
@@ -347,7 +353,7 @@ def test_pad_sizes(msg, bl_sz):
     binary(min_size=0, max_size=2049), integers(min_value=16, max_value=256)
 )
 @settings(max_examples=20)
-def test_pad_roundtrip(msg, bl_sz):
+def test_pad_roundtrip(msg: bytes, bl_sz: int):
     padded = c.sodium_pad(msg, bl_sz)
     assert len(padded) > len(msg)
     assert len(padded) >= bl_sz

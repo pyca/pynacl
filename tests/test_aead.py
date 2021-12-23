@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 import binascii
-from collections import namedtuple
+from typing import Callable, Dict, List, NamedTuple, Optional
 
 from hypothesis import given, settings
 from hypothesis.strategies import binary, sampled_from
@@ -27,28 +25,32 @@ import nacl.exceptions as exc
 from .utils import read_kv_test_vectors
 
 
-def chacha20poly1305_agl_vectors():
+def chacha20poly1305_agl_vectors() -> List[Dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "chacha20-poly1305-agl_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def chacha20poly1305_ietf_vectors():
+def chacha20poly1305_ietf_vectors() -> List[Dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "chacha20-poly1305-ietf_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def xchacha20poly1305_ietf_vectors():
+def xchacha20poly1305_ietf_vectors() -> List[Dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "xchacha20-poly1305-ietf_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-Construction = namedtuple("Construction", "encrypt, decrypt, NPUB, KEYBYTES")
+class Construction(NamedTuple):
+    encrypt: Callable[[bytes, Optional[bytes], bytes, bytes], bytes]
+    decrypt: Callable[[bytes, Optional[bytes], bytes, bytes], bytes]
+    NPUB: int
+    KEYBYTES: int
 
 
-def _getconstruction(construction):
+def _getconstruction(construction: bytes) -> Construction:
     if construction == b"chacha20-poly1305-old":
         encrypt = b.crypto_aead_chacha20poly1305_encrypt
         decrypt = b.crypto_aead_chacha20poly1305_decrypt
@@ -74,7 +76,7 @@ def _getconstruction(construction):
     + chacha20poly1305_ietf_vectors()
     + xchacha20poly1305_ietf_vectors(),
 )
-def test_chacha20poly1305_variants_kat(kv):
+def test_chacha20poly1305_variants_kat(kv: Dict[str, bytes]):
     msg = binascii.unhexlify(kv["IN"])
     ad = binascii.unhexlify(kv["AD"])
     nonce = binascii.unhexlify(kv["NONCE"])
@@ -103,7 +105,7 @@ def test_chacha20poly1305_variants_kat(kv):
 )
 @settings(deadline=None, max_examples=20)
 def test_chacha20poly1305_variants_roundtrip(
-    construction, message, aad, nonce, key
+    construction: bytes, message: bytes, aad: bytes, nonce: bytes, key: bytes
 ):
 
     c = _getconstruction(construction)
@@ -123,30 +125,35 @@ def test_chacha20poly1305_variants_roundtrip(
     "construction",
     [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
 )
-def test_chacha20poly1305_variants_wrong_params(construction):
+def test_chacha20poly1305_variants_wrong_params(construction: bytes):
     c = _getconstruction(construction)
     nonce = b"\x00" * c.NPUB
     key = b"\x00" * c.KEYBYTES
     aad = None
     c.encrypt(b"", aad, nonce, key)
+    # The first two checks call encrypt with a nonce/key that's too short. Otherwise,
+    # the types are fine. (TODO: Should this raise ValueError rather than TypeError?
+    # Doing so would be a breaking change.)
     with pytest.raises(exc.TypeError):
         c.encrypt(b"", aad, nonce[:-1], key)
     with pytest.raises(exc.TypeError):
         c.encrypt(b"", aad, nonce, key[:-1])
+    # Type safety: mypy spots these next two errors, but we want to check that they're
+    # spotted at runtime too.
     with pytest.raises(exc.TypeError):
-        c.encrypt(b"", aad, nonce.decode("utf-8"), key)
+        c.encrypt(b"", aad, nonce.decode("utf-8"), key)  # type: ignore[arg-type]
     with pytest.raises(exc.TypeError):
-        c.encrypt(b"", aad, nonce, key.decode("utf-8"))
+        c.encrypt(b"", aad, nonce, key.decode("utf-8"))  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
     "construction",
     [b"chacha20-poly1305-old", b"chacha20-poly1305", b"xchacha20-poly1305"],
 )
-def test_chacha20poly1305_variants_str_msg(construction):
+def test_chacha20poly1305_variants_str_msg(construction: bytes):
     c = _getconstruction(construction)
     nonce = b"\x00" * c.NPUB
     key = b"\x00" * c.KEYBYTES
     aad = None
     with pytest.raises(exc.TypeError):
-        c.encrypt("", aad, nonce, key)
+        c.encrypt("", aad, nonce, key)  # type: ignore[arg-type]

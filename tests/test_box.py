@@ -23,7 +23,7 @@ from nacl.public import Box, PrivateKey, PublicKey
 from nacl.utils import random
 
 from .test_bindings import _box_from_seed_vectors
-
+from .utils import check_type_error
 
 VECTORS = [
     # privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
@@ -61,7 +61,9 @@ def test_generate_private_key_from_random_seed():
 @pytest.mark.parametrize(
     ("seed", "public_key", "secret_key"), _box_from_seed_vectors()
 )
-def test_generate_private_key_from_seed(seed, public_key, secret_key):
+def test_generate_private_key_from_seed(
+    seed: bytes, public_key: bytes, secret_key: bytes
+):
     prvt = PrivateKey.from_seed(seed, encoder=HexEncoder)
     sk = binascii.unhexlify(secret_key)
     pk = binascii.unhexlify(public_key)
@@ -121,12 +123,18 @@ def test_box_bytes():
     VECTORS,
 )
 def test_box_encryption(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubalice = PublicKey(pubalice, encoder=HexEncoder)
-    privbob = PrivateKey(privbob, encoder=HexEncoder)
+    pubalice_decoded = PublicKey(pubalice, encoder=HexEncoder)
+    privbob_decoded = PrivateKey(privbob, encoder=HexEncoder)
 
-    box = Box(privbob, pubalice)
+    box = Box(privbob_decoded, pubalice_decoded)
     encrypted = box.encrypt(
         binascii.unhexlify(plaintext),
         binascii.unhexlify(nonce),
@@ -155,12 +163,18 @@ def test_box_encryption(
     VECTORS,
 )
 def test_box_decryption(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubbob = PublicKey(pubbob, encoder=HexEncoder)
-    privalice = PrivateKey(privalice, encoder=HexEncoder)
+    pubbob_decoded = PublicKey(pubbob, encoder=HexEncoder)
+    privalice_decoded = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(privalice, pubbob)
+    box = Box(privalice_decoded, pubbob_decoded)
 
     nonce = binascii.unhexlify(nonce)
     decrypted = binascii.hexlify(
@@ -183,12 +197,18 @@ def test_box_decryption(
     VECTORS,
 )
 def test_box_decryption_combined(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubbob = PublicKey(pubbob, encoder=HexEncoder)
-    privalice = PrivateKey(privalice, encoder=HexEncoder)
+    pubbob_decoded = PublicKey(pubbob, encoder=HexEncoder)
+    privalice_decoded = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(privalice, pubbob)
+    box = Box(privalice_decoded, pubbob_decoded)
 
     combined = binascii.hexlify(
         binascii.unhexlify(nonce) + binascii.unhexlify(ciphertext),
@@ -211,12 +231,18 @@ def test_box_decryption_combined(
     VECTORS,
 )
 def test_box_optional_nonce(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubbob = PublicKey(pubbob, encoder=HexEncoder)
-    privalice = PrivateKey(privalice, encoder=HexEncoder)
+    pubbob_decoded = PublicKey(pubbob, encoder=HexEncoder)
+    privalice_decoded = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(privalice, pubbob)
+    box = Box(privalice_decoded, pubbob_decoded)
 
     encrypted = box.encrypt(binascii.unhexlify(plaintext), encoder=HexEncoder)
 
@@ -238,12 +264,18 @@ def test_box_optional_nonce(
     VECTORS,
 )
 def test_box_encryption_generates_different_nonces(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubbob = PublicKey(pubbob, encoder=HexEncoder)
-    privalice = PrivateKey(privalice, encoder=HexEncoder)
+    pubbob_decoded = PublicKey(pubbob, encoder=HexEncoder)
+    privalice_decoded = PrivateKey(privalice, encoder=HexEncoder)
 
-    box = Box(privalice, pubbob)
+    box = Box(privalice_decoded, pubbob_decoded)
 
     nonce_0 = box.encrypt(
         binascii.unhexlify(plaintext), encoder=HexEncoder
@@ -269,14 +301,20 @@ def test_box_encryption_generates_different_nonces(
     VECTORS,
 )
 def test_box_failed_decryption(
-    privalice, pubalice, privbob, pubbob, nonce, plaintext, ciphertext
+    privalice: bytes,
+    pubalice: bytes,
+    privbob: bytes,
+    pubbob: bytes,
+    nonce: bytes,
+    plaintext: bytes,
+    ciphertext: bytes,
 ):
-    pubbob = PublicKey(pubbob, encoder=HexEncoder)
-    privbob = PrivateKey(privbob, encoder=HexEncoder)
+    pubbob_decoded = PublicKey(pubbob, encoder=HexEncoder)
+    privbob_decoded = PrivateKey(privbob, encoder=HexEncoder)
 
     # this cannot decrypt the ciphertext! the ciphertext must be decrypted by
     # (privalice, pubbob) or (privbob, pubalice)
-    box = Box(privbob, pubbob)
+    box = Box(privbob_decoded, pubbob_decoded)
 
     with pytest.raises(CryptoError):
         box.decrypt(ciphertext, binascii.unhexlify(nonce), encoder=HexEncoder)
@@ -285,6 +323,7 @@ def test_box_failed_decryption(
 def test_box_wrong_length():
     with pytest.raises(ValueError):
         PublicKey(b"")
+    # TODO: should the below raise a ValueError?
     with pytest.raises(TypeError):
         PrivateKey(b"")
 
@@ -301,12 +340,6 @@ def test_box_wrong_length():
         b.encrypt(b"", b"")
     with pytest.raises(ValueError):
         b.decrypt(b"", b"")
-
-
-def check_type_error(expected, f, *args):
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
 
 
 def test_wrong_types():

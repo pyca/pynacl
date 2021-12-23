@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 import binascii
+from typing import List, Tuple, Union
 
 import pytest
 
@@ -22,14 +21,19 @@ from nacl.encoding import Base64Encoder, HexEncoder
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SignedMessage, SigningKey, VerifyKey
 
-from .utils import assert_equal, assert_not_equal, read_crypto_test_vectors
+from .utils import (
+    assert_equal,
+    assert_not_equal,
+    check_type_error,
+    read_crypto_test_vectors,
+)
 
 
-def tohex(b):
+def tohex(b: bytes) -> str:
     return binascii.hexlify(b).decode("ascii")
 
 
-def ed25519_known_answers():
+def ed25519_known_answers() -> List[Tuple[bytes, bytes, bytes, bytes, bytes]]:
     # Known answers taken from: http://ed25519.cr.yp.to/python/sign.input
     # hex-encoded fields on each input line: sk||pk, pk, msg, signature||msg
     # known answer fields: sk, pk, msg, signature, signed
@@ -79,7 +83,7 @@ class TestSigningKey:
             SigningKey(b"\x00" * (crypto_sign_SEEDBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2):
+    def test_different_keys_are_not_equal(self, k2: Union[bytes, SigningKey]):
         k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         assert_not_equal(k1, k2)
 
@@ -87,7 +91,7 @@ class TestSigningKey:
         "seed",
         [b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a"],
     )
-    def test_initialization_with_seed(self, seed):
+    def test_initialization_with_seed(self, seed: bytes):
         SigningKey(seed, encoder=HexEncoder)
 
     @pytest.mark.parametrize(
@@ -95,7 +99,12 @@ class TestSigningKey:
         ed25519_known_answers(),
     )
     def test_message_signing(
-        self, seed, _public_key, message, signature, expected
+        self,
+        seed: bytes,
+        _public_key: bytes,
+        message: bytes,
+        signature: bytes,
+        expected: bytes,
     ):
         signing_key = SigningKey(
             seed,
@@ -140,7 +149,7 @@ class TestVerifyKey:
             VerifyKey(b"\x00" * (crypto_sign_PUBLICKEYBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2):
+    def test_different_keys_are_not_equal(self, k2: Union[bytes, VerifyKey]):
         k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         assert_not_equal(k1, k2)
 
@@ -149,7 +158,12 @@ class TestVerifyKey:
         ed25519_known_answers(),
     )
     def test_valid_signed_message(
-        self, _seed, public_key, message, signature, signed
+        self,
+        _seed: bytes,
+        public_key: bytes,
+        message: bytes,
+        signature: bytes,
+        signed: bytes,
     ):
         key = VerifyKey(
             public_key,
@@ -260,12 +274,6 @@ class TestVerifyKey:
         )
 
 
-def check_type_error(expected, f, *args):
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
-
-
 def test_wrong_types():
     sk = SigningKey.generate()
 
@@ -287,7 +295,7 @@ def test_wrong_types():
         "VerifyKey must be created from 32 bytes", VerifyKey, sk.verify_key
     )
 
-    def verify_detached_signature(x):
+    def verify_detached_signature(x: bytes) -> None:
         sk.verify_key.verify(b"", x)
 
     check_type_error(

@@ -21,7 +21,7 @@ from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
 from nacl.public import PrivateKey, PublicKey, SealedBox
 
-from .utils import read_crypto_test_vectors
+from .utils import check_type_error, read_crypto_test_vectors
 
 
 def sealbox_vectors():
@@ -95,12 +95,6 @@ def test_sealed_box_decryption(privalice, pubalice, plaintext, encrypted):
         encoder=HexEncoder,
     )
     assert binascii.hexlify(decrypted) == plaintext
-
-
-def check_type_error(expected, f, *args):
-    with pytest.raises(TypeError) as e:
-        f(*args)
-    assert expected in str(e.value)
 
 
 def test_wrong_types():
