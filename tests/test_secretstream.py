@@ -16,7 +16,7 @@ import binascii
 import json
 import os
 import random
-from typing import List, Optional, Tuple
+from typing import ByteString, List, Optional, Tuple
 
 from _pytest._code import ExceptionInfo
 from _pytest.monkeypatch import MonkeyPatch
@@ -219,8 +219,7 @@ def test_it_like_libsodium():
 
     header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
-    # TODO: not strictly a bytes object: see crypto_secretstream_xchacha20poly1305_state
-    state_save: bytearray = ffi.buffer(state.statebuf)[:]
+    state_save: ByteString = ffi.buffer(state.statebuf)[:]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
         state, m1, tag=crypto_secretstream_xchacha20poly1305_TAG_REKEY
@@ -242,7 +241,11 @@ def test_it_like_libsodium():
     # avoid using from_buffer until at least cffi >= 1.10 in setup.py
     # state = ffi.from_buffer(state_save)
     for i in range(crypto_secretstream_xchacha20poly1305_STATEBYTES):
-        state.statebuf[i] = state_save[i]
+        # Type safety: we can't write to a `ByteString` (≈ `Sequence[int]`). It's really
+        # a CFFI `cdata` object which owns an `unsigned char[]` (which we can write to).
+        # This is the only place we mutate `state_buf` in place across the project,
+        # and we don't expect end-users to do this.
+        state.statebuf[i] = state_save[i]  # type: ignore[index]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(state, m1)
 
