@@ -39,22 +39,9 @@ warn_unreachable = true
 no_implicit_reexport = true
 strict_equality = true
 
-# Include test files manually for now. Can tidy up later.
 files = [
     "src/nacl",
-    "tests/test_aead.py",
-    "tests/test_bindings.py",
-    "tests/test_box.py",
-    "tests/test_encoding.py",
-    "tests/test_exc.py",
-    "tests/test_generichash.py",
-    "tests/test_hash.py",
-    "tests/test_hashlib_scrypt.py",
-    "tests/test_kx.py",
-    "tests/test_public.py",
-    "tests/test_pwhash.py",
-    "tests/test_signing.py",
-    "tests/utils.py",
+    "tests",
 ]
 
 [[tool.mypy.overrides]]
@@ -76,25 +63,13 @@ module = [
 disallow_any_expr = false
 warn_return_any = false
 
-# Loosen some of the checks within the tests.
-# For now this is an explicit list rather than a wildcard "test.*", to make
-# it a little easier to run the strict checks on modules first. We can clean
-# this up later. Note that we _do_ run the strict checks on `test.utils`.
+# Loosen some of the checks within the tests. Note that `tests.utils` passes with the
+# strict checks on, but it's included here in the list of modules with looser checks
+# to keep mypy's config simple(r).
 
 [[tool.mypy.overrides]]
 module = [
-    "tests.test_aead",
-    "tests.test_bindings",
-    "tests.test_box",
-    "tests.test_encoding",
-    "tests.test_exc",
-    "tests.test_generichash",
-    "tests.test_hash",
-    "tests.test_hashlib_scrypt",
-    "tests.test_kx",
-    "tests.test_public",
-    "tests.test_pwhash",
-    "tests.test_signing",
+    "tests.*",
 ]
 # Some library helpers types' involve `Any`, in particular `pytest.mark.parameterize`
 # and `hypothesis.strategies.sampledfrom`.

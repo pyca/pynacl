@@ -14,6 +14,7 @@
 
 
 from binascii import hexlify
+from typing import List, Tuple
 
 import pytest
 
@@ -168,7 +169,7 @@ XHASHES = [
 ]
 
 
-def sip24_vectors():
+def sip24_vectors() -> List[Tuple[bytes, bytes, bytes]]:
     """Generate test vectors using data from the reference implementation's
     test defined in  https://github.com/veorq/SipHash/blob/master/main.c
 
@@ -182,7 +183,7 @@ def sip24_vectors():
     return vectors
 
 
-def sipx24_vectors():
+def sipx24_vectors() -> List[Tuple[bytes, bytes, bytes]]:
     """Generate test vectors using data from libsodium's tests"""
     vectors = []
     for i, expected in enumerate(XHASHES):
@@ -192,7 +193,7 @@ def sipx24_vectors():
 
 
 @pytest.mark.parametrize(("inp", "key", "expected"), sip24_vectors())
-def test_siphash24(inp, key, expected):
+def test_siphash24(inp: bytes, key: bytes, expected: bytes):
     rs = siphash24(inp, key)
     assert rs == hexlify(expected)
 
@@ -201,7 +202,7 @@ def test_siphash24(inp, key, expected):
     not SIPHASHX_AVAILABLE, reason="Requires full build of libsodium"
 )
 @pytest.mark.parametrize(("inp", "key", "expected"), sipx24_vectors())
-def test_siphashx24(inp, key, expected):
+def test_siphashx24(inp: bytes, key: bytes, expected: bytes):
     rs = siphashx24(inp, key)
     assert rs == expected
 
@@ -210,7 +211,7 @@ def test_siphashx24(inp, key, expected):
     ("inp", "key", "expected"),
     [(b"\00", b"\x00\x01\x02\x03\x04\x05\x06\x07", b"")],
 )
-def test_siphash24_shortened_key(inp, key, expected):
+def test_siphash24_shortened_key(inp: bytes, key: bytes, expected: bytes):
     with pytest.raises(ValueError):
         siphash24(inp, key)
 
@@ -222,7 +223,7 @@ def test_siphash24_shortened_key(inp, key, expected):
     ("inp", "key", "expected"),
     [(b"\00", b"\x00\x01\x02\x03\x04\x05\x06\x07", b"")],
 )
-def test_siphashx24_shortened_key(inp, key, expected):
+def test_siphashx24_shortened_key(inp: bytes, key: bytes, expected: bytes):
     with pytest.raises(ValueError):
         siphashx24(inp, key)
 

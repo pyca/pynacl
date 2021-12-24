@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, Tuple, cast
+from typing import ByteString, Optional, Tuple, cast
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -73,13 +73,13 @@ class crypto_secretstream_xchacha20poly1305_state:
 
     def __init__(self) -> None:
         """Initialize a clean state object."""
-        self.statebuf = ffi.new(
+        self.statebuf: ByteString = ffi.new(
             "unsigned char[]",
             crypto_secretstream_xchacha20poly1305_STATEBYTES,
         )
 
-        self.rawbuf: Optional[bytes] = None
-        self.tagbuf: Optional[bytes] = None
+        self.rawbuf: Optional[ByteString] = None
+        self.tagbuf: Optional[ByteString] = None
 
 
 def crypto_secretstream_xchacha20poly1305_init_push(

@@ -6,6 +6,7 @@ Changelog
 
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7 and Python 3.5.
 * Update ``libsodium`` to 1.0.18-stable (July 25, 2021 release).
+* Add inline type hints.
 
 1.4.0 (2020-05-25)
 ------------------
