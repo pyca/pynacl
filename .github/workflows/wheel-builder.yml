@@ -10,8 +10,6 @@ on:
   push:
     tags:
       - '*.*.*'
-    branches:
-      - 'universal'
 
 jobs:
   manylinux:

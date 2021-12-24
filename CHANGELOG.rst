@@ -5,6 +5,10 @@ Changelog
 ------------------
 
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7 and Python 3.5.
+* **BACKWARDS INCOMPATIBLE:** We no longer distribute ``manylinux1``
+  wheels.
+* Added ``manylinux2014``, ``manylinux_2_24``, ``musllinux``, and macOS
+  ``universal2`` wheels (the latter supports macOS ``arm64``).
 * Update ``libsodium`` to 1.0.18-stable (July 25, 2021 release).
 * Add inline type hints.
 
