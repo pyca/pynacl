@@ -1,32 +1,49 @@
 name: Wheel Builder
+permissions:
+  contents: read
 on:
   workflow_dispatch:
     inputs:
       version:
+        description: The version to build
         required: true
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
   manylinux:
     runs-on: ubuntu-latest
-    container: pyca/cryptography-manylinux1:x86_64
+    container: ghcr.io/pyca/${{ matrix.MANYLINUX.CONTAINER }}
     strategy:
       matrix:
-        PYTHON: ["cp36-cp36m"]
-    name: "Python ${{ matrix.PYTHON }} for manylinux1"
-    steps:
-      - run: /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv
-      - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi
-      - run: .venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir tmpwheelhouse
+        PYTHON:
+          - { VERSION: "cp36-cp36m", PATH: "/opt/python/cp36-cp36m/bin/python", ABI_VERSION: 'cp36' }
+        MANYLINUX:
+          - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64" }
+          - { name: "manylinux_2_24_x86_64", CONTAINER: "cryptography-manylinux_2_24:x86_64"}
+          - { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64"}
 
+    name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
+    steps:
+      - uses: actions/checkout@v2.4.0
+        with:
+          # The tag to build or the tag received by the tag event
+          ref: ${{ github.event.inputs.version || github.ref }}
+          persist-credentials: false
+      - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
+      - name: Install python dependencies
+        run: .venv/bin/pip install -U pip cffi wheel
+      - name: Make sdist
+        run: .venv/bin/python setup.py sdist
+      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir tmpwheelhouse
       - run: |
-          REGEX="cp3([0-9])*"
-          if [[ "${{ matrix.PYTHON }}" =~ $REGEX ]]; then
-              PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
+          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
           fi
           cd PyNaCl*
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../tmpwheelhouse
-      - run: auditwheel repair tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
+      - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
@@ -35,20 +52,25 @@ jobs:
       - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v1
         with:
-          name: "pynacl-${{ github.event.inputs.version }}-manylinux1-${{ matrix.PYTHON }}"
+          name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-  ${{ matrix.PYTHON.VERSION }}"
+
           path: pynacl-wheelhouse/
   macos:
-    runs-on: macos-latest
+    runs-on: macos-11
     strategy:
       matrix:
         PYTHON:
-          - VERSION: '3.8'
-            ABI_VERSION: '3.6'
-            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.8.2/python-3.8.2-macosx10.9.pkg'
-            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.8/bin/python3'
+          - VERSION: '3.10'
+            ABI_VERSION: 'cp36'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
+            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
     name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2.4.0
+        with:
+          # The tag to build or the tag received by the tag event
+          ref: ${{ github.event.inputs.version || github.ref }}
+          persist-credentials: false
       - run: |
           curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
           sudo installer -pkg python.pkg -target /
@@ -57,19 +79,20 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi
-      - run: venv/bin/pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl*.tar.gz && mkdir wheelhouse
+      - name: Make sdist
+        run: venv/bin/python setup.py sdist
+      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir wheelhouse
       - name: Build the wheel
         run: |
-            REGEX="3\.([0-9])*"
-            if [[ "$PYTHON_VERSION" =~ $REGEX ]]; then
-                PY_LIMITED_API="--py-limited-api=cp3${BASH_REMATCH[1]}"
-            fi
-
             cd PyNaCl*
-            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" CFLAGS="-mmacosx-version-min=10.9 -march=core2" \
-                ../venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../wheelhouse
+            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
+                ../venv/bin/python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
+          MACOSX_DEPLOYMENT_TARGET: '10.10'
+          CFLAGS: '-arch arm64 -arch x86_64'
+          ARCHFLAGS: '-arch arm64 -arch x86_64'
+          _PYTHON_HOST_PLATFORM: 'macosx-10.9-universal2'
       - run: venv/bin/pip install -f wheelhouse --no-index pynacl
       - run: |
           venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
@@ -88,10 +111,14 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
-          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "USE_ABI3": "true", "ABI_VERSION": "cp36"}
+          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "ABI_VERSION": "cp36"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2.4.0
+        with:
+          # The tag to build or the tag received by the tag event
+          ref: ${{ github.event.inputs.version || github.ref }}
+          persist-credentials: false
       - name: Setup python
         uses: actions/setup-python@v2.3.1
         with:
@@ -109,8 +136,9 @@ jobs:
 
       - name: Install wheel and our Python dependencies
         run: python -m pip install -U pip wheel cffi
-      - name: Download the sdist
-        run: pip download pynacl==${{ github.event.inputs.version }} --no-deps --no-binary pynacl && tar zxvf PyNaCl* && mkdir wheelhouse
+      - name: Make sdist
+        run: python setup.py sdist
+      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir wheelhouse
         shell: bash
       - name: Build the wheel
         run: |
