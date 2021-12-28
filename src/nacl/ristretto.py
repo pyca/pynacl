@@ -214,7 +214,7 @@ class Ristretto255Scalar:
         return repr(self)
 
 
-if nacl.bindings.has_crypto_core_ristretto25519:
+if nacl.bindings.has_crypto_core_ristretto25519:  # pragma: no branch
     # Neutral additive element
     Ristretto255Scalar.ZERO = Ristretto255Scalar(0)
 
@@ -223,15 +223,6 @@ if nacl.bindings.has_crypto_core_ristretto25519:
 
     # Constant needed for inverting points
     Ristretto255Scalar.MINUS_ONE = Ristretto255Scalar(-1)
-else:  # pragma: no cover
-
-    Ristretto255Scalar.ZERO = Ristretto255Scalar(
-        bytes(Ristretto255Scalar.SIZE)
-    )
-    Ristretto255Scalar.ONE = Ristretto255Scalar(bytes(Ristretto255Scalar.SIZE))
-    Ristretto255Scalar.MINUS_ONE = Ristretto255Scalar(
-        bytes(Ristretto255Scalar.SIZE)
-    )
 
 
 class Ristretto255Point:
@@ -362,7 +353,10 @@ class Ristretto255Point:
         return "Ristretto255Point({})".format(bytes(self).hex())
 
 
-# Neutral element
-Ristretto255Point.ZERO = Ristretto255Point(
-    bytes(Ristretto255Point.SIZE), _assume_valid=True
-)
+
+
+if nacl.bindings.has_crypto_core_ristretto25519:  # pragma: no branch
+    # Neutral element
+    Ristretto255Point.ZERO = Ristretto255Point(
+        bytes(Ristretto255Point.SIZE), _assume_valid=True
+    )
