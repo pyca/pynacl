@@ -252,6 +252,37 @@ class TestRistretto255Scalar:
         not has_crypto_core_ristretto25519,
         reason="Requires full build of libsodium",
     )
+    def test_div(self):
+        s = Ristretto255Scalar.random()
+        t = Ristretto255Scalar.random()
+        u = Ristretto255Scalar.random()
+
+        assert s / s == Ristretto255Scalar.ONE
+        assert s / t == (t / s).inverse
+        assert s / (t / u) == s / t * u
+
+        assert Ristretto255Scalar(123 * 456) / 123 == Ristretto255Scalar(456)
+        assert 123 * 456 / Ristretto255Scalar(123) == Ristretto255Scalar(456)
+
+        v = Ristretto255Scalar(b"\x01" * 32)
+        w = Ristretto255Scalar(b"\x02" * 32)
+        # (int.from_bytes(b"\x01" * 32, "little") * pow(int.from_bytes(b"\x02" * 32, "little"),
+        # -1, order) % order).to_bytes(32, "little").hex()
+        x = bytes.fromhex(
+            "f7e97a2e8d31092c6bce7b51ef7c6f0a00000000000000000000000000000008"
+        )
+        assert bytes(v / w) == x
+
+        with pytest.raises(TypeError):
+            s / "foo"  # type: ignore[operator]
+
+        with pytest.raises(TypeError):
+            "foo" / s  # type: ignore[operator]
+
+    @pytest.mark.skipif(
+        not has_crypto_core_ristretto25519,
+        reason="Requires full build of libsodium",
+    )
     def test_neg(self):
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(-123)

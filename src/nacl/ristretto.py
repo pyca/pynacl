@@ -182,6 +182,29 @@ class Ristretto255Scalar:
             nacl.bindings.crypto_core_ristretto255_scalar_negate(self._value)
         )
 
+    def __truediv__(self, other):
+        """
+        Divide two scalars.
+        """
+
+        try:
+            value = self._convert(other)
+        except exc.TypeError:
+            return NotImplemented
+
+        inverse = nacl.bindings.crypto_core_ristretto255_scalar_invert(value)
+        return Ristretto255Scalar(
+            nacl.bindings.crypto_core_ristretto255_scalar_mul(
+                self._value, inverse
+            )
+        )
+
+    def __rtruediv__(self, other):
+        Divide two scalars.
+        """
+
+        return self.inverse * other
+
     def __eq__(self, other):
         """
         Check if two scalars are identical. Comparing with other types such as
