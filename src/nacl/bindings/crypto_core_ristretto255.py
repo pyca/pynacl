@@ -40,17 +40,14 @@ if has_crypto_core_ristretto25519:  # pragma: no branch
     )
 
 
-def crypto_core_ristretto255_scalar_add(x, y):
+def crypto_core_ristretto255_scalar_add(x: bytes, y: bytes) -> bytes:
     """
     Compute the sum of the scalars ``x`` and ``y`` modulo ``L``.
 
     :param x: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the first scalar
-    :type x: bytes
     :param y: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the second scalar
-    :type y: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -84,14 +81,12 @@ def crypto_core_ristretto255_scalar_add(x, y):
     return ffi.buffer(z, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_complement(s):
+def crypto_core_ristretto255_scalar_complement(s: bytes) -> bytes:
     """
     Compute the complement of ``s`` such that ``s + comp = 1 (mod L)``.
 
     :param s: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the scalar
-    :type s: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -116,15 +111,13 @@ def crypto_core_ristretto255_scalar_complement(s):
     return ffi.buffer(comp, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_invert(s):
+def crypto_core_ristretto255_scalar_invert(s: bytes) -> bytes:
     """
     Compute the multiplicative inverse of ``s`` such that
     ``recip * s = 1 (mod L)``.
 
     :param s: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the scalar
-    :type s: bytes
-    :rtype: bytes
     :raises ValueError: if the value is not invertible
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
@@ -152,17 +145,14 @@ def crypto_core_ristretto255_scalar_invert(s):
     return ffi.buffer(recip, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_mul(x, y):
+def crypto_core_ristretto255_scalar_mul(x: bytes, y: bytes) -> bytes:
     """
     Compute the product of the scalars ``x`` and ``y`` modulo ``L``.
 
     :param x: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the first scalar
-    :type x: bytes
     :param y: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the second scalar
-    :type y: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -196,15 +186,13 @@ def crypto_core_ristretto255_scalar_mul(x, y):
     return ffi.buffer(z, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_negate(s):
+def crypto_core_ristretto255_scalar_negate(s: bytes) -> bytes:
     """
     Compute the additive inverse of the scalar ``s`` such that
     ``neg + s = 0 (mod L)``.
 
     :param s: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the scalar
-    :type s: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -228,11 +216,10 @@ def crypto_core_ristretto255_scalar_negate(s):
     return ffi.buffer(neg, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_random():
+def crypto_core_ristretto255_scalar_random() -> bytes:
     """
     Generate a random non-zero scalar modulo ``L``.
 
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -248,7 +235,7 @@ def crypto_core_ristretto255_scalar_random():
     return ffi.buffer(r, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_reduce(s):
+def crypto_core_ristretto255_scalar_reduce(s: bytes) -> bytes:
     """
     Reduce little endian value ``s`` modulo ``L``. ``s`` should have at least
     317 bits to ensure almost uniformity of ``r`` over ``L``.
@@ -257,8 +244,6 @@ def crypto_core_ristretto255_scalar_reduce(s):
               :py:data:`.crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES`
               bytes in little endian order representing the value to reduce
               to a Ristretto255 scalar
-    :type s: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -283,17 +268,14 @@ def crypto_core_ristretto255_scalar_reduce(s):
     return ffi.buffer(r, crypto_core_ristretto255_SCALAR_BYTES)[:]
 
 
-def crypto_core_ristretto255_scalar_sub(x, y):
+def crypto_core_ristretto255_scalar_sub(x: bytes, y: bytes) -> bytes:
     """
     Subtract scalar ``y`` from scalar ``x`` modulo ``L``.
 
     :param x: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the first scalar
-    :type x: bytes
     :param y: a sequence of :py:data:`.crypto_core_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the second scalar
-    :type y: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -340,17 +322,14 @@ else:  # pragma: no cover
     crypto_core_ristretto255_HASH_BYTES = 0
 
 
-def crypto_core_ristretto255_add(p, q):
+def crypto_core_ristretto255_add(p: bytes, q: bytes) -> bytes:
     """
     Compute the sum of the points ``p`` and ``q``.
 
     :param p: a sequence of :py:data:`.crypto_core_ristretto255_BYTES`
               bytes representing the first point
-    :type p: bytes
     :param q: a sequence of :py:data:`.crypto_core_ristretto255_BYTES`
               bytes representing the second point
-    :type q: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -384,15 +363,13 @@ def crypto_core_ristretto255_add(p, q):
     return ffi.buffer(r, crypto_core_ristretto255_BYTES)[:]
 
 
-def crypto_core_ristretto255_from_hash(r):
+def crypto_core_ristretto255_from_hash(r: bytes) -> bytes:
     """
     Map 64 bytes of input, e.g. the result of a hash function, to a group
     point. This might be the zero point, e.g. if input is all zeros.
 
     :param r: a sequence of :py:data:`.crypto_core_ristretto255_HASH_BYTES`
               bytes representing the value to convert
-    :type r: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -418,15 +395,13 @@ def crypto_core_ristretto255_from_hash(r):
     return ffi.buffer(q, crypto_core_ristretto255_BYTES)[:]
 
 
-def crypto_core_ristretto255_is_valid_point(p):
+def crypto_core_ristretto255_is_valid_point(p: bytes) -> bytes:
     """
     Check if ``p`` is a valid point.
 
     :param p: a sequence of :py:data:`.crypto_core_ristretto255_BYTES`
               bytes representing the value to check
-    :type p: bytes
     :return: False if invalid, True if valid
-    :rtype: bool
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -449,12 +424,11 @@ def crypto_core_ristretto255_is_valid_point(p):
     return rc == 1
 
 
-def crypto_core_ristretto255_random():
+def crypto_core_ristretto255_random() -> bytes:
     """
     Generate a random Ristretto255 point. This might be,
     although astronomically unlikely, the zero point.
 
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """
@@ -470,17 +444,14 @@ def crypto_core_ristretto255_random():
     return ffi.buffer(p, crypto_core_ristretto255_BYTES)[:]
 
 
-def crypto_core_ristretto255_sub(p, q):
+def crypto_core_ristretto255_sub(p: bytes, q: bytes) -> bytes:
     """
     Subtract point ``q`` from ``p``.
 
     :param p: a sequence of :py:data:`.crypto_core_ristretto255_BYTES`
               bytes representing the first point
-    :type p: bytes
     :param q: a sequence of :py:data:`.crypto_core_ristretto255_BYTES`
               bytes representing the second point
-    :type q: bytes
-    :rtype: bytes
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
     """

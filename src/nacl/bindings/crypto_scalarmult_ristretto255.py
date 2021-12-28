@@ -36,15 +36,13 @@ if has_crypto_scalarmult_ristretto25519:  # pragma: no branch
     )
 
 
-def crypto_scalarmult_ristretto255_base(n):
+def crypto_scalarmult_ristretto255_base(n: bytes) -> bytes:
     """
     Multiply the scalar ``n`` with the Ed25519 base point.
 
     :param n: a sequence of
               :py:data:`.crypto_scalarmult_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the scalar
-    :type n: bytes
-    :rtype: bytes
     :raises exc.RuntimeError: on error or if result is zero
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
@@ -75,18 +73,15 @@ def crypto_scalarmult_ristretto255_base(n):
     return ffi.buffer(q, crypto_scalarmult_ristretto255_BYTES)[:]
 
 
-def crypto_scalarmult_ristretto255(n, p):
+def crypto_scalarmult_ristretto255(n: bytes, p: bytes) -> bytes:
     """
     Multiply the scalar ``n`` with point ``p``.
 
     :param n: a sequence of
               :py:data:`.crypto_scalarmult_ristretto255_SCALAR_BYTES`
               bytes in little endian order representing the scalar
-    :type n: bytes
     :param p: a sequence of :py:data:`.crypto_scalarmult_ristretto255_BYTES`
               bytes in little endian order representing the point
-    :type p: bytes
-    :rtype: bytes
     :raises exc.RuntimeError: on error or if result is zero
     :raises nacl.exceptions.UnavailableError: If called when using a
         minimal build of libsodium.
