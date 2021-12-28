@@ -25,7 +25,10 @@ crypto_core_ristretto255_GROUP_ORDER = (
     2 ** 252 + 27742317777372353535851937790883648493
 )
 
-if has_crypto_core_ristretto25519:
+crypto_core_ristretto255_SCALAR_BYTES = 0
+crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = 0
+
+if has_crypto_core_ristretto25519:  # pragma: no branch
     # Size of a Ristretto255 scalar.
     crypto_core_ristretto255_SCALAR_BYTES = (
         lib.crypto_core_ristretto255_scalarbytes()
@@ -35,9 +38,6 @@ if has_crypto_core_ristretto25519:
     crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = (
         lib.crypto_core_ristretto255_nonreducedscalarbytes()
     )
-else:  # pragma: no cover
-    crypto_core_ristretto255_SCALAR_BYTES = 0
-    crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES = 0
 
 
 def crypto_core_ristretto255_scalar_add(x, y):

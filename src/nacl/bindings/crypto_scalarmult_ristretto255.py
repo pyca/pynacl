@@ -20,7 +20,10 @@ has_crypto_scalarmult_ristretto25519 = bool(
     lib.PYNACL_HAS_CRYPTO_SCALARMULT_RISTRETTO25519
 )
 
-if has_crypto_scalarmult_ristretto25519:
+crypto_scalarmult_ristretto255_BYTES = 0
+crypto_scalarmult_ristretto255_SCALAR_BYTES = 0
+
+if has_crypto_scalarmult_ristretto25519:  # pragma: no branch
     # Size of a Ristretto255 point.
     # Should equal crypto_core_ristretto255_BYTES
     crypto_scalarmult_ristretto255_BYTES = (
@@ -31,9 +34,6 @@ if has_crypto_scalarmult_ristretto25519:
     crypto_scalarmult_ristretto255_SCALAR_BYTES = (
         lib.crypto_scalarmult_ristretto255_scalarbytes()
     )
-else:  # pragma: no cover
-    crypto_scalarmult_ristretto255_BYTES = 0
-    crypto_scalarmult_ristretto255_SCALAR_BYTES = 0
 
 
 def crypto_scalarmult_ristretto255_base(n):
