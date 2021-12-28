@@ -16,7 +16,7 @@ import json
 import os
 from fractions import Fraction
 from functools import reduce
-from hashlib import sha256, sha512
+from hashlib import sha512
 from operator import mul
 from random import randrange
 
@@ -66,10 +66,16 @@ class TestRistretto255Scalar:
         reason="Requires full build of libsodium",
     )
     def test_init(self):
+        value = bytes(reversed(range(32)))
+        scalar = Ristretto255Scalar(value)
+        assert bytes(scalar) == value
 
-        dgst = sha256(b"hello").digest()
-        s = Ristretto255Scalar(dgst)
-        assert bytes(s) == dgst
+        reduced_scalar = Ristretto255Scalar(
+            (int.from_bytes(value, "little") + self.order * 13).to_bytes(
+                32, "little"
+            )
+        )
+        assert bytes(reduced_scalar) == value
 
         assert bytes(Ristretto255Scalar(0xE2)) == b"\xe2" + b"\x00" * 31
         assert bytes(Ristretto255Scalar(0xABCD)) == b"\xcd\xab" + b"\x00" * 30
@@ -181,6 +187,12 @@ class TestRistretto255Scalar:
         t = Ristretto255Scalar(456)
         u = Ristretto255Scalar(579)
 
+        with pytest.raises(TypeError):
+            s + "foo"
+
+        with pytest.raises(TypeError):
+            "foo" + s
+
         assert s + t == u
         assert s + t == t + s
         assert s != t
@@ -203,6 +215,12 @@ class TestRistretto255Scalar:
         s = Ristretto255Scalar(123)
         t = Ristretto255Scalar(456)
         u = Ristretto255Scalar(579)
+
+        with pytest.raises(TypeError):
+            s - "foo"
+
+        with pytest.raises(TypeError):
+            "foo" - s
 
         assert u - s == t
         assert u - t == s
@@ -247,6 +265,12 @@ class TestRistretto255Scalar:
         assert (a * b) * c == c * (b * a)
         assert a * Ristretto255Scalar.ZERO == Ristretto255Scalar.ZERO
         assert a * Ristretto255Scalar.ONE == a
+
+        with pytest.raises(TypeError):
+            s * "foo"
+
+        with pytest.raises(TypeError):
+            "foo" * s
 
     @pytest.mark.skipif(
         not has_crypto_core_ristretto25519,
@@ -311,7 +335,9 @@ class TestRistretto255Scalar:
         assert t != u
 
         assert s != "foobar"
+        assert "foobar" != s
         assert s != 123
+        assert 123 != s
 
         p = Ristretto255Scalar.random()
         q = Ristretto255Scalar.random()
@@ -491,7 +517,7 @@ class TestRistretto255Point:
         q = Ristretto255Point.random()
         r = Ristretto255Point.random()
 
-        with pytest.raises(exc.TypeError):
+        with pytest.raises(TypeError):
             p + 123
 
         assert p + Ristretto255Point.ZERO == p
@@ -509,7 +535,7 @@ class TestRistretto255Point:
         q = Ristretto255Point.random()
         r = Ristretto255Point.random()
 
-        with pytest.raises(exc.TypeError):
+        with pytest.raises(TypeError):
             p - 123
 
         assert p - Ristretto255Point.ZERO == p
@@ -538,7 +564,9 @@ class TestRistretto255Point:
         assert ((p * 2) * 3) * 5 == p * 30
 
         assert p * Ristretto255Scalar(7) == p * 8 - p
+        assert Ristretto255Scalar(7) * p == 8 * p - p
         assert p * Fraction(8, 1) == p * 8
+        assert Fraction(8, 1) * p == 8 * p
         assert 27 * p * Fraction(-11, 27) == p * -11
 
     @pytest.mark.skipif(
@@ -675,11 +703,11 @@ class TestElGamal:
         x, h = self.gen_key()
         orig_msg = b"The quick brown fox jumps over the lazy dog.".ljust(64)
 
-        # happens to be a valid point.
+        # Happens to be a valid point.
         m0 = Ristretto255Point(orig_msg[:32])
         e0, f0 = self.encrypt(h, m0)
 
-        # happens to be a valid point too. Blessed be the lazy dog!
+        # Happens to be a valid point too. Blessed be the lazy dog!
         m1 = Ristretto255Point(orig_msg[32:])
         e1, f1 = self.encrypt(h, m1)
 
@@ -697,7 +725,7 @@ class TestShamir:
 
     class Polynomial:
         def __init__(self, coeffs, zero):
-            self._coeffs = list(coeffs)
+            self._coeffs = coeffs
             self._zero = zero
 
         def __call__(self, i):
@@ -716,7 +744,7 @@ class TestShamir:
         gen = Ristretto255Point.random()
 
         alpha = self.Polynomial(
-            (Ristretto255Scalar.random() for __ in range(qualified_size)),
+            [Ristretto255Scalar.random() for __ in range(qualified_size)],
             Ristretto255Scalar.ZERO,
         )
 
