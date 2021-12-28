@@ -25,13 +25,44 @@ _ScalarType = Union["Ristretto255Scalar", bytes, int, Fraction]
 
 
 class Ristretto255Scalar:
-    SIZE = nacl.bindings.crypto_core_ristretto255_SCALAR_BYTES
-    NONREDUCED_SIZE = (
-        nacl.bindings.crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES
-    )
-    ORDER = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER
+    """
+    Scalar field modulo prime :py:const:`ORDER`. Each element is a scalar value.
 
-    def __init__(self, value):
+    :cvar ZERO: Scalar with value 0
+    :cvar ONE: Scalar with value 1
+    :cvar MINUS_ONE: Scalar with value -1 (modulo :py:const:`ORDER`)
+    :cvar SIZE: Size of Scalars in bytes (32)
+    :cvar NONREDUCED_SIZE: Size of non reduced scalar (64); see :py:meth:`reduce`.
+    :cvar ORDER: Group order (``2 ** 252 + 27742317777372353535851937790883648493``)
+    """
+
+    ZERO: ClassVar["Ristretto255Scalar"]
+    ONE: ClassVar["Ristretto255Scalar"]
+    MINUS_ONE: ClassVar["Ristretto255Scalar"]
+    SIZE: ClassVar[int] = nacl.bindings.crypto_core_ristretto255_SCALAR_BYTES
+    NONREDUCED_SIZE: ClassVar[
+        int
+    ] = nacl.bindings.crypto_core_ristretto255_NONREDUCED_SCALAR_BYTES
+    ORDER: ClassVar[int] = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER
+
+    # Actual value; 32 bytes in little endian order
+    _value: bytes
+
+    def __init__(self, value: _ScalarType) -> None:
+        """
+        Create a new :py:class:`Ristretto255Scalar`.
+
+        :param value: Value of the scalar. Will be converted according to its type.
+        :raises exc.TypeError: Type not supported
+
+        Value can be one of:
+
+        * :py:class:`Ristretto255Scalar`: Create a new object with the same value.
+        * *bytes*: *value* must be :py:CONST:`SIZE` bytes in little-endian order.
+        * *int*: *value* will be reduced modulo :py:CONST:`ORDER`.
+        * `Fraction <https://docs.python.org/3/library/fractions.html#fractions.Fraction>`__:
+          Numerator of *value* multiplied with the inverse of its denominator.
+        """
         self._value = self._convert(value)
 
     @staticmethod
@@ -76,42 +107,53 @@ class Ristretto255Scalar:
         raise exc.TypeError(f"Unsupported type: {type(value).__name__!r}")
 
     @classmethod
-    def random(cls):
+    def random(cls) -> "Ristretto255Scalar":
         """
-        Get a non-zero random scalar.
-        """
+        Create non-zero random scalar.
 
+        :return: Random scalar
+        """
         return cls(nacl.bindings.crypto_core_ristretto255_scalar_random())
 
     @classmethod
-    def random_zero(cls):
+    def random_zero(cls) -> "Ristretto255Scalar":
         """
-        Get a random scalar that could also be zero.
+        Create a random scalar that could be zero.
+
+        :return: Ristretto255Scalar: Random scalar
         """
         return cls.reduce(random(cls.NONREDUCED_SIZE))
 
     @classmethod
-    def reduce(cls, value):
+    def reduce(cls, value: bytes) -> "Ristretto255Scalar":
         """
         Reduce a larger value, e.g. the output of a hash function, to a scalar.
         There should be at least 317 bits to ensure almost uniformity.
+
+        :param value: :py:const:`NONREDUCED_SIZE` bytes in little-endian encoding
+        :return: Value reduced modulo :py:CONST:`ORDER`
         """
         return cls(nacl.bindings.crypto_core_ristretto255_scalar_reduce(value))
 
     @property
-    def inverse(self):
+    def inverse(self) -> "Ristretto255Scalar":
         """
-        Get multiplicative inverse such that ``x.inverse * x == 1``.
-        """
+        Get multiplicative inverse such that ``x.inverse * x == Ristretto255Scalar.ONE``.
 
+        :return: Multiplicative inverse reduced modulo :py:CONST:`ORDER`
+        """
         return Ristretto255Scalar(
             nacl.bindings.crypto_core_ristretto255_scalar_invert(self._value)
         )
 
     @property
-    def complement(self):
+    def complement(self) -> "Ristretto255Scalar":
         """
-        Get the complement such that ``x.complement + x == 1``.
+        Get the complement such that ``x.complement + x == Ristretto255Scalar.ONE``.
+
+        Note that this is *not* the two's complement where ``~x + x == -1``.
+
+        :return: Complemental value reduced modulo :py:CONST:`ORDER`
         """
         return Ristretto255Scalar(
             nacl.bindings.crypto_core_ristretto255_scalar_complement(
@@ -119,9 +161,12 @@ class Ristretto255Scalar:
             )
         )
 
-    def __add__(self, other):
+    def __add__(self, other: _ScalarType) -> "Ristretto255Scalar":
         """
         Add two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Sum of *self* and *other* reduced modulo :py:CONST:`ORDER`
         """
         try:
             value = self._convert(other)
@@ -134,12 +179,21 @@ class Ristretto255Scalar:
             )
         )
 
-    def __radd__(self, other):
+    def __radd__(self, other: _ScalarType) -> "Ristretto255Scalar":
+        """
+        Add two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Sum of *other* and *self* reduced modulo :py:CONST:`ORDER`
+        """
         return self + other
 
-    def __sub__(self, other):
+    def __sub__(self, other: _ScalarType) -> "Ristretto255Scalar":
         """
-        Subtract to scalars.
+        Subtract *other* from *self*.
+
+        :param other: Any of the types supported by the constructor
+        :return: Difference of *self* and *other* reduced modulo :py:CONST:`ORDER`
         """
         try:
             value = self._convert(other)
@@ -152,12 +206,21 @@ class Ristretto255Scalar:
             )
         )
 
-    def __rsub__(self, other):
+    def __rsub__(self, other: _ScalarType) -> "Ristretto255Scalar":
+        """
+        Subtract *self* from *other*.
+
+        :param other: Any of the types supported by the constructor
+        :return: Difference of *other* and *self* reduced modulo :py:CONST:`ORDER`
+        """
         return -(self - other)
 
-    def __mul__(self, other):
+    def __mul__(self, other: _ScalarType) -> "Ristretto255Scalar":
         """
         Multiply two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Product of *self* and *other* modulo :py:CONST:`ORDER`
         """
 
         try:
@@ -171,20 +234,21 @@ class Ristretto255Scalar:
             )
         )
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: _ScalarType) -> "Ristretto255Scalar":
+        """
+        Multiply two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Product of *other* and *self* modulo :py:CONST:`ORDER`
+        """
         return self * other
 
-    def __neg__(self):
-        """
-        Get the additive inverse such that ``-x + x == 0``.
-        """
-        return Ristretto255Scalar(
-            nacl.bindings.crypto_core_ristretto255_scalar_negate(self._value)
-        )
-
-    def __truediv__(self, other):
+    def __truediv__(self, other: _ScalarType) -> "Ristretto255Scalar":
         """
         Divide two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Product of *self* and inverse of *other* modulo :py:CONST:`ORDER`
         """
 
         try:
@@ -199,41 +263,94 @@ class Ristretto255Scalar:
             )
         )
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other: _ScalarType) -> "Ristretto255Scalar":
+        """
         Divide two scalars.
+
+        :param other: Any of the types supported by the constructor
+        :return: Product of *other* and inverse of *self* modulo :py:CONST:`ORDER`
         """
 
         return self.inverse * other
 
-    def __eq__(self, other):
+    def __neg__(self) -> "Ristretto255Scalar":
+        """
+        Get the additive inverse such that ``-x + x == Ristretto255Scalar.ZERO``.
+
+        :return: Additive inverse
+        """
+
+        return Ristretto255Scalar(
+            nacl.bindings.crypto_core_ristretto255_scalar_negate(self._value)
+        )
+
+    def __eq__(self, other: object) -> bool:
         """
         Check if two scalars are identical. Comparing with other types such as
         ``int`` will return False.
+
+        :return: True if equal, False otherwise
         """
         if not isinstance(other, self.__class__):
             return False
 
         return nacl.bindings.sodium_memcmp(self._value, other._value)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
+        """
+        Check if two scalars are not identical. Comparing with other types such as
+        ``int`` will return True.
+
+        :return: False if equal, True otherwise
+        """
         return not (self == other)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
+        """
+        Compute a hash value.
+
+        :return: Hash value
+        """
         return hash(self._value)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
+        """
+        Get byte representation of scalar.
+
+        :return: Value of scalar in little-endian encoding
+        """
         return self._value
 
-    def __int__(self):
+    def __int__(self) -> int:
+        """
+        Get integer representation of scalar.
+
+        :return: Value of scalar reduced modulo :py:CONST:`ORDER`
+        """
         return int.from_bytes(self._value, "little")
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
+        """
+        Check if scalar is non-zero.
+
+        :return: True if non-zero, False otherwise
+        """
         return not nacl.bindings.sodium_is_zero(self._value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Get representation of scalar which, when evaluated, will yield an equal scalar.
+
+        :return: Representation of scalar
+        """
         return f"Ristretto255Scalar({int(self)})"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Get human readable representation of scalar.
+
+        :return: Representation of scalar
+        """
         return repr(self)
 
 
@@ -249,11 +366,33 @@ if nacl.bindings.has_crypto_core_ristretto25519:  # pragma: no branch
 
 
 class Ristretto255Point:
-    SIZE = nacl.bindings.crypto_core_ristretto255_BYTES
-    HASH_SIZE = nacl.bindings.crypto_core_ristretto255_HASH_BYTES
-    ORDER = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER
+    """
+    Ristretto255 group. Each element is a curve point.
 
-    def __init__(self, value, _assume_valid=False):
+    :cvar ORDER: Group order
+    :cvar SIZE: Size of Points in bytes (32)
+    :cvar HASH_SIZE: Size input for :py:meth:`from_hash` (64).
+    :cvar ZERO: Neutral element
+    """
+
+    SIZE: ClassVar[int] = nacl.bindings.crypto_core_ristretto255_BYTES
+    HASH_SIZE: ClassVar[
+        int
+    ] = nacl.bindings.crypto_core_ristretto255_HASH_BYTES
+    ORDER: ClassVar[int] = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER
+    ZERO: ClassVar["Ristretto255Point"]
+
+    # Actual value; 32 bytes in little endian order
+    _value: bytes
+
+    def __init__(self, value: bytes, _assume_valid: bool = False) -> None:
+        """
+        Create a new :py:class:`Ristretto255Point`.
+
+        :param value: Value of point in little-endian order
+        :param _assume_valid: For internal use only: Skip check for valid point
+        :raises exc.ValueError: Invalid point
+        """
         if not _assume_valid:
             if not nacl.bindings.crypto_core_ristretto255_is_valid_point(
                 value
@@ -262,10 +401,13 @@ class Ristretto255Point:
         self._value = value
 
     @classmethod
-    def from_hash(cls, value):
+    def from_hash(cls, value: bytes) -> "Ristretto255Point":
         """
         Map 64 bytes of input, e.g. the result of a hash function, to a group
-        point. This might be the zero point, e.g. if input is all zeros.
+        point. This might be the zero point, e.g. if hash value is all zeros.
+
+        :param value: :py:const:`HASH_SIZE` bytes in little-endian encoding
+        :return: Point created from *value*
         """
         return cls(
             nacl.bindings.crypto_core_ristretto255_from_hash(value),
@@ -273,19 +415,24 @@ class Ristretto255Point:
         )
 
     @classmethod
-    def random(cls):
+    def random(cls) -> "Ristretto255Point":
         """
         Generate a random Ristretto255 point. This might be,
         although astronomically unlikely, the zero point.
+
+        :return: Random point
         """
         return cls(
             nacl.bindings.crypto_core_ristretto255_random(), _assume_valid=True
         )
 
     @classmethod
-    def base_mul(cls, n):
+    def base_mul(cls, n: _ScalarType) -> "Ristretto255Point":
         """
         Multiply the non-zero scalar *n* with the Ed25519 base point.
+
+        :param n: Scalar value, any type supported by :py:class:`Ristretto255Scalar`.
+        :return: Product of the Ed25519 base point and *n*
         """
         return cls(
             nacl.bindings.crypto_scalarmult_ristretto255_base(
@@ -294,15 +441,20 @@ class Ristretto255Point:
             _assume_valid=True,
         )
 
-    def __neg__(self):
+    def __neg__(self) -> "Ristretto255Point":
         """
-        Get inverse element such that ``-x + x == Ristretto255Point.ZERO``.
+        Get inverse element such that ``-self + self == Ristretto255Point.ZERO``.
+
+        :return: Inverse of *self*
         """
         return self * Ristretto255Scalar.MINUS_ONE
 
-    def __add__(self, other):
+    def __add__(self, other: "Ristretto255Point") -> "Ristretto255Point":
         """
         Add two points.
+
+        :arg other: A group point
+        :return: Sum of *self* and *other*
         """
         if not isinstance(other, Ristretto255Point):
             return NotImplemented  # type: ignore[unreachable]
@@ -314,9 +466,12 @@ class Ristretto255Point:
             _assume_valid=True,
         )
 
-    def __sub__(self, other):
+    def __sub__(self, other: "Ristretto255Point") -> "Ristretto255Point":
         """
         Subtract two points.
+
+        :arg other: A group point
+        :return: Difference of *self* and *other*
         """
         if not isinstance(other, Ristretto255Point):
             return NotImplemented  # type: ignore[unreachable]
@@ -328,9 +483,12 @@ class Ristretto255Point:
             _assume_valid=True,
         )
 
-    def __mul__(self, other):
+    def __mul__(self, other: _ScalarType) -> "Ristretto255Point":
         """
         Multiply the non-zero scalar *other* with the point.
+
+        :param other: Scalar value, any type supported by :py:class:`Ristretto255Scalar`.
+        :return: Product of *self* and *other*
         """
         return Ristretto255Point(
             nacl.bindings.crypto_scalarmult_ristretto255(
@@ -339,40 +497,74 @@ class Ristretto255Point:
             _assume_valid=True,
         )
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: _ScalarType) -> "Ristretto255Point":
         """
         Multiply the point with the non-zero scalar *other*.
+
+        :param other: Scalar value, any type supported by :py:class:`Ristretto255Scalar`.
+        :return: Product of *other and *self*
         """
         return self * other
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """
         Check if this is *not* the zero / neutral / identity point.
 
-        :return: False if zero point, else True
-        :rtype: bool
+        :return: False if zero point, True otherwise
         """
         return not nacl.bindings.sodium_is_zero(self._value)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        """
+        Compare this point to another point.
+
+        :param other: Other point to compare to
+        :return: True if same point, False otherwise or if not a :py:class:`Ristretto255Scalar`
+        """
         if not isinstance(other, self.__class__):
             return False
 
         return nacl.bindings.sodium_memcmp(self._value, other._value)
 
-    def __ne__(self, other):
+    def __ne__(self, other: object) -> bool:
+        """
+        Compare this point to another point.
+
+        :param other: Other point to compare to
+        :return: False if same point, True otherwise or if not a :py:class:`Ristretto255Scalar`
+        """
         return not (self == other)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
+        """
+        Get byte representation of point.
+
+        :return: Little-endian byte representation of point
+        """
         return self._value
 
-    def __hash__(self):
+    def __hash__(self) -> int:
+        """
+        Compute a hash value.
+
+        :return: Hash value
+        """
         return hash(self._value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Get representation of point which, when evaluated, will yield an equal point.
+
+        :return: Representation of point
+        """
         return f"Ristretto255Point({bytes(self)!r})"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Get human readable representation of point.
+
+        :return: Little-endian hex representation of point
+        """
         return f"Ristretto255Point({bytes(self).hex()})"
 
 

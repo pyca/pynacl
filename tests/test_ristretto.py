@@ -19,6 +19,7 @@ from functools import reduce
 from hashlib import sha512
 from operator import mul
 from random import randrange
+from typing import List, Tuple
 
 import pytest
 
@@ -30,7 +31,9 @@ from nacl.bindings import (
 from nacl.ristretto import Ristretto255Point, Ristretto255Scalar
 
 
-def _ristretto255_vectors():
+def _ristretto255_vectors() -> Tuple[
+    List[Tuple[int, bytes]], List[bytes], List[Tuple[str, bytes]]
+]:
     """
     Test vectors from https://ristretto.group/test_vectors/ristretto255.html
     """
@@ -38,21 +41,19 @@ def _ristretto255_vectors():
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     vectors = json.load(open(path))
 
-    return {
-        "encodings_of_small_multiples": [
+    return (
+        [
             (idx, bytes.fromhex(enc))
             for idx, enc in enumerate(vectors["encodings_of_small_multiples"])
         ],
-        "bad_encodings": [
-            bytes.fromhex(enc) for enc in vectors["bad_encodings"]
-        ],
-        "label_hash_to_points": [
+        [bytes.fromhex(enc) for enc in vectors["bad_encodings"]],
+        [
             (label, bytes.fromhex(enc))
             for label, enc in zip(
                 vectors["labels"], vectors["encoded_hash_to_points"]
             )
         ],
-    }
+    )
 
 
 class TestRistretto255Scalar:
@@ -97,7 +98,7 @@ class TestRistretto255Scalar:
             Ristretto255Scalar(b"too short")
 
         with pytest.raises(exc.TypeError):
-            Ristretto255Scalar(3.14)
+            Ristretto255Scalar(3.14)  # type: ignore[arg-type]
 
     @pytest.mark.skipif(
         not has_crypto_core_ristretto25519,
@@ -188,10 +189,10 @@ class TestRistretto255Scalar:
         u = Ristretto255Scalar(579)
 
         with pytest.raises(TypeError):
-            s + "foo"
+            s + "foo"  # type: ignore[operator]
 
         with pytest.raises(TypeError):
-            "foo" + s
+            "foo" + s  # type: ignore[operator]
 
         assert s + t == u
         assert s + t == t + s
@@ -217,10 +218,10 @@ class TestRistretto255Scalar:
         u = Ristretto255Scalar(579)
 
         with pytest.raises(TypeError):
-            s - "foo"
+            s - "foo"  # type: ignore[operator]
 
         with pytest.raises(TypeError):
-            "foo" - s
+            "foo" - s  # type: ignore[operator]
 
         assert u - s == t
         assert u - t == s
@@ -267,10 +268,10 @@ class TestRistretto255Scalar:
         assert a * Ristretto255Scalar.ONE == a
 
         with pytest.raises(TypeError):
-            s * "foo"
+            s * "foo"  # type: ignore[operator]
 
         with pytest.raises(TypeError):
-            "foo" * s
+            "foo" * s  # type: ignore[operator]
 
     @pytest.mark.skipif(
         not has_crypto_core_ristretto25519,
@@ -423,7 +424,16 @@ class TestRistretto255Scalar:
 
 
 class TestRistretto255Point:
-    _vectors = _ristretto255_vectors()
+    _vectors_encodings_of_small_multiples: List[Tuple[int, bytes]]
+    _vectors_bad_encodings: List[bytes]
+    _vectors_label_hash_to_points: List[Tuple[str, bytes]]
+
+    (
+        _vectors_encodings_of_small_multiples,
+        _vectors_bad_encodings,
+        _vectors_label_hash_to_points,
+    ) = _ristretto255_vectors()
+
     _base = bytes.fromhex(
         "e2f2ae0a6abc4e71a884a961c500515f58e30b6aa582dd8db6a65945e08d2d76"
     )
@@ -434,7 +444,7 @@ class TestRistretto255Point:
         reason="Requires full build of libsodium",
     )
     @pytest.mark.parametrize(
-        ("idx", "encoding"), _vectors["encodings_of_small_multiples"]
+        ("idx", "encoding"), _vectors_encodings_of_small_multiples
     )
     def test_small_multiples(self, idx, encoding):
         base = Ristretto255Point(self._base)
@@ -454,7 +464,7 @@ class TestRistretto255Point:
         not has_crypto_core_ristretto25519,
         reason="Requires full build of libsodium",
     )
-    @pytest.mark.parametrize(("encoding"), _vectors["bad_encodings"])
+    @pytest.mark.parametrize(("encoding"), _vectors_bad_encodings)
     def test_bad_encodings(self, encoding):
         with pytest.raises(exc.ValueError):
             Ristretto255Point(encoding)
@@ -464,7 +474,7 @@ class TestRistretto255Point:
         reason="Requires full build of libsodium",
     )
     @pytest.mark.parametrize(
-        ("label", "encoding"), _vectors["label_hash_to_points"]
+        ("label", "encoding"), _vectors_label_hash_to_points
     )
     def test_hash_to_point(self, label, encoding):
         point = Ristretto255Point.from_hash(
@@ -481,7 +491,7 @@ class TestRistretto255Point:
             Ristretto255Point(b"too short")
 
         with pytest.raises(exc.TypeError):
-            Ristretto255Point(3.14)
+            Ristretto255Point(3.14)  # type: ignore[arg-type]
 
         # good code paths are tested elsewhere.
 
@@ -518,7 +528,7 @@ class TestRistretto255Point:
         r = Ristretto255Point.random()
 
         with pytest.raises(TypeError):
-            p + 123
+            p + 123  # type: ignore[operator]
 
         assert p + Ristretto255Point.ZERO == p
         assert Ristretto255Point.ZERO + p == p
@@ -536,7 +546,7 @@ class TestRistretto255Point:
         r = Ristretto255Point.random()
 
         with pytest.raises(TypeError):
-            p - 123
+            p - 123  # type: ignore[operator]
 
         assert p - Ristretto255Point.ZERO == p
         assert Ristretto255Point.ZERO - p != p
@@ -554,10 +564,10 @@ class TestRistretto255Point:
         q = Ristretto255Point.random()
 
         with pytest.raises(exc.TypeError):
-            p * q
+            p * q  # type: ignore[operator]
 
         with pytest.raises(exc.TypeError):
-            p * "test"
+            p * "test"  # type: ignore[operator]
 
         assert p * 3 == 3 * p
         assert p + p + p == p * 3
@@ -655,7 +665,7 @@ class TestRistretto255Point:
     )
     def test_library_error(self):
         p = Ristretto255Point(
-            self._vectors["bad_encodings"][6], _assume_valid=True
+            self._vectors_bad_encodings[6], _assume_valid=True
         )
         q = Ristretto255Point.random()
 
@@ -674,13 +684,15 @@ class TestElGamal:
     ElGamal encryption.
     """
 
-    def gen_key(self):
+    def gen_key(self) -> Tuple[Ristretto255Scalar, Ristretto255Point]:
         x = Ristretto255Scalar.random()
         h = Ristretto255Point.base_mul(x)
 
         return x, h
 
-    def encrypt(self, h, m):
+    def encrypt(
+        self, h: Ristretto255Point, m: Ristretto255Point
+    ) -> Tuple[Ristretto255Point, Ristretto255Point]:
         y = Ristretto255Scalar.random()
         s = h * y
         c0 = Ristretto255Point.base_mul(y)
@@ -688,7 +700,12 @@ class TestElGamal:
 
         return c0, c1
 
-    def decrypt(self, c0, c1, x):
+    def decrypt(
+        self,
+        c0: Ristretto255Point,
+        c1: Ristretto255Point,
+        x: Ristretto255Scalar,
+    ) -> Ristretto255Point:
         s = c0 * x
         m = c1 - s
 
@@ -699,7 +716,7 @@ class TestElGamal:
         or not has_crypto_scalarmult_ristretto25519,
         reason="Requires full build of libsodium",
     )
-    def test_el_gamal(self):
+    def test_el_gamal(self) -> None:
         x, h = self.gen_key()
         orig_msg = b"The quick brown fox jumps over the lazy dog.".ljust(64)
 
@@ -724,11 +741,16 @@ class TestShamir:
     """
 
     class Polynomial:
-        def __init__(self, coeffs, zero):
+        _coeffs: List[Ristretto255Scalar]
+        _zero: Ristretto255Scalar
+
+        def __init__(
+            self, coeffs: List[Ristretto255Scalar], zero: Ristretto255Scalar
+        ) -> None:
             self._coeffs = coeffs
             self._zero = zero
 
-        def __call__(self, i):
+        def __call__(self, i: int) -> Ristretto255Scalar:
             return sum(
                 (
                     coeff * Ristretto255Scalar(i ** j)
@@ -737,10 +759,12 @@ class TestShamir:
                 self._zero,
             )
 
-        def __getitem__(self, idx):
+        def __getitem__(self, idx: int) -> Ristretto255Scalar:
             return self._coeffs[idx]
 
-    def share_secret(self, share_count, qualified_size):
+    def share_secret(
+        self, share_count: int, qualified_size: int
+    ) -> Tuple[Ristretto255Point, List[Tuple[int, Ristretto255Point]]]:
         gen = Ristretto255Point.random()
 
         alpha = self.Polynomial(
@@ -753,7 +777,9 @@ class TestShamir:
 
         return secret, shares
 
-    def reconstruct(self, shares):
+    def reconstruct(
+        self, shares: List[Tuple[int, Ristretto255Point]]
+    ) -> Ristretto255Point:
         return sum(
             (
                 share
@@ -776,7 +802,7 @@ class TestShamir:
         or not has_crypto_scalarmult_ristretto25519,
         reason="Requires full build of libsodium",
     )
-    def test_shamir(self):
+    def test_shamir(self) -> None:
         secret0, shares = self.share_secret(5, 3)
 
         # Delete any two shares
