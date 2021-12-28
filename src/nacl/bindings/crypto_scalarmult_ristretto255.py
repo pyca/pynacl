@@ -68,7 +68,11 @@ def crypto_scalarmult_ristretto255_base(n: bytes) -> bytes:
     # An error is returned iff the result is zero. For consistency with
     # crypto_scalarmult_ristretto255 and in case a future version of libsodium
     # returns an error for other reasons, raise an error.
-    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
+    ensure(
+        rc == 0,
+        "Unexpected library error. Zero operand?",
+        raising=exc.RuntimeError,
+    )
 
     return ffi.buffer(q, crypto_scalarmult_ristretto255_BYTES)[:]
 
@@ -115,6 +119,11 @@ def crypto_scalarmult_ristretto255(n: bytes, p: bytes) -> bytes:
 
     # An error is returned also if the result is zero. This cannot be
     # distinguished from other errors like invalid points.
-    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
+    # https://github.com/jedisct1/libsodium/issues/836#issuecomment-493710969
+    ensure(
+        rc == 0,
+        "Unexpected library error. Zero operand?",
+        raising=exc.RuntimeError,
+    )
 
     return ffi.buffer(q, crypto_scalarmult_ristretto255_BYTES)[:]

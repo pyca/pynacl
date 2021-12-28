@@ -226,7 +226,7 @@ class Ristretto255Point:
     @classmethod
     def base_mul(cls, n):
         """
-        Multiply the scalar ``n`` with the Ed25519 base point.
+        Multiply the non-zero scalar *n* with the Ed25519 base point.
         """
         return cls(
             nacl.bindings.crypto_scalarmult_ristretto255_base(
@@ -271,7 +271,7 @@ class Ristretto255Point:
 
     def __mul__(self, other):
         """
-        Multiply the scalar ``n`` with the point.
+        Multiply the non-zero scalar *other* with the point.
         """
         return Ristretto255Point(
             nacl.bindings.crypto_scalarmult_ristretto255(
@@ -281,6 +281,9 @@ class Ristretto255Point:
         )
 
     def __rmul__(self, other):
+        """
+        Multiply the point with the non-zero scalar *other*.
+        """
         return self * other
 
     def __bool__(self):
