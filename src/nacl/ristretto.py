@@ -231,7 +231,7 @@ class Ristretto255Scalar:
         return not nacl.bindings.sodium_is_zero(self._value)
 
     def __repr__(self):
-        return "Ristretto255Scalar({})".format(int(self))
+        return f"Ristretto255Scalar({int(self)})"
 
     def __str__(self):
         return repr(self)
@@ -370,12 +370,10 @@ class Ristretto255Point:
         return hash(self._value)
 
     def __repr__(self):
-        return "Ristretto255Point({!r})".format(bytes(self))
+        return f"Ristretto255Point({bytes(self)!r})"
 
     def __str__(self):
-        return "Ristretto255Point({})".format(bytes(self).hex())
-
-
+        return f"Ristretto255Point({bytes(self).hex()})"
 
 
 if nacl.bindings.has_crypto_core_ristretto25519:  # pragma: no branch
