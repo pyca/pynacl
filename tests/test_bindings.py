@@ -331,8 +331,9 @@ def test_sodium_is_zero():
     assert c.sodium_is_zero(b"")
     assert c.sodium_is_zero(b"\x00" * 37)
     assert not c.sodium_is_zero(b"\x00" * 13 + b"\xe1" + b"\x00" * 22)
+    assert not c.sodium_is_zero(b"no zero byte at all")
     with pytest.raises(TypeError):
-        c.sodium_is_zero("zero")
+        c.sodium_is_zero("zero")  # type: ignore[arg-type]
 
 
 @given(integers(min_value=-2, max_value=0))

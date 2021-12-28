@@ -17,14 +17,12 @@ from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
 
-def sodium_is_zero(inp):
+def sodium_is_zero(inp: bytes) -> bool:
     """
     Check if all bytes in ``inp`` are zero
 
     :param inp: input bytes string
-    :type inp: bytes
     :return: False if any byte is nonzero, else True
-    :rtype: bool
     """
     ensure(isinstance(inp, bytes), raising=exc.TypeError)
     ln = len(inp)
