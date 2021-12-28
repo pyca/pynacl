@@ -13,10 +13,15 @@
 # limitations under the License.
 
 from fractions import Fraction
+from typing import ClassVar, Union
 
 import nacl.bindings
 from nacl import exceptions as exc
 from nacl.utils import random
+
+
+# Python types accepted as scalars
+_ScalarType = Union["Ristretto255Scalar", bytes, int, Fraction]
 
 
 class Ristretto255Scalar:
@@ -27,23 +32,48 @@ class Ristretto255Scalar:
     ORDER = nacl.bindings.crypto_core_ristretto255_GROUP_ORDER
 
     def __init__(self, value):
+        self._value = self._convert(value)
+
+    @staticmethod
+    def _convert(value: object) -> bytes:
+        """
+        Convert various types to a byte array containing the reduced scalar value in little-endian order.
+
+        :param value: Value of the scalar. Will be converted according to its type.
+        :return: Canonical represention of the passed value, as byte array.
+        :raises exc.TypeError: Type not supported
+        """
         if isinstance(value, Ristretto255Scalar):
-            self._value = value._value
-        elif isinstance(value, bytes):
+            return value._value
+
+        if isinstance(value, bytes):
             if len(value) != Ristretto255Scalar.SIZE:
                 raise exc.ValueError
-            self._value = value
-        elif isinstance(value, int):
-            self._value = (value % Ristretto255Scalar.ORDER).to_bytes(
+
+            # Reduce value modulo the group order to ensure a canonical encoding.
+            zero = bytes(Ristretto255Scalar.SIZE)
+            return nacl.bindings.crypto_core_ristretto255_scalar_add(
+                value, zero
+            )
+
+        if isinstance(value, int):
+            return (value % Ristretto255Scalar.ORDER).to_bytes(
                 Ristretto255Scalar.SIZE, "little"
             )
-        elif isinstance(value, Fraction):
-            self._value = (
-                Ristretto255Scalar(value.numerator)
-                * Ristretto255Scalar(value.denominator).inverse
-            )._value
-        else:
-            raise exc.TypeError
+
+        if isinstance(value, Fraction):
+            numerator = Ristretto255Scalar._convert(value.numerator)
+            denominator = Ristretto255Scalar._convert(value.denominator)
+
+            # Compute fraction [a / b] as [a * (b ** -1)]
+            return nacl.bindings.crypto_core_ristretto255_scalar_mul(
+                numerator,
+                nacl.bindings.crypto_core_ristretto255_scalar_invert(
+                    denominator
+                ),
+            )
+
+        raise exc.TypeError(f"Unsupported type: {type(value).__name__!r}")
 
     @classmethod
     def random(cls):
@@ -93,10 +123,14 @@ class Ristretto255Scalar:
         """
         Add two scalars.
         """
+        try:
+            value = self._convert(other)
+        except exc.TypeError:
+            return NotImplemented
 
         return Ristretto255Scalar(
             nacl.bindings.crypto_core_ristretto255_scalar_add(
-                self._value, Ristretto255Scalar(other)._value
+                self._value, value
             )
         )
 
@@ -107,9 +141,14 @@ class Ristretto255Scalar:
         """
         Subtract to scalars.
         """
+        try:
+            value = self._convert(other)
+        except exc.TypeError:
+            return NotImplemented
+
         return Ristretto255Scalar(
             nacl.bindings.crypto_core_ristretto255_scalar_sub(
-                self._value, Ristretto255Scalar(other)._value
+                self._value, value
             )
         )
 
@@ -120,9 +159,15 @@ class Ristretto255Scalar:
         """
         Multiply two scalars.
         """
+
+        try:
+            value = self._convert(other)
+        except exc.TypeError:
+            return NotImplemented
+
         return Ristretto255Scalar(
             nacl.bindings.crypto_core_ristretto255_scalar_mul(
-                self._value, Ristretto255Scalar(other)._value
+                self._value, value
             )
         )
 
@@ -230,7 +275,7 @@ class Ristretto255Point:
         """
         return cls(
             nacl.bindings.crypto_scalarmult_ristretto255_base(
-                bytes(Ristretto255Scalar(n))
+                Ristretto255Scalar._convert(n)
             ),
             _assume_valid=True,
         )
@@ -246,7 +291,7 @@ class Ristretto255Point:
         Add two points.
         """
         if not isinstance(other, Ristretto255Point):
-            raise exc.TypeError("Operand must be another Ristretto255Point")
+            return NotImplemented  # type: ignore[unreachable]
 
         return Ristretto255Point(
             nacl.bindings.crypto_core_ristretto255_add(
@@ -260,7 +305,7 @@ class Ristretto255Point:
         Subtract two points.
         """
         if not isinstance(other, Ristretto255Point):
-            raise exc.TypeError("Operand must be another Ristretto255Point")
+            return NotImplemented  # type: ignore[unreachable]
 
         return Ristretto255Point(
             nacl.bindings.crypto_core_ristretto255_sub(
@@ -275,7 +320,7 @@ class Ristretto255Point:
         """
         return Ristretto255Point(
             nacl.bindings.crypto_scalarmult_ristretto255(
-                bytes(Ristretto255Scalar(other)), self._value
+                Ristretto255Scalar._convert(other), self._value
             ),
             _assume_valid=True,
         )
