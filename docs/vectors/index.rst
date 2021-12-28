@@ -55,6 +55,13 @@ In particular, the original expected results come from siphash's vectors.h,
 while the key and the input messages have been generated following
 the respective definitions in siphash's test.c.
 
+ristretto255
+^^^^^^^^^^^^
+
+The reference vectors for :ref:`ristretto255 <finite-field-arithmetic>` in
+``tests/data/ristretto255.json`` are taken from
+https://ristretto.group/test_vectors/ristretto255.html.
+
 Custom generated reference vectors
 ----------------------------------
 
