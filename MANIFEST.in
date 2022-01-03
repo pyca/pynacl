@@ -27,6 +27,7 @@ recursive-include docs *.py
 recursive-include docs *.rst
 recursive-include docs Makefile
 recursive-include docs/vectors/c-source *.c
+prune docs/_build
 recursive-include tests *.py
 recursive-include tests/data *
 
