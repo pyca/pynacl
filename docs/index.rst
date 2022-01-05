@@ -11,6 +11,7 @@ Contents
    signing
    hashing
    password_hashing
+   ristretto
 
 
 Support Features
@@ -31,6 +32,7 @@ Support Features
     api/hash
     api/pwhash
     api/hashlib
+    api/ristretto
 
 .. toctree::
     :caption: The PyNaCl open source project
