@@ -37,11 +37,9 @@ global-exclude __pycache__/*
 # Add PyNaCl header files
 recursive-include src/bindings *.py *.h
 
-# Remove our travis files
-exclude .travis.yml
-exclude .travis
-exclude .travis/install.sh
-exclude .travis/run.sh
+# Remove our CI files
+recursive-exclude .github *
+recursive-exclude .circleci *
 
 # Remove readthedocs config
 exclude .readthedocs.yml
