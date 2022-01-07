@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5.0 (UNRELEASED)
+1.5.0 (2022-01-07)
 ------------------
 
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 2.7 and Python 3.5.
