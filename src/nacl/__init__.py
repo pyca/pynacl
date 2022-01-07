@@ -30,7 +30,7 @@ __summary__ = (
 )
 __uri__ = "https://github.com/pyca/pynacl/"
 
-__version__ = "1.5.0.dev1"
+__version__ = "1.5.0"
 
 __author__ = "The PyNaCl developers"
 __email__ = "cryptography-dev@python.org"
