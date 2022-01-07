@@ -33,4 +33,4 @@ Features
 `Changelog`_
 ------------
 
-.. _Changelog: https://pynacl.readthedocs.io/en/stable/changelog/
+.. _Changelog: https://pynacl.readthedocs.io/en/latest/changelog/
