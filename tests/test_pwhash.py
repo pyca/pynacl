@@ -112,7 +112,7 @@ def argon2id_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9b63d97",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
             (
                 b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98"
                 b"EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*"
@@ -183,7 +183,7 @@ def test_scryptsalsa208sha256_verify_incorrect(password: bytes):
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
         ),
     ],
 )
@@ -224,7 +224,7 @@ def test_wrong_hash_length(passwd_hash: bytes, password: bytes):
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9b6",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
         ),
     ],
 )
@@ -265,7 +265,7 @@ def test_str_verify_wrong_hash_length(passwd_hash: bytes, password: bytes):
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9b63d97",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
             (
                 b"\x10e>\xc8A8\x11\xde\x07\xf1\x0f\x98"
                 b"EG\xe6}V]\xd4yN\xae\xd3P\x87yP\x1b\xc7+n*"
@@ -333,7 +333,7 @@ def test_scrypt_verify_incorrect(password: bytes):
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
         ),
     ],
 )
@@ -372,7 +372,7 @@ def test_wrong_scrypt_hash_length(passwd_hash: bytes, password: bytes):
             b"The quick brown fox jumps over the lazy dog.",
             b"ef537f25c895bfa782526529a9b6",
             20000,
-            (2 ** 20) * 100,
+            (2**20) * 100,
         ),
     ],
 )
@@ -386,11 +386,11 @@ def test_scrypt_kdf_wrong_salt_length(
 @pytest.mark.parametrize(
     ("opslimit", "memlimit", "n", "r", "p"),
     [
-        (32768, 2 * (2 ** 20), 10, 8, 1),
-        (32768, 8 * (2 ** 10), 3, 8, 128),
-        (65536, (2 ** 20) * 2, 11, 8, 1),
-        (262144, (2 ** 20) * 2, 11, 8, 4),
-        (2 * (2 ** 20), 2 * (2 ** 20), 11, 8, 32),
+        (32768, 2 * (2**20), 10, 8, 1),
+        (32768, 8 * (2**10), 3, 8, 128),
+        (65536, (2**20) * 2, 11, 8, 1),
+        (262144, (2**20) * 2, 11, 8, 4),
+        (2 * (2**20), 2 * (2**20), 11, 8, 32),
     ],
 )
 def test_variable_limits(opslimit: int, memlimit: int, n: int, r: int, p: int):

@@ -123,10 +123,10 @@ class blake2b:
 def scrypt(
     password: bytes,
     salt: bytes = b"",
-    n: int = 2 ** 20,
+    n: int = 2**20,
     r: int = 8,
     p: int = 1,
-    maxmem: int = 2 ** 25,
+    maxmem: int = 2**25,
     dklen: int = 64,
 ) -> bytes:
     """

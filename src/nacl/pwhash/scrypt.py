@@ -129,7 +129,7 @@ def kdf(
     n_log2, r, p = nacl.bindings.nacl_bindings_pick_scrypt_params(
         opslimit, memlimit
     )
-    maxmem = memlimit + (2 ** 16)
+    maxmem = memlimit + (2**16)
 
     return encoder.encode(
         nacl.bindings.crypto_pwhash_scryptsalsa208sha256_ll(
@@ -138,7 +138,7 @@ def kdf(
             # Cast safety: n_log2 is a positive integer, and so 2 ** n_log2 is also
             # a positive integer. Mypy+typeshed can't deduce this, because there's no
             # way to for them to know that n_log2: int is positive.
-            cast(int, 2 ** n_log2),
+            cast(int, 2**n_log2),
             r,
             p,
             maxmem=maxmem,

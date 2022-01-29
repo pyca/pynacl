@@ -273,7 +273,7 @@ def test_max_message_size(monkeypatch: MonkeyPatch):
     monkeypatch.setattr(
         css,
         "crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX",
-        2 ** 10 - 1,
+        2**10 - 1,
     )
     m = b"0" * (css.crypto_secretstream_xchacha20poly1305_MESSAGEBYTES_MAX + 1)
     k = crypto_secretstream_xchacha20poly1305_keygen()
