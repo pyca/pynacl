@@ -130,7 +130,7 @@ def test_hashlib_scrypt_api(
 ):
     _exp = unhexlify(expected.replace(b" ", b""))
     dgst = nacl.hashlib.scrypt(
-        password, salt=salt, n=n, r=r, p=p, dklen=dklen, maxmem=2 * (1024 ** 3)
+        password, salt=salt, n=n, r=r, p=p, dklen=dklen, maxmem=2 * (1024**3)
     )
     assert _exp == dgst
 
