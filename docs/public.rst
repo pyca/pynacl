@@ -38,7 +38,7 @@ nacl.public.Box
 The :class:`~nacl.public.Box` class uses the given public and private (secret)
 keys to derive a shared key, which is used with the nonce given to encrypt the
 given messages and to decrypt the given ciphertexts.  The same shared key will
-be generated from both pairing of keys, so given two keypairs belonging to
+be generated from both pairing of keys, so given two key pairs belonging to
 Alice (pkalice, skalice) and Bob (pkbob, skbob), the key derived from
 (pkalice, skbob) will equal that from (pkbob, skalice).
 
@@ -111,7 +111,7 @@ nacl.public.SealedBox
 ~~~~~~~~~~~~~~~~~~~~~
 
 The :class:`~nacl.public.SealedBox` class encrypts messages addressed
-to a specified key-pair by using ephemeral sender's keypairs, which
+to a specified key-pair by using ephemeral sender's key pairs, which
 will be discarded just after encrypting a single plaintext message.
 
 This kind of construction allows sending messages, which only the recipient
@@ -120,7 +120,7 @@ authorship.
 
 .. warning:: By design, the recipient will have no means to trace
     the ciphertext to a known author, since the sending
-    keypair itself is not bound to any sender's identity, and
+    key pair itself is not bound to any sender's identity, and
     the sender herself will not be able to decrypt the ciphertext
     she just created, since the private part of the key cannot be
     recovered after use.
@@ -263,7 +263,7 @@ Reference
 .. class:: SealedBox(receiver_key)
 
     The SealedBox class can box and unbox messages sent to a receiver key
-    using an ephemeral sending keypair.
+    using an ephemeral sending key pair.
 
     .. method:: encrypt(plaintext, encoder)
 
@@ -280,7 +280,7 @@ Reference
         :param bytes plaintext: The plaintext message to encrypt.
         :param encoder:  A class that is able to decode the ciphertext.
 
-        :return bytes: The public part of the ephemeral keypair,
+        :return bytes: The public part of the ephemeral key pair,
                        followed by the encrypted ciphertext
 
     .. method:: decrypt(ciphertext, encoder)

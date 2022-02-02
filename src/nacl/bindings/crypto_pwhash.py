@@ -225,7 +225,7 @@ def _check_memory_occupation(
 
     ensure(
         Blen + Vlen <= maxmem,
-        "Memory limit would be exceeded with the choosen n, r, p",
+        "Memory limit would be exceeded with the chosen n, r, p",
         raising=exc.ValueError,
     )
 

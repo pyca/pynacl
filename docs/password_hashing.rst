@@ -40,7 +40,7 @@ in the modules :py:mod:`~nacl.pwhash.argon2id`,
 therefore, if you need to change your choice of construction, you simply
 need to replace one module name with another in the example below.
 
-Further, if you just want to use a default choosen construction, you can
+Further, if you just want to use a default chosen construction, you can
 directly call :py:func:`nacl.pwhash.str` or :py:func:`nacl.pwhash.kdf`
 to use the preferred construct in modular crypt password hashing
 or key derivation mode.

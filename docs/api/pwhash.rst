@@ -17,7 +17,7 @@ ascii encoded hashing and verification.
                   memlimit=MEMLIMIT_INTERACTIVE)
 
     Returns a password verifier hash, generated with the password hasher
-    choosen as a default by libsodium.
+    chosen as a default by libsodium.
 
     :param password: password used to seed the key derivation procedure;
                      it length must be between

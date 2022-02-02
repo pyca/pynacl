@@ -44,7 +44,7 @@ nacl.hash
     :param encoder: the encoder to use on returned digest
     :type encoder: class
     :return: encoded bytes data
-    :rtype: the return type of the choosen encoder
+    :rtype: the return type of the chosen encoder
 
 
 .. function:: siphash24(message, key=b'', encoder=nacl.encoding.HexEncoder)

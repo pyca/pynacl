@@ -588,7 +588,7 @@ raising_argon2_parameters = [
     (15, "aPassword", 4 * "salt", 4, 256),
     #  too long output:
     (0xFFFFFFFF + 1, "aPassword", 4 * "salt", 4, 256),
-    #  too high interation count:
+    #  too high iteration count:
     (20, "aPassword", 4 * "salt", 0xFFFFFFFF + 1, 256),
     #  too low memory usage:
     (20, "aPassword", 4 * "salt", 4, 2),
