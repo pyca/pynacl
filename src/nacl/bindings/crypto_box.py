@@ -51,7 +51,7 @@ def crypto_box_keypair() -> Tuple[bytes, bytes]:
 
 def crypto_box_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
     """
-    Returns a (public, secret) keypair deterministically generated
+    Returns a (public, secret) key pair deterministically generated
     from an input ``seed``.
 
     .. warning:: The seed **must** be high-entropy; therefore,
@@ -269,7 +269,7 @@ def crypto_box_seal_open(ciphertext: bytes, pk: bytes, sk: bytes) -> bytes:
     """
     Decrypts and returns an encrypted message ``ciphertext``, using the
     recipent's secret key ``sk`` and the sender's ephemeral public key
-    embedded in the sealed box. The box contruct nonce is derived from
+    embedded in the sealed box. The box construct nonce is derived from
     the recipient's public key ``pk`` and the sender's public key.
 
     :param ciphertext: bytes
@@ -303,7 +303,7 @@ def crypto_box_seal_open(ciphertext: bytes, pk: bytes, sk: bytes) -> bytes:
 
     ensure(
         _clen >= crypto_box_SEALBYTES,
-        ("Input cyphertext must be at least {} long").format(
+        ("Input ciphertext must be at least {} long").format(
             crypto_box_SEALBYTES
         ),
         raising=exc.TypeError,

@@ -1,7 +1,7 @@
 Argon2 constructs reference vectors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since libsodium implements a different API for argon2 contructs
+Since libsodium implements a different API for argon2 constructs
 than the one exposed by the reference implementation available at
 `The password hash Argon2... <https://github.com/P-H-C/phc-winner-argon2/>`,
 the ``kats`` data provided along to the reference implementation sources
@@ -33,7 +33,7 @@ count must be 3 for ``argon2i`` and 1 for ``argon2id``, and the salt
 length must be 16 for raw hashes, and can vary for modular crypt formatted
 hashes.
 
-The full command lines used in generating the vactors are:
+The full command lines used in generating the vectors are:
 
 for raw argon2i
     .. code-block:: bash

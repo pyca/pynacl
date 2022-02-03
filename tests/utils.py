@@ -79,7 +79,7 @@ def flip_byte(original: bytes, byte_offset: int) -> bytes:
 
 
 # Type safety: it's fine to use `...` here, but mypy config doesn't like it because it's
-# an explict `Any`.
+# an explicit `Any`.
 def check_type_error(  # type: ignore[misc]
     expected: str, f: Callable[..., object], *args: object
 ) -> None:

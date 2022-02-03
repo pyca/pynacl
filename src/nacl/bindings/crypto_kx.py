@@ -38,7 +38,7 @@ crypto_kx_SESSION_KEY_BYTES: int = lib.crypto_kx_sessionkeybytes()
 
 def crypto_kx_keypair() -> Tuple[bytes, bytes]:
     """
-    Generate a keypair.
+    Generate a key pair.
     This is a duplicate crypto_box_keypair, but
     is included for api consistency.
     :return: (public_key, secret_key)
@@ -57,7 +57,7 @@ def crypto_kx_keypair() -> Tuple[bytes, bytes]:
 
 def crypto_kx_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
     """
-    Generate a keypair with a given seed.
+    Generate a key pair with a given seed.
     This is functionally the same as crypto_box_seed_keypair, however
     it uses the blake2b hash primitive instead of sha512.
     It is included mainly for api consistency when using crypto_kx.

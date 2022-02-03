@@ -253,7 +253,7 @@ def test_wrong_types(cls: Type[_BoxType]):
     expected = re.compile(
         cls.__name__ + " must be created from 32 bytes", re.IGNORECASE
     )
-    # Type saftey: we're checking these type errors are detected at runtime.
+    # Type safety: we're checking these type errors are detected at runtime.
     with pytest.raises(TypeError, match=expected):
         cls(12)  # type: ignore[arg-type]
 

@@ -16,7 +16,7 @@ to cpython standard library's hashlib module in cpython's version 3.6.
 
     Returns an hash object which exposes an API mostly compatible
     to python3.6's hashlib.blake2b (the only difference being missing
-    support for tree hashing parameters in the contructor)
+    support for tree hashing parameters in the constructor)
 
     The methods :py:func:`update`, :py:func:`copy`,
     :func:`digest` and :func:`hexdigest` have the same semantics
@@ -35,11 +35,11 @@ to cpython standard library's hashlib module in cpython's version 3.6.
 
     .. attribute:: PERSON_SIZE
 
-        the maximimum size of the personalization
+        the maximum size of the personalization
 
     .. attribute:: SALT_SIZE
 
-        the maximimum size of the salt
+        the maximum size of the salt
 
 
 .. function:: scrypt(password, salt='', n=2**20, r=8, p=1,\
@@ -55,7 +55,7 @@ to cpython standard library's hashlib module in cpython's version 3.6.
     :type n: int
     :param r: block size multiplier: the used block size will be 128 * r
     :type r: int
-    :param p: requested parallelism: the number of indipendently running
+    :param p: requested parallelism: the number of independently running
               scrypt constructs which will contribute to the final key
               generation
     :type p: int
