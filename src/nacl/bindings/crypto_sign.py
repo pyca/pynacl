@@ -245,7 +245,7 @@ def crypto_sign_ed25519ph_final_create(
     :param edph: the ed25519ph state for the data
                  being signed
     :type edph: crypto_sign_ed25519ph_state
-    :param sk: the ed25519 secret part of the signing key
+    :param sk: the ed25519 secret key (secret and public part)
     :type sk: bytes
     :return: ed25519ph signature
     :rtype: bytes
