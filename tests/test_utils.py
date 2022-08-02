@@ -45,7 +45,7 @@ def test_deterministic_random_bytes():
     )
     assert (
         nacl.utils.randombytes_deterministic(
-            100, seed, encoder=nacl.utils.encoding.HexEncoder
+            100, seed, encoder=nacl.encoding.HexEncoder
         )
         == expected
     )
