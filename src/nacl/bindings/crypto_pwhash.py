@@ -400,7 +400,6 @@ def crypto_pwhash_scryptsalsa208sha256_str_verify(
 
 
 def _check_argon2_limits_alg(opslimit: int, memlimit: int, alg: int) -> None:
-
     if alg == crypto_pwhash_ALG_ARGON2I13:
         if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
             raise exc.ValueError(
