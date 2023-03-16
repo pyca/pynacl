@@ -101,7 +101,6 @@ class argonRunner:
 
 
 if __name__ == "__main__":
-
     p = argparse.ArgumentParser()
     p.add_argument("-x", "--executable", dest="exe", required=True)
     p.add_argument(

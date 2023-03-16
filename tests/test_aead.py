@@ -107,7 +107,6 @@ def test_chacha20poly1305_variants_kat(kv: Dict[str, bytes]):
 def test_chacha20poly1305_variants_roundtrip(
     construction: bytes, message: bytes, aad: bytes, nonce: bytes, key: bytes
 ):
-
     c = _getconstruction(construction)
     unonce = nonce[: c.NPUB]
 
