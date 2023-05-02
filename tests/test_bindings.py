@@ -23,8 +23,8 @@ from hypothesis.strategies import binary, integers
 import pytest
 
 from nacl import bindings as c
-from nacl.utils import random
 from nacl.exceptions import BadSignatureError, CryptoError, UnavailableError
+from nacl.utils import random
 
 from .test_signing import ed25519_known_answers
 from .utils import flip_byte, read_crypto_test_vectors
