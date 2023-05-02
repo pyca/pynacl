@@ -64,9 +64,9 @@ def crypto_core_ed25519_is_valid_point(p: bytes) -> bool:
 def crypto_core_ed25519_from_uniform(r: bytes) -> bytes:
     """
     Maps a 32 bytes vector ``r`` to a point. The point is guaranteed to be on the main subgroup.
-    This function directly exposes the Elligator 2 map, uses the high bit to set 
+    This function directly exposes the Elligator 2 map, uses the high bit to set
     the sign of the X coordinate, and the resulting point is multiplied by the cofactor.
-    
+
     :param r: a :py:data:`.crypto_core_ed25519_BYTES` long bytes
               sequence representing arbitrary data
     :type r: bytes
@@ -90,7 +90,7 @@ def crypto_core_ed25519_from_uniform(r: bytes) -> bytes:
         raising=exc.TypeError,
     )
 
-    p = ffi.new("unsigned char[]", crypto_core_ed25519_BYTES)    
+    p = ffi.new("unsigned char[]", crypto_core_ed25519_BYTES)
 
     rc = lib.crypto_core_ed25519_from_uniform(p, r)
     ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
