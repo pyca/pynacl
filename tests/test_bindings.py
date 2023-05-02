@@ -23,6 +23,7 @@ from hypothesis.strategies import binary, integers
 import pytest
 
 from nacl import bindings as c
+from nacl.utils import random
 from nacl.exceptions import BadSignatureError, CryptoError, UnavailableError
 
 from .test_signing import ed25519_known_answers
@@ -500,9 +501,12 @@ def test_ed25519_from_uniform():
     Verify crypto_core_ed25519_from_uniform maps invalid 32 byte inputs
     to valid points"
     """
-    ones = c.crypto_core_ed25519_BYTES * b"\xff"
-    p1 = c.crypto_core_ed25519_from_uniform(ones)
-    res = test_ed25519_is_valid_point(p1)
+    res = True
+    for i in range(500):
+        r = random()
+        p = c.crypto_core_ed25519_from_uniform(r)
+        res = res and c.crypto_core_ed25519_is_valid_point(p)
+
     assert res is True
 
 
