@@ -495,6 +495,20 @@ def test_ed25519_is_valid_point():
 @pytest.mark.skipif(
     not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
 )
+def test_ed25519_from_uniform():
+    """
+    Verify crypto_core_ed25519_from_uniform maps invalid 32 byte inputs
+    to valid points"
+    """
+    ones = c.crypto_core_ed25519_BYTES * b"\xff"
+    p1 = c.crypto_core_ed25519_from_uniform(ones)
+    res = test_ed25519_is_valid_point(p1)
+    assert res is True
+
+
+@pytest.mark.skipif(
+    not c.has_crypto_core_ed25519, reason="Requires full build of libsodium"
+)
 def test_ed25519_add_and_sub():
     # the public component of a ed25519 keypair
     # is a point on the ed25519 curve

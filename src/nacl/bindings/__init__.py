@@ -61,6 +61,7 @@ from nacl.bindings.crypto_core import (
     crypto_core_ed25519_SCALARBYTES,
     crypto_core_ed25519_add,
     crypto_core_ed25519_is_valid_point,
+    crypto_core_ed25519_from_uniform,
     crypto_core_ed25519_scalar_add,
     crypto_core_ed25519_scalar_complement,
     crypto_core_ed25519_scalar_invert,

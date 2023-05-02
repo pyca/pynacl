@@ -61,6 +61,43 @@ def crypto_core_ed25519_is_valid_point(p: bytes) -> bool:
     return rc == 1
 
 
+def crypto_core_ed25519_from_uniform(r: bytes) -> bytes:
+    """
+    Maps a 32 bytes vector ``r`` to a point. The point is guaranteed to be on the main subgroup.
+    This function directly exposes the Elligator 2 map, uses the high bit to set 
+    the sign of the X coordinate, and the resulting point is multiplied by the cofactor.
+    
+    :param r: a :py:data:`.crypto_core_ed25519_BYTES` long bytes
+              sequence representing arbitrary data
+    :type r: bytes
+    :return: a point on the edwards25519 curve main order subgroup, represented as a
+             :py:data:`.crypto_core_ed25519_BYTES` long bytes sequence
+    :rtype: bytes
+    :raises nacl.exceptions.UnavailableError: If called when using a
+        minimal build of libsodium.
+    """
+    ensure(
+        has_crypto_core_ed25519,
+        "Not available in minimal build",
+        raising=exc.UnavailableError,
+    )
+
+    ensure(
+        isinstance(r, bytes) and len(r) == crypto_core_ed25519_BYTES,
+        "Integer r must be a {} long bytes sequence".format(
+            "crypto_core_ed25519_BYTES"
+        ),
+        raising=exc.TypeError,
+    )
+
+    p = ffi.new("unsigned char[]", crypto_core_ed25519_BYTES)    
+
+    rc = lib.crypto_core_ed25519_from_uniform(p, r)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
+
+    return ffi.buffer(p, crypto_core_ed25519_BYTES)[:]
+
+
 def crypto_core_ed25519_add(p: bytes, q: bytes) -> bytes:
     """
     Add two points on the edwards25519 curve.

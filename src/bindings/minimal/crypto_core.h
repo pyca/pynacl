@@ -21,6 +21,7 @@ size_t (*crypto_core_ed25519_scalarbytes)(void) = NULL;
 size_t (*crypto_core_ed25519_nonreducedscalarbytes)(void) = NULL;
 
 int (*crypto_core_ed25519_is_valid_point)(const unsigned char *) = NULL;
+int (*crypto_core_ed25519_from_uniform)(unsigned char *p, const unsigned char *r) = NULL; 
 int (*crypto_core_ed25519_add)(unsigned char *, const unsigned char *, const unsigned char *) = NULL;
 int (*crypto_core_ed25519_sub)(unsigned char *, const unsigned char *, const unsigned char *) = NULL;
 
