@@ -498,7 +498,7 @@ def test_ed25519_is_valid_point():
 )
 def test_ed25519_from_uniform():
     """
-    Verify crypto_core_ed25519_from_uniform maps invalid 32 byte inputs
+    Verify crypto_core_ed25519_from_uniform maps 32 byte inputs
     to valid points"
     """
     res = True
@@ -506,8 +506,22 @@ def test_ed25519_from_uniform():
         r = random()
         p = c.crypto_core_ed25519_from_uniform(r)
         res = res and c.crypto_core_ed25519_is_valid_point(p)
-
     assert res is True
+    
+    # Test data sourced from this libsodium discussion:
+    # https://github.com/jedisct1/libsodium/discussions/1086
+    random_data_input = unhexlify(
+        b"7f3e7fb9428103ad7f52db32f9df32505d7b427d894c5093f7a0f0374a30641d"
+    )
+    expected_output = unhexlify(
+        b"44b2fa2a6bb0b2adeace690a5a83b7fbe5bb487c34e64dc109b90bc4e00f670b"
+    )
+
+    random_data_to_curve = c.crypto_core_ed25519_from_uniform(random_data_input)
+
+    assert c.crypto_core_ed25519_is_valid_point(random_data_input) is False
+    assert c.crypto_core_ed25519_is_valid_point(random_data_to_curve) is True
+    assert random_data_to_curve == expected_output
 
 
 @pytest.mark.skipif(
