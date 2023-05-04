@@ -507,7 +507,7 @@ def test_ed25519_from_uniform():
         p = c.crypto_core_ed25519_from_uniform(r)
         res = res and c.crypto_core_ed25519_is_valid_point(p)
     assert res is True
-    
+
     # Test data sourced from this libsodium discussion:
     # https://github.com/jedisct1/libsodium/discussions/1086
     random_data_input = unhexlify(
