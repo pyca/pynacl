@@ -517,7 +517,9 @@ def test_ed25519_from_uniform():
         b"44b2fa2a6bb0b2adeace690a5a83b7fbe5bb487c34e64dc109b90bc4e00f670b"
     )
 
-    random_data_to_curve = c.crypto_core_ed25519_from_uniform(random_data_input)
+    random_data_to_curve = c.crypto_core_ed25519_from_uniform(
+        random_data_input
+    )
 
     assert c.crypto_core_ed25519_is_valid_point(random_data_input) is False
     assert c.crypto_core_ed25519_is_valid_point(random_data_to_curve) is True
