@@ -24,6 +24,7 @@ jobs:
           - {VERSION: "3.9", TOXENV: "py39"}
           - {VERSION: "3.10", TOXENV: "py310"}
           - {VERSION: "3.11", TOXENV: "py311"}
+          - {VERSION: "3.12", TOXENV: "py312"}
           - {VERSION: "3.11", TOXENV: "py311", NOTE: "system", SODIUM_INSTALL: "system"}
           - {VERSION: "3.11", TOXENV: "py311", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
@@ -33,6 +34,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
+          allow-prereleases: true
       - name: Install tox and coverage
         run: pip install tox coverage
       - name: Install libsodium (system install only)
@@ -76,6 +78,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
+          allow-prereleases: true
       - name: Install tox and coverage
         run: pip install tox coverage
       - name: Run tests
@@ -101,6 +104,7 @@ jobs:
           - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.10", TOXENV: "py310", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.11", TOXENV: "py311", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.12", TOXENV: "py312", SODIUM_MSVC_VERSION: "v142"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
       - uses: actions/checkout@v3.6.0
@@ -108,6 +112,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
+          allow-prereleases: true
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: 'Extract libsodium libraries'
         run: |
