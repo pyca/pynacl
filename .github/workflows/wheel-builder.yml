@@ -10,6 +10,12 @@ on:
   push:
     tags:
       - '*.*.*'
+  pull_request:
+    paths:
+      - .github/workflows/wheel-builder.yml
+      - pyproject.toml
+      - setup.cfg
+      - setup.py
 
 jobs:
   manylinux:
