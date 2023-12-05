@@ -5,12 +5,13 @@ on:
     branches:
       - main
       - '*.x'
+      - libsodium-upgrade
     tags:
       - '*'
 
 jobs:
   linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         PYTHON:
@@ -19,7 +20,6 @@ jobs:
           - {VERSION: "3.12", TOXENV: "mypy", COVERAGE: "false"}
           - {VERSION: "pypy-3.9", TOXENV: "pypy3"}
           - {VERSION: "pypy-3.10", TOXENV: "pypy3"}
-          - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
           - {VERSION: "3.9", TOXENV: "py39"}
@@ -44,7 +44,7 @@ jobs:
           tar zxvf LATEST.tar.gz
           cd libsodium-*
           ./configure ${SODIUM_INSTALL_MINIMAL:+--enable-minimal}
-          make
+          make -j$(nproc)
           make check
           sudo make install
           sudo ldconfig
@@ -68,7 +68,7 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - {VERSION: "3.6", TOXENV: "py36"}
+          - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.12", TOXENV: "py312"}
           - {VERSION: "3.12", TOXENV: "py312", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
@@ -97,7 +97,6 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
@@ -114,7 +113,7 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: 'Extract libsodium libraries'
         run: |
-          Expand-Archive src/libsodium-1.0.18-stable-msvc.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.19-stable-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Install tox and coverage
         run: pip install tox coverage

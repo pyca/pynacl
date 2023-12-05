@@ -293,7 +293,6 @@ ge25519_frombytes(ge25519_p3 *h, const unsigned char *s)
 {
     fe25519 u;
     fe25519 v;
-    fe25519 v3;
     fe25519 vxx;
     fe25519 m_root_check, p_root_check;
     fe25519 negx;
@@ -307,15 +306,9 @@ ge25519_frombytes(ge25519_p3 *h, const unsigned char *s)
     fe25519_sub(u, u, h->Z); /* u = y^2-1 */
     fe25519_add(v, v, h->Z); /* v = dy^2+1 */
 
-    fe25519_sq(v3, v);
-    fe25519_mul(v3, v3, v); /* v3 = v^3 */
-    fe25519_sq(h->X, v3);
-    fe25519_mul(h->X, h->X, v);
-    fe25519_mul(h->X, h->X, u); /* x = uv^7 */
-
-    fe25519_pow22523(h->X, h->X); /* x = (uv^7)^((q-5)/8) */
-    fe25519_mul(h->X, h->X, v3);
-    fe25519_mul(h->X, h->X, u); /* x = uv^3(uv^7)^((q-5)/8) */
+    fe25519_mul(h->X, u, v);
+    fe25519_pow22523(h->X, h->X);
+    fe25519_mul(h->X, u, h->X); /* u((uv)^((q-5)/8)) */
 
     fe25519_sq(vxx, h->X);
     fe25519_mul(vxx, vxx, v);
@@ -2519,6 +2512,21 @@ sc25519_is_canonical(const unsigned char s[32])
     return (c != 0);
 }
 
+/* multiply by the cofactor */
+static void
+ge25519_clear_cofactor(ge25519_p3 *p3)
+{
+    ge25519_p1p1 p1;
+    ge25519_p2   p2;
+
+    ge25519_p3_dbl(&p1, p3);
+    ge25519_p1p1_to_p2(&p2, &p1);
+    ge25519_p2_dbl(&p1, &p2);
+    ge25519_p1p1_to_p2(&p2, &p1);
+    ge25519_p2_dbl(&p1, &p2);
+    ge25519_p1p1_to_p3(p3, &p1);
+}
+
 static void
 ge25519_elligator2(unsigned char s[32], const fe25519 r, const unsigned char x_sign)
 {
@@ -2527,8 +2535,6 @@ ge25519_elligator2(unsigned char s[32], const fe25519 r, const unsigned char x_s
     fe25519      rr2;
     fe25519      x, x2, x3;
     ge25519_p3   p3;
-    ge25519_p1p1 p1;
-    ge25519_p2   p2;
     unsigned int notsquare;
 
     fe25519_sq2(rr2, r);
@@ -2572,14 +2578,7 @@ ge25519_elligator2(unsigned char s[32], const fe25519 r, const unsigned char x_s
         abort(); /* LCOV_EXCL_LINE */
     }
 
-    /* multiply by the cofactor */
-    ge25519_p3_dbl(&p1, &p3);
-    ge25519_p1p1_to_p2(&p2, &p1);
-    ge25519_p2_dbl(&p1, &p2);
-    ge25519_p1p1_to_p2(&p2, &p1);
-    ge25519_p2_dbl(&p1, &p2);
-    ge25519_p1p1_to_p3(&p3, &p1);
-
+    ge25519_clear_cofactor(&p3);
     ge25519_p3_tobytes(s, &p3);
 }
 

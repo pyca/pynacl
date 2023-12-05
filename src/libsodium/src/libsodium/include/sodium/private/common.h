@@ -226,24 +226,37 @@ xor_buf(unsigned char *out, const unsigned char *in, size_t n)
 # endif
 #endif
 
-#if defined(_MSC_VER) && \
-    (defined(_M_X64) || defined(_M_AMD64) || defined(_M_IX86))
+#ifdef _MSC_VER
 
-# include <intrin.h>
+# if defined(_M_X64) || defined(_M_IX86)
+#  include <intrin.h>
 
-# define HAVE_INTRIN_H    1
-# define HAVE_MMINTRIN_H  1
-# define HAVE_EMMINTRIN_H 1
-# define HAVE_PMMINTRIN_H 1
-# define HAVE_TMMINTRIN_H 1
-# define HAVE_SMMINTRIN_H 1
-# define HAVE_AVXINTRIN_H 1
-# if _MSC_VER >= 1600
-#  define HAVE_WMMINTRIN_H 1
-# endif
-# if _MSC_VER >= 1700 && defined(_M_X64)
-#  define HAVE_AVX2INTRIN_H 1
-# endif
+#  define HAVE_INTRIN_H    1
+#  define HAVE_MMINTRIN_H  1
+#  define HAVE_EMMINTRIN_H 1
+#  define HAVE_PMMINTRIN_H 1
+#  define HAVE_TMMINTRIN_H 1
+#  define HAVE_SMMINTRIN_H 1
+#  define HAVE_AVXINTRIN_H 1
+#  if _MSC_VER >= 1600
+#   define HAVE_WMMINTRIN_H 1
+#  endif
+#  if _MSC_VER >= 1700 && defined(_M_X64)
+#   define HAVE_AVX2INTRIN_H 1
+#  endif
+#  if _MSC_VER >= 1910 && defined(_M_X64)
+#   define HAVE_AVX512FINTRIN_H 1
+#  endif
+
+# elif defined(_M_ARM64)
+
+#  ifndef __ARM_NEON
+#   define __ARM_NEON 1
+#  endif
+#  define HAVE_ARMCRYPTO 1
+
+# endif /* _MSC_VER */
+
 #elif defined(HAVE_INTRIN_H)
 # include <intrin.h>
 #endif
@@ -256,6 +269,14 @@ extern void ct_unpoison(const void *, size_t);
 #else
 # define POISON(X, L)   (void) 0
 # define UNPOISON(X, L) (void) 0
+#endif
+
+#ifdef HAVE_GCC_MEMORY_FENCES
+# define ACQUIRE_FENCE __atomic_thread_fence(__ATOMIC_ACQUIRE)
+#elif defined(HAVE_C11_MEMORY_FENCES)
+# define ACQUIRE_FENCE atomic_thread_fence(memory_order_acquire)
+#else
+# define ACQUIRE_FENCE (void) 0
 #endif
 
 #endif

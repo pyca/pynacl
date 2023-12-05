@@ -127,13 +127,7 @@ class build_clib(_build_clib):
         # Ensure all of our executable files have their permission set
         for filename in [
             "src/libsodium/autogen.sh",
-            "src/libsodium/compile",
             "src/libsodium/configure",
-            "src/libsodium/depcomp",
-            "src/libsodium/install-sh",
-            "src/libsodium/missing",
-            "src/libsodium/msvc-scripts/process.bat",
-            "src/libsodium/test/default/wintest.bat",
         ]:
             os.chmod(here(filename), 0o755)
 
@@ -208,7 +202,7 @@ setup(
     license=nacl.__license__,
     author=nacl.__author__,
     author_email=nacl.__email__,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     setup_requires=setup_requirements,
     install_requires=requirements,
     extras_require={"tests": test_requirements, "docs": docs_requirements},
@@ -225,7 +219,6 @@ setup(
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
