@@ -60,7 +60,7 @@ def kdf(
 ) -> bytes:
     """
     Derive a ``size`` bytes long key from a caller-supplied
-    ``password`` and ``salt`` pair using the argon2i
+    ``password`` and ``salt`` pair using the argon2id
     memory-hard construct.
 
     the enclosing module provides the constants
