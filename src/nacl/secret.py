@@ -52,9 +52,9 @@ class SecretBox(encoding.Encodable, StringFixer):
     KEY_SIZE: ClassVar[int] = nacl.bindings.crypto_secretbox_KEYBYTES
     NONCE_SIZE: ClassVar[int] = nacl.bindings.crypto_secretbox_NONCEBYTES
     MACBYTES: ClassVar[int] = nacl.bindings.crypto_secretbox_MACBYTES
-    MESSAGEBYTES_MAX: ClassVar[
-        int
-    ] = nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
+    MESSAGEBYTES_MAX: ClassVar[int] = (
+        nacl.bindings.crypto_secretbox_MESSAGEBYTES_MAX
+    )
 
     def __init__(
         self, key: bytes, encoder: encoding.Encoder = encoding.RawEncoder
