@@ -64,14 +64,20 @@ jobs:
         if: matrix.PYTHON.COVERAGE != 'false'
 
   macos:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.RUNNER }}
     strategy:
       matrix:
+        RUNNER:
+          - 'macos-13'
+          - 'macos-latest'
         PYTHON:
           - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.12", TOXENV: "py312"}
           - {VERSION: "3.12", TOXENV: "py312", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
-    name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
+        exclude:
+          - PYTHON: {VERSION: "3.6", TOXENV: "py36"}
+            RUNNER: macos-latest
+    name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on ${{ matrix.RUNNER }}"
     steps:
       - uses: actions/checkout@v3.6.0
       - name: Setup python

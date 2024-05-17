@@ -20,7 +20,11 @@ on:
 jobs:
   manylinux:
     runs-on: ubuntu-latest
-    container: ghcr.io/pyca/${{ matrix.MANYLINUX.CONTAINER }}
+    container:
+      image: ghcr.io/pyca/${{ matrix.MANYLINUX.CONTAINER }}
+      volumes:
+        - /staticnodehost:/staticnodecontainer:rw,rshared
+        - /staticnodehost:/__e/node20:ro,rshared
     strategy:
       matrix:
         PYTHON:
@@ -32,6 +36,9 @@ jobs:
 
     name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
     steps:
+      - name: Ridiculous-er workaround for static node20
+        run: |
+          cp -R /staticnode/* /staticnodecontainer/
       - uses: actions/checkout@v3.6.0
         with:
           # The tag to build or the tag received by the tag event
@@ -87,10 +94,10 @@ jobs:
       - run: venv/bin/pip install -U pip wheel cffi
       - name: Make sdist
         run: venv/bin/python setup.py sdist
-      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir wheelhouse
+      - run: tar zxvf dist/pynacl*.tar.gz && mkdir wheelhouse
       - name: Build the wheel
         run: |
-            cd PyNaCl*
+            cd pynacl*
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
                 ../venv/bin/python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
         env:
