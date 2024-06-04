@@ -45,7 +45,11 @@
 # include <poll.h>
 #endif
 #ifdef HAVE_RDRAND
-# pragma GCC target("rdrnd")
+# ifdef __clang__
+#  pragma clang attribute push(__attribute__((target("rdrnd"))), apply_to = function)
+# elif defined(__GNUC__)
+#  pragma GCC target("rdrnd")
+# endif
 # include <immintrin.h>
 #endif
 
@@ -93,6 +97,10 @@ BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
 # endif
 #endif
 
+#if !defined(TLS) && !defined(__STDC_NO_THREADS__) && \
+    defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+# define TLS _Thread_local
+#endif
 #ifndef TLS
 # ifdef _WIN32
 #  define TLS __declspec(thread)
@@ -629,3 +637,9 @@ struct randombytes_implementation randombytes_internal_implementation = {
     SODIUM_C99(.buf =) randombytes_internal_random_buf,
     SODIUM_C99(.close =) randombytes_internal_random_close
 };
+
+#ifdef HAVE_RDRAND
+# ifdef __clang__
+#  pragma clang attribute pop
+# endif
+#endif

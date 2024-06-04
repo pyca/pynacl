@@ -120,7 +120,7 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: 'Extract libsodium libraries'
         run: |
-          Expand-Archive src/libsodium-1.0.18-stable-msvc.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.20-stable-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Install tox and coverage
         run: pip install tox coverage

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugDLL|Win32">
       <Configuration>DebugDLL</Configuration>
@@ -181,7 +182,7 @@
       <PreprocessorDefinitions>SODIUM_STATIC;SODIUM_EXPORT=;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -197,7 +198,7 @@
       <PreprocessorDefinitions>SODIUM_EXPORT=__declspec(dllexport);SODIUM_DLL_EXPORT;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\;$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -246,7 +247,7 @@
       <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -267,7 +268,7 @@
       <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include\sodium;$(SolutionDir)src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include\sodium;$(SolutionDir)..\..\src\libsodium\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -319,10 +320,10 @@
   </ItemGroup>
   <ItemGroup>
     {{tlv2}}
-    <ClInclude Include="builds\msvc\resource.h" />
+    <ClInclude Include="..\..\builds\msvc\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="builds\msvc\resource.rc">
+    <ResourceCompile Include="..\..\builds\msvc\resource.rc">
     </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

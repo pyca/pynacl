@@ -38,13 +38,14 @@
 
 #ifdef HAVE_EMMINTRIN_H
 
-# ifdef __GNUC__
+# ifdef __clang__
+#  pragma clang attribute push(__attribute__((target("sse2"))), apply_to = function)
+# elif defined(__GNUC__)
 #  pragma GCC target("sse2")
 # endif
+
 # include <emmintrin.h>
-# if defined(__XOP__) && defined(DISABLED)
-#  include <x86intrin.h>
-# endif
+
 # include "private/sse2_64_32.h"
 
 # include "../crypto_scrypt.h"
@@ -210,11 +211,13 @@ blockmix_salsa8_xor(const __m128i *Bin1, const __m128i *Bin2, __m128i *Bout,
  * Note that B's layout is permuted compared to the generic implementation.
  */
 static inline uint64_t
-integerify(const void *B, size_t r)
+integerify(const __m128i *B, size_t r)
 {
-    const uint64_t *X = ((const uint64_t *) B) + (2 * r - 1) * 8;
+    const __m128i * X  = B + (2*r - 1) * 4;
+    const uint32_t X0  = (uint32_t) _mm_cvtsi128_si32(X[0]);
+    const uint32_t X13 = (uint32_t) _mm_cvtsi128_si32(_mm_srli_si128(X[3], 4));
 
-    return *X;
+    return (((uint64_t)(X13) << 32) + X0);
 }
 
 /*
@@ -395,4 +398,9 @@ escrypt_kdf_sse(escrypt_local_t *local, const uint8_t *passwd, size_t passwdlen,
     /* Success! */
     return 0;
 }
+
+# ifdef __clang__
+#  pragma clang attribute pop
+# endif
+
 #endif
