@@ -4,14 +4,16 @@
 #include "windows.h"
 
 //specify the version numbers for the dll's
-#define LIBSODIUM_VERSION_STRING "1.0.18.0"
-#define LIBSODIUM_VERSION_BIN 1,0,18,0
+#define LIBSODIUM_VERSION_STRING "1.0.20.0"
+#define LIBSODIUM_VERSION_BIN 1,0,20,0
 
 //specify the product name for the dlls based on the platform we are compiling for
 #if defined(x64)
     #define LIBSODIUM_PRODUCT_NAME "libsodium (x64)"
 #elif defined(Win32)
     #define LIBSODIUM_PRODUCT_NAME "libsodium (x86)"
+#elif defined(ARM64)
+    #define LIBSODIUM_PRODUCT_NAME "libsodium (arm64)"
 #else
     #define LIBSODIUM_PRODUCT_NAME "libsodium"
 #endif
@@ -44,10 +46,10 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "FileDescription", "The Sodium crypto library (libsodium) "
+            VALUE "FileDescription", "The Sodium crypto library (libsodium)"
             VALUE "FileVersion", LIBSODIUM_VERSION_STRING
             VALUE "InternalName", "libsodium"
-            VALUE "LegalCopyright", "Copyright (c) 2013-2019 The libsodium authors."
+            VALUE "LegalCopyright", "Copyright (c) 2013-2024 The libsodium authors."
             VALUE "OriginalFilename", "libsodium.dll"
             VALUE "ProductName", LIBSODIUM_PRODUCT_NAME
             VALUE "ProductVersion", LIBSODIUM_VERSION_STRING

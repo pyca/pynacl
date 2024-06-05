@@ -139,7 +139,7 @@ jobs:
           architecture: ${{ matrix.WINDOWS.ARCH }}
       - name: Extract libsodium libraries
         run: |
-          Expand-Archive src/libsodium-1.0.18-stable-msvc.zip -DestinationPath c:\
+          Expand-Archive src/libsodium-1.0.20-stable-msvc.zip -DestinationPath c:\
         shell: powershell
       - name: Add sodium to paths
         run: |

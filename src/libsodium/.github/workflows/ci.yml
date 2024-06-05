@@ -12,13 +12,14 @@ jobs:
   tcc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Update packages list
         run: sudo apt-get update
 
       - name: Install dependencies
-        run: sudo apt-get install -y build-essential libtool autoconf automake tcc
+        run: |
+          sudo apt-get install -y build-essential libtool autoconf automake tcc
 
       - name: Autogen
         run: ./autogen.sh -s
@@ -31,10 +32,39 @@ jobs:
           make uninstall
           make distclean
 
+  zig:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update packages list
+        run: sudo apt-get update
+
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@d866436887ad1b24590684f9d00480376663dd36
+        with:
+          version: 0.12.0
+
+      - name: Autogen
+        run: ./autogen.sh -s
+
+      - name: Compilation with zig
+        run: |
+          zig build
+          zig build -Dtarget=x86_64-linux
+          zig build -Dtarget=aarch64-linux
+          zig build -Dtarget=x86_64-windows
+          zig build -Dtarget=aarch64-windows
+          zig build -Dtarget=x86_64-macos
+          zig build -Dtarget=aarch64-macos
+          zig build -Dtarget=wasm32-wasi
+          zig build -Doptimize=ReleaseFast
+          rm -fr zig-cache zig-out
+
   regular:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Update packages list
         run: sudo apt-get update
@@ -63,7 +93,7 @@ jobs:
   check-globals:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Update packages list
         run: sudo apt-get update
@@ -81,7 +111,7 @@ jobs:
   other-comp:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Update packages list
         run: sudo apt-get update
@@ -107,13 +137,13 @@ jobs:
   other-arch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Update packages list
         run: sudo apt-get update
 
       - name: Install dependencies
-        run: sudo apt-get install -y build-essential libtool autoconf automake qemu-user-static gcc-powerpc-linux-gnu
+        run: sudo apt-get install -y build-essential libtool autoconf automake gcc-powerpc-linux-gnu
 
       - name: Autogen
         run: ./autogen.sh -s
@@ -123,3 +153,27 @@ jobs:
           env CPPFLAGS="-DDEV_MODE=1" ./configure --disable-dependency-tracking --host=powerpc-linux-gnu
           make -j $(nproc)
           make clean > /dev/null
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update packages list
+        run: sudo apt-get update
+
+      - name: Install base dependencies
+        run: sudo apt-get install -y libtool autoconf automake unzip
+
+      - name: Autogen
+        run: ./autogen.sh -s
+
+      - name: Install Android NDK
+        run: |
+          mkdir /tmp/android && cd /tmp/android
+          curl -o ndk.zip -L https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+          unzip ndk.zip && rm -f *.zip && mv android-ndk* ndk
+
+      - name: Android compilation
+        run: |
+          env ANDROID_NDK_HOME=/tmp/android/ndk ./dist-build/android-aar.sh

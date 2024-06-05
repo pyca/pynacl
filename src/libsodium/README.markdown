@@ -23,12 +23,10 @@ as well as Javascript and Webassembly.
 
 ## Documentation
 
-The documentation is available on Gitbook and built from the [libsodium-doc](https://github.com/jedisct1/libsodium-doc) repository:
+The documentation is available on Gitbook and built from the
+[libsodium-doc](https://github.com/jedisct1/libsodium-doc) repository:
 
-* [libsodium documentation](https://download.libsodium.org/doc/) -
-online, requires Javascript.
-* [offline documentation](https://www.gitbook.com/book/jedisct1/libsodium/details)
-in PDF format.
+* [libsodium documentation](https://doc.libsodium.org) - online, requires Javascript.
 
 ## Integrity Checking
 
