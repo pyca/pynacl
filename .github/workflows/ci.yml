@@ -30,7 +30,7 @@ jobs:
           - {VERSION: "3.12", TOXENV: "py312", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Setup python
         uses: actions/setup-python@v5
         with:
@@ -79,7 +79,7 @@ jobs:
             RUNNER: macos-latest
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on ${{ matrix.RUNNER }}"
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Setup python
         uses: actions/setup-python@v5
         with:
@@ -112,7 +112,7 @@ jobs:
           - {VERSION: "3.12", TOXENV: "py312", SODIUM_MSVC_VERSION: "v142"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Setup python
         uses: actions/setup-python@v5
         with:
