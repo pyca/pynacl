@@ -79,3 +79,8 @@ disallow_any_decorated = false
 # It's not useful to annotate each test function as `-> None`.
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
+
+[project.urls]
+"Homepage" = "https://github.com/pyca/pynacl/"
+"Bug Tracker" = "https://github.com/pyca/pynacl/issues"
+"Documentation" = "https://pynacl.readthedocs.io/"
