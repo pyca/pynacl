@@ -44,6 +44,11 @@ docs = [
     "sphinx_rtd_theme"
 ]
 
+[project.urls]
+"Homepage" = "https://github.com/pyca/pynacl"
+"Bug Tracker" = "https://github.com/pyca/pynacl/issues"
+"Documentation" = "https://pynacl.readthedocs.io"
+
 [tool.black]
 line-length = 79
 target-version = ["py36"]
