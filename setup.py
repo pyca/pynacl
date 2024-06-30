@@ -30,24 +30,12 @@ from setuptools.command.build_clib import build_clib as _build_clib
 from setuptools.command.build_ext import build_ext as _build_ext
 
 
-requirements = []
-setup_requirements = ["setuptools"]
-test_requirements = [
-    "pytest>=3.2.1,!=3.3.0",
-    "hypothesis>=3.27.0",
-]
-docs_requirements = ["sphinx<7", "sphinx_rtd_theme"]
-
-
 if platform.python_implementation() == "PyPy":
     if sys.pypy_version_info < (2, 6):
         raise RuntimeError(
             "PyNaCl is not compatible with PyPy < 2.6. Please "
             "upgrade PyPy to use this library."
         )
-else:
-    requirements.append("cffi>=1.4.1")
-    setup_requirements.append("cffi>=1.4.1")
 
 
 def here(*paths):
@@ -194,19 +182,8 @@ CHANGELOG = open("CHANGELOG.rst").read()
 
 
 setup(
-    name=nacl.__title__,
-    version=nacl.__version__,
-    description=nacl.__summary__,
     long_description="\n".join((README, INSTALL, CHANGELOG)),
     url=nacl.__uri__,
-    license=nacl.__license__,
-    author=nacl.__author__,
-    author_email=nacl.__email__,
-    python_requires=">=3.6",
-    setup_requires=setup_requirements,
-    install_requires=requirements,
-    extras_require={"tests": test_requirements, "docs": docs_requirements},
-    tests_require=test_requirements,
     package_dir={"": "src"},
     packages=["nacl", "nacl.pwhash", "nacl.bindings"],
     package_data={"nacl": ["py.typed"]},
@@ -215,16 +192,4 @@ setup(
     cmdclass={"build_clib": build_clib, "build_ext": build_ext},
     distclass=Distribution,
     zip_safe=False,
-    classifiers=[
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-    ],
 )

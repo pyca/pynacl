@@ -39,7 +39,6 @@ recursive-include src/bindings *.py *.h
 
 # Remove our CI files
 recursive-exclude .github *
-recursive-exclude .circleci *
 
 # Remove readthedocs config
 exclude .readthedocs.yml
