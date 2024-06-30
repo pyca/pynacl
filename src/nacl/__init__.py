@@ -14,26 +14,12 @@
 
 
 __all__ = [
-    "__title__",
-    "__summary__",
     "__uri__",
     "__version__",
-    "__author__",
     "__email__",
-    "__license__",
-    "__copyright__",
 ]
 
-__title__ = "PyNaCl"
-__summary__ = (
-    "Python binding to the Networking and Cryptography (NaCl) library"
-)
 __uri__ = "https://github.com/pyca/pynacl/"
 
+# Must be kept in sync with `pyproject.toml`
 __version__ = "1.6.0.dev1"
-
-__author__ = "The PyNaCl developers"
-__email__ = "cryptography-dev@python.org"
-
-__license__ = "Apache License 2.0"
-__copyright__ = "Copyright 2013-2018 {}".format(__author__)
