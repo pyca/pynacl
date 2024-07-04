@@ -19,7 +19,7 @@ on:
 
 jobs:
   manylinux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.MANYLINUX.RUNNER }}
     container:
       image: ghcr.io/pyca/${{ matrix.MANYLINUX.CONTAINER }}
       volumes:
@@ -28,17 +28,30 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - { VERSION: "cp36-cp36m", PATH: "/opt/python/cp36-cp36m/bin/python", ABI_VERSION: 'cp36' }
+          - { VERSION: "cp37-cp37m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp37' }
         MANYLINUX:
-          - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64" }
-          - { name: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64"}
-          - { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64"}
+          - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
+          - { name: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
+          - { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
+
+          - { NAME: "manylinux2014_aarch64", CONTAINER: "cryptography-manylinux2014_aarch64", RUNNER: [self-hosted, Linux, ARM64] }
+          - { name: "manylinux_2_28_aarch64", CONTAINER: "cryptography-manylinux_2_28:aarch64", RUNNER: [self-hosted, Linux, ARM64] }
+          - { name: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: [self-hosted, Linux, ARM64] }
 
     name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
     steps:
       - name: Ridiculous-er workaround for static node20
         run: |
           cp -R /staticnode/* /staticnodecontainer/
+      - name: Ridiculous alpine workaround for actions support on arm64
+        run: |
+          # This modifies /etc/os-release so the JS actions
+          # from GH can't detect that it's on alpine:aarch64. It will
+          # then use a glibc nodejs, which works fine when gcompat
+          # is installed in the container (which it is)
+          sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
+        if: startsWith(matrix.MANYLINUX.NAME, 'musllinux') && endsWith(matrix.MANYLINUX.NAME, 'aarch64')
+
       - uses: actions/checkout@v4.1.7
         with:
           # The tag to build or the tag received by the tag event
@@ -46,16 +59,11 @@ jobs:
           persist-credentials: false
       - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
       - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi wheel
-      - name: Make sdist
-        run: .venv/bin/python setup.py sdist
-      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir tmpwheelhouse
+        run: .venv/bin/pip install -U pip cffi wheel build
       - run: |
-          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
-              PY_LIMITED_API="--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
-          fi
-          cd PyNaCl*
-          LIBSODIUM_MAKE_ARGS="-j$(nproc)" ../.venv/bin/python setup.py bdist_wheel $PY_LIMITED_API && mv dist/PyNaCl*.whl ../tmpwheelhouse
+          mkdir tmpwheelhouse
+          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          mv dist/PyNaCl*.whl tmpwheelhouse/
       - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
@@ -65,16 +73,16 @@ jobs:
       - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v4
         with:
-          name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-  ${{ matrix.PYTHON.VERSION }}"
+          name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-${{ matrix.PYTHON.VERSION }}"
 
           path: pynacl-wheelhouse/
   macos:
-    runs-on: macos-11
+    runs-on: macos-13
     strategy:
       matrix:
         PYTHON:
           - VERSION: '3.10'
-            ABI_VERSION: 'cp36'
+            ABI_VERSION: 'cp37'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
     name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
@@ -91,15 +99,13 @@ jobs:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
-      - run: venv/bin/pip install -U pip wheel cffi
-      - name: Make sdist
-        run: venv/bin/python setup.py sdist
-      - run: tar zxvf dist/pynacl*.tar.gz && mkdir wheelhouse
+      - run: venv/bin/pip install -U pip wheel cffi build
       - name: Build the wheel
         run: |
-            cd pynacl*
+            mkdir wheelhouse
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
-                ../venv/bin/python setup.py bdist_wheel --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
+                venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+              mv dist/PyNaCl*.whl wheelhouse/
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
           MACOSX_DEPLOYMENT_TARGET: '10.10'
@@ -124,7 +130,7 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
-          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "ABI_VERSION": "cp36"}
+          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "ABI_VERSION": "cp37"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@v4.1.7
@@ -148,15 +154,13 @@ jobs:
         shell: bash
 
       - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi
-      - name: Make sdist
-        run: python setup.py sdist
-      - run: tar zxvf dist/PyNaCl*.tar.gz && mkdir wheelhouse
-        shell: bash
+        run: python -m pip install -U pip wheel cffi build
       - name: Build the wheel
         run: |
+          mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          cd PyNaCl* && python setup.py bdist_wheel  --py-limited-api=${{ matrix.PYTHON.ABI_VERSION }} && mv dist/PyNaCl*.whl ../wheelhouse
+          python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          mv dist/PyNaCl*.whl wheelhouse/
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium

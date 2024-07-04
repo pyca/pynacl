@@ -19,7 +19,6 @@ jobs:
           - {VERSION: "3.12", TOXENV: "mypy", COVERAGE: "false"}
           - {VERSION: "pypy-3.9", TOXENV: "pypy3"}
           - {VERSION: "pypy-3.10", TOXENV: "pypy3"}
-          - {VERSION: "3.6", TOXENV: "py36"}
           - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.8", TOXENV: "py38"}
           - {VERSION: "3.9", TOXENV: "py39"}
@@ -71,11 +70,11 @@ jobs:
           - 'macos-13'
           - 'macos-latest'
         PYTHON:
-          - {VERSION: "3.6", TOXENV: "py36"}
+          - {VERSION: "3.7", TOXENV: "py37"}
           - {VERSION: "3.12", TOXENV: "py312"}
           - {VERSION: "3.12", TOXENV: "py312", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
-          - PYTHON: {VERSION: "3.6", TOXENV: "py36"}
+          - PYTHON: {VERSION: "3.7", TOXENV: "py37"}
             RUNNER: macos-latest
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on ${{ matrix.RUNNER }}"
     steps:
@@ -103,7 +102,6 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.6", TOXENV: "py36", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
