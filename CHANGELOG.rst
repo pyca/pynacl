@@ -3,6 +3,8 @@ Changelog
 
 1.6.0 (UNRELEASED)
 ------------------
+* **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6.
+* Update ``libsodium`` to 1.0.20-stable.
 
 1.5.0 (2022-01-07)
 ------------------
