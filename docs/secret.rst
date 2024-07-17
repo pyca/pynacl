@@ -184,8 +184,9 @@ Requirements
 Key
 ~~~
 
-The 32 bytes key given to :class:`~nacl.secret.SecretBox` or :class:`~nacl.secret.Aead`
-must be kept secret. It is the combination to your "safe" and anyone with this key will
+The 32 bytes key given to :class:`~nacl.secret.SecretBox`
+or :class:`~nacl.secret.Aead` must be kept secret. It is
+the combination to your "safe" and anyone with this key will
 be able to decrypt the data, or encrypt new data.
 
 
@@ -222,13 +223,14 @@ You can safely generate random nonces by calling:
 Aad
 ~~~
 
-:class:`~nacl.secret.Aead` supports Authenticated Encryption with Associated Data.
-:meth:`~nacl.secret.Aead.encrypt` and :meth:`~nacl.secret.Aead.decrypt` accept an
-optional, arbitrary long “additional data” parameter. These data are not present
-in the ciphertext, but are mixed in the computation of the authentication tag.
-A typical use for these data is to authenticate version numbers, timestamps or
-monotonically increasing counters in order to discard previous messages and
-prevent replay attacks.
+:class:`~nacl.secret.Aead` supports Authenticated Encryption with
+Associated Data. :meth:`~nacl.secret.Aead.encrypt` and
+:meth:`~nacl.secret.Aead.decrypt` accept an optional, arbitrary long
+“additional data” parameter. These data are not present in the ciphertext,
+but are mixed in the computation of the authentication tag.
+A typical use for these data is to authenticate version numbers,
+timestamps or monotonically increasing counters in order to discard
+previous messages and prevent replay attacks.
 
 A default empty bytes object will be used if not set when calling
 :meth:`~nacl.secret.Aead.encrypt` or :meth:`~nacl.secret.Aead.decrypt`.
