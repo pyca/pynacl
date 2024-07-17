@@ -115,7 +115,7 @@ very simple:
     # Encrypt our message with (optionally) additional authenticated data,
     # it will be exactly 40 bytes longer than the original message as it
     # stores authentication information and the nonce alongside it.
-    
+
     aad = b'POTUS'
 
     encrypted = box.encrypt(message, aad)
@@ -170,7 +170,7 @@ Finally, the message is decrypted (regardless of how the nonce was generated):
 
     plaintext = box.decrypt(encrypted, aad)
     #plaintext = box.decrypt(encrypted) would suffice if aad was not used.
-    
+
     print(plaintext.decode('utf-8'))
 
 .. testoutput::
@@ -194,7 +194,7 @@ Nonce
 ~~~~~
 
 The 24-byte nonce (`Number used once <https://en.wikipedia.org/wiki/Cryptographic_nonce>`_)
-given to :meth:`~nacl.secret.SecretBox.encrypt`, 
+given to :meth:`~nacl.secret.SecretBox.encrypt`,
 :meth:`~nacl.secret.SecretBox.decrypt`, :meth:`~nacl.secret.Aead.encrypt` and
 :meth:`~nacl.secret.Aead.decrypt` must **NEVER** be reused for a
 particular key. Reusing a nonce may give an attacker enough information to
@@ -216,7 +216,7 @@ reason, many protocols derive a new key for each session, reset the counter
 to zero with each new key, and never store the derived key or the counter.
 
 You can safely generate random nonces by calling:
-:func:`~nacl.utils.random` with ``SecretBox.NONCE_SIZE`` for SecretBox and 
+:func:`~nacl.utils.random` with ``SecretBox.NONCE_SIZE`` for SecretBox and
 :func:`~nacl.utils.random` with ``Aead.NONCE_SIZE`` for Aead.
 
 
@@ -328,7 +328,7 @@ Reference
         :param aad: [:class:`bytes`] The aad to be used in the authentication process
         :param nonce: [:class:`bytes`] The nonce to use in the encryption
         :param encoder: The encoder to use to encode the ciphertext
-        
+
         :return: An instance of :class:`~nacl.utils.EncryptedMessage`.
 
     .. method:: decrypt(ciphertext, aad, nonce, encoder)
@@ -342,7 +342,7 @@ Reference
         :param nonce: [:class:`bytes`] The nonce used when encrypting the
             ciphertext
         :param encoder: The encoder used to decode the ciphertext.
-        
+
         :return bytes: The decrypted plaintext.
 
 Algorithm details
