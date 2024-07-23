@@ -25,7 +25,7 @@ from nacl.utils import StringFixer, random
 
 class SignedMessage(bytes):
     """
-    A bytes subclass that holds a messaged that has been signed by a
+    A bytes subclass that holds a message that has been signed by a
     :class:`SigningKey`.
     """
 
