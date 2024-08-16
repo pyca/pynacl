@@ -76,6 +76,24 @@ def test_secretbox():
         )
 
 
+def test_secretbox_easy():
+    key = b"\x00" * c.crypto_secretbox_KEYBYTES
+    msg = b"message"
+    nonce = b"\x01" * c.crypto_secretbox_NONCEBYTES
+    ct = c.crypto_secretbox_easy(msg, nonce, key)
+    assert len(ct) == len(msg) + c.crypto_secretbox_BOXZEROBYTES
+    assert tohex(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
+    msg2 = c.crypto_secretbox_open_easy(ct, nonce, key)
+    assert msg2 == msg
+
+    with pytest.raises(CryptoError):
+        c.crypto_secretbox_open_easy(
+            msg + b"!",
+            nonce,
+            key,
+        )
+
+
 def test_secretbox_wrong_length():
     with pytest.raises(ValueError):
         c.crypto_secretbox(b"", b"", b"")
@@ -85,6 +103,21 @@ def test_secretbox_wrong_length():
         c.crypto_secretbox_open(b"", b"", b"")
     with pytest.raises(ValueError):
         c.crypto_secretbox_open(
+            b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES
+        )
+
+
+def test_secretbox_easy_wrong_length():
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_easy(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_easy(
+            b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES
+        )
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_open_easy(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_secretbox_open_easy(
             b"", b"", b"\x00" * c.crypto_secretbox_KEYBYTES
         )
 
@@ -116,6 +149,35 @@ def test_box():
 
     with pytest.raises(CryptoError):
         c.crypto_box_open(message + b"!", nonce, A_pubkey, A_secretkey)
+
+
+def test_box_easy():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    assert len(A_secretkey) == c.crypto_box_SECRETKEYBYTES
+    assert len(A_pubkey) == c.crypto_box_PUBLICKEYBYTES
+    B_pubkey, B_secretkey = c.crypto_box_keypair()
+
+    k1 = c.crypto_box_beforenm(B_pubkey, A_secretkey)
+    assert len(k1) == c.crypto_box_BEFORENMBYTES
+    k2 = c.crypto_box_beforenm(A_pubkey, B_secretkey)
+    assert tohex(k1) == tohex(k2)
+
+    message = b"message"
+    nonce = b"\x01" * c.crypto_box_NONCEBYTES
+    ct1 = c.crypto_box_easy_afternm(message, nonce, k1)
+    assert len(ct1) == len(message) + c.crypto_box_BOXZEROBYTES
+
+    ct2 = c.crypto_box_easy(message, nonce, B_pubkey, A_secretkey)
+    assert tohex(ct2) == tohex(ct1)
+
+    m1 = c.crypto_box_open_easy(ct1, nonce, A_pubkey, B_secretkey)
+    assert m1 == message
+
+    m2 = c.crypto_box_open_easy_afternm(ct1, nonce, k1)
+    assert m2 == message
+
+    with pytest.raises(CryptoError):
+        c.crypto_box_open_easy(message + b"!", nonce, A_pubkey, A_secretkey)
 
 
 def test_box_wrong_lengths():
@@ -152,6 +214,48 @@ def test_box_wrong_lengths():
         c.crypto_box_open_afternm(b"", b"", b"")
     with pytest.raises(ValueError):
         c.crypto_box_open_afternm(b"", b"\x00" * c.crypto_box_NONCEBYTES, b"")
+
+
+def test_box_easy_wrong_lengths():
+    A_pubkey, A_secretkey = c.crypto_box_keypair()
+    with pytest.raises(ValueError):
+        c.crypto_box_easy(b"abc", b"\x00", A_pubkey, A_secretkey)
+    with pytest.raises(ValueError):
+        c.crypto_box_easy(
+            b"abc", b"\x00" * c.crypto_box_NONCEBYTES, b"", A_secretkey
+        )
+    with pytest.raises(ValueError):
+        c.crypto_box_easy(
+            b"abc", b"\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b""
+        )
+
+    with pytest.raises(ValueError):
+        c.crypto_box_open_easy(b"", b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_box_open_easy(
+            b"", b"\x00" * c.crypto_box_NONCEBYTES, b"", b""
+        )
+    with pytest.raises(ValueError):
+        c.crypto_box_open_easy(
+            b"", b"\x00" * c.crypto_box_NONCEBYTES, A_pubkey, b""
+        )
+
+    with pytest.raises(ValueError):
+        c.crypto_box_beforenm(b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_box_beforenm(A_pubkey, b"")
+
+    with pytest.raises(ValueError):
+        c.crypto_box_easy_afternm(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_box_easy_afternm(b"", b"\x00" * c.crypto_box_NONCEBYTES, b"")
+
+    with pytest.raises(ValueError):
+        c.crypto_box_open_easy_afternm(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_box_open_easy_afternm(
+            b"", b"\x00" * c.crypto_box_NONCEBYTES, b""
+        )
 
 
 def test_sign():

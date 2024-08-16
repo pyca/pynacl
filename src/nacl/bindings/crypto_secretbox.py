@@ -84,3 +84,76 @@ def crypto_secretbox_open(
 
     plaintext = ffi.buffer(plaintext, len(padded))
     return plaintext[crypto_secretbox_ZEROBYTES:]
+
+
+def crypto_secretbox_easy(message: bytes, nonce: bytes, key: bytes) -> bytes:
+    """
+    Encrypts and returns the message ``message`` with the secret ``key`` and
+    the nonce ``nonce``.
+
+    :param message: bytes
+    :param nonce: bytes
+    :param key: bytes
+    :rtype: bytes
+    """
+    if len(key) != crypto_secretbox_KEYBYTES:
+        raise exc.ValueError("Invalid key")
+
+    if len(nonce) != crypto_secretbox_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce")
+
+    _mlen = len(message)
+    _clen = crypto_secretbox_MACBYTES + _mlen
+
+    ciphertext = ffi.new("unsigned char[]", _clen)
+
+    res = lib.crypto_secretbox_easy(ciphertext, message, _mlen, nonce, key)
+    ensure(res == 0, "Encryption failed", raising=exc.CryptoError)
+
+    ciphertext = ffi.buffer(ciphertext, _clen)
+    return ciphertext[:]
+
+
+def crypto_secretbox_open_easy(
+    ciphertext: bytes, nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Decrypt and returns the encrypted message ``ciphertext`` with the secret
+    ``key`` and the nonce ``nonce``.
+
+    :param ciphertext: bytes
+    :param nonce: bytes
+    :param key: bytes
+    :rtype: bytes
+    """
+    if len(key) != crypto_secretbox_KEYBYTES:
+        raise exc.ValueError("Invalid key")
+
+    if len(nonce) != crypto_secretbox_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce")
+
+    _clen = len(ciphertext)
+
+    ensure(
+        _clen >= crypto_secretbox_MACBYTES,
+        "Input ciphertext must be at least {} long".format(
+            crypto_secretbox_MACBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    _mlen = _clen - crypto_secretbox_MACBYTES
+
+    plaintext = ffi.new("unsigned char[]", max(1, _mlen))
+
+    res = lib.crypto_secretbox_open_easy(
+        plaintext, ciphertext, _clen, nonce, key
+    )
+    ensure(
+        res == 0,
+        "Decryption failed. Ciphertext failed verification",
+        raising=exc.CryptoError,
+    )
+
+    plaintext = ffi.buffer(plaintext, _mlen)
+    return plaintext[:]

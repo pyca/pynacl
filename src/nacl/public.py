@@ -251,7 +251,7 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
-        ciphertext = nacl.bindings.crypto_box_afternm(
+        ciphertext = nacl.bindings.crypto_box_easy_afternm(
             plaintext,
             nonce,
             self._shared_key,
@@ -296,7 +296,7 @@ class Box(encoding.Encodable, StringFixer):
                 "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
             )
 
-        plaintext = nacl.bindings.crypto_box_open_afternm(
+        plaintext = nacl.bindings.crypto_box_open_easy_afternm(
             ciphertext,
             nonce,
             self._shared_key,
