@@ -22,12 +22,16 @@ from cffi import FFI
 __all__ = ["ffi"]
 
 
-HEADERS = glob.glob(
-    os.path.join(os.path.abspath(os.path.dirname(__file__)), "*.h")
+HEADERS = sorted(
+    glob.glob(os.path.join(os.path.abspath(os.path.dirname(__file__)), "*.h"))
 )
 
-MINIMAL_HEADERS = glob.glob(
-    os.path.join(os.path.abspath(os.path.dirname(__file__)), "minimal", "*.h")
+MINIMAL_HEADERS = sorted(
+    glob.glob(
+        os.path.join(
+            os.path.abspath(os.path.dirname(__file__)), "minimal", "*.h"
+        )
+    )
 )
 
 
