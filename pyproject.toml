@@ -1,7 +1,7 @@
 [build-system]
 # Must be kept in sync with `dependencies` below
 requires = [
-    "setuptools>=61.0.0",
+    "setuptools>=61.0.0,!=74.0.0",
     "wheel",
     "cffi>=1.4.1; platform_python_implementation != 'PyPy'",
 ]
