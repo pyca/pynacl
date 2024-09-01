@@ -29,6 +29,7 @@ crypto_box_ZEROBYTES: int = lib.crypto_box_zerobytes()
 crypto_box_BOXZEROBYTES: int = lib.crypto_box_boxzerobytes()
 crypto_box_BEFORENMBYTES: int = lib.crypto_box_beforenmbytes()
 crypto_box_SEALBYTES: int = lib.crypto_box_sealbytes()
+crypto_box_MACBYTES: int = lib.crypto_box_macbytes()
 
 
 def crypto_box_keypair() -> Tuple[bytes, bytes]:
@@ -225,6 +226,156 @@ def crypto_box_open_afternm(
     )
 
     return ffi.buffer(plaintext, len(padded))[crypto_box_ZEROBYTES:]
+
+
+def crypto_box_easy(
+    message: bytes, nonce: bytes, pk: bytes, sk: bytes
+) -> bytes:
+    """
+    Encrypts and returns a message ``message`` using the secret key ``sk``,
+    public key ``pk``, and the nonce ``nonce``.
+
+    :param message: bytes
+    :param nonce: bytes
+    :param pk: bytes
+    :param sk: bytes
+    :rtype: bytes
+    """
+    if len(nonce) != crypto_box_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce size")
+
+    if len(pk) != crypto_box_PUBLICKEYBYTES:
+        raise exc.ValueError("Invalid public key")
+
+    if len(sk) != crypto_box_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
+    _mlen = len(message)
+    _clen = crypto_box_MACBYTES + _mlen
+
+    ciphertext = ffi.new("unsigned char[]", _clen)
+
+    rc = lib.crypto_box_easy(ciphertext, message, _mlen, nonce, pk, sk)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
+
+    return ffi.buffer(ciphertext, _clen)[:]
+
+
+def crypto_box_open_easy(
+    ciphertext: bytes, nonce: bytes, pk: bytes, sk: bytes
+) -> bytes:
+    """
+    Decrypts and returns an encrypted message ``ciphertext``, using the secret
+    key ``sk``, public key ``pk``, and the nonce ``nonce``.
+
+    :param ciphertext: bytes
+    :param nonce: bytes
+    :param pk: bytes
+    :param sk: bytes
+    :rtype: bytes
+    """
+    if len(nonce) != crypto_box_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce size")
+
+    if len(pk) != crypto_box_PUBLICKEYBYTES:
+        raise exc.ValueError("Invalid public key")
+
+    if len(sk) != crypto_box_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
+    _clen = len(ciphertext)
+
+    ensure(
+        _clen >= crypto_box_MACBYTES,
+        "Input ciphertext must be at least {} long".format(
+            crypto_box_MACBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    _mlen = _clen - crypto_box_MACBYTES
+
+    plaintext = ffi.new("unsigned char[]", max(1, _mlen))
+
+    res = lib.crypto_box_open_easy(plaintext, ciphertext, _clen, nonce, pk, sk)
+    ensure(
+        res == 0,
+        "An error occurred trying to decrypt the message",
+        raising=exc.CryptoError,
+    )
+
+    return ffi.buffer(plaintext, _mlen)[:]
+
+
+def crypto_box_easy_afternm(message: bytes, nonce: bytes, k: bytes) -> bytes:
+    """
+    Encrypts and returns the message ``message`` using the shared key ``k`` and
+    the nonce ``nonce``.
+
+    :param message: bytes
+    :param nonce: bytes
+    :param k: bytes
+    :rtype: bytes
+    """
+    if len(nonce) != crypto_box_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce")
+
+    if len(k) != crypto_box_BEFORENMBYTES:
+        raise exc.ValueError("Invalid shared key")
+
+    _mlen = len(message)
+    _clen = crypto_box_MACBYTES + _mlen
+
+    ciphertext = ffi.new("unsigned char[]", _clen)
+
+    rc = lib.crypto_box_easy_afternm(ciphertext, message, _mlen, nonce, k)
+    ensure(rc == 0, "Unexpected library error", raising=exc.RuntimeError)
+
+    return ffi.buffer(ciphertext, _clen)[:]
+
+
+def crypto_box_open_easy_afternm(
+    ciphertext: bytes, nonce: bytes, k: bytes
+) -> bytes:
+    """
+    Decrypts and returns the encrypted message ``ciphertext``, using the shared
+    key ``k`` and the nonce ``nonce``.
+
+    :param ciphertext: bytes
+    :param nonce: bytes
+    :param k: bytes
+    :rtype: bytes
+    """
+    if len(nonce) != crypto_box_NONCEBYTES:
+        raise exc.ValueError("Invalid nonce")
+
+    if len(k) != crypto_box_BEFORENMBYTES:
+        raise exc.ValueError("Invalid shared key")
+
+    _clen = len(ciphertext)
+
+    ensure(
+        _clen >= crypto_box_MACBYTES,
+        "Input ciphertext must be at least {} long".format(
+            crypto_box_MACBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    _mlen = _clen - crypto_box_MACBYTES
+
+    plaintext = ffi.new("unsigned char[]", max(1, _mlen))
+
+    res = lib.crypto_box_open_easy_afternm(
+        plaintext, ciphertext, _clen, nonce, k
+    )
+    ensure(
+        res == 0,
+        "An error occurred trying to decrypt the message",
+        raising=exc.CryptoError,
+    )
+
+    return ffi.buffer(plaintext, _mlen)[:]
 
 
 def crypto_box_seal(message: bytes, pk: bytes) -> bytes:
