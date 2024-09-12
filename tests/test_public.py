@@ -16,8 +16,21 @@ from typing import Tuple, Union
 
 import pytest
 
-from nacl.bindings import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES
-from nacl.public import Box, PrivateKey, PublicKey
+from nacl.bindings import (
+    crypto_box_PUBLICKEYBYTES,
+    crypto_box_SECRETKEYBYTES,
+    crypto_kx_PUBLIC_KEY_BYTES,
+    crypto_kx_SECRET_KEY_BYTES,
+)
+from nacl.public import (
+    AeadClient,
+    AeadServer,
+    Box,
+    PrivateKey,
+    PrivateKx,
+    PublicKey,
+    PublicKx,
+)
 from nacl.utils import random
 
 from .utils import assert_equal, assert_not_equal
@@ -168,3 +181,159 @@ class TestPrivateKey:
 
         assert box_AB.shared_key() == box_BA.shared_key()
         assert box_BprimeA.shared_key() == box_BA.shared_key()
+
+
+class TestPublicKx:
+    def test_equal_keys_have_equal_hashes(self):
+        kx1 = PublicKx(b"\x00" * crypto_kx_PUBLIC_KEY_BYTES)
+        kx2 = PublicKx(b"\x00" * crypto_kx_PUBLIC_KEY_BYTES)
+        assert hash(kx1) == hash(kx2)
+        assert id(kx1) != id(kx2)
+
+    def test_equal_keys_are_equal(self):
+        kx1 = PublicKx(b"\x00" * crypto_kx_PUBLIC_KEY_BYTES)
+        kx2 = PublicKx(b"\x00" * crypto_kx_PUBLIC_KEY_BYTES)
+        assert_equal(kx1, kx1)
+        assert_equal(kx1, kx2)
+
+    @pytest.mark.parametrize(
+        "kx2",
+        [
+            b"\x00" * crypto_kx_PUBLIC_KEY_BYTES,
+            PublicKx(b"\x01" * crypto_kx_PUBLIC_KEY_BYTES),
+            PublicKx(b"\x00" * (crypto_kx_PUBLIC_KEY_BYTES - 1) + b"\x01"),
+        ],
+    )
+    def test_different_keys_are_not_equal_kx(
+        self, kx2: Union[bytes, PublicKx]
+    ):
+        kx1 = PublicKx(b"\x00" * crypto_kx_PUBLIC_KEY_BYTES)
+        assert_not_equal(kx1, kx2)
+
+
+class TestPrivateKx:
+    def test_equal_keys_have_equal_hashes(self):
+        kx1 = PrivateKx(b"\x00" * crypto_kx_SECRET_KEY_BYTES)
+        kx2 = PrivateKx(b"\x00" * crypto_kx_SECRET_KEY_BYTES)
+        assert hash(kx1) == hash(kx2)
+        assert id(kx1) != id(kx2)
+
+    def test_equal_keys_are_equal(self):
+        kx1 = PrivateKx(b"\x00" * crypto_kx_SECRET_KEY_BYTES)
+        kx2 = PrivateKx(b"\x00" * crypto_kx_SECRET_KEY_BYTES)
+        assert_equal(kx1, kx1)
+        assert_equal(kx1, kx2)
+
+    def _gen_equivalent_raw_keys_couple_kx(
+        self,
+    ) -> Tuple[PrivateKx, PrivateKx]:
+        rwk1 = bytearray(random(crypto_box_SECRETKEYBYTES))
+        rwk2 = bytearray(rwk1)
+        # mask rwk1 bits
+        rwk1[0] &= 248
+        rwk1[31] &= 127
+        rwk1[31] |= 64
+        # set rwk2 bits
+        rwk2[0] |= 7
+        rwk2[31] |= 128
+        rwk2[31] &= 191
+        skx1 = PrivateKx(bytes(rwk1))
+        skx2 = PrivateKx(bytes(rwk2))
+        return skx1, skx2
+
+    def test_equivalent_keys_have_equal_hashes(self):
+        kx1, kx2 = self._gen_equivalent_raw_keys_couple_kx()
+        assert bytes(kx1) != bytes(kx2)
+        assert hash(kx1) == hash(kx2)
+
+    def test_equivalent_keys_compare_as_equal(self):
+        kx1, kx2 = self._gen_equivalent_raw_keys_couple_kx()
+        assert bytes(kx1) != bytes(kx2)
+        assert kx1 == kx2
+
+    def test_sk_and_pk_hashes_are_different(self):
+        skx = PrivateKx(random(crypto_kx_SECRET_KEY_BYTES))
+        assert hash(skx) != hash(skx.public_key)
+
+    @pytest.mark.parametrize(
+        "kx2",
+        [
+            b"\x00" * crypto_kx_SECRET_KEY_BYTES,
+            PrivateKx(b"\x01" * crypto_kx_SECRET_KEY_BYTES),
+            PrivateKx(b"\x00" * (crypto_kx_SECRET_KEY_BYTES - 1) + b"\x01"),
+        ],
+    )
+    def test_different_keys_are_not_equal_kx(
+        self, kx2: Union[bytes, PrivateKx]
+    ):
+        kx1 = PrivateKx(b"\x00" * crypto_kx_SECRET_KEY_BYTES)
+        assert_not_equal(kx1, kx2)
+
+    def test_shared_key_getter(self):
+        """
+        RFC 7748 "Elliptic Curves for Security" gives a set of test
+        parameters for the Diffie-Hellman key exchange on Curve25519:
+
+        6.1.  [Diffie-Hellman on] Curve25519
+            [ . . . ]
+        Alice's private key, a:
+          77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a
+        Alice's public key, X25519(a, 9):
+          8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a
+        Bob's private key, b:
+          5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb
+        Bob's public key, X25519(b, 9):
+          de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f
+
+        Since libNaCl/libsodium shared key generation adds an HSalsa20
+        key derivation pass on the raw shared Diffie-Hellman key, which
+        is not exposed by itself, we just check the shared key for equality.
+        """
+        prv_A = (
+            b"77076d0a7318a57d3c16c17251b26645"
+            b"df4c2f87ebc0992ab177fba51db92c2a"
+        )
+        pub_A = (
+            b"8520f0098930a754748b7ddcb43ef75a"
+            b"0dbf3a0d26381af4eba4a98eaa9b4e6a"
+        )
+        prv_B = (
+            b"5dab087e624a8a4b79e17f8b83800ee6"
+            b"6f3bb1292618b6fd1c2f8b27ff88e0eb"
+        )
+        pub_B = (
+            b"de9edb7d7b7dc1b4d35b61c2ece43537"
+            b"3f8343c85b78674dadfc7e146f882b4f"
+        )
+
+        alices_kx = PrivateKx(binascii.unhexlify(prv_A))
+        bobs_kx = PrivateKx(binascii.unhexlify(prv_B))
+        alicesP_kx = alices_kx.public_key
+        bobsP_kx = bobs_kx.public_key
+
+        assert binascii.unhexlify(pub_A) == bytes(alicesP_kx)
+        assert binascii.unhexlify(pub_B) == bytes(bobsP_kx)
+
+        aead_AB = AeadClient(alices_kx, bobsP_kx)
+        aead_BA = AeadServer(bobs_kx, alicesP_kx)
+
+        assert aead_AB.tx_key() == aead_BA.rx_key()
+        assert aead_AB.rx_key() == aead_BA.tx_key()
+
+    def test_equivalent_keys_shared_key_getter(self):
+        alices_kx = PrivateKx.generate()
+        alicesP_kx = alices_kx.public_key
+        bobs_kx, bobsprime_kx = self._gen_equivalent_raw_keys_couple_kx()
+        bobsP_kx, bobsprimeP_kx = bobs_kx.public_key, bobsprime_kx.public_key
+
+        assert bobsP_kx == bobsprimeP_kx
+
+        aead_AB = AeadClient(alices_kx, bobsP_kx)
+
+        aead_BA = AeadServer(bobs_kx, alicesP_kx)
+        aead_BprimeA = AeadServer(bobsprime_kx, alicesP_kx)
+
+        assert aead_AB.tx_key() == aead_BA.rx_key()
+        assert aead_AB.rx_key() == aead_BA.tx_key()
+        assert aead_BprimeA.tx_key() == aead_BA.tx_key()
+        assert aead_BprimeA.rx_key() == aead_BA.rx_key()
