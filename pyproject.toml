@@ -19,6 +19,7 @@ authors = [
 description = "Python binding to the Networking and Cryptography (NaCl) library"
 license = {text = "Apache-2.0"}
 classifiers = [
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python :: 3",
@@ -28,6 +29,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.7"
 dependencies = [

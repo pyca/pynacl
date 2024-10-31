@@ -99,7 +99,6 @@ pygments_style = "sphinx"
 # a list of builtin themes.
 if sphinx_rtd_theme:
     html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 else:
     html_theme = "default"
 

@@ -12,6 +12,7 @@ jobs:
   linux:
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
         PYTHON:
           - {VERSION: "3.12", TOXENV: "docs", COVERAGE: "false"}
@@ -25,11 +26,12 @@ jobs:
           - {VERSION: "3.10", TOXENV: "py310"}
           - {VERSION: "3.11", TOXENV: "py311"}
           - {VERSION: "3.12", TOXENV: "py312"}
-          - {VERSION: "3.12", TOXENV: "py312", NOTE: "system", SODIUM_INSTALL: "system"}
-          - {VERSION: "3.12", TOXENV: "py312", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.13-dev", TOXENV: "py313"}
+          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Setup python
         uses: actions/setup-python@v5
         with:
@@ -71,14 +73,14 @@ jobs:
           - 'macos-latest'
         PYTHON:
           - {VERSION: "3.7", TOXENV: "py37"}
-          - {VERSION: "3.12", TOXENV: "py312"}
-          - {VERSION: "3.12", TOXENV: "py312", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.13-dev", TOXENV: "py313"}
+          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
           - PYTHON: {VERSION: "3.7", TOXENV: "py37"}
             RUNNER: macos-latest
     name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on ${{ matrix.RUNNER }}"
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Setup python
         uses: actions/setup-python@v5
         with:
@@ -108,9 +110,10 @@ jobs:
           - {VERSION: "3.10", TOXENV: "py310", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.11", TOXENV: "py311", SODIUM_MSVC_VERSION: "v142"}
           - {VERSION: "3.12", TOXENV: "py312", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.13-dev", TOXENV: "py313", SODIUM_MSVC_VERSION: "v142"}
     name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.2
       - name: Setup python
         uses: actions/setup-python@v5
         with:
