@@ -14,9 +14,9 @@
 
 
 import hashlib
+import itertools
 from binascii import hexlify, unhexlify
 from typing import Callable, List, Tuple
-import itertools
 
 from hypothesis import given, settings
 from hypothesis.strategies import binary, integers
