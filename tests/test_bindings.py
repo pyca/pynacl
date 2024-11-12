@@ -94,6 +94,25 @@ def test_secretbox_easy():
         )
 
 
+@pytest.mark.parametrize(
+    ("encoder", "decoder"),
+    [
+        [bytes, bytearray],
+        [bytearray, bytes],
+        [bytearray, bytearray],
+    ],
+)
+def test_secretbox_bytearray(encoder, decoder):
+    key = b"\x00" * c.crypto_secretbox_KEYBYTES
+    msg = b"message"
+    nonce = b"\x01" * c.crypto_secretbox_NONCEBYTES
+    ct = c.crypto_secretbox(encoder(msg), encoder(nonce), encoder(key))
+    assert len(ct) == len(msg) + c.crypto_secretbox_BOXZEROBYTES
+    assert tohex(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
+    msg2 = c.crypto_secretbox_open(decoder(ct), decoder(nonce), decoder(key))
+    assert msg2 == msg
+
+
 def test_secretbox_wrong_length():
     with pytest.raises(ValueError):
         c.crypto_secretbox(b"", b"", b"")

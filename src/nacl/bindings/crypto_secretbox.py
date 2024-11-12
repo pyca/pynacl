@@ -44,6 +44,9 @@ def crypto_secretbox(message: bytes, nonce: bytes, key: bytes) -> bytes:
     if len(nonce) != crypto_secretbox_NONCEBYTES:
         raise exc.ValueError("Invalid nonce")
 
+    nonce = ffi.from_buffer(nonce)
+    key = ffi.from_buffer(key)
+
     padded = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ciphertext = ffi.new("unsigned char[]", len(padded))
 
@@ -71,6 +74,9 @@ def crypto_secretbox_open(
 
     if len(nonce) != crypto_secretbox_NONCEBYTES:
         raise exc.ValueError("Invalid nonce")
+
+    nonce = ffi.from_buffer(nonce)
+    key = ffi.from_buffer(key)
 
     padded = b"\x00" * crypto_secretbox_BOXZEROBYTES + ciphertext
     plaintext = ffi.new("unsigned char[]", len(padded))
