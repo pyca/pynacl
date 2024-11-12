@@ -16,6 +16,7 @@
 import hashlib
 from binascii import hexlify, unhexlify
 from typing import Callable, List, Tuple
+import itertools
 
 from hypothesis import given, settings
 from hypothesis.strategies import binary, integers
@@ -96,13 +97,12 @@ def test_secretbox_easy():
 
 @pytest.mark.parametrize(
     ("encoder", "decoder"),
-    [
-        (bytes, bytearray),
-        (bytearray, bytes),
-        (bytearray, bytearray),
-    ],
+    itertools.product(
+        [bytes, bytearray, memoryview],
+        [bytes, bytearray, memoryview],
+    ),
 )
-def test_secretbox_bytearray(
+def test_secretbox_byteslike(
     encoder: Callable[[bytes], bytes], decoder: Callable[[bytes], bytes]
 ):
     key = b"\x00" * c.crypto_secretbox_KEYBYTES
