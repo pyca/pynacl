@@ -16,7 +16,7 @@ import binascii
 import json
 import os
 import random
-from typing import ByteString, List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 from _pytest._code import ExceptionInfo
 from _pytest.monkeypatch import MonkeyPatch
@@ -219,6 +219,7 @@ def test_it_like_libsodium():
 
     header = crypto_secretstream_xchacha20poly1305_init_push(state, k)
 
+    ByteString = Union[bytes, bytearray, memoryview]
     state_save: ByteString = ffi.buffer(state.statebuf)[:]
 
     c1 = crypto_secretstream_xchacha20poly1305_push(
