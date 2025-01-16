@@ -181,3 +181,4 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 # Retry requests in the linkcheck builder so that we're resilient against
 # transient network errors.
 linkcheck_retries = 10
+linkcheck_timeout = 5
