@@ -307,7 +307,6 @@ def crypto_aead_chacha20poly1305_encrypt(
         _aad = ffi.NULL
         aalen = 0
 
-    mlen = len(message)
     mxout = mlen + crypto_aead_chacha20poly1305_ietf_ABYTES
 
     clen = ffi.new("unsigned long long *")
@@ -466,7 +465,6 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(
         _aad = ffi.NULL
         aalen = 0
 
-    mlen = len(message)
     mxout = mlen + crypto_aead_xchacha20poly1305_ietf_ABYTES
 
     clen = ffi.new("unsigned long long *")
