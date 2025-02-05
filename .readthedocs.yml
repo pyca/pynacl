@@ -6,6 +6,7 @@ sphinx:
   # The config file overrides the UI settings:
   # https://github.com/pyca/cryptography/issues/5863#issuecomment-817828152
   builder: dirhtml
+  configuration: docs/conf.py
 
 build:
   os: "ubuntu-20.04"
