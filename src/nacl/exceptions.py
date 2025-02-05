@@ -61,7 +61,7 @@ class UnavailableError(RuntimeError):
     """
     is a subclass of :class:`~nacl.exceptions.RuntimeError`, raised when
     trying to call functions not available in a minimal build of
-    libsodium.
+    libsodium or due to hardware limitations.
     """
 
     pass
