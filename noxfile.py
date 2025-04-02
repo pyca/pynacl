@@ -6,9 +6,7 @@ nox.options.default_venv_backend = "uv|virtualenv"
 
 @nox.session
 def tests(session: nox.Session) -> None:
-    session.install("coverage")
-    session.install("pretend")
-    session.install(".[tests]")
+    session.install("coverage", "pretend", ".[tests]")
 
     session.run(
         "coverage",
@@ -26,8 +24,7 @@ def tests(session: nox.Session) -> None:
 
 @nox.session
 def docs(session: nox.Session) -> None:
-    session.install("doc8")
-    session.install(".[docs]")
+    session.install("doc8", ".[docs]")
     tmpdir = session.create_tmp()
 
     session.run(
@@ -58,10 +55,7 @@ def docs(session: nox.Session) -> None:
 
 @nox.session
 def meta(session: nox.Session) -> None:
-    session.install("black")
-    session.install("flake8")
-    session.install("flake8-import-order")
-    session.install("check-manifest")
+    session.install("black", "flake8", "flake8-import-order", "check-manifest")
 
     session.run("flake8", ".")
     session.run("black", "--check", ".")
