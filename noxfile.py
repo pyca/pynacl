@@ -64,7 +64,6 @@ def meta(session: nox.Session) -> None:
 
 @nox.session
 def mypy(session: nox.Session) -> None:
-    session.install(".[tests]")
-    session.install("mypy")
+    session.install(".[tests]", "mypy")
 
     session.run("mypy")
