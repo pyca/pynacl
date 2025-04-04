@@ -15,29 +15,29 @@ jobs:
       fail-fast: false
       matrix:
         PYTHON:
-          - {VERSION: "3.12", TOXENV: "docs", COVERAGE: "false"}
-          - {VERSION: "3.12", TOXENV: "meta", COVERAGE: "false"}
-          - {VERSION: "3.12", TOXENV: "mypy", COVERAGE: "false"}
-          - {VERSION: "pypy-3.9", TOXENV: "pypy3"}
-          - {VERSION: "pypy-3.10", TOXENV: "pypy3"}
-          - {VERSION: "3.7", TOXENV: "py37"}
-          - {VERSION: "3.8", TOXENV: "py38"}
-          - {VERSION: "3.9", TOXENV: "py39"}
-          - {VERSION: "3.10", TOXENV: "py310"}
-          - {VERSION: "3.11", TOXENV: "py311"}
-          - {VERSION: "3.12", TOXENV: "py312"}
-          - {VERSION: "3.13-dev", TOXENV: "py313"}
-          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: "system", SODIUM_INSTALL: "system"}
-          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
-    name: "Linux ${{ matrix.PYTHON.TOXENV }} ${{ matrix.PYTHON.NOTE }}"
+          - {VERSION: "3.12", NOXSESSION: "docs", COVERAGE: "false"}
+          - {VERSION: "3.12", NOXSESSION: "meta", COVERAGE: "false"}
+          - {VERSION: "3.12", NOXSESSION: "mypy", COVERAGE: "false"}
+          - {VERSION: "pypy-3.9", NOXSESSION: "tests"}
+          - {VERSION: "pypy-3.10", NOXSESSION: "tests"}
+          - {VERSION: "3.7", NOXSESSION: "tests"}
+          - {VERSION: "3.8", NOXSESSION: "tests"}
+          - {VERSION: "3.9", NOXSESSION: "tests"}
+          - {VERSION: "3.10", NOXSESSION: "tests"}
+          - {VERSION: "3.11", NOXSESSION: "tests"}
+          - {VERSION: "3.12", NOXSESSION: "tests"}
+          - {VERSION: "3.13", NOXSESSION: "tests"}
+          - {VERSION: "3.13", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.13", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+    name: "Linux ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Setup python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
-      - name: Install tox and coverage
-        run: pip install tox coverage
+      - name: Install nox and coverage
+        run: pip install nox coverage
       - name: Install libsodium (system install only)
         run: |
           wget --timeout=60 https://download.libsodium.org/libsodium/releases/LATEST.tar.gz || \
@@ -53,15 +53,14 @@ jobs:
           SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
         if: matrix.PYTHON.SODIUM_INSTALL == 'system'
       - name: Run tests
-        run: LIBSODIUM_MAKE_ARGS="-j$(nproc)" tox
+        run: LIBSODIUM_MAKE_ARGS="-j$(nproc)" nox -s ${{ matrix.python.NOXSESSION }}
         env:
-          TOXENV: ${{ matrix.PYTHON.TOXENV }}
           SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
           SODIUM_INSTALL: ${{ matrix.PYTHON.SODIUM_INSTALL }}
       - name: Upload coverage
         run: |
           curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash || curl -o codecov.sh -f https://codecov.io/bash
-          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on macOS"
+          bash codecov.sh -n "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on Linux"
         if: matrix.PYTHON.COVERAGE != 'false'
 
   macos:
@@ -72,25 +71,24 @@ jobs:
           - 'macos-13'
           - 'macos-latest'
         PYTHON:
-          - {VERSION: "3.7", TOXENV: "py37"}
-          - {VERSION: "3.13-dev", TOXENV: "py313"}
-          - {VERSION: "3.13-dev", TOXENV: "py313", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.7", NOXSESSION: "tests"}
+          - {VERSION: "3.13", NOXSESSION: "tests"}
+          - {VERSION: "3.13", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
-          - PYTHON: {VERSION: "3.7", TOXENV: "py37"}
+          - PYTHON: {VERSION: "3.7", NOXSESSION: "tests"}
             RUNNER: macos-latest
-    name: "Python ${{ matrix.PYTHON.VERSION }}${{ matrix.PYTHON.NOTE }} on ${{ matrix.RUNNER }}"
+    name: "${{ matrix.RUNNER }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.python.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Setup python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
-      - name: Install tox and coverage
-        run: pip install tox coverage
+      - name: Install nox and coverage
+        run: pip install nox coverage
       - name: Run tests
-        run: LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" tox
+        run: LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" nox -s ${{ matrix.python.NOXSESSION }}
         env:
-          TOXENV: ${{ matrix.PYTHON.TOXENV }}
           SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
       - name: Upload coverage
         run: |
@@ -104,14 +102,14 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.7", TOXENV: "py37", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.8", TOXENV: "py38", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.9", TOXENV: "py39", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.10", TOXENV: "py310", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.11", TOXENV: "py311", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.12", TOXENV: "py312", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.13-dev", TOXENV: "py313", SODIUM_MSVC_VERSION: "v142"}
-    name: "Python ${{ matrix.PYTHON.VERSION }} on Windows ${{ matrix.WINDOWS.ARCH }}"
+          - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.9", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.10", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.11", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.12", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+    name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
     steps:
       - uses: actions/checkout@v4.2.2
       - name: Setup python
@@ -123,8 +121,8 @@ jobs:
         run: |
           Expand-Archive src/libsodium-1.0.20-stable-msvc.zip -DestinationPath c:\
         shell: powershell
-      - name: Install tox and coverage
-        run: pip install tox coverage
+      - name: Install nox and coverage
+        run: pip install nox coverage
       - name: Run tests
         run: |
             set PYNACL_SODIUM_LIBRARY_NAME=sodium
@@ -132,10 +130,8 @@ jobs:
             set SODIUM_INSTALL=system
             set INCLUDE=C:/libsodium/include;%INCLUDE%
             set LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;%LIB%
-            tox
+            nox -s ${{ matrix.PYTHON.NOXSESSION }}
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
-        env:
-          TOXENV: ${{ matrix.PYTHON.TOXENV }}
         shell: cmd
       - name: Upload coverage
         run: |

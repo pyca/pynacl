@@ -1,4 +1,4 @@
-include tox.ini
+include noxfile.py
 include LICENSE
 include README.rst
 include CHANGELOG.rst
