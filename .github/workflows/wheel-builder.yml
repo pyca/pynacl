@@ -65,14 +65,14 @@ jobs:
       - run: |
           mkdir tmpwheelhouse
           LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          mv dist/PyNaCl*.whl tmpwheelhouse/
-      - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/PyNaCl*.whl -w wheelhouse/
+          mv dist/pynacl*.whl tmpwheelhouse/
+      - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/pynacl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
       - run: |
           .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v4
         with:
           name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-${{ matrix.PYTHON.VERSION }}"
@@ -107,7 +107,7 @@ jobs:
             mkdir wheelhouse
             LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
                 venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-              mv dist/PyNaCl*.whl wheelhouse/
+              mv dist/pynacl*.whl wheelhouse/
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
           MACOSX_DEPLOYMENT_TARGET: '10.10'
@@ -119,7 +119,7 @@ jobs:
           venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/PyNaCl*.whl pynacl-wheelhouse/
+      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v4
         with:
           name: "pynacl-${{ github.event.inputs.version }}-macOS-${{ matrix.PYTHON.VERSION }}"
@@ -162,7 +162,7 @@ jobs:
           mkdir wheelhouse
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-          mv dist/PyNaCl*.whl wheelhouse/
+          mv dist/pynacl*.whl wheelhouse/
         shell: cmd
         env:
           PYNACL_SODIUM_LIBRARY_NAME: sodium
@@ -174,7 +174,7 @@ jobs:
         run: |
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
-      - run: move wheelhouse\PyNaCl*.whl pynacl-wheelhouse\
+      - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v4
         with:
           name: "pynacl-${{ github.event.inputs.version }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
