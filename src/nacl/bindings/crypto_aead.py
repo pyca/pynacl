@@ -83,6 +83,39 @@ _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX = (
     + crypto_aead_xchacha20poly1305_ietf_ABYTES
 )
 
+crypto_aead_aegis256_KEYBYTES: int = lib.crypto_aead_aegis256_keybytes()
+crypto_aead_aegis256_NSECBYTES: int = lib.crypto_aead_aegis256_nsecbytes()
+crypto_aead_aegis256_NPUBBYTES: int = lib.crypto_aead_aegis256_npubbytes()
+crypto_aead_aegis256_ABYTES: int = lib.crypto_aead_aegis256_abytes()
+crypto_aead_aegis256_MESSAGEBYTES_MAX: int = (
+    lib.crypto_aead_aegis256_messagebytes_max()
+)
+_aead_aegis256_CRYPTBYTES_MAX = (
+    crypto_aead_aegis256_MESSAGEBYTES_MAX + crypto_aead_aegis256_ABYTES
+)
+
+crypto_aead_aegis128l_KEYBYTES: int = lib.crypto_aead_aegis128l_keybytes()
+crypto_aead_aegis128l_NSECBYTES: int = lib.crypto_aead_aegis128l_nsecbytes()
+crypto_aead_aegis128l_NPUBBYTES: int = lib.crypto_aead_aegis128l_npubbytes()
+crypto_aead_aegis128l_ABYTES: int = lib.crypto_aead_aegis128l_abytes()
+crypto_aead_aegis128l_MESSAGEBYTES_MAX: int = (
+    lib.crypto_aead_aegis128l_messagebytes_max()
+)
+_aead_aegis256_CRYPTBYTES_MAX = (
+    crypto_aead_aegis128l_MESSAGEBYTES_MAX + crypto_aead_aegis128l_ABYTES
+)
+
+crypto_aead_aes256gcm_KEYBYTES: int = lib.crypto_aead_aes256gcm_keybytes()
+crypto_aead_aes256gcm_NSECBYTES: int = lib.crypto_aead_aes256gcm_nsecbytes()
+crypto_aead_aes256gcm_NPUBBYTES: int = lib.crypto_aead_aes256gcm_npubbytes()
+crypto_aead_aes256gcm_ABYTES: int = lib.crypto_aead_aes256gcm_abytes()
+crypto_aead_aes256gcm_MESSAGEBYTES_MAX: int = (
+    lib.crypto_aead_aes256gcm_messagebytes_max()
+)
+_aead_aegis256_CRYPTBYTES_MAX = (
+    crypto_aead_aes256gcm_MESSAGEBYTES_MAX + crypto_aead_aes256gcm_ABYTES
+)
+
 
 def crypto_aead_chacha20poly1305_ietf_encrypt(
     message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
@@ -549,6 +582,485 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(
         aalen = 0
 
     res = lib.crypto_aead_xchacha20poly1305_ietf_decrypt(
+        message, mlen, ffi.NULL, ciphertext, clen, _aad, aalen, nonce, key
+    )
+
+    ensure(res == 0, "Decryption failed.", raising=exc.CryptoError)
+
+    return ffi.buffer(message, mlen[0])[:]
+
+
+def crypto_aead_aegis256_encrypt(
+    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Encrypt the given ``message`` using the AEGIS-256
+    construction.
+
+    :param message:
+    :type message: bytes
+    :param aad:
+    :type aad: Optional[bytes]
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: authenticated ciphertext
+    :rtype: bytes
+    """
+    ensure(
+        isinstance(message, bytes),
+        "Input message type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    mlen = len(message)
+
+    ensure(
+        mlen <= crypto_aead_aegis256_MESSAGEBYTES_MAX,
+        "Message must be at most {} bytes long".format(
+            crypto_aead_aegis256_MESSAGEBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aegis256_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis256_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aegis256_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis256_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    mxout = mlen + crypto_aead_aegis256_ABYTES
+
+    clen = ffi.new("unsigned long long *")
+
+    ciphertext = ffi.new("unsigned char[]", mxout)
+
+    res = lib.crypto_aead_aegis256_encrypt(
+        ciphertext, clen, message, mlen, _aad, aalen, ffi.NULL, nonce, key
+    )
+
+    ensure(res == 0, "Encryption failed.", raising=exc.CryptoError)
+    return ffi.buffer(ciphertext, clen[0])[:]
+
+
+def crypto_aead_aegis256_decrypt(
+    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Decrypt the given ``ciphertext`` using the AEGIS-256
+    construction.
+
+    :param ciphertext: authenticated ciphertext
+    :type ciphertext: bytes
+    :param aad:
+    :type aad: Optional[bytes]
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: message
+    :rtype: bytes
+    """
+    ensure(
+        isinstance(ciphertext, bytes),
+        "Input ciphertext type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    clen = len(ciphertext)
+
+    ensure(
+        clen <= _aead_aegis256_CRYPTBYTES_MAX,
+        "Ciphertext must be at most {} bytes long".format(
+            _aead_aegis256_CRYPTBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aegis256_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis256_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aegis256_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis256_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    mxout = clen - crypto_aead_aegis256_ABYTES
+    mlen = ffi.new("unsigned long long *")
+    message = ffi.new("unsigned char[]", mxout)
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    res = lib.crypto_aead_aegis256_decrypt(
+        message, mlen, ffi.NULL, ciphertext, clen, _aad, aalen, nonce, key
+    )
+
+    ensure(res == 0, "Decryption failed.", raising=exc.CryptoError)
+
+    return ffi.buffer(message, mlen[0])[:]
+
+
+def crypto_aead_aegis128l_encrypt(
+    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Encrypt the given ``message`` using the AEGIS-128L
+    construction.
+
+    :param message:
+    :type message: bytes
+    :param aad:
+    :type aad: Optional[bytes]
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: authenticated ciphertext
+    :rtype: bytes
+    """
+    ensure(
+        isinstance(message, bytes),
+        "Input message type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    mlen = len(message)
+
+    ensure(
+        mlen <= crypto_aead_aegis128l_MESSAGEBYTES_MAX,
+        "Message must be at most {} bytes long".format(
+            crypto_aead_aegis128l_MESSAGEBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aegis128l_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis128l_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aegis128l_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis128l_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    mxout = mlen + crypto_aead_aegis128l_ABYTES
+
+    clen = ffi.new("unsigned long long *")
+
+    ciphertext = ffi.new("unsigned char[]", mxout)
+
+    res = lib.crypto_aead_aegis128l_encrypt(
+        ciphertext, clen, message, mlen, _aad, aalen, ffi.NULL, nonce, key
+    )
+
+    ensure(res == 0, "Encryption failed.", raising=exc.CryptoError)
+    return ffi.buffer(ciphertext, clen[0])[:]
+
+
+def crypto_aead_aegis128l_decrypt(
+    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Decrypt the given ``ciphertext`` using the AEGIS-128L
+    construction.
+
+    :param ciphertext: authenticated ciphertext
+    :type ciphertext: bytes
+    :param aad:
+    :type aad: Optional[bytes]
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: message
+    :rtype: bytes
+    """
+    ensure(
+        isinstance(ciphertext, bytes),
+        "Input ciphertext type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    clen = len(ciphertext)
+
+    ensure(
+        clen <= _aead_aegis256_CRYPTBYTES_MAX,
+        "Ciphertext must be at most {} bytes long".format(
+            _aead_aegis256_CRYPTBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aegis128l_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis128l_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aegis128l_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aegis128l_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    mxout = clen - crypto_aead_aegis128l_ABYTES
+    mlen = ffi.new("unsigned long long *")
+    message = ffi.new("unsigned char[]", mxout)
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    res = lib.crypto_aead_aegis128l_decrypt(
+        message, mlen, ffi.NULL, ciphertext, clen, _aad, aalen, nonce, key
+    )
+
+    ensure(res == 0, "Decryption failed.", raising=exc.CryptoError)
+
+    return ffi.buffer(message, mlen[0])[:]
+
+
+def crypto_aead_aes256gcm_encrypt(
+    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Encrypt the given ``message`` using the AES-256-GCM
+    construction.  Requires the Intel AES-NI extensions,
+    or the ARM Crypto extensions.
+
+    :param message:
+    :type message: bytes
+    :param aad:
+    :type aad: Optional[bytes]a
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: authenticated ciphertext
+    :rtype: bytes
+    """
+    ensure(
+        lib.crypto_aead_aes256gcm_is_available() == 1,
+        "Construction requires hardware acceleration",
+        raising=exc.UnavailableError,
+    )
+
+    ensure(
+        isinstance(message, bytes),
+        "Input message type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    mlen = len(message)
+
+    ensure(
+        mlen <= crypto_aead_aes256gcm_MESSAGEBYTES_MAX,
+        "Message must be at most {} bytes long".format(
+            crypto_aead_aes256gcm_MESSAGEBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aes256gcm_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aes256gcm_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aes256gcm_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aes256gcm_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    mxout = mlen + crypto_aead_aes256gcm_ABYTES
+
+    clen = ffi.new("unsigned long long *")
+
+    ciphertext = ffi.new("unsigned char[]", mxout)
+
+    res = lib.crypto_aead_aes256gcm_encrypt(
+        ciphertext, clen, message, mlen, _aad, aalen, ffi.NULL, nonce, key
+    )
+
+    ensure(res == 0, "Encryption failed.", raising=exc.CryptoError)
+    return ffi.buffer(ciphertext, clen[0])[:]
+
+
+def crypto_aead_aes256gcm_decrypt(
+    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+) -> bytes:
+    """
+    Decrypt the given ``ciphertext`` using the AES-256-GCM
+    construction.  Requires the Intel AES-NI extensions,
+    or the ARM Crypto extensions.
+
+    :param ciphertext: authenticated ciphertext
+    :type ciphertext: bytes
+    :param aad:
+    :type aad: Optional[bytes]
+    :param nonce:
+    :type nonce: bytes
+    :param key:
+    :type key: bytes
+    :return: message
+    :rtype: bytes
+    """
+    ensure(
+        lib.crypto_aead_aes256gcm_is_available() == 1,
+        "Construction requires hardware acceleration",
+        raising=exc.UnavailableError,
+    )
+
+    ensure(
+        isinstance(ciphertext, bytes),
+        "Input ciphertext type must be bytes",
+        raising=exc.TypeError,
+    )
+
+    clen = len(ciphertext)
+
+    ensure(
+        clen <= _aead_aegis256_CRYPTBYTES_MAX,
+        "Ciphertext must be at most {} bytes long".format(
+            _aead_aegis256_CRYPTBYTES_MAX
+        ),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        isinstance(aad, bytes) or (aad is None),
+        "Additional data must be bytes or None",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(nonce, bytes)
+        and len(nonce) == crypto_aead_aes256gcm_NPUBBYTES,
+        "Nonce must be a {} bytes long bytes sequence".format(
+            crypto_aead_aes256gcm_NPUBBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(key, bytes) and len(key) == crypto_aead_aes256gcm_KEYBYTES,
+        "Key must be a {} bytes long bytes sequence".format(
+            crypto_aead_aes256gcm_KEYBYTES
+        ),
+        raising=exc.TypeError,
+    )
+
+    mxout = clen - crypto_aead_aes256gcm_ABYTES
+    mlen = ffi.new("unsigned long long *")
+    message = ffi.new("unsigned char[]", mxout)
+
+    if aad:
+        _aad = aad
+        aalen = len(aad)
+    else:
+        _aad = ffi.NULL
+        aalen = 0
+
+    res = lib.crypto_aead_aes256gcm_decrypt(
         message, mlen, ffi.NULL, ciphertext, clen, _aad, aalen, nonce, key
     )
 
