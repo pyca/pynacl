@@ -405,6 +405,20 @@ def _box_from_seed_vectors() -> List[Tuple[bytes, bytes, bytes]]:
     ]
 
 
+def _kx_from_seed_vectors() -> List[Tuple[bytes, bytes, bytes]]:
+    # Fmt: <seed> <tab> <public_key> || <secret_key>
+    DATA = "kx_from_seed.txt"
+    lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b"\t")
+    return [
+        (
+            x[0],  # seed
+            x[1][:64],  # derived public key
+            x[1][64:],  # derived secret key
+        )
+        for x in lines
+    ]
+
+
 @pytest.mark.parametrize(
     ("seed", "public_key", "secret_key"), _box_from_seed_vectors()
 )
