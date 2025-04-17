@@ -54,3 +54,4 @@ exclude release.py
 
 # Exclude the libsodium msvc zip
 exclude src/libsodium*.zip
+exclude src/libsodium*.zip.minisig
