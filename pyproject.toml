@@ -51,9 +51,10 @@ docs = [
 "Bug Tracker" = "https://github.com/pyca/pynacl/issues"
 "Documentation" = "https://pynacl.readthedocs.io"
 
-[tool.black]
+[tool.ruff]
 line-length = 79
-target-version = ["py36"]
+exclude = ["src/libsodium"]
+
 
 [tool.mypy]
 show_error_codes = true

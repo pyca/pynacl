@@ -17,7 +17,6 @@ for libsodium selected hash primitives and the constants needed
 for their usage.
 """
 
-
 import nacl.bindings
 import nacl.encoding
 
