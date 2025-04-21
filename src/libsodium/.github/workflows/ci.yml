@@ -41,9 +41,9 @@ jobs:
         run: sudo apt-get update
 
       - name: Install Zig
-        uses: goto-bus-stop/setup-zig@d866436887ad1b24590684f9d00480376663dd36
+        uses: mlugg/setup-zig@v1
         with:
-          version: 0.12.0
+          version: 0.14.0
 
       - name: Autogen
         run: ./autogen.sh -s
@@ -53,6 +53,7 @@ jobs:
           zig build
           zig build -Dtarget=x86_64-linux
           zig build -Dtarget=aarch64-linux
+          zig build -Dtarget=x86-windows
           zig build -Dtarget=x86_64-windows
           zig build -Dtarget=aarch64-windows
           zig build -Dtarget=x86_64-macos
@@ -171,7 +172,7 @@ jobs:
       - name: Install Android NDK
         run: |
           mkdir /tmp/android && cd /tmp/android
-          curl -o ndk.zip -L https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+          curl -o ndk.zip -L https://dl.google.com/android/repository/android-ndk-r27c-linux.zip
           unzip ndk.zip && rm -f *.zip && mv android-ndk* ndk
 
       - name: Android compilation
