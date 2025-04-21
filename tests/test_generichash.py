@@ -44,9 +44,9 @@ def generichash_vectors() -> List[Tuple[bytes, bytes, bytes, bytes]]:
     return read_crypto_test_vectors(DATA, delimiter=b"\t")  # type: ignore[return-value]
 
 
-def blake2_salt_pers_vectors() -> (
-    List[Tuple[bytes, bytes, bytes, bytes, bytes, bytes]]
-):
+def blake2_salt_pers_vectors() -> List[
+    Tuple[bytes, bytes, bytes, bytes, bytes, bytes]
+]:
     # Format: <message> <tab> <key> <tab> <salt> <tab>
     # <personalization> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-salt-personalization.txt"

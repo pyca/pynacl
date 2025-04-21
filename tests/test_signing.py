@@ -254,8 +254,7 @@ class TestVerifyKey:
 
     def test_key_conversion(self):
         keypair_seed = (
-            b"421151a459faeade3d247115f94aedae"
-            b"42318124095afabe4d1451a559faedee"
+            b"421151a459faeade3d247115f94aedae42318124095afabe4d1451a559faedee"
         )
         signing_key = SigningKey(binascii.unhexlify(keypair_seed))
         verify_key = signing_key.verify_key
@@ -264,13 +263,11 @@ class TestVerifyKey:
         public_key = bytes(verify_key.to_curve25519_public_key())
 
         assert tohex(private_key) == (
-            "8052030376d47112be7f73ed7a019293"
-            "dd12ad910b654455798b4667d73de166"
+            "8052030376d47112be7f73ed7a019293dd12ad910b654455798b4667d73de166"
         )
 
         assert tohex(public_key) == (
-            "f1814f0e8ff1043d8a44d25babff3ced"
-            "cae6c22c3edaa48f857ae70de2baae50"
+            "f1814f0e8ff1043d8a44d25babff3cedcae6c22c3edaa48f857ae70de2baae50"
         )
 
 

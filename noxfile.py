@@ -55,10 +55,9 @@ def docs(session: nox.Session) -> None:
 
 @nox.session
 def meta(session: nox.Session) -> None:
-    session.install("black", "flake8", "flake8-import-order", "check-manifest")
-
-    session.run("flake8", ".")
-    session.run("black", "--check", ".")
+    session.install("ruff", "check-manifest")
+    session.run("ruff", "check", ".")
+    session.run("ruff", "format", "--check", ".")
     session.run("check-manifest", ".")
 
 

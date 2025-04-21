@@ -124,20 +124,16 @@ class TestPrivateKey:
         is not exposed by itself, we just check the shared key for equality.
         """
         prv_A = (
-            b"77076d0a7318a57d3c16c17251b26645"
-            b"df4c2f87ebc0992ab177fba51db92c2a"
+            b"77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a"
         )
         pub_A = (
-            b"8520f0098930a754748b7ddcb43ef75a"
-            b"0dbf3a0d26381af4eba4a98eaa9b4e6a"
+            b"8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a"
         )
         prv_B = (
-            b"5dab087e624a8a4b79e17f8b83800ee6"
-            b"6f3bb1292618b6fd1c2f8b27ff88e0eb"
+            b"5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb"
         )
         pub_B = (
-            b"de9edb7d7b7dc1b4d35b61c2ece43537"
-            b"3f8343c85b78674dadfc7e146f882b4f"
+            b"de9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f"
         )
 
         alices = PrivateKey(binascii.unhexlify(prv_A))

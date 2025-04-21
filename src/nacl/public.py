@@ -97,8 +97,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
         ):
             raise exc.TypeError(
                 (
-                    "PrivateKey must be created from a {} "
-                    "bytes long raw secret key"
+                    "PrivateKey must be created from a {} bytes long raw secret key"
                 ).format(self.SIZE)
             )
 
@@ -134,8 +133,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
         if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
             raise exc.TypeError(
                 (
-                    "PrivateKey seed must be a {} bytes long "
-                    "binary sequence"
+                    "PrivateKey seed must be a {} bytes long binary sequence"
                 ).format(cls.SEED_SIZE)
             )
         # generate a raw key pair from the given seed
