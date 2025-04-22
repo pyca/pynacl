@@ -102,13 +102,13 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64'}
         PYTHON:
-          - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.9", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.10", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.11", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.12", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
-          - {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v142"}
+          - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.9", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.10", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.11", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.12", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
     name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
     steps:
       - uses: actions/checkout@v4.2.2
@@ -125,6 +125,7 @@ jobs:
         run: pip install nox coverage
       - name: Run tests
         run: |
+            call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.ARCH }}
             set PYNACL_SODIUM_LIBRARY_NAME=sodium
             set PYNACL_SODIUM_STATIC=1
             set SODIUM_INSTALL=system

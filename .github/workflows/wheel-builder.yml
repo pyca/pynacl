@@ -132,7 +132,7 @@ jobs:
           - {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86'}
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64'}
         PYTHON:
-          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v142", "ABI_VERSION": "cp37"}
+          - {VERSION: "3.9", SODIUM_MSVC_VERSION: "v143", "ABI_VERSION": "cp37"}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@v4.2.2
@@ -160,7 +160,7 @@ jobs:
       - name: Build the wheel
         run: |
           mkdir wheelhouse
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
           python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
           mv dist/pynacl*.whl wheelhouse/
         shell: cmd
