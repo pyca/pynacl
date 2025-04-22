@@ -288,6 +288,8 @@ slide_vartime(signed char *r, const unsigned char *a)
     }
 }
 
+static volatile unsigned char optblocker_u8;
+
 int
 ge25519_frombytes(ge25519_p3 *h, const unsigned char *s)
 {
@@ -320,7 +322,7 @@ ge25519_frombytes(ge25519_p3 *h, const unsigned char *s)
     fe25519_cmov(h->X, x_sqrtm1, 1 - has_m_root);
 
     fe25519_neg(negx, h->X);
-    fe25519_cmov(h->X, negx, fe25519_isnegative(h->X) ^ (s[31] >> 7));
+    fe25519_cmov(h->X, negx, fe25519_isnegative(h->X) ^ (((s[31] >> 5) ^ optblocker_u8) >> 2));
     fe25519_mul(h->T, h->X, h->Y);
 
     return (has_m_root | has_p_root) - 1;
@@ -563,26 +565,39 @@ ge25519_precomp_0(ge25519_precomp *h)
 static unsigned char
 equal(signed char b, signed char c)
 {
-    unsigned char ub = b;
-    unsigned char uc = c;
-    unsigned char x  = ub ^ uc; /* 0: yes; 1..255: no */
-    uint32_t      y  = (uint32_t) x; /* 0: yes; 1..255: no */
+#if defined(HAVE_INLINE_ASM) && defined(__x86_64__)
+    int32_t b32 = (int32_t) b, c32 = (int32_t) c, q32, z32;
+    __asm__ ("xorl %0,%0\n movl $1,%1\n cmpb %b3,%b2\n cmovel %1,%0" :
+             "=&r"(z32), "=&r"(q32) : "q"(b32), "q"(c32) : "cc");
+    return (unsigned char) z32;
+#elif defined(HAVE_INLINE_ASM) && defined(__aarch64__)
+    unsigned char z;
+    __asm__ ("and %w0,%w1,255\n cmp %w0,%w2,uxtb\n cset %w0,eq" :
+             "=&r"(z) : "r"(b), "r"(c) : "cc");
+    return z;
+#else
+    const unsigned char x  = (unsigned char) b ^ (unsigned char) c; /* 0: yes; 1..255: no */
+    uint32_t            y  = (uint32_t) x; /* 0: yes; 1..255: no */
 
-    y -= 1;   /* 4294967295: yes; 0..254: no */
-    y >>= 31; /* 1: yes; 0: no */
-
-    return y;
+    y--;
+    return ((y >> 29) ^ optblocker_u8) >> 2; /* 1: yes; 0: no */
+#endif
 }
 
 static unsigned char
 negative(signed char b)
 {
-    /* 18446744073709551361..18446744073709551615: yes; 0..255: no */
-    uint64_t x = b;
-
-    x >>= 63; /* 1: yes; 0: no */
-
+#if defined(HAVE_INLINE_ASM) && defined(__x86_64__)
+    __asm__ ("shrb $7,%0" : "+r"(b) : : "cc");
+    return b;
+#elif defined(HAVE_INLINE_ASM) && defined(__aarch64__)
+    uint8_t x;
+    __asm__ ("ubfx %w0,%w1,7,1" : "=r"(x) : "r"(b) : );
     return x;
+#else
+    const uint8_t x = (uint8_t) b; /* 0..127: no 128..255: yes */
+    return ((x >> 5) ^ optblocker_u8) >> 2; /* 1: yes; 0: no */
+#endif
 }
 
 static void

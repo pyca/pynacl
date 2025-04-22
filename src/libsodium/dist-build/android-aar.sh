@@ -2,14 +2,63 @@
 
 # Create an AAR with libsodium in all combinations of static | shared | minimal | full.
 #
-# The x86 static library will not work due to text relocation rules, so static x86 versions are limited to shared libraries.
 # To simplify linking, library variants have distinct names: sodium, sodium-static, sodium-minimal and sodium-minimal-static.
 
 SODIUM_VERSION="1.0.20.0"
+
+if [ -z "$ANDROID_NDK_HOME" ]; then
+  echo "ANDROID_NDK_HOME must be set to the directory containing the Android NDK."
+  exit 1
+fi
+
+if [ ! -f "${ANDROID_NDK_HOME}/ndk-build" ]; then
+  echo "The ANDROID_NDK_HOME directory does not contain an 'ndk-build' file."
+  exit 1
+fi
+
+if [ ! -d "${ANDROID_NDK_HOME}/toolchains" ]; then
+  echo "The ANDROID_NDK_HOME directory does not contain a 'toolchains' directory."
+  exit 1
+fi
+
+if [ ! -f "${ANDROID_NDK_HOME}/source.properties" ]; then
+  echo "The ANDROID_NDK_HOME directory does not contain a 'source.properties' file."
+  exit 1
+fi
+
 NDK_VERSION=$(grep "Pkg.Revision = " <"${ANDROID_NDK_HOME}/source.properties" | cut -f 2 -d '=' | cut -f 2 -d' ' | cut -f 1 -d'.')
 DEST_PATH=$(mktemp -d)
 
+if [ -z "$NDK_PLATFORM" ]; then
+  export NDK_PLATFORM="android-21"
+  echo "Compiling for default platform: [${NDK_PLATFORM}]"
+  echo "That can be changed by setting an NDK_PLATFORM environment variable."
+fi
+
+SDK_VERSION=$(echo "$NDK_PLATFORM" | cut -f2 -d"-")
+if [ -z "$NDK_VERSION" ]; then
+  echo "Failed to determine the NDK version."
+  exit 1
+fi
+if [ -z "$SDK_VERSION" ]; then
+  echo "Failed to determine the SDK version."
+  exit 1
+fi
+echo "NDK version: [$NDK_VERSION]"
+echo "SDK version: [$SDK_VERSION]"
+
+echo
+
+if which zip >/dev/null; then
+  echo "The 'zip' command is installed."
+else
+  echo "The 'zip' command is not installed. Please install it before running this script."
+  exit 1
+fi
+
 cd "$(dirname "$0")/../" || exit
+
+trap 'kill -TERM -$$' INT
 
 make_abi_json() {
   echo "{\"abi\":\"${NDK_ARCH}\",\"api\":${SDK_VERSION},\"ndk\":${NDK_VERSION},\"stl\":\"none\"}" >"$1/abi.json"
@@ -21,13 +70,11 @@ make_prefab_json() {
 
 make_manifest() {
   echo "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"com.android.ndk.thirdparty.sodium\" android:versionCode=\"1\" android:versionName=\"1.0\">
-        <uses-sdk android:minSdkVersion=\"19\" android:targetSdkVersion=\"21\"/>
+        <uses-sdk android:minSdkVersion=\"$SDK_VERSION\" android:targetSdkVersion=\"$SDK_VERSION\"/>
 </manifest>" >"${1}/AndroidManifest.xml"
 }
 
 make_prefab_structure() {
-  mkdir "$DEST_PATH"
-
   for variant_dirs in "prefab" "prefab/modules" "META-INF"; do
     mkdir "${DEST_PATH}/${variant_dirs}"
   done
@@ -53,11 +100,6 @@ make_prefab_structure() {
       mkdir "$DEST_PATH/${variant}/libs/android.${arch}"
       mkdir "$DEST_PATH/${variant}/libs/android.${arch}/include"
       NDK_ARCH="$arch"
-      if [ $arch = "arm64-v8a" ] || [ $arch = "x86_64" ]; then
-        SDK_VERSION="21"
-      else
-        SDK_VERSION="19"
-      fi
 
       make_abi_json "$DEST_PATH/${variant}/libs/android.${arch}"
     done
@@ -111,8 +153,14 @@ zip -9 -r "$AAR_PATH" META-INF prefab AndroidManifest.xml
 cd .. || exit
 rm -r "$DEST_PATH"
 
-echo
-echo "Congrats you have built an AAR containing libsodium! To use it with
+echo "
+
+Congrats you have built an AAR containing libsodium!
+The build used a min Android SDK of version $SDK_VERSION
+You can build for a different SDK version by specifying NDK_PLATFORM=\"android-{SDK_VERSION}\"
+as an environment variable before running this script but the defaults should be fine.
+
+To use the aar with
 gradle or cmake (as set by default for Android Studio projects):
 
 - Edit the app/build.gradle file to add:
@@ -141,4 +189,6 @@ gradle or cmake (as set by default for Android Studio projects):
       - 'sodium' for the full shared library,
       - 'sodium-static' for the full static library
       - 'sodium-minimal' for the minimal shared library, or
-      - 'sodium-minimal-static' for the minimal static library."
+      - 'sodium-minimal-static' for the minimal static library.
+
+  "

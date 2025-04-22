@@ -73,9 +73,7 @@ for dir in dirs:
     dir = dir.replace("/", "\\")
     uid = uuid.uuid3(uuid.UUID(bytes=b"LibSodiumMSVCUID"), dir)
     fd = fd + '    <Filter Include="{}">\r\n'.format(dir)
-    fd = fd + "      <UniqueIdentifier>{{{}}}</UniqueIdentifier>\r\n".format(
-        uid
-    )
+    fd = fd + "      <UniqueIdentifier>{{{}}}</UniqueIdentifier>\r\n".format(uid)
     fd = fd + "    </Filter>\r\n"
 
 
@@ -105,9 +103,8 @@ def get_project_configurations(vs_version):
                 projconfig
                 + "      <Configuration>{}</Configuration>\r\n".format(config)
             )
-            projconfig = (
-                projconfig
-                + "      <Platform>{}</Platform>\r\n".format(platform)
+            projconfig = projconfig + "      <Platform>{}</Platform>\r\n".format(
+                platform
             )
             projconfig = projconfig + "    </ProjectConfiguration>\r\n"
     return projconfig
@@ -119,8 +116,7 @@ def apply_template(tplfile, outfile, sbox):
         tpl = fd.read()
     for s in sbox.keys():
         tpl = tpl.replace(
-            str.encode("{{" + s + "}}", "utf8"),
-            str.encode(str.strip(sbox[s]), "utf8"),
+            str.encode("{{" + s + "}}", "utf8"), str.encode(str.strip(sbox[s]), "utf8")
         )
 
     with open(outfile, "wb") as fd:
@@ -149,9 +145,7 @@ apply_template(
 
 sbox.update({"platform": "v140"})
 sbox.update({"configurations": get_project_configurations(140)})
-apply_template(
-    sd + "/tl_libsodium.vcxproj.tpl", "ci/appveyor/libsodium.vcxproj", sbox
-)
+apply_template(sd + "/tl_libsodium.vcxproj.tpl", "ci/appveyor/libsodium.vcxproj", sbox)
 
 apply_template(
     sd + "/libsodium.vcxproj.filters.tpl",
