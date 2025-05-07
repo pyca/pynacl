@@ -182,3 +182,7 @@ intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 # transient network errors.
 linkcheck_retries = 10
 linkcheck_timeout = 5
+
+linkcheck_ignore = [
+    "https://www.gnu.org/software/make/manual/html_node/Parallel.html"
+]
