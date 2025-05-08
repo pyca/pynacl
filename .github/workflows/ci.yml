@@ -12,58 +12,6 @@ permissions:
   contents: read
 
 jobs:
-  all-green:
-    runs-on: ubuntu-latest
-    needs: [linux, macos, windows]
-    if: ${{ always() }}
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4.2.2
-        timeout-minutes: 3
-        with:
-          persist-credentials: false
-      - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@v1.2.2
-        with:
-          jobs: ${{ toJSON(needs) }}
-      - name: Setup python
-        if: ${{ always() }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-        timeout-minutes: 3
-      - run: pip install coverage[toml]
-        if: ${{ always() }}
-      - name: Download coverage data
-        if: ${{ always() }}
-        uses: actions/download-artifact@v4.3.0
-        with:
-          pattern: coverage-data-*
-          merge-multiple: true
-      - name: Combine coverage and fail if it's <100%.
-        if: ${{ always() }}
-        id: combinecoverage
-        run: |
-          set +e
-          echo "## Coverage" >> $GITHUB_STEP_SUMMARY
-          coverage combine
-          coverage report -m --fail-under 100
-          COV_EXIT_CODE=$?
-          if [ $COV_EXIT_CODE -ne 0 ]; then
-            echo "🚨 Coverage failed. Under 100%" | tee -a $GITHUB_STEP_SUMMARY
-          fi
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          coverage report -m >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          exit $COV_EXIT_CODE
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-html-report
-          path: htmlcov
-          if-no-files-found: ignore
-        if: ${{ failure() && steps.combinecoverage.outcome == 'failure' }}
-
   linux:
     runs-on: ubuntu-22.04
     strategy:
@@ -112,6 +60,7 @@ jobs:
         env:
           SODIUM_INSTALL_MINIMAL: ${{ matrix.PYTHON.SODIUM_INSTALL_MINIMAL }}
           SODIUM_INSTALL: ${{ matrix.PYTHON.SODIUM_INSTALL }}
+      - uses: ./.github/actions/upload-coverage
 
   macos:
     runs-on: ${{ matrix.RUNNER }}
@@ -189,3 +138,55 @@ jobs:
             IF %ERRORLEVEL% NEQ 0 EXIT /B %ERRORLEVEL%
         shell: cmd
       - uses: ./.github/actions/upload-coverage
+
+  all-green:
+    runs-on: ubuntu-latest
+    needs: [linux, macos, windows]
+    if: ${{ always() }}
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4.2.2
+        timeout-minutes: 3
+        with:
+          persist-credentials: false
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
+      - name: Setup python
+        if: ${{ always() }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+        timeout-minutes: 3
+      - run: pip install coverage[toml]
+        if: ${{ always() }}
+      - name: Download coverage data
+        if: ${{ always() }}
+        uses: actions/download-artifact@v4.3.0
+        with:
+          pattern: coverage-data-*
+          merge-multiple: true
+      - name: Combine coverage and fail if it's <100%.
+        if: ${{ always() }}
+        id: combinecoverage
+        run: |
+          set +e
+          echo "## Coverage" >> $GITHUB_STEP_SUMMARY
+          coverage combine
+          coverage report -m --fail-under 100
+          COV_EXIT_CODE=$?
+          if [ $COV_EXIT_CODE -ne 0 ]; then
+            echo "🚨 Coverage failed. Under 100%" | tee -a $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          coverage report -m >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $COV_EXIT_CODE
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: htmlcov
+          if-no-files-found: ignore
+        if: ${{ failure() && steps.combinecoverage.outcome == 'failure' }}
