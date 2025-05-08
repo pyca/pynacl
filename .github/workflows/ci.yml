@@ -21,8 +21,8 @@ jobs:
           - {VERSION: "3.12", NOXSESSION: "docs"}
           - {VERSION: "3.12", NOXSESSION: "meta"}
           - {VERSION: "3.12", NOXSESSION: "mypy"}
-          - {VERSION: "pypy-3.9", NOXSESSION: "tests"}
           - {VERSION: "pypy-3.10", NOXSESSION: "tests"}
+          - {VERSION: "pypy-3.11", NOXSESSION: "tests"}
           - {VERSION: "3.7", NOXSESSION: "tests"}
           - {VERSION: "3.8", NOXSESSION: "tests"}
           - {VERSION: "3.9", NOXSESSION: "tests"}
