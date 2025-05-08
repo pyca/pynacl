@@ -911,7 +911,7 @@ def crypto_aead_aes256gcm_encrypt(
     :param message:
     :type message: bytes
     :param aad:
-    :type aad: Optional[bytes]a
+    :type aad: Optional[bytes]
     :param nonce:
     :type nonce: bytes
     :param key:

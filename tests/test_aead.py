@@ -21,6 +21,7 @@ import pytest
 
 import nacl.bindings as b
 import nacl.exceptions as exc
+from nacl._sodium import lib
 
 from .utils import read_kv_test_vectors
 
@@ -95,6 +96,8 @@ def _getconstruction(construction: bytes) -> Construction:
         NPUB = b.crypto_aead_aegis128l_NPUBBYTES
         KEYBYTES = b.crypto_aead_aegis128l_KEYBYTES
     elif construction == b"aes256gcm":
+        if lib.crypto_aead_aes256gcm_is_available() != 1:
+            pytest.skip("aes256gcm not supported")
         encrypt = b.crypto_aead_aes256gcm_encrypt
         decrypt = b.crypto_aead_aes256gcm_decrypt
         NPUB = b.crypto_aead_aes256gcm_NPUBBYTES
@@ -120,11 +123,8 @@ def test_variants_kat(kv: Dict[str, bytes]):
     c = _getconstruction(kv["AEAD"])
     _tag = kv.get("TAG", b"")
     exp = binascii.unhexlify(kv["CT"]) + binascii.unhexlify(_tag)
-    try:
-        out = c.encrypt(msg, ad, nonce, k)
-        assert out == exp
-    except exc.UnavailableError:
-        pass
+    out = c.encrypt(msg, ad, nonce, k)
+    assert out == exp
 
 
 @given(
@@ -151,17 +151,14 @@ def test_variants_roundtrip_aad(
     unonce = nonce[: c.NPUB]
     ukey = key[: c.KEYBYTES]
 
-    try:
-        ct = c.encrypt(message, aad, unonce, ukey)
-        pt = c.decrypt(ct, aad, unonce, ukey)
+    ct = c.encrypt(message, aad, unonce, ukey)
+    pt = c.decrypt(ct, aad, unonce, ukey)
 
-        assert pt == message
-        with pytest.raises(exc.CryptoError):
-            ct1 = bytearray(ct)
-            ct1[0] = ct1[0] ^ 0xFF
-            c.decrypt(ct1, aad, unonce, ukey)
-    except exc.UnavailableError:
-        pass
+    assert pt == message
+    with pytest.raises(exc.CryptoError):
+        ct1 = bytearray(ct)
+        ct1[0] = ct1[0] ^ 0xFF
+        c.decrypt(ct1, aad, unonce, ukey)
 
 
 @given(
@@ -188,17 +185,14 @@ def test_variants_roundtrip_no_aad(
     unonce = nonce[: c.NPUB]
     ukey = key[: c.KEYBYTES]
 
-    try:
-        ct = c.encrypt(message, aad, unonce, ukey)
-        pt = c.decrypt(ct, aad, unonce, ukey)
+    ct = c.encrypt(message, aad, unonce, ukey)
+    pt = c.decrypt(ct, aad, unonce, ukey)
 
-        assert pt == message
-        with pytest.raises(exc.CryptoError):
-            ct1 = bytearray(ct)
-            ct1[0] = ct1[0] ^ 0xFF
-            c.decrypt(ct1, aad, unonce, ukey)
-    except exc.UnavailableError:
-        pass
+    assert pt == message
+    with pytest.raises(exc.CryptoError):
+        ct1 = bytearray(ct)
+        ct1[0] = ct1[0] ^ 0xFF
+        c.decrypt(ct1, aad, unonce, ukey)
 
 
 @pytest.mark.parametrize(
@@ -217,23 +211,20 @@ def test_variants_wrong_params(construction: bytes):
     nonce = b"\x00" * c.NPUB
     key = b"\x00" * c.KEYBYTES
     aad = None
-    try:
-        c.encrypt(b"", aad, nonce, key)
-        # The first two checks call encrypt with a nonce/key that's too short. Otherwise,
-        # the types are fine. (TODO: Should this raise ValueError rather than TypeError?
-        # Doing so would be a breaking change.)
-        with pytest.raises(exc.TypeError):
-            c.encrypt(b"", aad, nonce[:-1], key)
-        with pytest.raises(exc.TypeError):
-            c.encrypt(b"", aad, nonce, key[:-1])
-        # Type safety: mypy spots these next two errors, but we want to check that they're
-        # spotted at runtime too.
-        with pytest.raises(exc.TypeError):
-            c.encrypt(b"", aad, nonce.decode("utf-8"), key)  # type: ignore[arg-type]
-        with pytest.raises(exc.TypeError):
-            c.encrypt(b"", aad, nonce, key.decode("utf-8"))  # type: ignore[arg-type]
-    except exc.UnavailableError:
-        pass
+    c.encrypt(b"", aad, nonce, key)
+    # The first two checks call encrypt with a nonce/key that's too short. Otherwise,
+    # the types are fine. (TODO: Should this raise ValueError rather than TypeError?
+    # Doing so would be a breaking change.)
+    with pytest.raises(exc.TypeError):
+        c.encrypt(b"", aad, nonce[:-1], key)
+    with pytest.raises(exc.TypeError):
+        c.encrypt(b"", aad, nonce, key[:-1])
+    # Type safety: mypy spots these next two errors, but we want to check that they're
+    # spotted at runtime too.
+    with pytest.raises(exc.TypeError):
+        c.encrypt(b"", aad, nonce.decode("utf-8"), key)  # type: ignore[arg-type]
+    with pytest.raises(exc.TypeError):
+        c.encrypt(b"", aad, nonce, key.decode("utf-8"))  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -252,8 +243,5 @@ def test_variants_str_msg(construction: bytes):
     nonce = b"\x00" * c.NPUB
     key = b"\x00" * c.KEYBYTES
     aad = None
-    try:
-        with pytest.raises(exc.TypeError):
-            c.encrypt("", aad, nonce, key)  # type: ignore[arg-type]
-    except exc.UnavailableError:
-        pass
+    with pytest.raises(exc.TypeError):
+        c.encrypt("", aad, nonce, key)  # type: ignore[arg-type]
