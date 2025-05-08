@@ -6,20 +6,23 @@ nox.options.default_venv_backend = "uv|virtualenv"
 
 @nox.session
 def tests(session: nox.Session) -> None:
-    session.install("coverage", "pretend", ".[tests]")
+    session.install(".[tests]")
+
+    if session.posargs:
+        tests = session.posargs
+    else:
+        tests = ["tests/"]
 
     session.run(
-        "coverage",
-        "run",
-        "--parallel-mode",
-        "-m",
         "pytest",
-        "--capture=no",
-        "--strict-markers",
-        *session.posargs,
+        "-n",
+        "auto",
+        "--dist=worksteal",
+        "--cov=nacl",
+        "--cov=tests",
+        "--cov-context=test",
+        *tests,
     )
-    session.run("coverage", "combine")
-    session.run("coverage", "report", "-m")
 
 
 @nox.session

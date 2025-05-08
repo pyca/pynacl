@@ -95,7 +95,8 @@ def _getconstruction(construction: bytes) -> Construction:
         decrypt = b.crypto_aead_aegis128l_decrypt
         NPUB = b.crypto_aead_aegis128l_NPUBBYTES
         KEYBYTES = b.crypto_aead_aegis128l_KEYBYTES
-    elif construction == b"aes256gcm":
+    else:
+        assert construction == b"aes256gcm"
         if lib.crypto_aead_aes256gcm_is_available() != 1:
             pytest.skip("aes256gcm not supported")
         encrypt = b.crypto_aead_aes256gcm_encrypt
