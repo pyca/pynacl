@@ -99,17 +99,8 @@ jobs:
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', IMAGE: "windows-latest"}
         PYTHON:
           - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - {VERSION: "3.9", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - {VERSION: "3.10", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - {VERSION: "3.11", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - {VERSION: "3.12", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
         include:
-          - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
-            PYTHON: {VERSION: "3.11", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
-          - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
-            PYTHON: {VERSION: "3.12", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
             PYTHON: {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
     name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
