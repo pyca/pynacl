@@ -3,7 +3,7 @@
 requires = [
     "setuptools>=61.0.0,!=74.0.0",
     "wheel",
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy'",
+    "cffi @ git+https://github.com/quansight-labs/cffi@main",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -33,7 +33,7 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = [
-    "cffi @ https://github.com/Quansight-Labs/cffi-ft; platform_python_implementation != 'PyPy'"
+    "cffi @ git+https://github.com/quansight-labs/cffi@main"
 ]
 
 [project.optional-dependencies]
@@ -42,6 +42,7 @@ tests = [
     "pytest-cov >=2.10.1",
     "pytest-xdist >=3.5.0",
     "hypothesis>=3.27.0",
+    "pytest-run-parallel @ git+https://github.com/quansight-labs/pytest-run-parallel@main"
 ]
 docs = [
     "sphinx<7",
