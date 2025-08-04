@@ -32,6 +32,15 @@ jobs:
           - {VERSION: "3.13", NOXSESSION: "tests"}
           - {VERSION: "3.13", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
           - {VERSION: "3.13", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.13t", NOXSESSION: "tests"}
+          - {VERSION: "3.13t", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.13t", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.14", NOXSESSION: "tests"}
+          - {VERSION: "3.14", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.14", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.14t", NOXSESSION: "tests"}
+          - {VERSION: "3.14t", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
+          - {VERSION: "3.14t", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
       - uses: actions/checkout@v4.2.2
@@ -73,6 +82,12 @@ jobs:
           - {VERSION: "3.7", NOXSESSION: "tests"}
           - {VERSION: "3.13", NOXSESSION: "tests"}
           - {VERSION: "3.13", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.13t", NOXSESSION: "tests"}
+          - {VERSION: "3.13t", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.14", NOXSESSION: "tests"}
+          - {VERSION: "3.14", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
+          - {VERSION: "3.14t", NOXSESSION: "tests"}
+          - {VERSION: "3.14t", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
           - PYTHON: {VERSION: "3.7", NOXSESSION: "tests"}
             RUNNER: macos-latest
@@ -101,6 +116,9 @@ jobs:
         PYTHON:
           - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.13", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.13t", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.14", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.14t", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
         exclude:
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
             PYTHON: {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
