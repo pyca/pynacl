@@ -33,7 +33,7 @@ classifiers = [
 ]
 requires-python = ">=3.7"
 dependencies = [
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy'"
+    "cffi @ git+https://github.com/Quansight-Labs/cffi-ft; platform_python_implementation != 'PyPy'"
 ]
 
 [project.optional-dependencies]
