@@ -66,7 +66,7 @@ jobs:
       - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
       - run: .venv/bin/pip install -U pip wheel cffi build
         if: matrix.PYTHON.VERSION != 'cp314-cp314t'
-      - run: .venv/bin/pip install -U pip wheel 'cffi>=2.0.0b1' build
+      - run: .venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
         if: matrix.PYTHON.VERSION == 'cp314-cp314t'
       - name: Build the wheel
         run: |
@@ -124,7 +124,7 @@ jobs:
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi build
         if: matrix.PYTHON.VERSION != '3.14t-dev'
-      - run: venv/bin/pip install -U pip wheel 'cffi>=2.0.0b1' build
+      - run: venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
         if: matrix.PYTHON.VERSION == '3.14t-dev'
       - name: Build the wheel
         run: |
@@ -190,7 +190,7 @@ jobs:
 
       - run: python -m pip install -U pip wheel cffi build
         if: matrix.PYTHON.VERSION != '3.14t-dev'
-      - run: python -m pip install -U pip wheel 'cffi>=2.0.0b1' build
+      - run: python -m pip install -U pip wheel 'cffi>=2.0.0' build
         if: matrix.PYTHON.VERSION == '3.14t-dev'
       - name: Determine PY_LIMITED_API
         run: |
