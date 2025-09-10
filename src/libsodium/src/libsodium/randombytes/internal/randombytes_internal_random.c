@@ -5,10 +5,12 @@
 #include <limits.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
 #if !defined(_MSC_VER) && !defined(__BORLANDC__)
 # include <unistd.h>
+#endif
+#if !defined(__STDC_NO_THREADS__) && defined(HAVE_THREADS_H)
+# include <threads.h>
 #endif
 
 #include <sys/types.h>
