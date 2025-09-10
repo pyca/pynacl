@@ -35,7 +35,7 @@ jobs:
           - {VERSION: "3.14-dev", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v5.0.0
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -80,7 +80,7 @@ jobs:
             RUNNER: macos-latest
     name: "${{ matrix.RUNNER }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.python.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v5.0.0
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -110,7 +110,7 @@ jobs:
 
     name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
     steps:
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v5.0.0
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -141,7 +141,7 @@ jobs:
     if: ${{ always() }}
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@v4.3.0
+      - uses: actions/checkout@v5.0.0
         timeout-minutes: 3
         with:
           persist-credentials: false
