@@ -25,7 +25,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python :: Free Threading :: 3 - Stable",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -34,7 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.14'",
     "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.14'",

@@ -29,7 +29,7 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - { VERSION: "cp37-cp37m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp37' }
+          - { VERSION: "cp38-cp38m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp38' }
           - { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
         MANYLINUX:
           - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
@@ -101,9 +101,9 @@ jobs:
     strategy:
       matrix:
         PYTHON:
-          - VERSION: '3.10'
-            ABI_VERSION: 'cp37'
-            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
+          - VERSION: '3.13'
+            ABI_VERSION: 'cp38'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.13.7/python-3.13.7-macos11.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
           - VERSION: '3.14t-dev'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.14.0/python-3.14.0rc1-macos11.pkg'
@@ -162,11 +162,11 @@ jobs:
       matrix:
         include:
           - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
-            PYTHON: {VERSION: '3.9', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
-            PYTHON: {VERSION: '3.9', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', VS_ARCH: 'arm64', IMAGE: 'windows-11-arm'}
-            PYTHON: {VERSION: '3.11', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
             PYTHON: {VERSION: '3.14t-dev', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
