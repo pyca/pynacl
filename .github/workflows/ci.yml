@@ -18,12 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         PYTHON:
-          - {VERSION: "3.12", NOXSESSION: "docs"}
-          - {VERSION: "3.12", NOXSESSION: "meta"}
-          - {VERSION: "3.12", NOXSESSION: "mypy"}
+          - {VERSION: "3.13", NOXSESSION: "docs"}
+          - {VERSION: "3.13", NOXSESSION: "meta"}
+          - {VERSION: "3.13", NOXSESSION: "mypy"}
           - {VERSION: "pypy-3.10", NOXSESSION: "tests"}
           - {VERSION: "pypy-3.11", NOXSESSION: "tests"}
-          - {VERSION: "3.7", NOXSESSION: "tests"}
           - {VERSION: "3.8", NOXSESSION: "tests"}
           - {VERSION: "3.9", NOXSESSION: "tests"}
           - {VERSION: "3.10", NOXSESSION: "tests"}
@@ -72,12 +71,12 @@ jobs:
           - 'macos-13'
           - 'macos-latest'
         PYTHON:
-          - {VERSION: "3.7", NOXSESSION: "tests"}
+          - {VERSION: "3.8", NOXSESSION: "tests"}
           - {VERSION: "3.14-dev", NOXSESSION: "tests"}
           - {VERSION: "3.14t-dev", NOXSESSION: "tests"}
           - {VERSION: "3.14-dev", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
-          - PYTHON: {VERSION: "3.7", NOXSESSION: "tests"}
+          - PYTHON: {VERSION: "3.8", NOXSESSION: "tests"}
             RUNNER: macos-latest
     name: "${{ matrix.RUNNER }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.python.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
     steps:
@@ -102,12 +101,12 @@ jobs:
           - {ARCH: 'x64', SODIUM_ARCH: 'x64', IMAGE: "windows-latest"}
           - {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
         PYTHON:
-          - {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.14-dev", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.14t-dev", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
         exclude:
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', IMAGE: "windows-11-arm"}
-            PYTHON: {VERSION: "3.7", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+            PYTHON: {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
 
     name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
     steps:

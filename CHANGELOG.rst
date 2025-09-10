@@ -3,8 +3,12 @@ Changelog
 
 1.6.0 (UNRELEASED)
 ------------------
-* **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6.
-* Update ``libsodium`` to 1.0.20-stable.
+* **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6 and 3.7.
+* Added support for the low level AEAD AES bindings.
+* Added support for ``crypto_core_ed25519_from_uniform``.
+* Update ``libsodium`` to 1.0.20-stable (2025-08-27 build).
+* Added support for free-threaded Python 3.14.
+* Added support for Windows on ARM wheels.
 
 1.5.0 (2022-01-07)
 ------------------
