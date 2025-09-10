@@ -30,16 +30,26 @@ jobs:
       matrix:
         PYTHON:
           - { VERSION: "cp37-cp37m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp37' }
+          - { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
         MANYLINUX:
           - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
           - { name: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
           - { name: "manylinux_2_34_x86_64", CONTAINER: "cryptography-manylinux_2_34:x86_64", RUNNER: "ubuntu-latest" }
           - { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
+          - { name: "musllinux_1_2_x86_64", CONTAINER: "cryptography-musllinux_1_2:x86_64", RUNNER: "ubuntu-latest" }
 
           - { NAME: "manylinux2014_aarch64", CONTAINER: "cryptography-manylinux2014_aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { name: "manylinux_2_28_aarch64", CONTAINER: "cryptography-manylinux_2_28:aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { name: "manylinux_2_34_aarch64", CONTAINER: "cryptography-manylinux_2_34:aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { name: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
+          - { name: "musllinux_1_2_aarch64", CONTAINER: "cryptography-musllinux_1_2:aarch64", RUNNER: "ubuntu-24.04-arm" }
+        exclude:
+          # musllinux 1_1 doesn't have python 3.14 builds
+          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
+            MANYLINUX: { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
+          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
+            MANYLINUX: { name: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
+
 
     name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
     steps:
@@ -61,11 +71,18 @@ jobs:
           ref: ${{ github.event.inputs.version || github.ref }}
           persist-credentials: false
       - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
-      - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi wheel build
-      - run: |
+      - run: .venv/bin/pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != 'cp314-cp314t'
+      - run: .venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == 'cp314-cp314t'
+      - name: Build the wheel
+        run: |
+          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+          fi
+
           mkdir tmpwheelhouse
-          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel $PY_LIMITED_API
           mv dist/pynacl*.whl tmpwheelhouse/
       - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/pynacl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
@@ -88,7 +105,10 @@ jobs:
             ABI_VERSION: 'cp37'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
             BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
-    name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
+          - VERSION: '3.14t-dev'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.14.0/python-3.14.0rc1-macos11.pkg'
+            BIN_PATH: '/Library/Frameworks/PythonT.framework/Versions/3.14/bin/python3.14t'
+    name: "Python ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
       - uses: actions/checkout@v4.3.0
         with:
@@ -100,17 +120,28 @@ jobs:
           sudo installer -pkg python.pkg -target /
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
+        if: matrix.PYTHON.VERSION != '3.14t-dev'
+      - run: |
+          curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
+          sudo installer -pkg python.pkg -applyChoiceChangesXML .github/config/macos-pkg-choices-freethreaded.xml -target /
+        env:
+          PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
+        if: matrix.PYTHON.VERSION == '3.14t-dev'
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != '3.14t-dev'
+      - run: venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == '3.14t-dev'
       - name: Build the wheel
         run: |
+            if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+            fi
             mkdir wheelhouse
-            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
-                venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-              mv dist/pynacl*.whl wheelhouse/
+            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" venv/bin/python -m build --wheel $PY_LIMITED_API
+            mv dist/pynacl*.whl wheelhouse/
         env:
-          PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
           MACOSX_DEPLOYMENT_TARGET: '10.10'
           CFLAGS: '-arch arm64 -arch x86_64'
           ARCHFLAGS: '-arch arm64 -arch x86_64'
@@ -136,6 +167,12 @@ jobs:
             PYTHON: {VERSION: '3.9', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', VS_ARCH: 'arm64', IMAGE: 'windows-11-arm'}
             PYTHON: {VERSION: '3.11', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.14t-dev', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.14t-dev', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', VS_ARCH: 'arm64', IMAGE: 'windows-11-arm'}
+            PYTHON: {VERSION: '3.14t-dev', SODIUM_MSVC_VERSION: 'v143'}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@v4.3.0
@@ -158,13 +195,22 @@ jobs:
           echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
         shell: bash
 
-      - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi build
+      - run: python -m pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != '3.14t-dev'
+      - run: python -m pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == '3.14t-dev'
+      - name: Determine PY_LIMITED_API
+        run: |
+          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+          fi
+          echo "PY_LIMITED_API=$PY_LIMITED_API" >> $GITHUB_ENV
+        shell: bash
       - name: Build the wheel
         run: |
           mkdir wheelhouse
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          python -m build --wheel %PY_LIMITED_API%
           mv dist/pynacl*.whl wheelhouse/
         shell: cmd
         env:
