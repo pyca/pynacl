@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.6.0 (UNRELEASED)
+1.6.0 (2025-09-11)
 ------------------
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6 and 3.7.
 * Added support for the low level AEAD AES bindings.
