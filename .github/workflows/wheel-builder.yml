@@ -44,12 +44,6 @@ jobs:
           - { name: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { name: "musllinux_1_2_aarch64", CONTAINER: "cryptography-musllinux_1_2:aarch64", RUNNER: "ubuntu-24.04-arm" }
         exclude:
-          # CFFI 2.0.0b1 didn't include manylinux2014 wheels
-          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
-            MANYLINUX: { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
-          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
-            MANYLINUX: { NAME: "manylinux2014_aarch64", CONTAINER: "cryptography-manylinux2014_aarch64", RUNNER: "ubuntu-24.04-arm" }
-
           # musllinux 1_1 doesn't have python 3.14 builds
           - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
             MANYLINUX: { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
