@@ -1548,7 +1548,6 @@ Optional Features:
   --enable-opt            Optimize for the native CPU - The resulting library
                           will be faster but not portable
   --enable-valgrind       Whether to enable Valgrind on the unit tests
-                          (requires GNU make)
   --disable-valgrind-memcheck
                           Whether to skip memcheck during the Valgrind tests
   --disable-valgrind-helgrind
@@ -2930,7 +2929,7 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
-am__api_version='1.17'
+am__api_version='1.18'
 
 
   # Find a good install program.  We prefer a C program (faster),
@@ -3199,10 +3198,14 @@ am_lf='
 '
 case `pwd` in
   *[\\\"\#\$\&\'\`$am_lf]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe absolute working directory name" "$LINENO" 5;;
 esac
 case $srcdir in
   *[\\\"\#\$\&\'\`$am_lf\ \	]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe srcdir value: '$srcdir'" "$LINENO" 5;;
 esac
 
@@ -3820,6 +3823,8 @@ fi
 
 
 AM_DEFAULT_VERBOSITY=0
+
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 printf %s "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
@@ -4968,7 +4973,10 @@ _ACEOF
       break
     fi
   done
-  rm -f core conftest*
+  # aligned with autoconf, so not including core; see bug#72225.
+  rm -f -r a.out a.exe b.out conftest.$ac_ext conftest.$ac_objext \
+    conftest.dSYM conftest1.$ac_ext conftest1.$ac_objext conftest1.dSYM \
+    conftest2.$ac_ext conftest2.$ac_objext conftest2.dSYM
   unset am_i ;;
 esac
 fi
@@ -7501,12 +7509,15 @@ fi
 
 
 
+
+
+
 		# Check whether --enable-valgrind was given.
 if test ${enable_valgrind+y}
 then :
   enableval=$enable_valgrind; enable_valgrind=$enableval
 else case e in #(
-  e) enable_valgrind=no ;;
+  e) enable_valgrind= ;;
 esac
 fi
 
@@ -7905,7 +7916,7 @@ valgrind_quiet_ = $(valgrind_quiet_$(AM_DEFAULT_VERBOSITY))
 valgrind_quiet_0 = --quiet
 valgrind_v_use   = $(valgrind_v_use_$(V))
 valgrind_v_use_  = $(valgrind_v_use_$(AM_DEFAULT_VERBOSITY))
-valgrind_v_use_0 = @echo "  USE   " $(patsubst check-valgrind-%,%,$''@):;
+valgrind_v_use_0 = @echo "  USE   " $(patsubst check-valgrind-%-local,%,$''@):;
 
 # Support running with and without libtool.
 ifneq ($(LIBTOOL),)
@@ -7915,12 +7926,12 @@ valgrind_lt =
 endif
 
 # Use recursive makes in order to ignore errors during check
-check-valgrind:
+check-valgrind-local:
 ifeq ($(VALGRIND_ENABLED),yes)
 	$(A''M_V_at)$(MAKE) $(AM_MAKEFLAGS) -k \
 		$(foreach tool, $(valgrind_enabled_tools), check-valgrind-$(tool))
 else
-	@echo "Need to use GNU make and reconfigure with --enable-valgrind"
+	@echo "Need to reconfigure with --enable-valgrind"
 endif
 
 # Valgrind running
@@ -7934,14 +7945,16 @@ VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
 	$(VALGRIND) $(VALGRIND_SUPPRESSIONS) --error-exitcode=1 $(VALGRIND_FLAGS)
 
-define valgrind_tool_rule =
-check-valgrind-$(1):
+define valgrind_tool_rule
+check-valgrind-$(1)-local:
 ifeq ($$(VALGRIND_ENABLED)-$$(ENABLE_VALGRIND_$(1)),yes-yes)
+ifneq ($$(TESTS),)
 	$$(valgrind_v_use)$$(MAKE) check-TESTS \
 		TESTS_ENVIRONMENT="$$(VALGRIND_TESTS_ENVIRONMENT)" \
 		LOG_COMPILER="$$(VALGRIND_LOG_COMPILER)" \
 		LOG_FLAGS="$$(valgrind_$(1)_flags)" \
 		TEST_SUITE_LOG=test-suite-$(1).log
+endif
 else ifeq ($$(VALGRIND_ENABLED),yes)
 	@echo "Need to reconfigure with --enable-valgrind-$(1)"
 else
@@ -7957,17 +7970,8 @@ A''M_DISTCHECK_CONFIGURE_FLAGS += --disable-valgrind
 MOSTLYCLEANFILES ?=
 MOSTLYCLEANFILES += $(valgrind_log_files)
 
-.PHONY: check-valgrind $(add-prefix check-valgrind-,$(valgrind_tools))
+.PHONY: check-valgrind $(addprefix check-valgrind-,$(valgrind_tools))
 '
-
-	if test "$enable_valgrind" != "yes"
-then :
-
-		VALGRIND_CHECK_RULES='
-check-valgrind:
-	@echo "Need to use GNU make and reconfigure with --enable-valgrind"'
-
-fi
 
 
 
@@ -8178,7 +8182,7 @@ then :
 
                 #define _FORTIFY_SOURCE 3
                 #include <string.h>
-                int main() {
+                int main(void) {
                     char *s = " ";
                     strcpy(s, "x");
                     return strlen(s)-1;
@@ -8198,7 +8202,6 @@ else case e in #(
   e)
               { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-              CFLAGS=$ac_save_cflags
               ax_add_fortify_3_failed=1
              ;;
 esac
@@ -8209,7 +8212,6 @@ else case e in #(
   e)
           { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-          CFLAGS=$ac_save_cflags
           ax_add_fortify_3_failed=1
          ;;
 esac
@@ -21469,6 +21471,12 @@ ac_fn_c_check_header_compile "$LINENO" "cet.h" "ac_cv_header_cet_h" "$ac_include
 if test "x$ac_cv_header_cet_h" = xyes
 then :
   printf "%s\n" "#define HAVE_CET_H 1" >>confdefs.h
+
+fi
+ac_fn_c_check_header_compile "$LINENO" "threads.h" "ac_cv_header_threads_h" "$ac_includes_default"
+if test "x$ac_cv_header_threads_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_THREADS_H 1" >>confdefs.h
 
 fi
 

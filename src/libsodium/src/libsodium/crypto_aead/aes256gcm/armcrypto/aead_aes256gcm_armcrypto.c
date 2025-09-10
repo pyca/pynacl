@@ -15,7 +15,7 @@
 
 #if defined(HAVE_ARMCRYPTO) && defined(__clang__) && defined(NATIVE_LITTLE_ENDIAN)
 
-#if !defined(MSC_VER) || _MSC_VER < 1800
+#if !defined(_MSC_VER) || _MSC_VER < 1800
 #define __vectorcall
 #endif
 
@@ -46,9 +46,10 @@ typedef uint64x2_t BlockVec;
 #define LOAD128(a)     vld1q_u64((const uint64_t *) (const void *) (a))
 #define STORE128(a, b) vst1q_u64((uint64_t *) (void *) (a), (b))
 #define AES_XENCRYPT(block_vec, rkey) \
-    vreinterpretq_u64_u8(vaesmcq_u8(vaeseq_u8(vreinterpretq_u8_u64(block_vec), rkey)))
+    vreinterpretq_u64_u8(             \
+        vaesmcq_u8(vaeseq_u8(rkey, vreinterpretq_u8_u64(block_vec))))
 #define AES_XENCRYPTLAST(block_vec, rkey) \
-    vreinterpretq_u64_u8(vaeseq_u8(vreinterpretq_u8_u64(block_vec), rkey))
+    vreinterpretq_u64_u8(vaeseq_u8(rkey, vreinterpretq_u8_u64(block_vec)))
 #define XOR128(a, b)  veorq_u64((a), (b))
 #define AND128(a, b)  vandq_u64((a), (b))
 #define OR128(a, b)   vorrq_u64((a), (b))
