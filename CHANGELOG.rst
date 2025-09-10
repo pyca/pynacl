@@ -5,7 +5,7 @@ Changelog
 ------------------
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6 and 3.7.
 * Added support for the low level AEAD AES bindings.
-* Added support for ``crypto_core_ed25519_from_uniform ``.
+* Added support for ``crypto_core_ed25519_from_uniform``.
 * Update ``libsodium`` to 1.0.20-stable (2025-08-27 build).
 * Added support for free-threaded Python 3.14.
 * Added support for Windows on ARM wheels.
