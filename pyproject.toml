@@ -3,8 +3,8 @@
 requires = [
     "setuptools>=61.0.0,!=74.0.0",
     "wheel",
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.14'",
-    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.14'",
+    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.9'",
+    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.9'",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -35,8 +35,8 @@ classifiers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.14'",
-    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.14'",
+    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.9'",
+    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.9'",
 ]
 
 [project.optional-dependencies]
