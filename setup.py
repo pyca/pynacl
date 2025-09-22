@@ -119,8 +119,10 @@ class build_clib(_build_clib):
         ]:
             os.chmod(here(filename), 0o755)
 
-        if not shutil.which("make"):
-            raise Exception("ERROR: The 'make' utility is missing from PATH")
+        make_command = os.environ.get("MAKE") or "make"
+
+        if not shutil.which(make_command):
+            raise Exception("ERROR: The '%s' utility is missing from PATH" % make_command)
 
         # Locate our configure script
         configure = abshere("src/libsodium/configure")
@@ -148,13 +150,13 @@ class build_clib(_build_clib):
 
         make_args = os.environ.get("LIBSODIUM_MAKE_ARGS", "").split()
         # Build the library
-        subprocess.check_call(["make"] + make_args, cwd=build_temp)
+        subprocess.check_call([make_command] + make_args, cwd=build_temp)
 
         # Check the build library
-        subprocess.check_call(["make", "check"] + make_args, cwd=build_temp)
+        subprocess.check_call([make_command, "check"] + make_args, cwd=build_temp)
 
         # Install the built library
-        subprocess.check_call(["make", "install"] + make_args, cwd=build_temp)
+        subprocess.check_call([make_command, "install"] + make_args, cwd=build_temp)
 
 
 class build_ext(_build_ext):
