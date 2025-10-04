@@ -97,7 +97,7 @@ jobs:
 
           path: pynacl-wheelhouse/
   macos:
-    runs-on: macos-13
+    runs-on: macos-15
     strategy:
       matrix:
         PYTHON:
