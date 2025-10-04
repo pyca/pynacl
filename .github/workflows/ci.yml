@@ -68,7 +68,7 @@ jobs:
     strategy:
       matrix:
         RUNNER:
-          - 'macos-13'
+          - 'macos-15-intel'
           - 'macos-latest'
         PYTHON:
           - {VERSION: "3.8", NOXSESSION: "tests"}
