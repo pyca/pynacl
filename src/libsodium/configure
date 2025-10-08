@@ -22692,11 +22692,19 @@ then :
   printf "%s\n" "#define HAVE_MEMSET_S 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "explicit_bzero" "ac_cv_func_explicit_bzero"
-if test "x$ac_cv_func_explicit_bzero" = xyes
-then :
+# On Android/Bionic none of these exist in libc.
+case "$host_os" in
+  *android*)
+    ac_cv_func_explicit_bzero=no
+    ac_cv_func_memset_s=no
+    ac_cv_func_memset_explicit=no
+    ;;
+  *)
+    ac_fn_c_check_func "$LINENO" "explicit_bzero" "ac_cv_func_explicit_bzero"
+    ;;
+esac
+if test "x$ac_cv_func_explicit_bzero" = xyes; then
   printf "%s\n" "#define HAVE_EXPLICIT_BZERO 1" >>confdefs.h
-
 fi
 ac_fn_c_check_func "$LINENO" "memset_explicit" "ac_cv_func_memset_explicit"
 if test "x$ac_cv_func_memset_explicit" = xyes
