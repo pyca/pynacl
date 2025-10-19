@@ -1,0 +1,39 @@
+name: Generate _sodium.c
+
+on: [workflow_dispatch] # Allows you to manually trigger the workflow
+
+jobs:
+  generate_file:
+    runs-on: windows-latest # Use a clean Windows environment
+
+    steps:
+    - name: Checkout PyNaCl source
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies (Cython)
+      run: python -m pip install Cython
+
+    - name: Run Cython to generate _sodium.c
+      run: cython src/nacl/bindings/_sodium.pyx
+      shell: bash # Use bash shell for better command execution
+
+    - name: Verify generated file
+      run: |
+        if [[ -f src/nacl/bindings/_sodium.c ]]; then
+          echo "_sodium.c was successfully generated."
+        else
+          echo "Error: _sodium.c was NOT generated."
+          exit 1
+        fi
+      shell: bash
+
+    - name: Upload _sodium.c as an artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pynacl-c-file
+        path: src/nacl/bindings/_sodium.c
