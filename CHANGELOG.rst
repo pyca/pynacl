@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.1 (2025-11-10)
+------------------
+* The ``MAKE`` environment variable can now be used to specify the ``make``
+  binary that should be used in the build process.
+
 1.6.0 (2025-09-11)
 ------------------
 * **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6 and 3.7.

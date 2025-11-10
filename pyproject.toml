@@ -13,7 +13,7 @@ dynamic = ["readme"]
 
 name = "PyNaCl"
 # Must be kept in sync with `src/nacl/__init__.py`
-version = "1.6.0"
+version = "1.6.1"
 authors = [
     {name = "The PyNaCl developers", email = "cryptography-dev@python.org"}
 ]
