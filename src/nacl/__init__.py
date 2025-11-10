@@ -22,4 +22,4 @@ __all__ = [
 __uri__ = "https://github.com/pyca/pynacl/"
 
 # Must be kept in sync with `pyproject.toml`
-__version__ = "1.6.0"
+__version__ = "1.6.1"
