@@ -35,20 +35,12 @@ jobs:
           - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
           - { NAME: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
           - { NAME: "manylinux_2_34_x86_64", CONTAINER: "cryptography-manylinux_2_34:x86_64", RUNNER: "ubuntu-latest" }
-          - { NAME: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
           - { NAME: "musllinux_1_2_x86_64", CONTAINER: "cryptography-musllinux_1_2:x86_64", RUNNER: "ubuntu-latest" }
 
           - { NAME: "manylinux2014_aarch64", CONTAINER: "cryptography-manylinux2014_aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { NAME: "manylinux_2_28_aarch64", CONTAINER: "cryptography-manylinux_2_28:aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { NAME: "manylinux_2_34_aarch64", CONTAINER: "cryptography-manylinux_2_34:aarch64", RUNNER: "ubuntu-24.04-arm" }
-          - { NAME: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
           - { NAME: "musllinux_1_2_aarch64", CONTAINER: "cryptography-musllinux_1_2:aarch64", RUNNER: "ubuntu-24.04-arm" }
-        exclude:
-          # musllinux 1_1 doesn't have python 3.14 builds
-          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
-            MANYLINUX: { NAME: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
-          - PYTHON: { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
-            MANYLINUX: { NAME: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
 
 
     name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
