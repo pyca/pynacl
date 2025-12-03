@@ -57,7 +57,7 @@ jobs:
           sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
         if: startsWith(matrix.MANYLINUX.NAME, 'musllinux') && endsWith(matrix.MANYLINUX.NAME, 'aarch64')
 
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
@@ -102,7 +102,7 @@ jobs:
             BIN_PATH: '/Library/Frameworks/PythonT.framework/Versions/3.14/bin/python3.14t'
     name: "Python ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
@@ -167,7 +167,7 @@ jobs:
             PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
-      - uses: actions/checkout@v6.0.0
+      - uses: actions/checkout@v6.0.1
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
