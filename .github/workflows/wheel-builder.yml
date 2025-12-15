@@ -83,7 +83,7 @@ jobs:
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-${{ matrix.PYTHON.VERSION }}"
 
@@ -144,7 +144,7 @@ jobs:
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: "pynacl-${{ github.event.inputs.version }}-macOS-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse/
@@ -216,7 +216,7 @@ jobs:
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
       - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: "pynacl-${{ github.event.inputs.version }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse\
