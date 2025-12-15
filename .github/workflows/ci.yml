@@ -180,7 +180,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           exit $COV_EXIT_CODE
       - name: Upload HTML report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-html-report
           path: htmlcov
