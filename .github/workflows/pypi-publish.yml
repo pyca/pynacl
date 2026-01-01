@@ -1,0 +1,60 @@
+name: Publish to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: The run of wheel-builder to use for finding artifacts.
+        required: true
+      environment:
+        description: Which PyPI environment to upload to
+        required: true
+        type: choice
+        options: ["testpypi", "pypi"]
+  workflow_run:
+    workflows: ["Wheel Builder"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # We're not actually verifying that the triggering push event was for a
+    # tag, because github doesn't expose enough information to do so.
+    # wheel-builder.yml currently only has push events for tags.
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success')
+    permissions:
+      id-token: write
+      attestations: write
+    steps:
+      - run: echo "$EVENT_CONTEXT"
+        env:
+          EVENT_CONTEXT: ${{ toJson(github.event) }}
+
+      - run: |
+          echo "PYPI_URL=https://upload.pypi.org/legacy/" >> $GITHUB_ENV
+        if: github.event_name == 'workflow_run' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'pypi')
+      - run: |
+          echo "PYPI_URL=https://test.pypi.org/legacy/" >> $GITHUB_ENV
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'testpypi'
+
+      - uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392  # v12
+        with:
+          path: tmpdist/
+          run_id: ${{ github.event.inputs.run_id || github.event.workflow_run.id }}
+      - run: mkdir dist/
+      - run: |
+          find tmpdist/ -type f -name 'PyNaCl*' -exec mv {} dist/ \;
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
+        with:
+          repository-url: ${{ env.PYPI_URL }}
+          skip-existing: true
+          # Do not perform attestation for things for TestPyPI. This is
+          # because there's nothing that would prevent a malicious PyPI from
+          # serving a signed TestPyPI asset in place of a release intended for
+          # PyPI.
+          attestations: ${{ env.PYPI_URL == 'https://upload.pypi.org/legacy/' }}

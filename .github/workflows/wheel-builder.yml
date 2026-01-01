@@ -18,6 +18,26 @@ on:
       - setup.py
 
 jobs:
+  sdist:
+    runs-on: ubuntu-latest
+    name: sdist
+    steps:
+      - uses: actions/checkout@v6.0.1
+        with:
+          # The tag to build or the tag received by the tag event
+          ref: ${{ github.event.inputs.version || github.ref }}
+          persist-credentials: false
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install -U pip build
+      - run: python -m build --sdist
+      - uses: actions/upload-artifact@v6
+        with:
+          name: pynacl-sdist
+          path: dist/PyNaCl*
+
   manylinux:
     runs-on: ${{ matrix.MANYLINUX.RUNNER }}
     container:
