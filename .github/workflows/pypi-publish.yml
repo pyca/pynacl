@@ -46,7 +46,7 @@ jobs:
           run_id: ${{ github.event.inputs.run_id || github.event.workflow_run.id }}
       - run: mkdir dist/
       - run: |
-          find tmpdist/ -type f -name 'PyNaCl*' -exec mv {} dist/ \;
+          find tmpdist/ -type f -iname 'PyNaCl*' -exec mv {} dist/ \;
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # v1.13.0
