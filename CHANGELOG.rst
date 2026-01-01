@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.2 (2026-01-01)
+------------------
+* Updated ``libsodium`` to 1.0.20-stable (2025-12-31 build) to resolve
+  ``CVE-2025-69277``.
+
 1.6.1 (2025-11-10)
 ------------------
 * The ``MAKE`` environment variable can now be used to specify the ``make``
