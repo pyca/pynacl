@@ -1048,6 +1048,9 @@ ge25519_is_on_main_subgroup(const ge25519_p3 *p)
     ge25519_mul_l(&pl, p);
 
     return fe25519_iszero(pl.X);
+    fe25519_sub(t, pl.Y, pl.Z);
+
+    return fe25519_iszero(pl.X) & fe25519_iszero(t);
 }
 
 int
