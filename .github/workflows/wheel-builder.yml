@@ -36,7 +36,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: pynacl-sdist
-          path: dist/PyNaCl*
+          path: dist/pynacl*
 
   manylinux:
     runs-on: ${{ matrix.MANYLINUX.RUNNER }}
