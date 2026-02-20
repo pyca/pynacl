@@ -45,6 +45,8 @@ tests = [
     "pytest-cov >=2.10.1",
     "pytest-xdist >=3.5.0",
     "hypothesis>=3.27.0",
+    "mypy>=1.4.1",
+    "flake8>=5.0.4",
 ]
 docs = [
     "sphinx<7",

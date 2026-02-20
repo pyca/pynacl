@@ -14,8 +14,9 @@
 
 
 import hashlib
+import itertools
 from binascii import hexlify, unhexlify
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 from hypothesis import given, settings
 from hypothesis.strategies import binary, integers
@@ -92,6 +93,26 @@ def test_secretbox_easy():
             nonce,
             key,
         )
+
+
+@pytest.mark.parametrize(
+    ("encoder", "decoder"),
+    itertools.product(
+        [bytes, bytearray, memoryview],
+        [bytes, bytearray, memoryview],
+    ),
+)
+def test_secretbox_byteslike(
+    encoder: Callable[[bytes], bytes], decoder: Callable[[bytes], bytes]
+):
+    key = b"\x00" * c.crypto_secretbox_KEYBYTES
+    msg = b"message"
+    nonce = b"\x01" * c.crypto_secretbox_NONCEBYTES
+    ct = c.crypto_secretbox(encoder(msg), encoder(nonce), encoder(key))
+    assert len(ct) == len(msg) + c.crypto_secretbox_BOXZEROBYTES
+    assert tohex(ct) == "3ae84dfb89728737bd6e2c8cacbaf8af3d34cc1666533a"
+    msg2 = c.crypto_secretbox_open(decoder(ct), decoder(nonce), decoder(key))
+    assert msg2 == msg
 
 
 def test_secretbox_wrong_length():
