@@ -130,6 +130,10 @@ from nacl.bindings.crypto_kx import (
     crypto_kx_seed_keypair,
     crypto_kx_server_session_keys,
 )
+from nacl.bindings.crypto_onetimeauth import (
+    crypto_onetimeauth,
+    crypto_onetimeauth_verify,
+)
 from nacl.bindings.crypto_pwhash import (
     crypto_pwhash_ALG_ARGON2I13,
     crypto_pwhash_ALG_ARGON2ID13,
@@ -378,6 +382,8 @@ __all__ = [
     "crypto_kx_SECRET_KEY_BYTES",
     "crypto_kx_SEED_BYTES",
     "crypto_kx_SESSION_KEY_BYTES",
+    "crypto_onetimeauth",
+    "crypto_onetimeauth_verify",
     "has_crypto_scalarmult_ed25519",
     "crypto_scalarmult_BYTES",
     "crypto_scalarmult_SCALARBYTES",
