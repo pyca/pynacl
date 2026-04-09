@@ -2,6 +2,7 @@ from nacl._sodium import ffi, lib
 
 POLY1305_BYTES = 16  # length of MAC/tag in bytes
 
+
 def crypto_onetimeauth(message: bytes, key: bytes) -> bytes:
     """
     Generate Poly1305 MAC over message with key.
@@ -18,6 +19,7 @@ def crypto_onetimeauth(message: bytes, key: bytes) -> bytes:
     if rc != 0:
         raise RuntimeError(f"crypto_onetimeauth failed with code {rc}")
     return ffi.buffer(mac, POLY1305_BYTES)[:]
+
 
 def crypto_onetimeauth_verify(mac: bytes, message: bytes, key: bytes) -> bool:
     """
