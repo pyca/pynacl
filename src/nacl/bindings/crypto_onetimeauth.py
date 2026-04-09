@@ -17,9 +17,7 @@ def crypto_onetimeauth(message: bytes, key: bytes) -> bytes:
         raise ValueError(f"Key must be {crypto_onetimeauth_KEYBYTES} bytes")
 
     mac = ffi.new(f"unsigned char[{crypto_onetimeauth_BYTES}]")
-    rc = lib.crypto_onetimeauth(mac, message, len(message), key)
-    if rc != 0:
-        raise RuntimeError(f"crypto_onetimeauth failed with code {rc}")
+    lib.crypto_onetimeauth(mac, message, len(message), key)
     return ffi.buffer(mac, crypto_onetimeauth_BYTES)[:]
 
 
