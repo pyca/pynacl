@@ -3,7 +3,8 @@
 requires = [
     "setuptools>=61.0.0,!=74.0.0",
     "wheel",
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy'",
+    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.9'",
+    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.9'",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -12,7 +13,7 @@ dynamic = ["readme"]
 
 name = "PyNaCl"
 # Must be kept in sync with `src/nacl/__init__.py`
-version = "1.6.0"
+version = "1.6.2"
 authors = [
     {name = "The PyNaCl developers", email = "cryptography-dev@python.org"}
 ]
@@ -22,18 +23,20 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: Free Threading :: 3 - Stable",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
-    "cffi>=1.4.1; platform_python_implementation != 'PyPy'"
+    "cffi>=1.4.1; platform_python_implementation != 'PyPy' and python_version < '3.9'",
+    "cffi>=2.0.0; platform_python_implementation != 'PyPy' and python_version >= '3.9'",
 ]
 
 [project.optional-dependencies]

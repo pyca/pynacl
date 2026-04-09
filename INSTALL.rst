@@ -49,3 +49,10 @@ distribution, you can disable the bundled copy during install by running:
 .. [#many] `manylinux1 wheels <https://www.python.org/dev/peps/pep-0513/>`_
     are built on a baseline linux environment based on Centos 5.11
     and should work on most x86 and x86_64 glibc based linux environments.
+
+GNU Make (gmake) may be required for newer versions of PyNaCl. You can
+set the binary to use by setting the ``MAKE`` environment variable:
+
+.. code-block:: console
+
+    $ MAKE=gmake pip install pynacl

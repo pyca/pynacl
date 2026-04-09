@@ -2930,7 +2930,7 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
-am__api_version='1.17'
+am__api_version='1.18'
 
 
   # Find a good install program.  We prefer a C program (faster),
@@ -3199,10 +3199,14 @@ am_lf='
 '
 case `pwd` in
   *[\\\"\#\$\&\'\`$am_lf]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe absolute working directory name" "$LINENO" 5;;
 esac
 case $srcdir in
   *[\\\"\#\$\&\'\`$am_lf\ \	]*)
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
     as_fn_error $? "unsafe srcdir value: '$srcdir'" "$LINENO" 5;;
 esac
 
@@ -3820,6 +3824,8 @@ fi
 
 
 AM_DEFAULT_VERBOSITY=0
+
+
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 printf %s "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
@@ -4968,7 +4974,10 @@ _ACEOF
       break
     fi
   done
-  rm -f core conftest*
+  # aligned with autoconf, so not including core; see bug#72225.
+  rm -f -r a.out a.exe b.out conftest.$ac_ext conftest.$ac_objext \
+    conftest.dSYM conftest1.$ac_ext conftest1.$ac_objext conftest1.dSYM \
+    conftest2.$ac_ext conftest2.$ac_objext conftest2.dSYM
   unset am_i ;;
 esac
 fi
@@ -5756,6 +5765,37 @@ fi
 
 
 fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if we are using FilC" >&5
+printf %s "checking if we are using FilC... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef __FILC__
+# error __FILC__ is not defined
+#endif
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+   enable_asm="no"
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: compiling with FilC - asm implementations disabled" >&5
+printf "%s\n" "$as_me: WARNING: compiling with FilC - asm implementations disabled" >&2;}
+else case e in #(
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; } ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 # Check whether --enable-pie was given.
 if test ${enable_pie+y}
@@ -8178,7 +8218,7 @@ then :
 
                 #define _FORTIFY_SOURCE 3
                 #include <string.h>
-                int main() {
+                int main(void) {
                     char *s = " ";
                     strcpy(s, "x");
                     return strlen(s)-1;
@@ -8198,7 +8238,6 @@ else case e in #(
   e)
               { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-              CFLAGS=$ac_save_cflags
               ax_add_fortify_3_failed=1
              ;;
 esac
@@ -8209,7 +8248,6 @@ else case e in #(
   e)
           { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-          CFLAGS=$ac_save_cflags
           ax_add_fortify_3_failed=1
          ;;
 esac
@@ -21471,6 +21509,12 @@ then :
   printf "%s\n" "#define HAVE_CET_H 1" >>confdefs.h
 
 fi
+ac_fn_c_check_header_compile "$LINENO" "threads.h" "ac_cv_header_threads_h" "$ac_includes_default"
+if test "x$ac_cv_header_threads_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_THREADS_H 1" >>confdefs.h
+
+fi
 
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if _xgetbv() is available" >&5
@@ -21834,6 +21878,9 @@ printf %s "checking whether we can use inline asm code... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+#ifdef __FILC__
+# error inline assembly is not supported with FilC
+#endif
 
 int
 main (void)

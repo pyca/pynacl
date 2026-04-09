@@ -1,10 +1,24 @@
 Changelog
 =========
 
-1.6.0 (UNRELEASED)
+1.6.2 (2026-01-01)
 ------------------
-* **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6.
-* Update ``libsodium`` to 1.0.20-stable.
+* Updated ``libsodium`` to 1.0.20-stable (2025-12-31 build) to resolve
+  ``CVE-2025-69277``.
+
+1.6.1 (2025-11-10)
+------------------
+* The ``MAKE`` environment variable can now be used to specify the ``make``
+  binary that should be used in the build process.
+
+1.6.0 (2025-09-11)
+------------------
+* **BACKWARDS INCOMPATIBLE:** Removed support for Python 3.6 and 3.7.
+* Added support for the low level AEAD AES bindings.
+* Added support for ``crypto_core_ed25519_from_uniform``.
+* Update ``libsodium`` to 1.0.20-stable (2025-08-27 build).
+* Added support for free-threaded Python 3.14.
+* Added support for Windows on ARM wheels.
 
 1.5.0 (2022-01-07)
 ------------------

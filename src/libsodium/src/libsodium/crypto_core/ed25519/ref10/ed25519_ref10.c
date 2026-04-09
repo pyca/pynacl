@@ -39,7 +39,7 @@ load_4(const unsigned char *in)
  * and 10*25.5 bit limbs elsewhere.
  *
  * Functions used elsewhere that are candidates for inlining are defined
- * via "private/curve25519_ref10.h".
+ * via "private/ed25519_ref10.h".
  */
 
 #ifdef HAVE_TI_MODE
@@ -1044,10 +1044,13 @@ int
 ge25519_is_on_main_subgroup(const ge25519_p3 *p)
 {
     ge25519_p3 pl;
+    fe25519    t;
 
     ge25519_mul_l(&pl, p);
 
-    return fe25519_iszero(pl.X);
+    fe25519_sub(t, pl.Y, pl.Z);
+
+    return fe25519_iszero(pl.X) & fe25519_iszero(t);
 }
 
 int
@@ -2629,7 +2632,7 @@ ge25519_from_hash(unsigned char s[32], const unsigned char h[64])
     gl[31] &= 0x7f;
     fe25519_frombytes(fe_f, fl);
     fe25519_frombytes(fe_g, gl);
-    fe_f[0] += (h[32] >> 7) * 19;
+    fe_f[0] += (((h[32] >> 5) ^ optblocker_u8) >> 2) * 19;
     for (i = 0; i < sizeof (fe25519) / sizeof fe_f[0]; i++) {
         fe_f[i] += 38 * fe_g[i];
     }
@@ -2689,7 +2692,7 @@ ristretto255_is_canonical(const unsigned char *s)
     }
     c = (((unsigned int) c) - 1U) >> 8;
     d = (0xed - 1U - (unsigned int) s[0]) >> 8;
-    e = s[31] >> 7;
+    e = ((s[31] >> 5) ^ optblocker_u8) >> 2;
 
     return 1 - (((c & d) | e | s[0]) & 1);
 }

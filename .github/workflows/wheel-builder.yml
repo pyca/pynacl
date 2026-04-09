@@ -18,27 +18,50 @@ on:
       - setup.py
 
 jobs:
+  sdist:
+    runs-on: ubuntu-latest
+    name: sdist
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          # The tag to build or the tag received by the tag event
+          ref: ${{ github.event.inputs.version || github.ref }}
+          persist-credentials: false
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: pip install -U pip build
+      - run: python -m build --sdist
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pynacl-sdist
+          path: dist/pynacl*
+
   manylinux:
     runs-on: ${{ matrix.MANYLINUX.RUNNER }}
     container:
       image: ghcr.io/pyca/${{ matrix.MANYLINUX.CONTAINER }}
       volumes:
         - /staticnodehost:/staticnodecontainer:rw,rshared
-        - /staticnodehost:/__e/node20:ro,rshared
+        - /staticnodehost/20:/__e/node20:ro,rshared
+        - /staticnodehost/24:/__e/node24:ro,rshared
     strategy:
       matrix:
         PYTHON:
-          - { VERSION: "cp37-cp37m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp37' }
+          - { VERSION: "cp38-cp38m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp38' }
+          - { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
         MANYLINUX:
           - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
-          - { name: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
-          - { name: "manylinux_2_34_x86_64", CONTAINER: "cryptography-manylinux_2_34:x86_64", RUNNER: "ubuntu-latest" }
-          - { name: "musllinux_1_1_x86_64", CONTAINER: "cryptography-musllinux_1_1:x86_64", RUNNER: "ubuntu-latest" }
+          - { NAME: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
+          - { NAME: "manylinux_2_34_x86_64", CONTAINER: "cryptography-manylinux_2_34:x86_64", RUNNER: "ubuntu-latest" }
+          - { NAME: "musllinux_1_2_x86_64", CONTAINER: "cryptography-musllinux_1_2:x86_64", RUNNER: "ubuntu-latest" }
 
           - { NAME: "manylinux2014_aarch64", CONTAINER: "cryptography-manylinux2014_aarch64", RUNNER: "ubuntu-24.04-arm" }
-          - { name: "manylinux_2_28_aarch64", CONTAINER: "cryptography-manylinux_2_28:aarch64", RUNNER: "ubuntu-24.04-arm" }
-          - { name: "manylinux_2_34_aarch64", CONTAINER: "cryptography-manylinux_2_34:aarch64", RUNNER: "ubuntu-24.04-arm" }
-          - { name: "musllinux_1_1_aarch64", CONTAINER: "cryptography-musllinux_1_1:aarch64", RUNNER: "ubuntu-24.04-arm" }
+          - { NAME: "manylinux_2_28_aarch64", CONTAINER: "cryptography-manylinux_2_28:aarch64", RUNNER: "ubuntu-24.04-arm" }
+          - { NAME: "manylinux_2_34_aarch64", CONTAINER: "cryptography-manylinux_2_34:aarch64", RUNNER: "ubuntu-24.04-arm" }
+          - { NAME: "musllinux_1_2_aarch64", CONTAINER: "cryptography-musllinux_1_2:aarch64", RUNNER: "ubuntu-24.04-arm" }
+
 
     name: "${{ matrix.PYTHON.VERSION }} for ${{ matrix.MANYLINUX.NAME }}"
     steps:
@@ -54,17 +77,24 @@ jobs:
           sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
         if: startsWith(matrix.MANYLINUX.NAME, 'musllinux') && endsWith(matrix.MANYLINUX.NAME, 'aarch64')
 
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
           persist-credentials: false
       - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
-      - name: Install python dependencies
-        run: .venv/bin/pip install -U pip cffi wheel build
-      - run: |
+      - run: .venv/bin/pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != 'cp314-cp314t'
+      - run: .venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == 'cp314-cp314t'
+      - name: Build the wheel
+        run: |
+          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+          fi
+
           mkdir tmpwheelhouse
-          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          LIBSODIUM_MAKE_ARGS="-j$(nproc)" .venv/bin/python -m build --wheel $PY_LIMITED_API
           mv dist/pynacl*.whl tmpwheelhouse/
       - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/pynacl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
@@ -73,23 +103,26 @@ jobs:
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.MANYLINUX.NAME }}-${{ matrix.PYTHON.VERSION }}"
 
           path: pynacl-wheelhouse/
   macos:
-    runs-on: macos-13
+    runs-on: macos-15
     strategy:
       matrix:
         PYTHON:
-          - VERSION: '3.10'
-            ABI_VERSION: 'cp37'
-            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.10.1/python-3.10.1-macos11.pkg'
-            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3'
-    name: "Python ${{ matrix.PYTHON.VERSION }} for ABI ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
+          - VERSION: '3.13'
+            ABI_VERSION: 'cp38'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.13.7/python-3.13.7-macos11.pkg'
+            BIN_PATH: '/Library/Frameworks/Python.framework/Versions/3.13/bin/python3'
+          - VERSION: '3.14t'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.14.0/python-3.14.0-macos11.pkg'
+            BIN_PATH: '/Library/Frameworks/PythonT.framework/Versions/3.14/bin/python3.14t'
+    name: "Python ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
@@ -99,17 +132,28 @@ jobs:
           sudo installer -pkg python.pkg -target /
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
+        if: matrix.PYTHON.VERSION != '3.14t'
+      - run: |
+          curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
+          sudo installer -pkg python.pkg -applyChoiceChangesXML .github/config/macos-pkg-choices-freethreaded.xml -target /
+        env:
+          PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
+        if: matrix.PYTHON.VERSION == '3.14t'
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != '3.14t'
+      - run: venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == '3.14t'
       - name: Build the wheel
         run: |
+            if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+            fi
             mkdir wheelhouse
-            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" \
-                venv/bin/python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
-              mv dist/pynacl*.whl wheelhouse/
+            LIBSODIUM_MAKE_ARGS="-j$(sysctl -n hw.ncpu)" venv/bin/python -m build --wheel $PY_LIMITED_API
+            mv dist/pynacl*.whl wheelhouse/
         env:
-          PYTHON_VERSION: ${{ matrix.PYTHON.ABI_VERSION }}
           MACOSX_DEPLOYMENT_TARGET: '10.10'
           CFLAGS: '-arch arm64 -arch x86_64'
           ARCHFLAGS: '-arch arm64 -arch x86_64'
@@ -120,7 +164,7 @@ jobs:
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: "pynacl-${{ github.event.inputs.version }}-macOS-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse/
@@ -130,20 +174,26 @@ jobs:
       matrix:
         include:
           - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
-            PYTHON: {VERSION: '3.9', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
-            PYTHON: {VERSION: '3.9', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', VS_ARCH: 'arm64', IMAGE: 'windows-11-arm'}
-            PYTHON: {VERSION: '3.11', ABI_VERSION: 'cp37', SODIUM_MSVC_VERSION: 'v143'}
+            PYTHON: {VERSION: '3.13', ABI_VERSION: 'cp38', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'arm64', SODIUM_ARCH: 'ARM64', VS_ARCH: 'arm64', IMAGE: 'windows-11-arm'}
+            PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
         with:
           # The tag to build or the tag received by the tag event
           ref: ${{ github.event.inputs.version || github.ref }}
           persist-credentials: false
       - name: Setup python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.PYTHON.VERSION }}
           architecture: ${{ matrix.WINDOWS.ARCH }}
@@ -157,13 +207,22 @@ jobs:
           echo "LIB=C:/libsodium/${{ matrix.WINDOWS.SODIUM_ARCH }}/release/${{ matrix.PYTHON.SODIUM_MSVC_VERSION }}/static;$LIB" >> $GITHUB_ENV
         shell: bash
 
-      - name: Install wheel and our Python dependencies
-        run: python -m pip install -U pip wheel cffi build
+      - run: python -m pip install -U pip wheel cffi build
+        if: matrix.PYTHON.VERSION != '3.14t'
+      - run: python -m pip install -U pip wheel 'cffi>=2.0.0' build
+        if: matrix.PYTHON.VERSION == '3.14t'
+      - name: Determine PY_LIMITED_API
+        run: |
+          if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
+              PY_LIMITED_API="--config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}"
+          fi
+          echo "PY_LIMITED_API=$PY_LIMITED_API" >> $GITHUB_ENV
+        shell: bash
       - name: Build the wheel
         run: |
           mkdir wheelhouse
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -no_logo -arch=${{ matrix.WINDOWS.VS_ARCH }}
-          python -m build --wheel --config-setting=--build-option=--py-limited-api=${{ matrix.PYTHON.ABI_VERSION }}
+          python -m build --wheel %PY_LIMITED_API%
           mv dist/pynacl*.whl wheelhouse/
         shell: cmd
         env:
@@ -177,7 +236,7 @@ jobs:
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate();signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
       - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: "pynacl-${{ github.event.inputs.version }}-win-${{ matrix.WINDOWS.ARCH }}-${{ matrix.PYTHON.VERSION }}"
           path: pynacl-wheelhouse\

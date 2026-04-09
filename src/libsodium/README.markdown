@@ -1,5 +1,4 @@
 [![GitHub CI](https://github.com/jedisct1/libsodium/workflows/CI/badge.svg)](https://github.com/jedisct1/libsodium/actions)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/fu8s2elx25il98hj?svg=true)](https://ci.appveyor.com/project/jedisct1/libsodium)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/2397/badge.svg)](https://scan.coverity.com/projects/2397)
 [![Azure build status](https://jedisct1.visualstudio.com/Libsodium/_apis/build/status/jedisct1.libsodium?branchName=stable)](https://jedisct1.visualstudio.com/Libsodium/_build/latest?definitionId=3&branchName=stable)
 [![CodeQL scan](https://github.com/jedisct1/libsodium/workflows/CodeQL%20scan/badge.svg)](https://github.com/jedisct1/libsodium/actions)
@@ -16,24 +15,29 @@ It is a portable, cross-compilable, installable, and packageable fork of [NaCl](
 
 - **Encryption & Decryption:** Securely encrypt and decrypt data with modern algorithms.
 - **Digital Signatures:** Create and verify signatures to ensure data authenticity.
-- **Cross-Platform Compatibility:** Supported on Windows (MinGW and Visual Studio, both x86 and x64), iOS, Android, JavaScript, and WebAssembly.
+- **Cross-Platform Compatibility:** Supported on Windows (MinGW and Visual Studio, x86, x64 and arm64), iOS, Android, JavaScript, and WebAssembly.
 - **User-Friendly API:** Designed to provide all core cryptographic operations while remaining easy to integrate into your projects.
 
 ---
 
 ## Documentation
 
-Detailed documentation is available online. It is generated from the [libsodium-doc](https://github.com/jedisct1/libsodium-doc) repository and requires JavaScript for full functionality:
-
-- [libsodium Documentation](https://doc.libsodium.org)
+- [Installation](https://doc.libsodium.org/installation)
+- [Quickstart](https://doc.libsodium.org/quickstart)
+- [Full Documentation](https://doc.libsodium.org)
+- [Releases](https://download.libsodium.org/libsodium/releases/)
+- [Integrity Checking](https://doc.libsodium.org/installation#integrity-checking)
 
 ---
 
-## Integrity Checking
+## Versioning
 
-For security and authenticity, please review the integrity checking instructions. These include the signing keys and methods to verify your installation:
+libsodium uses a two-tier release system:
 
-- [Integrity Checking Instructions](https://download.libsodium.org/doc/installation#integrity-checking)
+- **Point releases** (e.g., 1.0.19, 1.0.20, 1.0.21) are tagged when new features are added or significant changes are made.
+- **Stable releases** are frequent maintainance updates between point releases. They fix minor issues while remaining fully compatible with their parent point release. No new features, no breaking changes.
+
+If your application depends on a specific point release, stable updates are safe to apply. Security fixes go to the `stable` branch immediately, with a new point release tagged shortly after.
 
 ---
 
