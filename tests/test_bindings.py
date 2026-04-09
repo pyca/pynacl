@@ -1020,3 +1020,30 @@ def test_scalarmult_ed25519_unavailable():
         c.crypto_scalarmult_ed25519(zero, zero)
     with pytest.raises(UnavailableError):
         c.crypto_scalarmult_ed25519_noclamp(zero, zero)
+
+
+def test_onetimeauth_wrong_length():
+    with pytest.raises(ValueError):
+        c.crypto_onetimeauth(b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_onetimeauth(b"message", b"")
+    with pytest.raises(ValueError):
+        c.crypto_onetimeauth_verify(b"", b"", b"")
+    with pytest.raises(ValueError):
+        c.crypto_onetimeauth_verify(
+            b"\x00" * c.crypto_onetimeauth_BYTES, b"message", b""
+        )
+    with pytest.raises(ValueError):
+        c.crypto_onetimeauth_verify(
+            b"", b"message", b"\x00" * c.crypto_onetimeauth_KEYBYTES
+        )
+
+
+def test_onetimeauth():
+    key = b"\x01" * c.crypto_onetimeauth_KEYBYTES
+    msg = b"message"
+
+    mac = c.crypto_onetimeauth(msg, key)
+    assert tohex(mac) == "4cee137430de76761b1d11751b1d1175"
+
+    assert c.crypto_onetimeauth_verify(mac, msg, key)
