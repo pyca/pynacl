@@ -1,6 +1,8 @@
 from nacl._sodium import ffi, lib
 
-POLY1305_BYTES = 16  # length of MAC/tag in bytes
+
+crypto_onetimeauth_BYTES = lib.crypto_onetimeauth_bytes()
+crypto_onetimeauth_KEYBYTES = lib.crypto_onetimeauth_keybytes()
 
 
 def crypto_onetimeauth(message: bytes, key: bytes) -> bytes:
@@ -11,14 +13,14 @@ def crypto_onetimeauth(message: bytes, key: bytes) -> bytes:
     :param key: 32-bytes Poly1305 key
     :return: 16-bytes MAC (tag)
     """
-    if len(key) != 32:
-        raise ValueError("Key must be 32 bytes")
+    if len(key) != crypto_onetimeauth_KEYBYTES:
+        raise ValueError(f"Key must be {crypto_onetimeauth_KEYBYTES} bytes")
 
-    mac = ffi.new(f"unsigned char[{POLY1305_BYTES}]")
+    mac = ffi.new(f"unsigned char[{crypto_onetimeauth_BYTES}]")
     rc = lib.crypto_onetimeauth(mac, message, len(message), key)
     if rc != 0:
         raise RuntimeError(f"crypto_onetimeauth failed with code {rc}")
-    return ffi.buffer(mac, POLY1305_BYTES)[:]
+    return ffi.buffer(mac, crypto_onetimeauth_BYTES)[:]
 
 
 def crypto_onetimeauth_verify(mac: bytes, message: bytes, key: bytes) -> bool:
@@ -30,10 +32,10 @@ def crypto_onetimeauth_verify(mac: bytes, message: bytes, key: bytes) -> bool:
     :param key: 32-bytes key
     :return: True on valid MAC, else False
     """
-    if len(mac) != POLY1305_BYTES:
-        raise ValueError("MAC must be 16 bytes")
-    if len(key) != 32:
-        raise ValueError("Key must be 32 bytes")
+    if len(mac) != crypto_onetimeauth_BYTES:
+        raise ValueError(f"MAC must be {crypto_onetimeauth_BYTES} bytes")
+    if len(key) != crypto_onetimeauth_KEYBYTES:
+        raise ValueError(f"Key must be {crypto_onetimeauth_KEYBYTES} bytes")
 
     rc = lib.crypto_onetimeauth_verify(mac, message, len(message), key)
     return rc == 0
