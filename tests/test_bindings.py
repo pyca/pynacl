@@ -1030,9 +1030,13 @@ def test_onetimeauth_wrong_length():
     with pytest.raises(ValueError):
         c.crypto_onetimeauth_verify(b"", b"", b"")
     with pytest.raises(ValueError):
-        c.crypto_onetimeauth_verify(b"\x00" * c.crypto_onetimeauth_BYTES, b"message", b"")
+        c.crypto_onetimeauth_verify(
+            b"\x00" * c.crypto_onetimeauth_BYTES, b"message", b""
+        )
     with pytest.raises(ValueError):
-        c.crypto_onetimeauth_verify(b"", b"message", b"\x00" * c.crypto_onetimeauth_KEYBYTES)
+        c.crypto_onetimeauth_verify(
+            b"", b"message", b"\x00" * c.crypto_onetimeauth_KEYBYTES
+        )
 
 
 def test_onetimeauth():
