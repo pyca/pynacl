@@ -225,7 +225,7 @@ jobs:
           # omitted — none works under Emscripten/wasm.
           pip install pytest hypothesis
           pip install wheelhouse/pynacl-*.whl
-          python .github/bin/smoketest.py
+          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
           pytest -p no:cacheprovider tests/
 
   all-green:
