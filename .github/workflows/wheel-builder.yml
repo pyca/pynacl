@@ -97,7 +97,8 @@ jobs:
           mv dist/pynacl*.whl tmpwheelhouse/
       - run: auditwheel repair --plat ${{ matrix.MANYLINUX.NAME }} tmpwheelhouse/pynacl*.whl -w wheelhouse/
       - run: .venv/bin/pip install pynacl --no-index -f wheelhouse/
-      - run: .venv/bin/python .github/bin/smoketest.py
+      - run: |
+          .venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
@@ -157,7 +158,8 @@ jobs:
           ARCHFLAGS: '-arch arm64 -arch x86_64'
           _PYTHON_HOST_PLATFORM: 'macosx-10.9-universal2'
       - run: venv/bin/pip install -f wheelhouse --no-index pynacl
-      - run: venv/bin/python .github/bin/smoketest.py
+      - run: |
+          venv/bin/python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
@@ -225,7 +227,8 @@ jobs:
       - name: Test installing the wheel
         run: pip install -f wheelhouse pynacl --no-index
       - name: Test the installed wheel
-        run: python .github/bin/smoketest.py
+        run: |
+          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
       - run: mkdir pynacl-wheelhouse
       - run: move wheelhouse\pynacl*.whl pynacl-wheelhouse\
       - uses: actions/upload-artifact@v7
@@ -262,7 +265,6 @@ jobs:
           persist-credentials: false
           sparse-checkout: |
             .github/bin/build_pyemscripten_libsodium.sh
-            .github/bin/smoketest.py
             src/libsodium
           sparse-checkout-cone-mode: false
 
@@ -307,7 +309,8 @@ jobs:
             CFLAGS=-I/tmp/libsodium-pyodide/include
             LDFLAGS=-L/tmp/libsodium-pyodide/lib
           # Full pytest suite runs in ci.yml::pyemscripten — smoketest only here.
-          CIBW_TEST_COMMAND_PYODIDE: python {project}/.github/bin/smoketest.py
+          CIBW_TEST_COMMAND_PYODIDE: |
+            python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
       - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
