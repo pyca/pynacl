@@ -255,7 +255,7 @@ jobs:
     steps:
       - name: Get build script and bundled libsodium from repository
         # The sdist doesn't carry the cross-compile script or .github/bin,
-        # but CIBW_BEFORE_ALL_PYODIDE and CIBW_TEST_COMMAND_PYODIDE need them.
+        # but CIBW_BEFORE_BUILD_PYODIDE and CIBW_TEST_COMMAND_PYODIDE need them.
         uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.event.inputs.version || github.ref }}
@@ -292,9 +292,12 @@ jobs:
         env:
           CIBW_BUILD: ${{ matrix.PYODIDE.CIBW_BUILD }}
           CIBW_ENABLE: ${{ matrix.PYODIDE.CIBW_ENABLE }}
-          # BEFORE_ALL (vs BEFORE_BUILD) so libsodium is cross-compiled
-          # once per host even if the matrix grows multiple cp* targets.
-          CIBW_BEFORE_ALL_PYODIDE: |
+          # BEFORE_BUILD (not BEFORE_ALL) — emsdk only lives on PATH
+          # inside cibuildwheel's build env, where BEFORE_BUILD runs.
+          # BEFORE_ALL would run on the host with no emconfigure available.
+          # The script's own libsodium.a-exists check makes the per-Python
+          # repeat cheap if the matrix ever grows.
+          CIBW_BEFORE_BUILD_PYODIDE: |
             SODIUM_SRC=${{ github.workspace }}/src/libsodium \
             SODIUM_PATH=/tmp/libsodium-pyodide \
             SODIUM_INSTALL_MINIMAL=${{ matrix.PYODIDE.SODIUM_INSTALL_MINIMAL }} \
