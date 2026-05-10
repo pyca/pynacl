@@ -136,16 +136,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Keep in lockstep with wheel-builder.yml::pyemscripten.
         PYODIDE:
-          # TODO: switch to stable Pyodide 314.0 when released. Keep these
-          # pins in lockstep with wheel-builder.yml::pyemscripten.
+          # TODO: switch to stable Pyodide 314.0 when released.
           - VERSION: "314.0.0a1"
             EMSDK: "5.0.3"
             PYTHON: "3.14"
-    name: "pyemscripten (Pyodide ${{ matrix.PYODIDE.VERSION }})"
+            # PEP 783 platform tag emitted by pyodide-build for this xbuildenv.
+            WHEEL_TAG: "cp314-pyemscripten_2026_0_wasm32"
+    name: "${{ matrix.PYODIDE.WHEEL_TAG }} (Pyodide ${{ matrix.PYODIDE.VERSION }})"
     env:
       PYODIDE_VERSION: ${{ matrix.PYODIDE.VERSION }}
       EMSDK_VERSION: ${{ matrix.PYODIDE.EMSDK }}
+      WHEEL_TAG: ${{ matrix.PYODIDE.WHEEL_TAG }}
     steps:
       - uses: actions/checkout@v6.0.2
 
@@ -154,31 +157,16 @@ jobs:
         with:
           python-version: ${{ matrix.PYODIDE.PYTHON }}
 
-      - name: Install pyodide-build
-        # PYODIDE_VERSION pins the xbuildenv (Pyodide release), not the
-        # pyodide-build package — the two version independently.
-        run: python -m pip install "pyodide-build[resolve]"
+      - name: Install pyodide-build (from main)
+        # TODO: No released pyodide-build yet supports Python 3.14 / pyemscripten_2026_0. Fix this when pyodide-build has a stable release with support.
+        run: python -m pip install "pyodide-build[resolve] @ git+https://github.com/pyodide/pyodide-build.git@main"
 
       - name: Install Pyodide xbuildenv (cross-build artifacts + patches)
-        # pyodide-build reads PYODIDE_VERSION from the environment.
         run: pyodide xbuildenv install
 
-      - name: Cache emsdk install
-        id: emsdk-cache
-        uses: actions/cache@v5
-        with:
-          path: /opt/emsdk
-          key: emsdk-${{ env.PYODIDE_VERSION }}-${{ env.EMSDK_VERSION }}-${{ runner.os }}-${{ runner.arch }}-0
-
-      - name: Install emsdk (Pyodide-pinned)
-        if: steps.emsdk-cache.outputs.cache-hit != 'true'
-        run: |
-          set -e
-          sudo git clone --depth 1 https://github.com/emscripten-core/emsdk.git /opt/emsdk
-          sudo chown -R "$(id -u):$(id -g)" /opt/emsdk
-          cd /opt/emsdk
-          ./emsdk install "${EMSDK_VERSION}"
-          ./emsdk activate "${EMSDK_VERSION}"
+      - name: Install Pyodide-pinned Emscripten SDK
+        # Pyodide patches emscripten; vanilla emsdk produces broken wheels.
+        run: pyodide xbuildenv install-emscripten
 
       - name: Cache cross-compiled libsodium
         id: sodium-cache
@@ -197,7 +185,7 @@ jobs:
         run: |
           set -e
           # shellcheck disable=SC1091
-          source /opt/emsdk/emsdk_env.sh
+          source "$(pyodide config get emsdk_dir)/emsdk_env.sh"
           bash .github/bin/build_pyemscripten_libsodium.sh
 
       - name: Build pyemscripten wheel
@@ -206,27 +194,27 @@ jobs:
         run: |
           set -e
           # shellcheck disable=SC1091
-          source /opt/emsdk/emsdk_env.sh
+          source "$(pyodide config get emsdk_dir)/emsdk_env.sh"
           export CFLAGS="-I/tmp/libsodium-pyodide/include ${CFLAGS:-}"
           export LDFLAGS="-L/tmp/libsodium-pyodide/lib ${LDFLAGS:-}"
           mkdir -p wheelhouse
-          # pyodide-build 0.34.x ignores --output-dir and emits two wheels
-          # in dist/; the pyemscripten_*-tagged repack is what ships to PyPI.
           pyodide build .
-          cp dist/pynacl-*-pyemscripten_*_wasm32.whl wheelhouse/
+          # Match WHEEL_TAG exactly: catches silent xbuildenv ABI drift.
+          cp "dist/pynacl-${WHEEL_TAG}.whl" wheelhouse/ 2>/dev/null \
+            || cp dist/pynacl-*-${WHEEL_TAG}.whl wheelhouse/
 
-      - name: Create Pyodide venv and run tests
+      - name: Run tests
         run: |
           set -e
           pyodide venv .venv-pyodide
           # shellcheck disable=SC1091
           source .venv-pyodide/bin/activate
-          # pytest-xdist, pytest-cov, and pytest-pyodide are deliberately
-          # omitted — none works under Emscripten/wasm.
-          pip install pytest hypothesis
+          # pytest-xdist omitted: no multiprocessing under Emscripten.
+          pip install pytest pytest-cov hypothesis
           pip install wheelhouse/pynacl-*.whl
           python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
-          pytest -p no:cacheprovider tests/
+          pytest -p no:cacheprovider --cov=nacl --cov=tests tests/
+      - uses: ./.github/actions/upload-coverage
 
   all-green:
     runs-on: ubuntu-latest
