@@ -159,7 +159,7 @@ def test_variants_roundtrip_aad(
     with pytest.raises(exc.CryptoError):
         ct1 = bytearray(ct)
         ct1[0] = ct1[0] ^ 0xFF
-        c.decrypt(ct1, aad, unonce, ukey)
+        c.decrypt(bytes(ct1), aad, unonce, ukey)
 
 
 @given(
@@ -193,7 +193,7 @@ def test_variants_roundtrip_no_aad(
     with pytest.raises(exc.CryptoError):
         ct1 = bytearray(ct)
         ct1[0] = ct1[0] ^ 0xFF
-        c.decrypt(ct1, aad, unonce, ukey)
+        c.decrypt(bytes(ct1), aad, unonce, ukey)
 
 
 @pytest.mark.parametrize(
