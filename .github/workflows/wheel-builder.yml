@@ -276,10 +276,10 @@ jobs:
         with:
           name: pynacl-sdist
 
-      # TODO: switch to released cibuildwheel once pypa/cibuildwheel#2812
-      # (which adds cp314-pyodide_wasm32 / pyemscripten_2026_0_wasm32) is
-      # merged.
-      - run: pip install "cibuildwheel @ git+https://github.com/agriyakhetarpal/cibuildwheel.git@40ffec086b3068e0e4e2b86e9ef5ff6ff1156d9f"
+      # TODO: switch to released cibuildwheel once a release containing
+      # pypa/cibuildwheel#2812 (cp314-pyodide_wasm32 / pyemscripten_2026_0_wasm32)
+      # is published.
+      - run: pip install "cibuildwheel @ git+https://github.com/pypa/cibuildwheel.git@main"
       - run: mkdir wheelhouse
 
       - name: Cache cross-compiled libsodium
