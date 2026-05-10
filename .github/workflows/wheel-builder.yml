@@ -255,6 +255,7 @@ jobs:
     env:
       PYODIDE_VERSION: ${{ matrix.PYODIDE.VERSION }}
       EMSDK_VERSION: ${{ matrix.PYODIDE.EMSDK }}
+      WHEEL_TAG: ${{ matrix.PYODIDE.WHEEL_TAG }}
     steps:
       - name: Get build script and bundled libsodium from repository
         # The sdist doesn't carry the cross-compile script or .github/bin,
@@ -313,7 +314,8 @@ jobs:
             python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
 
       - run: mkdir pynacl-wheelhouse
-      - run: mv wheelhouse/pynacl*.whl pynacl-wheelhouse/
+      # Match WHEEL_TAG exactly: catches silent xbuildenv ABI drift.
+      - run: mv wheelhouse/pynacl-*-${WHEEL_TAG}.whl pynacl-wheelhouse/
       - uses: actions/upload-artifact@v7
         with:
           name: "pynacl-${{ github.event.inputs.version }}-${{ matrix.PYODIDE.WHEEL_TAG }}"
