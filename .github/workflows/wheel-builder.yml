@@ -245,7 +245,7 @@ jobs:
         PYODIDE:
           # TODO: switch to stable Pyodide 314.0 when released. Keep these
           # pins in lockstep with ci.yml::pyemscripten.
-          - VERSION: "314.0.0a1"
+          - VERSION: "314.0.0a2"
             EMSDK: "5.0.3"
             PYTHON: "3.14"
             CIBW_BUILD: "cp314-pyodide_wasm32"
