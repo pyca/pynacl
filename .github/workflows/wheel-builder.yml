@@ -277,10 +277,10 @@ jobs:
         with:
           name: pynacl-sdist
 
-      # TODO: switch to released cibuildwheel once a release containing
-      # pypa/cibuildwheel#2812 (cp314-pyodide_wasm32 / pyemscripten_2026_0_wasm32)
-      # is published.
-      - run: pip install "cibuildwheel @ git+https://github.com/pypa/cibuildwheel.git@main"
+      # 4.0.0rc1 is the first release carrying pypa/cibuildwheel#2812
+      # (cp314-pyodide_wasm32 / pyemscripten_2026_0_wasm32). Bump to the
+      # stable 4.0.0 tag once it lands.
+      - run: pip install "cibuildwheel==4.0.0rc1"
       - run: mkdir wheelhouse
 
       - name: Cache cross-compiled libsodium
