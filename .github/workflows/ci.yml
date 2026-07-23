@@ -130,9 +130,98 @@ jobs:
         shell: cmd
       - uses: ./.github/actions/upload-coverage
 
+  pyemscripten:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in lockstep with wheel-builder.yml::pyemscripten.
+        PYODIDE:
+          # TODO: switch to stable Pyodide 314.0 when released.
+          - VERSION: "314.0.0a2"
+            EMSDK: "5.0.3"
+            PYTHON: "3.14"
+            # PEP 783 platform tag emitted by pyodide-build for this xbuildenv.
+            WHEEL_TAG: "cp314-pyemscripten_2026_0_wasm32"
+    name: "${{ matrix.PYODIDE.WHEEL_TAG }} (Pyodide ${{ matrix.PYODIDE.VERSION }})"
+    env:
+      PYODIDE_VERSION: ${{ matrix.PYODIDE.VERSION }}
+      EMSDK_VERSION: ${{ matrix.PYODIDE.EMSDK }}
+      WHEEL_TAG: ${{ matrix.PYODIDE.WHEEL_TAG }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.PYODIDE.PYTHON }}
+
+      - name: Install pyodide-build
+        # 0.34.1+ ships the PEP 783 `pyemscripten` platform name and the
+        # `xbuildenv install-emscripten` subcommand this job relies on.
+        run: python -m pip install "pyodide-build[resolve]==0.34.3"
+
+      - name: Install Pyodide xbuildenv (cross-build artifacts + patches)
+        # Explicit version arg — `pyodide xbuildenv install` does not read
+        # PYODIDE_VERSION; without this the matrix pin would not be
+        # enforced (selection falls back to latest host-Python-compatible).
+        run: pyodide xbuildenv install "${PYODIDE_VERSION}"
+
+      - name: Install Pyodide-pinned Emscripten SDK
+        # Pyodide patches emscripten; vanilla emsdk produces broken wheels.
+        run: pyodide xbuildenv install-emscripten
+
+      - name: Cache cross-compiled libsodium
+        id: sodium-cache
+        uses: actions/cache@v5
+        with:
+          path: /tmp/libsodium-pyodide
+          # min0/min1 partitions full vs --enable-minimal builds.
+          key: libsodium-pyodide-${{ env.PYODIDE_VERSION }}-${{ env.EMSDK_VERSION }}-min${{ matrix.PYODIDE.SODIUM_INSTALL_MINIMAL || '0' }}-${{ hashFiles('.github/bin/build_pyemscripten_libsodium.sh', 'src/libsodium/configure.ac') }}-${{ runner.os }}-${{ runner.arch }}-0
+
+      - name: Cross-compile libsodium for wasm32-emscripten
+        if: steps.sodium-cache.outputs.cache-hit != 'true'
+        env:
+          SODIUM_SRC: ${{ github.workspace }}/src/libsodium
+          SODIUM_PATH: /tmp/libsodium-pyodide
+          SODIUM_INSTALL_MINIMAL: ${{ matrix.PYODIDE.SODIUM_INSTALL_MINIMAL }}
+        run: |
+          set -e
+          # shellcheck disable=SC1091
+          source "$(pyodide config get emsdk_dir)/emsdk_env.sh"
+          bash .github/bin/build_pyemscripten_libsodium.sh
+
+      - name: Build pyemscripten wheel
+        env:
+          SODIUM_INSTALL: system
+        run: |
+          set -e
+          # shellcheck disable=SC1091
+          source "$(pyodide config get emsdk_dir)/emsdk_env.sh"
+          export CFLAGS="-I/tmp/libsodium-pyodide/include ${CFLAGS:-}"
+          export LDFLAGS="-L/tmp/libsodium-pyodide/lib ${LDFLAGS:-}"
+          mkdir -p wheelhouse
+          pyodide build .
+          # Match WHEEL_TAG exactly: catches silent xbuildenv ABI drift.
+          cp "dist/pynacl-${WHEEL_TAG}.whl" wheelhouse/ 2>/dev/null \
+            || cp dist/pynacl-*-${WHEEL_TAG}.whl wheelhouse/
+
+      - name: Run tests
+        run: |
+          set -e
+          pyodide venv .venv-pyodide
+          # shellcheck disable=SC1091
+          source .venv-pyodide/bin/activate
+          # pytest-xdist omitted: no multiprocessing under Emscripten.
+          pip install pytest pytest-cov hypothesis
+          pip install wheelhouse/pynacl-*.whl
+          python -c "import nacl.signing; key = nacl.signing.SigningKey.generate(); signature = key.sign(b'test'); key.verify_key.verify(signature)"
+          pytest -p no:cacheprovider --cov=nacl --cov=tests tests/
+      - uses: ./.github/actions/upload-coverage
+
   all-green:
     runs-on: ubuntu-latest
-    needs: [linux, macos, windows]
+    needs: [linux, macos, windows, pyemscripten]
     if: ${{ always() }}
     timeout-minutes: 3
     steps:
