@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 import binascii
-from typing import List, Tuple
 
 import pytest
 
@@ -25,7 +26,7 @@ from nacl.public import PrivateKey, PublicKey, SealedBox
 from .utils import check_type_error, read_crypto_test_vectors
 
 
-def sealbox_vectors() -> List[Tuple[bytes, bytes, bytes, bytes]]:
+def sealbox_vectors() -> list[tuple[bytes, bytes, bytes, bytes]]:
     # Fmt: <recipient sk><tab><recipient pk><tab><pt_len>:<plaintext>
     # <tab><cr_len>:<ciphertext>[<tab> ...]
 

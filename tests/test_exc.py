@@ -22,18 +22,18 @@ class CustomError(exc.CryptoError):
     pass
 
 
-# Type safety: mypy can spot comparisons that will always evaluate to False, and the
-# bad argument type. Suppress these: we want to test these are detected at runtime.
+# Type safety: mypy can spot the bad argument type. Suppress it: we want to
+# test it is detected at runtime.
 
 
 def test_exceptions_ensure_with_true_condition():
-    exc.ensure(1 == 1, "one equals one")
+    exc.ensure(True, "one equals one")
 
 
 def test_exceptions_ensure_with_false_condition():
     with pytest.raises(exc.AssertionError):
         exc.ensure(
-            1 == 0,  # type: ignore[comparison-overlap]
+            False,
             "one is not zero",
             raising=exc.AssertionError,
         )
@@ -42,7 +42,7 @@ def test_exceptions_ensure_with_false_condition():
 def test_exceptions_ensure_with_unwanted_kwarg():
     with pytest.raises(exc.TypeError):
         exc.ensure(
-            1 == 1,
+            True,
             unexpected="unexpected",  # type: ignore[arg-type]
         )
 
@@ -50,7 +50,7 @@ def test_exceptions_ensure_with_unwanted_kwarg():
 def test_exceptions_ensure_custom_exception():
     with pytest.raises(CustomError):
         exc.ensure(
-            1 == 0,  # type: ignore[comparison-overlap]
+            False,
             "Raising a CustomError",
             raising=CustomError,
         )

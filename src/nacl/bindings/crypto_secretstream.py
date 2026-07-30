@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, Tuple, Union, cast
+from __future__ import annotations
+
+from typing import Union, cast
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
-
 
 crypto_secretstream_xchacha20poly1305_ABYTES: int = (
     lib.crypto_secretstream_xchacha20poly1305_abytes()
@@ -69,7 +70,7 @@ class crypto_secretstream_xchacha20poly1305_state:
 
     """
 
-    __slots__ = ["statebuf", "rawbuf", "tagbuf"]
+    __slots__ = ["rawbuf", "statebuf", "tagbuf"]
 
     def __init__(self) -> None:
         """Initialize a clean state object."""
@@ -79,8 +80,8 @@ class crypto_secretstream_xchacha20poly1305_state:
             crypto_secretstream_xchacha20poly1305_STATEBYTES,
         )
 
-        self.rawbuf: Optional[ByteString] = None
-        self.tagbuf: Optional[ByteString] = None
+        self.rawbuf: ByteString | None = None
+        self.tagbuf: ByteString | None = None
 
 
 def crypto_secretstream_xchacha20poly1305_init_push(
@@ -130,7 +131,7 @@ def crypto_secretstream_xchacha20poly1305_init_push(
 def crypto_secretstream_xchacha20poly1305_push(
     state: crypto_secretstream_xchacha20poly1305_state,
     m: bytes,
-    ad: Optional[bytes] = None,
+    ad: bytes | None = None,
     tag: int = crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
 ) -> bytes:
     """
@@ -250,8 +251,8 @@ def crypto_secretstream_xchacha20poly1305_init_pull(
 def crypto_secretstream_xchacha20poly1305_pull(
     state: crypto_secretstream_xchacha20poly1305_state,
     c: bytes,
-    ad: Optional[bytes] = None,
-) -> Tuple[bytes, int]:
+    ad: bytes | None = None,
+) -> tuple[bytes, int]:
     """
     Read a decrypted message from the secret stream.
 

@@ -12,41 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import binascii
 import json
 import os
 import random
-from typing import List, Optional, Tuple, Union
-
-from _pytest._code import ExceptionInfo
-from _pytest.monkeypatch import MonkeyPatch
+from typing import Optional, Tuple, Union
 
 import pytest
-
+from _pytest._code import ExceptionInfo
+from _pytest.monkeypatch import MonkeyPatch
 from nacl._sodium import ffi
+
 from nacl.bindings.crypto_secretstream import (
     crypto_secretstream_xchacha20poly1305_ABYTES,
     crypto_secretstream_xchacha20poly1305_HEADERBYTES,
-    crypto_secretstream_xchacha20poly1305_KEYBYTES,
-    crypto_secretstream_xchacha20poly1305_STATEBYTES,
-    crypto_secretstream_xchacha20poly1305_TAG_FINAL,
-    crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
-    crypto_secretstream_xchacha20poly1305_TAG_PUSH,
-    crypto_secretstream_xchacha20poly1305_TAG_REKEY,
     crypto_secretstream_xchacha20poly1305_init_pull,
     crypto_secretstream_xchacha20poly1305_init_push,
+    crypto_secretstream_xchacha20poly1305_KEYBYTES,
     crypto_secretstream_xchacha20poly1305_keygen,
     crypto_secretstream_xchacha20poly1305_pull,
     crypto_secretstream_xchacha20poly1305_push,
     crypto_secretstream_xchacha20poly1305_rekey,
     crypto_secretstream_xchacha20poly1305_state,
+    crypto_secretstream_xchacha20poly1305_STATEBYTES,
+    crypto_secretstream_xchacha20poly1305_TAG_FINAL,
+    crypto_secretstream_xchacha20poly1305_TAG_MESSAGE,
+    crypto_secretstream_xchacha20poly1305_TAG_PUSH,
+    crypto_secretstream_xchacha20poly1305_TAG_REKEY,
 )
 from nacl.utils import random as randombytes
 
 Chunk = Tuple[int, Optional[bytes], bytes, bytes]
 
 
-def read_secretstream_vectors() -> List[Tuple[bytes, bytes, List[Chunk]]]:
+def read_secretstream_vectors() -> list[tuple[bytes, bytes, list[Chunk]]]:
     DATA = "secretstream-test-vectors.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
     with open(path) as fp:
@@ -75,7 +76,7 @@ def read_secretstream_vectors() -> List[Tuple[bytes, bytes, List[Chunk]]]:
     ("key", "header", "chunks"),
     read_secretstream_vectors(),
 )
-def test_vectors(key: bytes, header: bytes, chunks: List[Chunk]):
+def test_vectors(key: bytes, header: bytes, chunks: list[Chunk]):
     state = crypto_secretstream_xchacha20poly1305_state()
     crypto_secretstream_xchacha20poly1305_init_pull(state, header, key)
     for tag, ad, message, ciphertext in chunks:

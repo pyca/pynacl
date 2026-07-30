@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2013 Donald Stufft and individual contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,13 +28,14 @@ from setuptools import Distribution, setup
 from setuptools.command.build_clib import build_clib as _build_clib
 from setuptools.command.build_ext import build_ext as _build_ext
 
-
-if platform.python_implementation() == "PyPy":
-    if sys.pypy_version_info < (2, 6):
-        raise RuntimeError(
-            "PyNaCl is not compatible with PyPy < 2.6. Please "
-            "upgrade PyPy to use this library."
-        )
+if platform.python_implementation() == "PyPy" and sys.pypy_version_info < (
+    2,
+    6,
+):
+    raise RuntimeError(
+        "PyNaCl is not compatible with PyPy < 2.6. Please "
+        "upgrade PyPy to use this library."
+    )
 
 
 def here(*paths):
@@ -52,18 +52,13 @@ sodium = functools.partial(here, "src/libsodium/src/libsodium")
 sys.path.insert(0, abshere("src"))
 
 
-import nacl  # noqa
+import nacl
 
 
 def use_system():
-    install_type = os.environ.get("SODIUM_INSTALL")
-
-    if install_type == "system":
-        # If we are forcing system installs, don't compile the bundled one
-        return True
-    else:
-        # By default we just use the bundled copy
-        return False
+    # If we are forcing system installs, don't compile the bundled one; by
+    # default we just use the bundled copy
+    return os.environ.get("SODIUM_INSTALL") == "system"
 
 
 class Distribution(Distribution):
@@ -83,10 +78,10 @@ class build_clib(_build_clib):
         return files
 
     def build_libraries(self, libraries):
-        raise Exception("build_libraries")
+        raise RuntimeError("build_libraries")
 
     def check_library_list(self, libraries):
-        raise Exception("check_library_list")
+        raise RuntimeError("check_library_list")
 
     def get_library_names(self):
         return ["sodium"]
@@ -122,8 +117,8 @@ class build_clib(_build_clib):
         make_command = os.environ.get("MAKE") or "make"
 
         if not shutil.which(make_command):
-            raise Exception(
-                "ERROR: The '%s' utility is missing from PATH" % make_command
+            raise RuntimeError(
+                f"ERROR: The '{make_command}' utility is missing from PATH"
             )
 
         # Locate our configure script
@@ -184,13 +179,16 @@ class build_ext(_build_ext):
         return _build_ext.run(self)
 
 
-README = open("README.rst").read()
-INSTALL = open("INSTALL.rst").read()
-CHANGELOG = open("CHANGELOG.rst").read()
+with open("README.rst") as f:
+    README = f.read()
+with open("INSTALL.rst") as f:
+    INSTALL = f.read()
+with open("CHANGELOG.rst") as f:
+    CHANGELOG = f.read()
 
 
 setup(
-    long_description="\n".join((README, INSTALL, CHANGELOG)),
+    long_description=f"{README}\n{INSTALL}\n{CHANGELOG}",
     url=nacl.__uri__,
     package_dir={"": "src"},
     packages=["nacl", "nacl.pwhash", "nacl.bindings"],

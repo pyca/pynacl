@@ -17,7 +17,6 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-
 has_crypto_core_ed25519 = bool(lib.PYNACL_HAS_CRYPTO_CORE_ED25519)
 
 crypto_core_ed25519_BYTES = 0

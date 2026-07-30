@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import sys
-from typing import Tuple
 
 import nacl.exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
-
 
 has_crypto_pwhash_scryptsalsa208sha256 = bool(
     lib.PYNACL_HAS_CRYPTO_PWHASH_SCRYPTSALSA208SHA256
@@ -205,7 +205,7 @@ def _check_memory_occupation(
 
     ensure(
         p <= SCRYPT_PR_MAX / r,
-        "p*r is greater than {}".format(SCRYPT_PR_MAX),
+        f"p*r is greater than {SCRYPT_PR_MAX}",
         raising=exc.ValueError,
     )
 
@@ -232,11 +232,10 @@ def _check_memory_occupation(
 
 def nacl_bindings_pick_scrypt_params(
     opslimit: int, memlimit: int
-) -> Tuple[int, int, int]:
+) -> tuple[int, int, int]:
     """Python implementation of libsodium's pickparams"""
 
-    if opslimit < 32768:
-        opslimit = 32768
+    opslimit = max(opslimit, 32768)
 
     r = 8
 
@@ -254,8 +253,7 @@ def nacl_bindings_pick_scrypt_params(
 
         maxrp = (opslimit // 4) // (2**n_log2)
 
-        if maxrp > 0x3FFFFFFF:  # pragma: no cover
-            maxrp = 0x3FFFFFFF
+        maxrp = min(maxrp, 0x3FFFFFFF)
 
         p = maxrp // r
 
@@ -403,53 +401,37 @@ def _check_argon2_limits_alg(opslimit: int, memlimit: int, alg: int) -> None:
     if alg == crypto_pwhash_ALG_ARGON2I13:
         if memlimit < crypto_pwhash_argon2i_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {} bytes".format(
-                    crypto_pwhash_argon2i_MEMLIMIT_MIN
-                )
+                f"memlimit must be at least {crypto_pwhash_argon2i_MEMLIMIT_MIN} bytes"
             )
         elif memlimit > crypto_pwhash_argon2i_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {} bytes".format(
-                    crypto_pwhash_argon2i_MEMLIMIT_MAX
-                )
+                f"memlimit must be at most {crypto_pwhash_argon2i_MEMLIMIT_MAX} bytes"
             )
         if opslimit < crypto_pwhash_argon2i_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {}".format(
-                    crypto_pwhash_argon2i_OPSLIMIT_MIN
-                )
+                f"opslimit must be at least {crypto_pwhash_argon2i_OPSLIMIT_MIN}"
             )
         elif opslimit > crypto_pwhash_argon2i_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {}".format(
-                    crypto_pwhash_argon2i_OPSLIMIT_MAX
-                )
+                f"opslimit must be at most {crypto_pwhash_argon2i_OPSLIMIT_MAX}"
             )
 
     elif alg == crypto_pwhash_ALG_ARGON2ID13:
         if memlimit < crypto_pwhash_argon2id_MEMLIMIT_MIN:
             raise exc.ValueError(
-                "memlimit must be at least {} bytes".format(
-                    crypto_pwhash_argon2id_MEMLIMIT_MIN
-                )
+                f"memlimit must be at least {crypto_pwhash_argon2id_MEMLIMIT_MIN} bytes"
             )
         elif memlimit > crypto_pwhash_argon2id_MEMLIMIT_MAX:
             raise exc.ValueError(
-                "memlimit must be at most {} bytes".format(
-                    crypto_pwhash_argon2id_MEMLIMIT_MAX
-                )
+                f"memlimit must be at most {crypto_pwhash_argon2id_MEMLIMIT_MAX} bytes"
             )
         if opslimit < crypto_pwhash_argon2id_OPSLIMIT_MIN:
             raise exc.ValueError(
-                "opslimit must be at least {}".format(
-                    crypto_pwhash_argon2id_OPSLIMIT_MIN
-                )
+                f"opslimit must be at least {crypto_pwhash_argon2id_OPSLIMIT_MIN}"
             )
         elif opslimit > crypto_pwhash_argon2id_OPSLIMIT_MAX:
             raise exc.ValueError(
-                "opslimit must be at most {}".format(
-                    crypto_pwhash_argon2id_OPSLIMIT_MAX
-                )
+                f"opslimit must be at most {crypto_pwhash_argon2id_OPSLIMIT_MAX}"
             )
     else:
         raise exc.TypeError("Unsupported algorithm")
@@ -490,23 +472,17 @@ def crypto_pwhash_alg(
 
     if len(salt) != crypto_pwhash_SALTBYTES:
         raise exc.ValueError(
-            "salt must be exactly {} bytes long".format(
-                crypto_pwhash_SALTBYTES
-            )
+            f"salt must be exactly {crypto_pwhash_SALTBYTES} bytes long"
         )
 
     if outlen < crypto_pwhash_BYTES_MIN:
         raise exc.ValueError(
-            "derived key must be at least {} bytes long".format(
-                crypto_pwhash_BYTES_MIN
-            )
+            f"derived key must be at least {crypto_pwhash_BYTES_MIN} bytes long"
         )
 
     elif outlen > crypto_pwhash_BYTES_MAX:
         raise exc.ValueError(
-            "derived key must be at most {} bytes long".format(
-                crypto_pwhash_BYTES_MAX
-            )
+            f"derived key must be at most {crypto_pwhash_BYTES_MAX} bytes long"
         )
 
     _check_argon2_limits_alg(opslimit, memlimit, alg)

@@ -13,14 +13,14 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 import hashlib
 from binascii import hexlify, unhexlify
-from typing import List, Tuple
-
-from hypothesis import given, settings
-from hypothesis.strategies import binary, integers
 
 import pytest
+from hypothesis import given, settings
+from hypothesis.strategies import binary, integers
 
 from nacl import bindings as c
 from nacl.exceptions import BadSignatureError, CryptoError, UnavailableError
@@ -281,7 +281,7 @@ def test_sign_wrong_lengths():
         c.crypto_sign_seed_keypair(b"")
 
 
-def secret_scalar() -> Tuple[bytes, bytes]:
+def secret_scalar() -> tuple[bytes, bytes]:
     pubkey, secretkey = c.crypto_box_keypair()
     assert len(secretkey) == c.crypto_box_SECRETKEYBYTES
     assert c.crypto_box_SECRETKEYBYTES == c.crypto_scalarmult_BYTES
@@ -291,7 +291,7 @@ def secret_scalar() -> Tuple[bytes, bytes]:
 def test_scalarmult():
     x, xpub = secret_scalar()
     assert len(x) == 32
-    y, ypub = secret_scalar()
+    y, _ypub = secret_scalar()
     # the Curve25519 base point (generator)
     base = unhexlify(b"09" + b"00" * 31)
 
@@ -382,7 +382,7 @@ def test_box_seal_wrong_types():
     A_pubkey, A_secretkey = c.crypto_box_keypair()
     # type safety: mypy can spot these errors, but we want to spot them at runtime too.
     with pytest.raises(TypeError):
-        c.crypto_box_seal(b"abc", dict())  # type: ignore[arg-type]
+        c.crypto_box_seal(b"abc", {})  # type: ignore[arg-type]
     with pytest.raises(TypeError):
         c.crypto_box_seal_open(b"abc", None, A_secretkey)  # type: ignore[arg-type]
     with pytest.raises(TypeError):
@@ -391,7 +391,7 @@ def test_box_seal_wrong_types():
         c.crypto_box_seal_open(None, A_pubkey, A_secretkey)  # type: ignore[arg-type]
 
 
-def _box_from_seed_vectors() -> List[Tuple[bytes, bytes, bytes]]:
+def _box_from_seed_vectors() -> list[tuple[bytes, bytes, bytes]]:
     # Fmt: <seed> <tab> <public_key> || <secret_key>
     DATA = "box_from_seed.txt"
     lines = read_crypto_test_vectors(DATA, maxels=2, delimiter=b"\t")
@@ -542,7 +542,6 @@ def test_sign_ed25519ph_rfc8032():
 
 
 def test_sign_ed25519ph_libsodium():
-    #
     _hsk, _hpk, hmsg, _hsig, _hsigmsg = ed25519_known_answers()[-1]
 
     msg = unhexlify(hmsg)

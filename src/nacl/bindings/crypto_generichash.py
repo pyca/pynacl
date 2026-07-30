@@ -11,12 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import NoReturn, TypeVar
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, NoReturn
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 crypto_generichash_BYTES: int = lib.crypto_generichash_blake2b_bytes()
 crypto_generichash_BYTES_MIN: int = lib.crypto_generichash_blake2b_bytes_min()
@@ -147,9 +151,6 @@ def generichash_blake2b_salt_personal(
     return ffi.buffer(digest, digest_size)[:]
 
 
-_Blake2State = TypeVar("_Blake2State", bound="Blake2State")
-
-
 class Blake2State:
     """
     Python-level wrapper for the crypto_generichash_blake2b state buffer
@@ -169,10 +170,10 @@ class Blake2State:
         on copy.copy()
         """
         raise TypeError(
-            "can't pickle {} objects".format(self.__class__.__name__)
+            f"can't pickle {self.__class__.__name__} objects"
         )
 
-    def copy(self: _Blake2State) -> _Blake2State:
+    def copy(self) -> Self:
         _st = self.__class__(self.digest_size)
         ffi.memmove(
             _st._statebuf, self._statebuf, crypto_generichash_STATEBYTES

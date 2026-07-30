@@ -17,7 +17,6 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-
 has_crypto_scalarmult_ed25519 = bool(lib.PYNACL_HAS_CRYPTO_SCALARMULT_ED25519)
 
 crypto_scalarmult_BYTES: int = lib.crypto_scalarmult_bytes()

@@ -11,13 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+from __future__ import annotations
 
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
 from nacl.public import (
     PrivateKey as _Curve25519_PrivateKey,
+)
+from nacl.public import (
     PublicKey as _Curve25519_PublicKey,
 )
 from nacl.utils import StringFixer, random
@@ -35,7 +37,7 @@ class SignedMessage(bytes):
     @classmethod
     def _from_parts(
         cls, signature: bytes, message: bytes, combined: bytes
-    ) -> "SignedMessage":
+    ) -> SignedMessage:
         obj = cls(combined)
         obj._signature = signature
         obj._message = message
@@ -75,8 +77,7 @@ class VerifyKey(encoding.Encodable, StringFixer):
 
         if len(key) != nacl.bindings.crypto_sign_PUBLICKEYBYTES:
             raise exc.ValueError(
-                "The key must be exactly %s bytes long"
-                % nacl.bindings.crypto_sign_PUBLICKEYBYTES,
+                f"The key must be exactly {nacl.bindings.crypto_sign_PUBLICKEYBYTES} bytes long",
             )
 
         self._key = key
@@ -98,7 +99,7 @@ class VerifyKey(encoding.Encodable, StringFixer):
     def verify(
         self,
         smessage: bytes,
-        signature: Optional[bytes] = None,
+        signature: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> bytes:
         """
@@ -119,14 +120,14 @@ class VerifyKey(encoding.Encodable, StringFixer):
             #   signature size and combine them.
             if not isinstance(signature, bytes):
                 raise exc.TypeError(
-                    "Verification signature must be created from %d bytes"
-                    % nacl.bindings.crypto_sign_BYTES,
+                    "Verification signature must be created from "
+                    f"{nacl.bindings.crypto_sign_BYTES} bytes",
                 )
 
             if len(signature) != nacl.bindings.crypto_sign_BYTES:
                 raise exc.ValueError(
-                    "The signature must be exactly %d bytes long"
-                    % nacl.bindings.crypto_sign_BYTES,
+                    "The signature must be exactly "
+                    f"{nacl.bindings.crypto_sign_BYTES} bytes long",
                 )
 
             smessage = signature + encoder.decode(smessage)
@@ -181,8 +182,8 @@ class SigningKey(encoding.Encodable, StringFixer):
         # Verify that our seed is the proper size
         if len(seed) != nacl.bindings.crypto_sign_SEEDBYTES:
             raise exc.ValueError(
-                "The seed must be exactly %d bytes long"
-                % nacl.bindings.crypto_sign_SEEDBYTES
+                "The seed must be exactly "
+                f"{nacl.bindings.crypto_sign_SEEDBYTES} bytes long"
             )
 
         public_key, secret_key = nacl.bindings.crypto_sign_seed_keypair(seed)
@@ -206,7 +207,7 @@ class SigningKey(encoding.Encodable, StringFixer):
         return not (self == other)
 
     @classmethod
-    def generate(cls) -> "SigningKey":
+    def generate(cls) -> SigningKey:
         """
         Generates a random :class:`~nacl.signing.SigningKey` object.
 

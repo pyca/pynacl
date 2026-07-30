@@ -121,8 +121,7 @@ def kdf(
 
     ensure(
         len(salt) == SALTBYTES,
-        "The salt must be exactly %s, not %s bytes long"
-        % (SALTBYTES, len(salt)),
+        f"The salt must be exactly {SALTBYTES}, not {len(salt)} bytes long",
         raising=exc.ValueError,
     )
 
@@ -201,8 +200,7 @@ def verify(password_hash: bytes, password: bytes) -> bool:
 
     ensure(
         len(password_hash) == PWHASH_SIZE,
-        "The password hash must be exactly %s bytes long"
-        % nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES,
+        f"The password hash must be exactly {nacl.bindings.crypto_pwhash_scryptsalsa208sha256_STRBYTES} bytes long",
         raising=exc.ValueError,
     )
 

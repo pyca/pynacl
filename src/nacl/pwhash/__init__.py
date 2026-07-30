@@ -61,9 +61,7 @@ def verify(password_hash: bytes, password: bytes) -> bool:
     password will hash to the same string when using the parameters saved
     in the stored hash
     """
-    if password_hash.startswith(argon2id.STRPREFIX):
-        return argon2id.verify(password_hash, password)
-    elif password_hash.startswith(argon2i.STRPREFIX):
+    if password_hash.startswith((argon2id.STRPREFIX, argon2i.STRPREFIX)):
         return argon2id.verify(password_hash, password)
     elif scrypt.AVAILABLE and password_hash.startswith(scrypt.STRPREFIX):
         return scrypt.verify(password_hash, password)

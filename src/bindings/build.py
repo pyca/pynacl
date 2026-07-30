@@ -18,7 +18,6 @@ import sys
 
 from cffi import FFI
 
-
 __all__ = ["ffi"]
 
 

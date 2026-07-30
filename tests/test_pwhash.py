@@ -11,17 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import binascii
 import json
 import os
 import sys
 import unicodedata as ud
-from typing import List, Tuple
-
-from hypothesis import given, settings
-from hypothesis.strategies import integers, text
 
 import pytest
+from hypothesis import given, settings
+from hypothesis.strategies import integers, text
 
 import nacl.bindings
 import nacl.encoding
@@ -41,20 +41,22 @@ PASSWD_CHARS = "".join(
 # Select Letters, number representations and spacing characters
 
 
-def argon2i_modular_crypt_ref() -> List[Tuple[str, str]]:
+def argon2i_modular_crypt_ref() -> list[tuple[str, str]]:
     DATA = "modular_crypt_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors = json.load(open(path))
+    with open(path) as f:
+        jvectors = json.load(f)
     vectors = [
         (x["pwhash"], x["passwd"]) for x in jvectors if x["mode"] == "crypt"
     ]
     return vectors
 
 
-def argon2i_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
+def argon2i_raw_ref() -> list[tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2i_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors = json.load(open(path))
+    with open(path) as f:
+        jvectors = json.load(f)
     vectors = [
         (
             x["dgst_len"],
@@ -70,10 +72,11 @@ def argon2i_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
     return vectors
 
 
-def argon2id_modular_crypt_ref() -> List[Tuple[str, str]]:
+def argon2id_modular_crypt_ref() -> list[tuple[str, str]]:
     DATA = "modular_crypt_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors = json.load(open(path))
+    with open(path) as f:
+        jvectors = json.load(f)
     vectors = [
         (x["pwhash"], x["passwd"])
         for x in jvectors
@@ -82,10 +85,11 @@ def argon2id_modular_crypt_ref() -> List[Tuple[str, str]]:
     return vectors
 
 
-def argon2id_raw_ref() -> List[Tuple[int, str, str, int, int, str]]:
+def argon2id_raw_ref() -> list[tuple[int, str, str, int, int, str]]:
     DATA = "raw_argon2id_hashes.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors = json.load(open(path))
+    with open(path) as f:
+        jvectors = json.load(f)
     vectors = [
         (
             x["dgst_len"],

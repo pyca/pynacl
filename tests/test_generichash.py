@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import binascii
 import copy
 import json
 import os
-from typing import AnyStr, Dict, List, Tuple, Union
+from typing import AnyStr
 
 import pytest
 
@@ -27,7 +29,6 @@ import nacl.hashlib
 
 from .utils import read_crypto_test_vectors
 
-
 OVERLONG_PARAMS_VECTORS = [
     (b"key", 65 * b"\xaa", 16 * b"\xaa", 16 * b"\x55", 64, b"will raise"),
     (b"salt", b"key", 17 * b"\xaa", 16 * b"\x55", 64, b"will raise"),
@@ -36,7 +37,7 @@ OVERLONG_PARAMS_VECTORS = [
 ]
 
 
-def generichash_vectors() -> List[Tuple[bytes, bytes, bytes, bytes]]:
+def generichash_vectors() -> list[tuple[bytes, bytes, bytes, bytes]]:
     # Format: <message> <tab> <key> <tab> <output length> <tab> <output>
     DATA = "crypto-test-vectors-blake2-nosalt-nopersonalization.txt"
     # Type safety: read_crypto_test_vectors returns an arbitrary length tuple, but we
@@ -44,8 +45,8 @@ def generichash_vectors() -> List[Tuple[bytes, bytes, bytes, bytes]]:
     return read_crypto_test_vectors(DATA, delimiter=b"\t")  # type: ignore[return-value]
 
 
-def blake2_salt_pers_vectors() -> List[
-    Tuple[bytes, bytes, bytes, bytes, bytes, bytes]
+def blake2_salt_pers_vectors() -> list[
+    tuple[bytes, bytes, bytes, bytes, bytes, bytes]
 ]:
     # Format: <message> <tab> <key> <tab> <salt> <tab>
     # <personalization> <tab> <output length> <tab> <output>
@@ -55,10 +56,11 @@ def blake2_salt_pers_vectors() -> List[
     return read_crypto_test_vectors(DATA, delimiter=b"\t")  # type: ignore[return-value]
 
 
-def blake2_reference_vectors() -> List[Tuple[str, str, int, str]]:
+def blake2_reference_vectors() -> list[tuple[str, str, int, str]]:
     DATA = "blake2-kat.json"
     path = os.path.join(os.path.dirname(__file__), "data", DATA)
-    jvectors: List[Dict[str, str]] = json.load(open(path))
+    with open(path) as f:
+        jvectors: list[dict[str, str]] = json.load(f)
     vectors = [
         (x["in"], x["key"], len(x["out"]) // 2, x["out"])
         for x in jvectors
@@ -71,7 +73,7 @@ def blake2_reference_vectors() -> List[Tuple[str, str, int, str]]:
     ["message", "key", "outlen", "output"], generichash_vectors()
 )
 def test_generichash(
-    message: AnyStr, key: AnyStr, outlen: Union[AnyStr, int], output: AnyStr
+    message: AnyStr, key: AnyStr, outlen: AnyStr | int, output: AnyStr
 ):
     msg = binascii.unhexlify(message)
     output_bytes = binascii.hexlify(binascii.unhexlify(output))

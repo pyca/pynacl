@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import binascii
-from typing import List, Tuple, Union
 
 import pytest
 
@@ -33,7 +34,7 @@ def tohex(b: bytes) -> str:
     return binascii.hexlify(b).decode("ascii")
 
 
-def ed25519_known_answers() -> List[Tuple[bytes, bytes, bytes, bytes, bytes]]:
+def ed25519_known_answers() -> list[tuple[bytes, bytes, bytes, bytes, bytes]]:
     # Known answers taken from: http://ed25519.cr.yp.to/python/sign.input
     # hex-encoded fields on each input line: sk||pk, pk, msg, signature||msg
     # known answer fields: sk, pk, msg, signature, signed
@@ -83,7 +84,7 @@ class TestSigningKey:
             SigningKey(b"\x00" * (crypto_sign_SEEDBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2: Union[bytes, SigningKey]):
+    def test_different_keys_are_not_equal(self, k2: bytes | SigningKey):
         k1 = SigningKey(b"\x00" * crypto_sign_SEEDBYTES)
         assert_not_equal(k1, k2)
 
@@ -149,7 +150,7 @@ class TestVerifyKey:
             VerifyKey(b"\x00" * (crypto_sign_PUBLICKEYBYTES - 1) + b"\x01"),
         ],
     )
-    def test_different_keys_are_not_equal(self, k2: Union[bytes, VerifyKey]):
+    def test_different_keys_are_not_equal(self, k2: bytes | VerifyKey):
         k1 = VerifyKey(b"\x00" * crypto_sign_PUBLICKEYBYTES)
         assert_not_equal(k1, k2)
 

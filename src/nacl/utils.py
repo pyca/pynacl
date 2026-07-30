@@ -13,13 +13,16 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 import os
-from typing import SupportsBytes, Type, TypeVar
+from typing import TYPE_CHECKING, SupportsBytes
 
 import nacl.bindings
 from nacl import encoding
 
-_EncryptedMessage = TypeVar("_EncryptedMessage", bound="EncryptedMessage")
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class EncryptedMessage(bytes):
@@ -33,11 +36,11 @@ class EncryptedMessage(bytes):
 
     @classmethod
     def _from_parts(
-        cls: Type[_EncryptedMessage],
+        cls,
         nonce: bytes,
         ciphertext: bytes,
         combined: bytes,
-    ) -> _EncryptedMessage:
+    ) -> Self:
         obj = cls(combined)
         obj._nonce = nonce
         obj._ciphertext = ciphertext

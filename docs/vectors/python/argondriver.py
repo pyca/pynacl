@@ -1,6 +1,3 @@
-#!/usr/bin/python
-#
-
 import argparse
 import json
 import random
@@ -36,11 +33,11 @@ class argonRunner:
             self.exe,
             salt.encode("ascii"),
             "-t",
-            "{:2d}".format(iters),
+            f"{iters:2d}",
             "-m",
-            "{:2d}".format(maxmem),
+            f"{maxmem:2d}",
             "-l",
-            "{:3d}".format(dgst_len),
+            f"{dgst_len:3d}",
             "-v",
             self.version,
         ]
@@ -60,17 +57,17 @@ class argonRunner:
         p = subprocess.Popen(
             argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE
         )
-        out, err = p.communicate(passwd.encode("ascii"))
-        return dict(
-            passwd=passwd,
-            salt=salt,
-            dgst_len=dgst_len,
-            maxmem=2**maxmem,
-            iters=iters,
-            mode=mode,
-            pwhash=out.decode("ascii").rstrip(),
-            construct=self.construct,
-        )
+        out, _err = p.communicate(passwd.encode("ascii"))
+        return {
+            "passwd": passwd,
+            "salt": salt,
+            "dgst_len": dgst_len,
+            "maxmem": 2**maxmem,
+            "iters": iters,
+            "mode": mode,
+            "pwhash": out.decode("ascii").rstrip(),
+            "construct": self.construct,
+        }
 
     def _genSalt(self):
         sltln = self.rng.randint(self.mnsaltlen, self.mxsaltlen)

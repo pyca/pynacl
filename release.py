@@ -14,7 +14,7 @@ import click
 
 
 def run(*args, **kwargs):
-    print("[running] {}".format(list(args)))
+    print(f"[running] {list(args)}")
     subprocess.check_call(list(args), **kwargs)
 
 
@@ -24,7 +24,7 @@ def release(version):
     """
     ``version`` should be a string like '0.4' or '1.0'.
     """
-    run("git", "tag", "-s", version, "-m", "{} release".format(version))
+    run("git", "tag", "-s", version, "-m", f"{version} release")
     run("git", "push", "git@github.com:pyca/pynacl.git", version)
 
 

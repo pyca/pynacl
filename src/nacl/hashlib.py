@@ -116,7 +116,7 @@ class blake2b:
         on copy.copy()
         """
         raise TypeError(
-            "can't pickle {} objects".format(self.__class__.__name__)
+            f"can't pickle {self.__class__.__name__} objects"
         )
 
 

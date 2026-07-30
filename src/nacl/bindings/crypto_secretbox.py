@@ -17,7 +17,6 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-
 crypto_secretbox_KEYBYTES: int = lib.crypto_secretbox_keybytes()
 crypto_secretbox_NONCEBYTES: int = lib.crypto_secretbox_noncebytes()
 crypto_secretbox_ZEROBYTES: int = lib.crypto_secretbox_zerobytes()
@@ -136,9 +135,7 @@ def crypto_secretbox_open_easy(
 
     ensure(
         _clen >= crypto_secretbox_MACBYTES,
-        "Input ciphertext must be at least {} long".format(
-            crypto_secretbox_MACBYTES
-        ),
+        f"Input ciphertext must be at least {crypto_secretbox_MACBYTES} long",
         raising=exc.TypeError,
     )
 

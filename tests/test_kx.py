@@ -13,10 +13,9 @@
 # limitations under the License.
 
 
+import pytest
 from hypothesis import HealthCheck, given, settings
 from hypothesis.strategies import binary
-
-import pytest
 
 import nacl.bindings as b
 import nacl.exceptions as exc

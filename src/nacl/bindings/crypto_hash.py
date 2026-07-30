@@ -17,7 +17,6 @@ from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-
 # crypto_hash_BYTES = lib.crypto_hash_bytes()
 crypto_hash_BYTES: int = lib.crypto_hash_sha512_bytes()
 crypto_hash_sha256_BYTES: int = lib.crypto_hash_sha256_bytes()

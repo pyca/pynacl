@@ -13,13 +13,15 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 import binascii
 import re
-from typing import Dict, Type, TypeVar
-
-from hypothesis import given, strategies as st
+from typing import TypeVar
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from nacl.encoding import HexEncoder
 from nacl.exceptions import CryptoError
@@ -27,7 +29,6 @@ from nacl.secret import Aead, SecretBox
 
 from .test_aead import xchacha20poly1305_ietf_vectors
 from .utils import flip_byte
-
 
 VECTORS = [
     # Key, Nonce, Plaintext, Ciphertext
@@ -52,13 +53,13 @@ VECTORS = [
 _BoxType = TypeVar("_BoxType", Aead, SecretBox)
 
 
-def hex_keys(m: Type[_BoxType]) -> st.SearchStrategy[bytes]:
+def hex_keys(m: type[_BoxType]) -> st.SearchStrategy[bytes]:
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(
         binascii.hexlify
     )
 
 
-def boxes(m: Type[_BoxType]) -> st.SearchStrategy[_BoxType]:
+def boxes(m: type[_BoxType]) -> st.SearchStrategy[_BoxType]:
     return st.binary(min_size=m.KEY_SIZE, max_size=m.KEY_SIZE).map(m)
 
 
@@ -96,7 +97,7 @@ AEAD_VECTORS = [
 
 
 @pytest.mark.parametrize("kv", AEAD_VECTORS, ids=range(len(AEAD_VECTORS)))
-def test_aead_vectors(kv: Dict[str, bytes]):
+def test_aead_vectors(kv: dict[str, bytes]):
     box = Aead(kv["KEY"])
     combined = kv["CT"] + kv["TAG"]
     aad, nonce, plaintext = kv["AD"], kv["NONCE"], kv["IN"]
@@ -249,7 +250,7 @@ def test_secret_box_wrong_nonce_length(box: SecretBox, nonce: bytes):
 
 
 @pytest.mark.parametrize("cls", (SecretBox, Aead))
-def test_wrong_types(cls: Type[_BoxType]):
+def test_wrong_types(cls: type[_BoxType]):
     expected = re.compile(
         cls.__name__ + " must be created from 32 bytes", re.IGNORECASE
     )

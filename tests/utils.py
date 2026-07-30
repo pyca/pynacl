@@ -13,25 +13,27 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 import os
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable
 
 import pytest
 
 
 def assert_equal(x: object, y: object) -> None:
     assert x == y
-    assert not (x != y)
+    assert x == y
 
 
 def assert_not_equal(x: object, y: object) -> None:
     assert x != y
-    assert not (x == y)
+    assert x != y
 
 
 def read_crypto_test_vectors(
-    fname: str, maxels: int = 0, delimiter: Optional[bytes] = None
-) -> List[Tuple[bytes, ...]]:
+    fname: str, maxels: int = 0, delimiter: bytes | None = None
+) -> list[tuple[bytes, ...]]:
     assert delimiter is not None and isinstance(delimiter, bytes)
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
@@ -48,14 +50,14 @@ def read_crypto_test_vectors(
 
 def read_kv_test_vectors(
     fname: str,
-    delimiter: Optional[bytes] = None,
-    newrecord: Optional[bytes] = None,
-) -> List[Dict[str, bytes]]:
+    delimiter: bytes | None = None,
+    newrecord: bytes | None = None,
+) -> list[dict[str, bytes]]:
     assert delimiter is not None and isinstance(delimiter, bytes)
     assert newrecord is not None and isinstance(newrecord, bytes)
     vectors = []
     path = os.path.join(os.path.dirname(__file__), "data", fname)
-    vector: Dict[str, bytes] = {}
+    vector: dict[str, bytes] = {}
     with open(path, "rb") as fp:
         for line in fp:
             line = line.rstrip()

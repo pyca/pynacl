@@ -18,7 +18,6 @@ import pytest
 import nacl.encoding
 import nacl.secret
 
-
 KEY = b"1" * nacl.secret.SecretBox.KEY_SIZE
 NONCE = b"1" * nacl.secret.SecretBox.NONCE_SIZE
 TEXT = b"The quick brown fox jumps over the lazy dog"

@@ -20,7 +20,6 @@ for their usage.
 import nacl.bindings
 import nacl.encoding
 
-
 BLAKE2B_BYTES = nacl.bindings.crypto_generichash_BYTES
 """Default digest size for :func:`blake2b` hash"""
 BLAKE2B_BYTES_MIN = nacl.bindings.crypto_generichash_BYTES_MIN

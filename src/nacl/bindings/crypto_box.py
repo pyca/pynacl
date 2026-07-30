@@ -11,14 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Tuple
+from __future__ import annotations
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
 
-
-__all__ = ["crypto_box_keypair", "crypto_box"]
+__all__ = ["crypto_box", "crypto_box_keypair"]
 
 
 crypto_box_SECRETKEYBYTES: int = lib.crypto_box_secretkeybytes()
@@ -32,7 +31,7 @@ crypto_box_SEALBYTES: int = lib.crypto_box_sealbytes()
 crypto_box_MACBYTES: int = lib.crypto_box_macbytes()
 
 
-def crypto_box_keypair() -> Tuple[bytes, bytes]:
+def crypto_box_keypair() -> tuple[bytes, bytes]:
     """
     Returns a randomly generated public and secret key.
 
@@ -50,7 +49,7 @@ def crypto_box_keypair() -> Tuple[bytes, bytes]:
     )
 
 
-def crypto_box_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
+def crypto_box_seed_keypair(seed: bytes) -> tuple[bytes, bytes]:
     """
     Returns a (public, secret) key pair deterministically generated
     from an input ``seed``.
@@ -287,9 +286,7 @@ def crypto_box_open_easy(
 
     ensure(
         _clen >= crypto_box_MACBYTES,
-        "Input ciphertext must be at least {} long".format(
-            crypto_box_MACBYTES
-        ),
+        f"Input ciphertext must be at least {crypto_box_MACBYTES} long",
         raising=exc.TypeError,
     )
 
@@ -356,9 +353,7 @@ def crypto_box_open_easy_afternm(
 
     ensure(
         _clen >= crypto_box_MACBYTES,
-        "Input ciphertext must be at least {} long".format(
-            crypto_box_MACBYTES
-        ),
+        f"Input ciphertext must be at least {crypto_box_MACBYTES} long",
         raising=exc.TypeError,
     )
 
@@ -454,9 +449,7 @@ def crypto_box_seal_open(ciphertext: bytes, pk: bytes, sk: bytes) -> bytes:
 
     ensure(
         _clen >= crypto_box_SEALBYTES,
-        ("Input ciphertext must be at least {} long").format(
-            crypto_box_SEALBYTES
-        ),
+        (f"Input ciphertext must be at least {crypto_box_SEALBYTES} long"),
         raising=exc.TypeError,
     )
 

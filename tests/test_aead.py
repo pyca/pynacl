@@ -11,60 +11,61 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import binascii
-from typing import Callable, Dict, List, NamedTuple, Optional
+from __future__ import annotations
 
-from hypothesis import given, settings
-from hypothesis.strategies import binary, sampled_from
+import binascii
+from typing import Callable, NamedTuple
 
 import pytest
+from hypothesis import given, settings
+from hypothesis.strategies import binary, sampled_from
+from nacl._sodium import lib
 
 import nacl.bindings as b
 import nacl.exceptions as exc
-from nacl._sodium import lib
 
 from .utils import read_kv_test_vectors
 
 
-def chacha20poly1305_agl_vectors() -> List[Dict[str, bytes]]:
+def chacha20poly1305_agl_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "chacha20-poly1305-agl_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def chacha20poly1305_ietf_vectors() -> List[Dict[str, bytes]]:
+def chacha20poly1305_ietf_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "chacha20-poly1305-ietf_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def xchacha20poly1305_ietf_vectors() -> List[Dict[str, bytes]]:
+def xchacha20poly1305_ietf_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "xchacha20-poly1305-ietf_ref.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def aegis256_vectors() -> List[Dict[str, bytes]]:
+def aegis256_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "aegis256.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def aegis128l_vectors() -> List[Dict[str, bytes]]:
+def aegis128l_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "aegis128l.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
-def aes256gcm_vectors() -> List[Dict[str, bytes]]:
+def aes256gcm_vectors() -> list[dict[str, bytes]]:
     # NIST vectors derived format
     DATA = "aes256gcm.txt"
     return read_kv_test_vectors(DATA, delimiter=b":", newrecord=b"AEAD")
 
 
 class Construction(NamedTuple):
-    encrypt: Callable[[bytes, Optional[bytes], bytes, bytes], bytes]
-    decrypt: Callable[[bytes, Optional[bytes], bytes, bytes], bytes]
+    encrypt: Callable[[bytes, bytes | None, bytes, bytes], bytes]
+    decrypt: Callable[[bytes, bytes | None, bytes, bytes], bytes]
     NPUB: int
     KEYBYTES: int
 
@@ -116,7 +117,7 @@ def _getconstruction(construction: bytes) -> Construction:
     + aegis128l_vectors()
     + aes256gcm_vectors(),
 )
-def test_variants_kat(kv: Dict[str, bytes]):
+def test_variants_kat(kv: dict[str, bytes]):
     msg = binascii.unhexlify(kv["IN"])
     ad = binascii.unhexlify(kv["AD"])
     nonce = binascii.unhexlify(kv["NONCE"])

@@ -14,9 +14,9 @@
 
 
 __all__ = [
+    "__email__",
     "__uri__",
     "__version__",
-    "__email__",
 ]
 
 __uri__ = "https://github.com/pyca/pynacl/"

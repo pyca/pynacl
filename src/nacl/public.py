@@ -11,13 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import ClassVar, Generic, Optional, Type, TypeVar
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar
 
 import nacl.bindings
 from nacl import encoding
 from nacl import exceptions as exc
 from nacl.encoding import Encoder
 from nacl.utils import EncryptedMessage, StringFixer, random
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class PublicKey(encoding.Encodable, StringFixer):
@@ -44,9 +49,7 @@ class PublicKey(encoding.Encodable, StringFixer):
 
         if len(self._public_key) != self.SIZE:
             raise exc.ValueError(
-                "The public key must be exactly {} bytes long".format(
-                    self.SIZE
-                )
+                f"The public key must be exactly {self.SIZE} bytes long"
             )
 
     def __bytes__(self) -> bytes:
@@ -96,9 +99,9 @@ class PrivateKey(encoding.Encodable, StringFixer):
             isinstance(private_key, bytes) and len(private_key) == self.SIZE
         ):
             raise exc.TypeError(
-                (
-                    "PrivateKey must be created from a {} bytes long raw secret key"
-                ).format(self.SIZE)
+                
+                    f"PrivateKey must be created from a {self.SIZE} bytes long raw secret key"
+                
             )
 
         raw_public_key = nacl.bindings.crypto_scalarmult_base(private_key)
@@ -111,7 +114,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
         cls,
         seed: bytes,
         encoder: encoding.Encoder = encoding.RawEncoder,
-    ) -> "PrivateKey":
+    ) -> PrivateKey:
         """
         Generate a PrivateKey using a deterministic construction
         starting from a caller-provided seed
@@ -132,12 +135,12 @@ class PrivateKey(encoding.Encodable, StringFixer):
         # Verify the given seed type and size are correct
         if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
             raise exc.TypeError(
-                (
-                    "PrivateKey seed must be a {} bytes long binary sequence"
-                ).format(cls.SEED_SIZE)
+                
+                    f"PrivateKey seed must be a {cls.SEED_SIZE} bytes long binary sequence"
+                
             )
         # generate a raw key pair from the given seed
-        raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
+        _raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
         # construct a instance from the raw secret key
         return cls(raw_sk)
 
@@ -156,16 +159,13 @@ class PrivateKey(encoding.Encodable, StringFixer):
         return not (self == other)
 
     @classmethod
-    def generate(cls) -> "PrivateKey":
+    def generate(cls) -> PrivateKey:
         """
         Generates a random :class:`~nacl.public.PrivateKey` object
 
         :rtype: :class:`~nacl.public.PrivateKey`
         """
         return cls(random(PrivateKey.SIZE), encoder=encoding.RawEncoder)
-
-
-_Box = TypeVar("_Box", bound="Box")
 
 
 class Box(encoding.Encodable, StringFixer):
@@ -208,13 +208,13 @@ class Box(encoding.Encodable, StringFixer):
 
     @classmethod
     def decode(
-        cls: Type[_Box], encoded: bytes, encoder: Encoder = encoding.RawEncoder
-    ) -> _Box:
+        cls, encoded: bytes, encoder: Encoder = encoding.RawEncoder
+    ) -> Self:
         """
         Alternative constructor. Creates a Box from an existing Box's shared key.
         """
         # Create an empty box
-        box: _Box = cls.__new__(cls)
+        box: Self = cls.__new__(cls)
 
         # Assign our decoded value to the shared key of the box
         box._shared_key = encoder.decode(encoded)
@@ -224,7 +224,7 @@ class Box(encoding.Encodable, StringFixer):
     def encrypt(
         self,
         plaintext: bytes,
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> EncryptedMessage:
         """
@@ -246,7 +246,7 @@ class Box(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long"
             )
 
         ciphertext = nacl.bindings.crypto_box_easy_afternm(
@@ -267,7 +267,7 @@ class Box(encoding.Encodable, StringFixer):
     def decrypt(
         self,
         ciphertext: bytes,
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> bytes:
         """
@@ -291,7 +291,7 @@ class Box(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long"
             )
 
         plaintext = nacl.bindings.crypto_box_open_easy_afternm(
@@ -320,7 +320,7 @@ class Box(encoding.Encodable, StringFixer):
 _Key = TypeVar("_Key", PublicKey, PrivateKey)
 
 
-class SealedBox(Generic[_Key], encoding.Encodable, StringFixer):
+class SealedBox(encoding.Encodable, StringFixer, Generic[_Key]):
     """
     The SealedBox class boxes and unboxes messages addressed to
     a specified key-pair by using ephemeral sender's key pairs,
@@ -339,7 +339,7 @@ class SealedBox(Generic[_Key], encoding.Encodable, StringFixer):
     """
 
     _public_key: bytes
-    _private_key: Optional[bytes]
+    _private_key: bytes | None
 
     def __init__(self, recipient_key: _Key):
         if isinstance(recipient_key, PublicKey):
@@ -389,7 +389,7 @@ class SealedBox(Generic[_Key], encoding.Encodable, StringFixer):
         return encoded_ciphertext
 
     def decrypt(
-        self: "SealedBox[PrivateKey]",
+        self: SealedBox[PrivateKey],
         ciphertext: bytes,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> bytes:

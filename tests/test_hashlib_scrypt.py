@@ -22,7 +22,6 @@ import nacl.encoding
 import nacl.hashlib
 from nacl.exceptions import UnavailableError
 
-
 # Test vectors from rfc 7914, Page 13
 #   scrypt (P="", S="",
 #           N=16, r=1, p=1, dklen=64) =

@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
+from __future__ import annotations
+
 from binascii import hexlify
-from typing import List, Tuple
 
 import pytest
 
@@ -169,7 +170,7 @@ XHASHES = [
 ]
 
 
-def sip24_vectors() -> List[Tuple[bytes, bytes, bytes]]:
+def sip24_vectors() -> list[tuple[bytes, bytes, bytes]]:
     """Generate test vectors using data from the reference implementation's
     test defined in  https://github.com/veorq/SipHash/blob/master/main.c
 
@@ -183,7 +184,7 @@ def sip24_vectors() -> List[Tuple[bytes, bytes, bytes]]:
     return vectors
 
 
-def sipx24_vectors() -> List[Tuple[bytes, bytes, bytes]]:
+def sipx24_vectors() -> list[tuple[bytes, bytes, bytes]]:
     """Generate test vectors using data from libsodium's tests"""
     vectors = []
     for i, expected in enumerate(XHASHES):

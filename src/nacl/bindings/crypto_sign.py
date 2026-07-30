@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Tuple
+from __future__ import annotations
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
 from nacl.exceptions import ensure
-
 
 crypto_sign_BYTES: int = lib.crypto_sign_bytes()
 # crypto_sign_SEEDBYTES = lib.crypto_sign_seedbytes()
@@ -29,7 +28,7 @@ crypto_sign_curve25519_BYTES: int = lib.crypto_box_secretkeybytes()
 crypto_sign_ed25519ph_STATEBYTES: int = lib.crypto_sign_ed25519ph_statebytes()
 
 
-def crypto_sign_keypair() -> Tuple[bytes, bytes]:
+def crypto_sign_keypair() -> tuple[bytes, bytes]:
     """
     Returns a randomly generated public key and secret key.
 
@@ -47,7 +46,7 @@ def crypto_sign_keypair() -> Tuple[bytes, bytes]:
     )
 
 
-def crypto_sign_seed_keypair(seed: bytes) -> Tuple[bytes, bytes]:
+def crypto_sign_seed_keypair(seed: bytes) -> tuple[bytes, bytes]:
     """
     Computes and returns the public key and secret key using the seed ``seed``.
 
@@ -262,9 +261,7 @@ def crypto_sign_ed25519ph_final_create(
     )
     ensure(
         len(sk) == crypto_sign_SECRETKEYBYTES,
-        ("secret key must be {} bytes long").format(
-            crypto_sign_SECRETKEYBYTES
-        ),
+        (f"secret key must be {crypto_sign_SECRETKEYBYTES} bytes long"),
         raising=exc.TypeError,
     )
     signature = ffi.new("unsigned char[]", crypto_sign_BYTES)
@@ -305,7 +302,7 @@ def crypto_sign_ed25519ph_final_verify(
     )
     ensure(
         len(signature) == crypto_sign_BYTES,
-        ("signature must be {} bytes long").format(crypto_sign_BYTES),
+        (f"signature must be {crypto_sign_BYTES} bytes long"),
         raising=exc.TypeError,
     )
     ensure(
@@ -315,9 +312,7 @@ def crypto_sign_ed25519ph_final_verify(
     )
     ensure(
         len(pk) == crypto_sign_PUBLICKEYBYTES,
-        ("public key must be {} bytes long").format(
-            crypto_sign_PUBLICKEYBYTES
-        ),
+        (f"public key must be {crypto_sign_PUBLICKEYBYTES} bytes long"),
         raising=exc.TypeError,
     )
     rc = lib.crypto_sign_ed25519ph_final_verify(edph.state, signature, pk)

@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import ClassVar, Optional
+from __future__ import annotations
+
+from typing import ClassVar
 
 import nacl.bindings
 from nacl import encoding
@@ -65,7 +67,7 @@ class SecretBox(encoding.Encodable, StringFixer):
 
         if len(key) != self.KEY_SIZE:
             raise exc.ValueError(
-                "The key must be exactly %s bytes long" % self.KEY_SIZE,
+                f"The key must be exactly {self.KEY_SIZE} bytes long",
             )
 
         self._key = key
@@ -76,7 +78,7 @@ class SecretBox(encoding.Encodable, StringFixer):
     def encrypt(
         self,
         plaintext: bytes,
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> EncryptedMessage:
         """
@@ -100,7 +102,7 @@ class SecretBox(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long",
             )
 
         ciphertext = nacl.bindings.crypto_secretbox_easy(
@@ -119,7 +121,7 @@ class SecretBox(encoding.Encodable, StringFixer):
     def decrypt(
         self,
         ciphertext: bytes,
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> bytes:
         """
@@ -143,7 +145,7 @@ class SecretBox(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long",
             )
 
         plaintext = nacl.bindings.crypto_secretbox_open_easy(
@@ -208,7 +210,7 @@ class Aead(encoding.Encodable, StringFixer):
 
         if len(key) != self.KEY_SIZE:
             raise exc.ValueError(
-                "The key must be exactly %s bytes long" % self.KEY_SIZE,
+                f"The key must be exactly {self.KEY_SIZE} bytes long",
             )
 
         self._key = key
@@ -220,7 +222,7 @@ class Aead(encoding.Encodable, StringFixer):
         self,
         plaintext: bytes,
         aad: bytes = b"",
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> EncryptedMessage:
         """
@@ -251,7 +253,7 @@ class Aead(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long",
             )
 
         ciphertext = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_encrypt(
@@ -271,7 +273,7 @@ class Aead(encoding.Encodable, StringFixer):
         self,
         ciphertext: bytes,
         aad: bytes = b"",
-        nonce: Optional[bytes] = None,
+        nonce: bytes | None = None,
         encoder: encoding.Encoder = encoding.RawEncoder,
     ) -> bytes:
         """
@@ -295,7 +297,7 @@ class Aead(encoding.Encodable, StringFixer):
 
         if len(nonce) != self.NONCE_SIZE:
             raise exc.ValueError(
-                "The nonce must be exactly %s bytes long" % self.NONCE_SIZE,
+                f"The nonce must be exactly {self.NONCE_SIZE} bytes long",
             )
 
         plaintext = nacl.bindings.crypto_aead_xchacha20poly1305_ietf_decrypt(

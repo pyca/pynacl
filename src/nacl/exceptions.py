@@ -17,8 +17,9 @@
 # inherit from CryptoError. Below, we refer to the parent types via the
 # `builtins` namespace, so mypy can distinguish between (e.g.)
 # `nacl.exceptions.RuntimeError` and `builtins.RuntimeError`.
+from __future__ import annotations
+
 import builtins
-from typing import Type
 
 
 class CryptoError(Exception):
@@ -64,10 +65,9 @@ class UnavailableError(RuntimeError):
     libsodium or due to hardware limitations.
     """
 
-    pass
 
 
-def ensure(cond: bool, *args: object, **kwds: Type[Exception]) -> None:
+def ensure(cond: bool, *args: object, **kwds: type[Exception]) -> None:
     """
     Return if a condition is true, otherwise raise a caller-configurable
     :py:class:`Exception`

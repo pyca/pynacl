@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+from __future__ import annotations
 
 from nacl import exceptions as exc
 from nacl._sodium import ffi, lib
@@ -118,7 +118,7 @@ _aead_aegis256_CRYPTBYTES_MAX = (
 
 
 def crypto_aead_chacha20poly1305_ietf_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the IETF ratified chacha20poly1305
@@ -145,9 +145,7 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(
 
     ensure(
         mlen <= crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_chacha20poly1305_ietf_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -160,18 +158,14 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_chacha20poly1305_ietf_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_ietf_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_chacha20poly1305_ietf_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -197,7 +191,7 @@ def crypto_aead_chacha20poly1305_ietf_encrypt(
 
 
 def crypto_aead_chacha20poly1305_ietf_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the IETF ratified chacha20poly1305
@@ -224,9 +218,7 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(
 
     ensure(
         clen <= _aead_chacha20poly1305_ietf_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_chacha20poly1305_ietf_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_chacha20poly1305_ietf_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -239,18 +231,14 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_ietf_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_chacha20poly1305_ietf_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_ietf_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_chacha20poly1305_ietf_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -276,7 +264,7 @@ def crypto_aead_chacha20poly1305_ietf_decrypt(
 
 
 def crypto_aead_chacha20poly1305_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the "legacy" construction
@@ -303,9 +291,7 @@ def crypto_aead_chacha20poly1305_encrypt(
 
     ensure(
         mlen <= crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_chacha20poly1305_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -318,18 +304,14 @@ def crypto_aead_chacha20poly1305_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_chacha20poly1305_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_chacha20poly1305_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -355,7 +337,7 @@ def crypto_aead_chacha20poly1305_encrypt(
 
 
 def crypto_aead_chacha20poly1305_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the "legacy" construction
@@ -382,9 +364,7 @@ def crypto_aead_chacha20poly1305_decrypt(
 
     ensure(
         clen <= _aead_chacha20poly1305_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_chacha20poly1305_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_chacha20poly1305_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -397,18 +377,14 @@ def crypto_aead_chacha20poly1305_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_chacha20poly1305_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_chacha20poly1305_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_chacha20poly1305_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_chacha20poly1305_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_chacha20poly1305_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -434,7 +410,7 @@ def crypto_aead_chacha20poly1305_decrypt(
 
 
 def crypto_aead_xchacha20poly1305_ietf_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the long-nonces xchacha20poly1305
@@ -461,9 +437,7 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(
 
     ensure(
         mlen <= crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_xchacha20poly1305_ietf_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -476,18 +450,14 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_xchacha20poly1305_ietf_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_xchacha20poly1305_ietf_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_xchacha20poly1305_ietf_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -513,7 +483,7 @@ def crypto_aead_xchacha20poly1305_ietf_encrypt(
 
 
 def crypto_aead_xchacha20poly1305_ietf_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the long-nonces xchacha20poly1305
@@ -540,9 +510,7 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(
 
     ensure(
         clen <= _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_xchacha20poly1305_ietf_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -555,18 +523,14 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_xchacha20poly1305_ietf_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_xchacha20poly1305_ietf_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_xchacha20poly1305_ietf_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes)
         and len(key) == crypto_aead_xchacha20poly1305_ietf_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_xchacha20poly1305_ietf_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_xchacha20poly1305_ietf_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -591,7 +555,7 @@ def crypto_aead_xchacha20poly1305_ietf_decrypt(
 
 
 def crypto_aead_aegis256_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the AEGIS-256
@@ -618,9 +582,7 @@ def crypto_aead_aegis256_encrypt(
 
     ensure(
         mlen <= crypto_aead_aegis256_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_aegis256_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_aegis256_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -633,17 +595,13 @@ def crypto_aead_aegis256_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aegis256_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis256_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aegis256_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aegis256_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis256_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aegis256_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -669,7 +627,7 @@ def crypto_aead_aegis256_encrypt(
 
 
 def crypto_aead_aegis256_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the AEGIS-256
@@ -696,9 +654,7 @@ def crypto_aead_aegis256_decrypt(
 
     ensure(
         clen <= _aead_aegis256_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_aegis256_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_aegis256_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -711,17 +667,13 @@ def crypto_aead_aegis256_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aegis256_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis256_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aegis256_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aegis256_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis256_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aegis256_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -746,7 +698,7 @@ def crypto_aead_aegis256_decrypt(
 
 
 def crypto_aead_aegis128l_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the AEGIS-128L
@@ -773,9 +725,7 @@ def crypto_aead_aegis128l_encrypt(
 
     ensure(
         mlen <= crypto_aead_aegis128l_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_aegis128l_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_aegis128l_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -788,17 +738,13 @@ def crypto_aead_aegis128l_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aegis128l_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis128l_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aegis128l_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aegis128l_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis128l_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aegis128l_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -824,7 +770,7 @@ def crypto_aead_aegis128l_encrypt(
 
 
 def crypto_aead_aegis128l_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the AEGIS-128L
@@ -851,9 +797,7 @@ def crypto_aead_aegis128l_decrypt(
 
     ensure(
         clen <= _aead_aegis256_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_aegis256_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_aegis256_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -866,17 +810,13 @@ def crypto_aead_aegis128l_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aegis128l_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis128l_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aegis128l_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aegis128l_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aegis128l_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aegis128l_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -901,7 +841,7 @@ def crypto_aead_aegis128l_decrypt(
 
 
 def crypto_aead_aes256gcm_encrypt(
-    message: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    message: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Encrypt the given ``message`` using the AES-256-GCM
@@ -935,9 +875,7 @@ def crypto_aead_aes256gcm_encrypt(
 
     ensure(
         mlen <= crypto_aead_aes256gcm_MESSAGEBYTES_MAX,
-        "Message must be at most {} bytes long".format(
-            crypto_aead_aes256gcm_MESSAGEBYTES_MAX
-        ),
+        f"Message must be at most {crypto_aead_aes256gcm_MESSAGEBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -950,17 +888,13 @@ def crypto_aead_aes256gcm_encrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aes256gcm_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aes256gcm_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aes256gcm_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aes256gcm_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aes256gcm_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aes256gcm_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
@@ -986,7 +920,7 @@ def crypto_aead_aes256gcm_encrypt(
 
 
 def crypto_aead_aes256gcm_decrypt(
-    ciphertext: bytes, aad: Optional[bytes], nonce: bytes, key: bytes
+    ciphertext: bytes, aad: bytes | None, nonce: bytes, key: bytes
 ) -> bytes:
     """
     Decrypt the given ``ciphertext`` using the AES-256-GCM
@@ -1020,9 +954,7 @@ def crypto_aead_aes256gcm_decrypt(
 
     ensure(
         clen <= _aead_aegis256_CRYPTBYTES_MAX,
-        "Ciphertext must be at most {} bytes long".format(
-            _aead_aegis256_CRYPTBYTES_MAX
-        ),
+        f"Ciphertext must be at most {_aead_aegis256_CRYPTBYTES_MAX} bytes long",
         raising=exc.ValueError,
     )
 
@@ -1035,17 +967,13 @@ def crypto_aead_aes256gcm_decrypt(
     ensure(
         isinstance(nonce, bytes)
         and len(nonce) == crypto_aead_aes256gcm_NPUBBYTES,
-        "Nonce must be a {} bytes long bytes sequence".format(
-            crypto_aead_aes256gcm_NPUBBYTES
-        ),
+        f"Nonce must be a {crypto_aead_aes256gcm_NPUBBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
     ensure(
         isinstance(key, bytes) and len(key) == crypto_aead_aes256gcm_KEYBYTES,
-        "Key must be a {} bytes long bytes sequence".format(
-            crypto_aead_aes256gcm_KEYBYTES
-        ),
+        f"Key must be a {crypto_aead_aes256gcm_KEYBYTES} bytes long bytes sequence",
         raising=exc.TypeError,
     )
 
