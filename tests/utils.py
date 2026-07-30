@@ -23,12 +23,14 @@ import pytest
 
 def assert_equal(x: object, y: object) -> None:
     assert x == y
-    assert x == y
+    # Deliberately exercises `!=` to check `__ne__` consistency
+    assert not (x != y)  # noqa: SIM202
 
 
 def assert_not_equal(x: object, y: object) -> None:
     assert x != y
-    assert x != y
+    # Deliberately exercises `==` to check `__eq__` consistency
+    assert not (x == y)  # noqa: SIM201
 
 
 def read_crypto_test_vectors(
