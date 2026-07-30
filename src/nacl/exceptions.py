@@ -66,7 +66,6 @@ class UnavailableError(RuntimeError):
     """
 
 
-
 def ensure(cond: bool, *args: object, **kwds: type[Exception]) -> None:
     """
     Return if a condition is true, otherwise raise a caller-configurable

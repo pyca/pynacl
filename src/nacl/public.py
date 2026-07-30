@@ -99,9 +99,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
             isinstance(private_key, bytes) and len(private_key) == self.SIZE
         ):
             raise exc.TypeError(
-                
-                    f"PrivateKey must be created from a {self.SIZE} bytes long raw secret key"
-                
+                f"PrivateKey must be created from a {self.SIZE} bytes long raw secret key"
             )
 
         raw_public_key = nacl.bindings.crypto_scalarmult_base(private_key)
@@ -135,9 +133,7 @@ class PrivateKey(encoding.Encodable, StringFixer):
         # Verify the given seed type and size are correct
         if not (isinstance(seed, bytes) and len(seed) == cls.SEED_SIZE):
             raise exc.TypeError(
-                
-                    f"PrivateKey seed must be a {cls.SEED_SIZE} bytes long binary sequence"
-                
+                f"PrivateKey seed must be a {cls.SEED_SIZE} bytes long binary sequence"
             )
         # generate a raw key pair from the given seed
         _raw_pk, raw_sk = nacl.bindings.crypto_box_seed_keypair(seed)
