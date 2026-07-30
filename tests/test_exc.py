@@ -22,10 +22,6 @@ class CustomError(exc.CryptoError):
     pass
 
 
-# Type safety: mypy can spot the bad argument type. Suppress it: we want to
-# test it is detected at runtime.
-
-
 def test_exceptions_ensure_with_true_condition():
     exc.ensure(True, "one equals one")
 
