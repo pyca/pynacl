@@ -149,6 +149,8 @@ exclude_also = [
     "@abc.abstractmethod",
     "@typing.overload",
     "if typing.TYPE_CHECKING",
+    # Pyodide branches never run under the coverage-collecting CI jobs.
+    'if sys.platform == "emscripten":',
 ]
 
 [tool.coverage.html]
@@ -157,4 +159,7 @@ show_contexts = true
 [tool.pytest.ini_options]
 addopts = "-r s --capture=no"
 console_output_style = "progress-even-when-capture-no"
+markers = [
+    "skip_emscripten: this test is not executed under Emscripten/Pyodide",
+]
 

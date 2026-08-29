@@ -124,7 +124,8 @@ class build_clib(_build_clib):
         # Locate our configure script
         configure = abshere("src/libsodium/configure")
 
-        # Run ./configure
+        # Mirrored by .github/bin/build_pyemscripten_libsodium.sh —
+        # keep in sync.
         configure_flags = [
             "--disable-shared",
             "--enable-static",
