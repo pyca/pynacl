@@ -6,6 +6,10 @@ PyNaCl: Python binding to the libsodium library
     :target: https://pypi.org/project/PyNaCl/
     :alt: Latest Version
 
+.. image:: https://readthedocs.org/projects/pynacl/badge/?version=latest
+    :target: https://pynacl.readthedocs.io/en/latest/
+    :alt: Latest Documentation
+
 PyNaCl is a Python binding to `libsodium`_, which is a fork of the
 `Networking and Cryptography library`_. These libraries have a stated goal of
 improving usability, security and speed. It supports Python 3.8+ as well as
@@ -13,6 +17,12 @@ PyPy 3.
 
 .. _libsodium: https://github.com/jedisct1/libsodium
 .. _Networking and Cryptography library: https://nacl.cr.yp.to/
+
+Documentation
+-------------
+
+The complete documentation, including installation instructions and usage
+examples, is available at https://pynacl.readthedocs.io/.
 
 Features
 --------
