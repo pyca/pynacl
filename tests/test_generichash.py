@@ -245,3 +245,22 @@ def test_blake2_digest_size_descriptor_coherence():
     assert h.name == "blake2b"
     assert h.block_size == 128
     assert h.digest_size == 64
+
+
+def test_blake2b_rejects_digest_lengths_that_abort():
+    # libsodium calls sodium_misuse for an output length of 0 or above 64.
+    # A directly constructed Blake2State used to reach that abort.
+    from nacl.bindings.crypto_generichash import (
+        Blake2State,
+        generichash_blake2b_final,
+        generichash_blake2b_salt_personal,
+    )
+
+    one_byte = generichash_blake2b_salt_personal(b"abc", digest_size=1)
+    assert len(one_byte) == 1
+
+    for size in (0, -1, 65):
+        with pytest.raises(exc.ValueError):
+            generichash_blake2b_salt_personal(b"abc", digest_size=size)
+        with pytest.raises(exc.ValueError):
+            generichash_blake2b_final(Blake2State(size))
