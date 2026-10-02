@@ -155,6 +155,36 @@ def test_expected_bindings_level_pickle_and_copy_failures():
         copy.copy(st)
 
 
+def test_generichash_blake2b_final_rejects_zero_directly_constructed_state():
+    # A Blake2State constructed directly with digest_size=0 used to abort
+    # the process (SIGABRT via sodium_misuse in blake2b_final) instead of
+    # raising a Python exception. Same failure class as issue #964, which
+    # covered oversized digest_size; zero is also rejected by libsodium.
+    from nacl.bindings.crypto_generichash import (
+        Blake2State,
+        generichash_blake2b_final,
+    )
+
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_final(Blake2State(0))
+
+
+def test_generichash_blake2b_init_rejects_zero_digest_size():
+    from nacl.bindings.crypto_generichash import generichash_blake2b_init
+
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_init(digest_size=0)
+
+
+def test_generichash_blake2b_salt_personal_rejects_zero_digest_size():
+    from nacl.bindings.crypto_generichash import (
+        generichash_blake2b_salt_personal,
+    )
+
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_salt_personal(b"msg", digest_size=0)
+
+
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )
