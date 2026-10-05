@@ -184,5 +184,10 @@ linkcheck_retries = 10
 linkcheck_timeout = 5
 
 linkcheck_ignore = [
-    "https://www.gnu.org/software/make/manual/html_node/Parallel.html"
+    "https://www.gnu.org/software/make/manual/html_node/Parallel.html",
+    # Ars Technica returns HTTP 403 to the linkcheck builder.
+    (
+        r"https://arstechnica\.com/gaming/2010/12/"
+        r"ps3-hacked-through-poor-implementation-of-cryptography/$"
+    ),
 ]
