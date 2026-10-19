@@ -30,6 +30,8 @@ jobs:
           - {VERSION: "3.13", NOXSESSION: "tests"}
           - {VERSION: "3.14", NOXSESSION: "tests"}
           - {VERSION: "3.14t", NOXSESSION: "tests"}
+          - {VERSION: "3.15", NOXSESSION: "tests"}
+          - {VERSION: "3.15t", NOXSESSION: "tests"}
           - {VERSION: "3.14", NOXSESSION: "tests", NOTE: "system", SODIUM_INSTALL: "system"}
           - {VERSION: "3.14", NOXSESSION: "tests", NOTE: "minimal", SODIUM_INSTALL_MINIMAL: "1"}
     name: "Linux ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }} ${{ matrix.PYTHON.NOTE }}"
@@ -73,6 +75,8 @@ jobs:
           - {VERSION: "3.8", NOXSESSION: "tests"}
           - {VERSION: "3.14", NOXSESSION: "tests"}
           - {VERSION: "3.14t", NOXSESSION: "tests"}
+          - {VERSION: "3.15", NOXSESSION: "tests"}
+          - {VERSION: "3.15t", NOXSESSION: "tests"}
           - {VERSION: "3.14", NOXSESSION: "tests", NOTE: " (minimal build)", SODIUM_INSTALL_MINIMAL: "1"}
         exclude:
           - PYTHON: {VERSION: "3.8", NOXSESSION: "tests"}
@@ -102,6 +106,8 @@ jobs:
           - {VERSION: "3.8", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.14", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
           - {VERSION: "3.14t", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.15", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
+          - {VERSION: "3.15t", NOXSESSION: "tests", SODIUM_MSVC_VERSION: "v143"}
 
     name: "Windows ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.NOXSESSION }}"
     steps:
