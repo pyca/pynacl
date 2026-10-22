@@ -40,6 +40,7 @@ crypto_generichash_STATEBYTES: int = lib.crypto_generichash_statebytes()
 
 _OVERLONG = "{0} length greater than {1} bytes"
 _TOOBIG = "{0} greater than {1}"
+_TOOSMALL = "{0} less than {1}"
 
 
 def _checkparams(
@@ -68,6 +69,14 @@ def _checkparams(
         isinstance(digest_size, int),
         "Digest size must be an integer number",
         raising=exc.TypeError,
+    )
+
+    # libsodium's blake2b_final() calls sodium_misuse() (abort) when outlen
+    # is 0; reject that here so callers get a Python exception instead.
+    ensure(
+        digest_size >= 1,
+        _TOOSMALL.format("Digest_size", 1),
+        raising=exc.ValueError,
     )
 
     ensure(
@@ -269,6 +278,14 @@ def generichash_blake2b_final(state: Blake2State) -> bytes:
         isinstance(state, Blake2State),
         "State must be a Blake2State object",
         raising=exc.TypeError,
+    )
+
+    # Blake2State can be constructed directly, bypassing _checkparams().
+    # Guard digest_size here so a zero digest does not abort via sodium_misuse.
+    ensure(
+        state.digest_size >= 1,
+        _TOOSMALL.format("Digest_size", 1),
+        raising=exc.ValueError,
     )
 
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
