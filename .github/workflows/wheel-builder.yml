@@ -50,6 +50,7 @@ jobs:
         PYTHON:
           - { VERSION: "cp38-cp38m", PATH: "/opt/python/cp311-cp311/bin/python", ABI_VERSION: 'cp38' }
           - { VERSION: "cp314-cp314t", PATH: "/opt/python/cp314-cp314t/bin/python" }
+          - { VERSION: "cp315-cp315t", PATH: "/opt/python/cp315-cp315t/bin/python" }
         MANYLINUX:
           - { NAME: "manylinux2014_x86_64", CONTAINER: "cryptography-manylinux2014:x86_64", RUNNER: "ubuntu-latest" }
           - { NAME: "manylinux_2_28_x86_64", CONTAINER: "cryptography-manylinux_2_28:x86_64", RUNNER: "ubuntu-latest" }
@@ -83,9 +84,9 @@ jobs:
           persist-credentials: false
       - run: ${{ matrix.PYTHON.PATH }} -m venv .venv
       - run: .venv/bin/pip install -U pip wheel cffi build
-        if: matrix.PYTHON.VERSION != 'cp314-cp314t'
+        if: ${{ !endsWith(matrix.PYTHON.VERSION, 't') }}
       - run: .venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
-        if: matrix.PYTHON.VERSION == 'cp314-cp314t'
+        if: endsWith(matrix.PYTHON.VERSION, 't')
       - name: Build the wheel
         run: |
           if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
@@ -119,6 +120,9 @@ jobs:
           - VERSION: '3.14t'
             DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.14.0/python-3.14.0-macos11.pkg'
             BIN_PATH: '/Library/Frameworks/PythonT.framework/Versions/3.14/bin/python3.14t'
+          - VERSION: '3.15t'
+            DOWNLOAD_URL: 'https://www.python.org/ftp/python/3.15.0/python-3.15.0-macos11.pkg'
+            BIN_PATH: '/Library/Frameworks/PythonT.framework/Versions/3.15/bin/python3.15t'
     name: "Python ${{ matrix.PYTHON.VERSION }} ${{ matrix.PYTHON.ABI_VERSION }} on macOS"
     steps:
       - uses: actions/checkout@v7.0.1
@@ -131,19 +135,21 @@ jobs:
           sudo installer -pkg python.pkg -target /
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
-        if: matrix.PYTHON.VERSION != '3.14t'
+        if: ${{ !endsWith(matrix.PYTHON.VERSION, 't') }}
       - run: |
           curl "$PYTHON_DOWNLOAD_URL" -o python.pkg
-          sudo installer -pkg python.pkg -applyChoiceChangesXML .github/config/macos-pkg-choices-freethreaded.xml -target /
+          sed "s/PythonTFramework-3.14/PythonTFramework-${PYTHON_VERSION%t}/" .github/config/macos-pkg-choices-freethreaded.xml > freethreaded-choices.xml
+          sudo installer -pkg python.pkg -applyChoiceChangesXML freethreaded-choices.xml -target /
         env:
           PYTHON_DOWNLOAD_URL: ${{ matrix.PYTHON.DOWNLOAD_URL }}
-        if: matrix.PYTHON.VERSION == '3.14t'
+          PYTHON_VERSION: ${{ matrix.PYTHON.VERSION }}
+        if: endsWith(matrix.PYTHON.VERSION, 't')
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m pip install -U virtualenv
       - run: ${{ matrix.PYTHON.BIN_PATH }} -m virtualenv venv
       - run: venv/bin/pip install -U pip wheel cffi build
-        if: matrix.PYTHON.VERSION != '3.14t'
+        if: ${{ !endsWith(matrix.PYTHON.VERSION, 't') }}
       - run: venv/bin/pip install -U pip wheel 'cffi>=2.0.0' build
-        if: matrix.PYTHON.VERSION == '3.14t'
+        if: endsWith(matrix.PYTHON.VERSION, 't')
       - name: Build the wheel
         run: |
             if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
@@ -180,6 +186,10 @@ jobs:
             PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
           - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
             PYTHON: {VERSION: '3.14t', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x86', SODIUM_ARCH: 'Win32', VS_ARCH: 'x86', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.15t', SODIUM_MSVC_VERSION: 'v143'}
+          - WINDOWS: {ARCH: 'x64', SODIUM_ARCH: 'x64', VS_ARCH: 'amd64', IMAGE: 'windows-latest'}
+            PYTHON: {VERSION: '3.15t', SODIUM_MSVC_VERSION: 'v143'}
     name: "${{ matrix.PYTHON.VERSION }} ${{ matrix.WINDOWS.ARCH }} ${{ matrix.PYTHON.ABI_VERSION }}"
     steps:
       - uses: actions/checkout@v7.0.1
@@ -203,9 +213,9 @@ jobs:
         shell: bash
 
       - run: python -m pip install -U pip wheel cffi build
-        if: matrix.PYTHON.VERSION != '3.14t'
+        if: ${{ !endsWith(matrix.PYTHON.VERSION, 't') }}
       - run: python -m pip install -U pip wheel 'cffi>=2.0.0' build
-        if: matrix.PYTHON.VERSION == '3.14t'
+        if: endsWith(matrix.PYTHON.VERSION, 't')
       - name: Determine PY_LIMITED_API
         run: |
           if [ -n "${{ matrix.PYTHON.ABI_VERSION }}" ]; then
