@@ -280,6 +280,14 @@ def test_sign_wrong_lengths():
     with pytest.raises(ValueError):
         c.crypto_sign_seed_keypair(b"")
 
+    pubkey, secretkey = c.crypto_sign_keypair()
+    with pytest.raises(ValueError):
+        c.crypto_sign(b"message", secretkey[: c.crypto_sign_SEEDBYTES])
+
+    sigmsg = c.crypto_sign(b"message", secretkey)
+    with pytest.raises(ValueError):
+        c.crypto_sign_open(sigmsg, pubkey[:-1])
+
 
 def secret_scalar() -> tuple[bytes, bytes]:
     pubkey, secretkey = c.crypto_box_keypair()
@@ -311,6 +319,16 @@ def test_scalarmult():
     )
     bz2 = c.crypto_scalarmult(z, base)
     assert tohex(bz1) == tohex(bz2)
+
+
+def test_scalarmult_wrong_lengths():
+    x, xpub = secret_scalar()
+    with pytest.raises(TypeError):
+        c.crypto_scalarmult_base(x[:-1])
+    with pytest.raises(TypeError):
+        c.crypto_scalarmult(x[:-1], xpub)
+    with pytest.raises(TypeError):
+        c.crypto_scalarmult(x, xpub[:-1])
 
 
 def test_sign_test_key_conversion():

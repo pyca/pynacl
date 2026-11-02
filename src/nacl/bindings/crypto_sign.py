@@ -77,6 +77,9 @@ def crypto_sign(message: bytes, sk: bytes) -> bytes:
     :param sk: bytes
     :rtype: bytes
     """
+    if len(sk) != crypto_sign_SECRETKEYBYTES:
+        raise exc.ValueError("Invalid secret key")
+
     signed = ffi.new("unsigned char[]", len(message) + crypto_sign_BYTES)
     signed_len = ffi.new("unsigned long long *")
 
@@ -95,6 +98,9 @@ def crypto_sign_open(signed: bytes, pk: bytes) -> bytes:
     :param pk: bytes
     :rtype: bytes
     """
+    if len(pk) != crypto_sign_PUBLICKEYBYTES:
+        raise exc.ValueError("Invalid public key")
+
     message = ffi.new("unsigned char[]", len(signed))
     message_len = ffi.new("unsigned long long *")
 
