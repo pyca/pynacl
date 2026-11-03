@@ -40,6 +40,14 @@ def crypto_scalarmult_base(n: bytes) -> bytes:
     :param n: bytes
     :rtype: bytes
     """
+    ensure(
+        isinstance(n, bytes) and len(n) == crypto_scalarmult_SCALARBYTES,
+        "Input must be a {} long bytes sequence".format(
+            "crypto_scalarmult_SCALARBYTES"
+        ),
+        raising=exc.TypeError,
+    )
+
     q = ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
     rc = lib.crypto_scalarmult_base(q, n)
@@ -57,6 +65,22 @@ def crypto_scalarmult(n: bytes, p: bytes) -> bytes:
     :param n: bytes
     :rtype: bytes
     """
+    ensure(
+        isinstance(n, bytes) and len(n) == crypto_scalarmult_SCALARBYTES,
+        "Input must be a {} long bytes sequence".format(
+            "crypto_scalarmult_SCALARBYTES"
+        ),
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        isinstance(p, bytes) and len(p) == crypto_scalarmult_BYTES,
+        "Input must be a {} long bytes sequence".format(
+            "crypto_scalarmult_BYTES"
+        ),
+        raising=exc.TypeError,
+    )
+
     q = ffi.new("unsigned char[]", crypto_scalarmult_BYTES)
 
     rc = lib.crypto_scalarmult(q, n, p)
