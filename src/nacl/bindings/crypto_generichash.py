@@ -13,6 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 
+import threading
 from typing import TYPE_CHECKING, NoReturn
 
 from nacl import exceptions as exc
@@ -156,13 +157,15 @@ class Blake2State:
     Python-level wrapper for the crypto_generichash_blake2b state buffer
     """
 
-    __slots__ = ["_statebuf", "digest_size"]
+    __slots__ = ["_lock", "_statebuf", "digest_size"]
 
     def __init__(self, digest_size: int):
         self._statebuf = ffi.new(
             "unsigned char[]", crypto_generichash_STATEBYTES
         )
         self.digest_size = digest_size
+        # libsodium runs without the GIL, so serialize access to the state
+        self._lock = threading.Lock()
 
     def __reduce__(self) -> NoReturn:
         """
@@ -173,9 +176,10 @@ class Blake2State:
 
     def copy(self) -> Self:
         _st = self.__class__(self.digest_size)
-        ffi.memmove(
-            _st._statebuf, self._statebuf, crypto_generichash_STATEBYTES
-        )
+        with self._lock:
+            ffi.memmove(
+                _st._statebuf, self._statebuf, crypto_generichash_STATEBYTES
+            )
         return _st
 
 
@@ -249,9 +253,10 @@ def generichash_blake2b_update(state: Blake2State, data: bytes) -> None:
         raising=exc.TypeError,
     )
 
-    rc = lib.crypto_generichash_blake2b_update(
-        state._statebuf, data, len(data)
-    )
+    with state._lock:
+        rc = lib.crypto_generichash_blake2b_update(
+            state._statebuf, data, len(data)
+        )
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
 
 
@@ -272,9 +277,10 @@ def generichash_blake2b_final(state: Blake2State) -> bytes:
     )
 
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
-    rc = lib.crypto_generichash_blake2b_final(
-        state._statebuf, _digest, state.digest_size
-    )
+    with state._lock:
+        rc = lib.crypto_generichash_blake2b_final(
+            state._statebuf, _digest, state.digest_size
+        )
 
     ensure(rc == 0, "Unexpected failure", raising=exc.RuntimeError)
     return ffi.buffer(_digest, state.digest_size)[:]
