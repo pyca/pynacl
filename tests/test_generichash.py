@@ -16,8 +16,10 @@ from __future__ import annotations
 
 import binascii
 import copy
+import hashlib
 import json
 import os
+import threading
 from typing import AnyStr
 
 import pytest
@@ -245,3 +247,26 @@ def test_blake2_digest_size_descriptor_coherence():
     assert h.name == "blake2b"
     assert h.block_size == 128
     assert h.digest_size == 64
+
+
+def test_hashlib_blake2_concurrent_update():
+    # libsodium is called with the GIL released, so concurrent updates on a
+    # shared state must be serialized by the binding.
+    chunk = b"\xaa" * 100003
+    nthreads, nupdates = 8, 20
+    h = nacl.hashlib.blake2b()
+    barrier = threading.Barrier(nthreads)
+
+    def worker() -> None:
+        barrier.wait()
+        for _ in range(nupdates):
+            h.update(chunk)
+
+    threads = [threading.Thread(target=worker) for _ in range(nthreads)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    expected = hashlib.blake2b(chunk * nthreads * nupdates, digest_size=32)
+    assert h.digest() == expected.digest()
