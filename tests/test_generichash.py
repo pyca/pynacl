@@ -155,6 +155,23 @@ def test_expected_bindings_level_pickle_and_copy_failures():
         copy.copy(st)
 
 
+def test_generichash_blake2b_final_rejects_oversized_directly_constructed_state():
+    # Regression test for https://github.com/pyca/pynacl/issues/964
+    # A Blake2State constructed directly (bypassing
+    # generichash_blake2b_init()'s parameter validation) with an
+    # out-of-range digest_size used to crash the process with SIGABRT
+    # inside libsodium instead of raising a Python exception.
+    from nacl.bindings.crypto_generichash import (
+        Blake2State,
+        crypto_generichash_BYTES_MAX,
+        generichash_blake2b_final,
+    )
+
+    state = Blake2State(crypto_generichash_BYTES_MAX + 1)
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_final(state)
+
+
 @pytest.mark.parametrize(
     ["message", "key", "outlen", "output"], blake2_reference_vectors()
 )

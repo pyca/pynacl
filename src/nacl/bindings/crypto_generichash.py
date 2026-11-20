@@ -271,6 +271,12 @@ def generichash_blake2b_final(state: Blake2State) -> bytes:
         raising=exc.TypeError,
     )
 
+    ensure(
+        state.digest_size <= crypto_generichash_BYTES_MAX,
+        _TOOBIG.format("Digest_size", crypto_generichash_BYTES_MAX),
+        raising=exc.ValueError,
+    )
+
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
     rc = lib.crypto_generichash_blake2b_final(
         state._statebuf, _digest, state.digest_size
