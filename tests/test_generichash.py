@@ -245,3 +245,45 @@ def test_blake2_digest_size_descriptor_coherence():
     assert h.name == "blake2b"
     assert h.block_size == 128
     assert h.digest_size == 64
+
+
+OUT_OF_RANGE_DIGEST_SIZES = [0, 65, 256]
+
+
+@pytest.mark.parametrize("digest_size", OUT_OF_RANGE_DIGEST_SIZES)
+def test_out_of_range_digest_size_oneshot(digest_size: int):
+    with pytest.raises(exc.ValueError):
+        nacl.hash.blake2b(b"message", digest_size=digest_size)
+
+
+@pytest.mark.parametrize("digest_size", OUT_OF_RANGE_DIGEST_SIZES)
+def test_out_of_range_digest_size_init(digest_size: int):
+    from nacl.bindings.crypto_generichash import generichash_blake2b_init
+
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_init(digest_size=digest_size)
+
+
+@pytest.mark.parametrize("digest_size", OUT_OF_RANGE_DIGEST_SIZES)
+def test_out_of_range_digest_size_state(digest_size: int):
+    from nacl.bindings.crypto_generichash import Blake2State
+
+    with pytest.raises(exc.ValueError):
+        Blake2State(digest_size)
+
+
+@pytest.mark.parametrize("digest_size", OUT_OF_RANGE_DIGEST_SIZES)
+def test_out_of_range_digest_size_final(digest_size: int):
+    from nacl.bindings.crypto_generichash import (
+        generichash_blake2b_final,
+        generichash_blake2b_init,
+    )
+
+    st = generichash_blake2b_init(digest_size=32)
+    st.digest_size = digest_size
+    with pytest.raises(exc.ValueError):
+        generichash_blake2b_final(st)
+
+
+def test_smallest_digest_size_is_accepted():
+    assert len(nacl.hash.blake2b(b"message", digest_size=1)) == 2

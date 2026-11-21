@@ -40,6 +40,28 @@ crypto_generichash_STATEBYTES: int = lib.crypto_generichash_statebytes()
 
 _OVERLONG = "{0} length greater than {1} bytes"
 _TOOBIG = "{0} greater than {1}"
+_TOOSMALL = "{0} less than {1}"
+
+
+def _checkdigestsize(digest_size: int) -> None:
+    """Check a digest size is in the range libsodium accepts"""
+    ensure(
+        isinstance(digest_size, int),
+        "Digest size must be an integer number",
+        raising=exc.TypeError,
+    )
+
+    ensure(
+        digest_size >= 1,
+        _TOOSMALL.format("Digest_size", 1),
+        raising=exc.ValueError,
+    )
+
+    ensure(
+        digest_size <= crypto_generichash_BYTES_MAX,
+        _TOOBIG.format("Digest_size", crypto_generichash_BYTES_MAX),
+        raising=exc.ValueError,
+    )
 
 
 def _checkparams(
@@ -64,17 +86,7 @@ def _checkparams(
         raising=exc.TypeError,
     )
 
-    ensure(
-        isinstance(digest_size, int),
-        "Digest size must be an integer number",
-        raising=exc.TypeError,
-    )
-
-    ensure(
-        digest_size <= crypto_generichash_BYTES_MAX,
-        _TOOBIG.format("Digest_size", crypto_generichash_BYTES_MAX),
-        raising=exc.ValueError,
-    )
+    _checkdigestsize(digest_size)
 
     ensure(
         len(key) <= crypto_generichash_KEYBYTES_MAX,
@@ -159,6 +171,8 @@ class Blake2State:
     __slots__ = ["_statebuf", "digest_size"]
 
     def __init__(self, digest_size: int):
+        _checkdigestsize(digest_size)
+
         self._statebuf = ffi.new(
             "unsigned char[]", crypto_generichash_STATEBYTES
         )
@@ -270,6 +284,8 @@ def generichash_blake2b_final(state: Blake2State) -> bytes:
         "State must be a Blake2State object",
         raising=exc.TypeError,
     )
+
+    _checkdigestsize(state.digest_size)
 
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
     rc = lib.crypto_generichash_blake2b_final(
