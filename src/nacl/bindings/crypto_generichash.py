@@ -40,12 +40,38 @@ crypto_generichash_STATEBYTES: int = lib.crypto_generichash_statebytes()
 
 _OVERLONG = "{0} length greater than {1} bytes"
 _TOOBIG = "{0} greater than {1}"
+_TOOSMALL = "{0} smaller than {1}"
+
+
+def _check_digest_size(digest_size: int) -> None:
+    """Reject a digest length that libsodium treats as misuse.
+
+    ``crypto_generichash_blake2b_final`` calls ``sodium_misuse`` when the
+    output length is 0 or greater than 64, which aborts the process.
+    Lengths from 1 through ``crypto_generichash_BYTES_MAX`` stay valid.
+    """
+    ensure(
+        isinstance(digest_size, int),
+        "Digest size must be an integer number",
+        raising=exc.TypeError,
+    )
+    ensure(
+        digest_size >= 1,
+        _TOOSMALL.format("Digest_size", 1),
+        raising=exc.ValueError,
+    )
+    ensure(
+        digest_size <= crypto_generichash_BYTES_MAX,
+        _TOOBIG.format("Digest_size", crypto_generichash_BYTES_MAX),
+        raising=exc.ValueError,
+    )
 
 
 def _checkparams(
     digest_size: int, key: bytes, salt: bytes, person: bytes
 ) -> None:
     """Check hash parameters"""
+    _check_digest_size(digest_size)
     ensure(
         isinstance(key, bytes),
         "Key must be a bytes sequence",
@@ -62,18 +88,6 @@ def _checkparams(
         isinstance(person, bytes),
         "Person must be a bytes sequence",
         raising=exc.TypeError,
-    )
-
-    ensure(
-        isinstance(digest_size, int),
-        "Digest size must be an integer number",
-        raising=exc.TypeError,
-    )
-
-    ensure(
-        digest_size <= crypto_generichash_BYTES_MAX,
-        _TOOBIG.format("Digest_size", crypto_generichash_BYTES_MAX),
-        raising=exc.ValueError,
     )
 
     ensure(
@@ -270,6 +284,7 @@ def generichash_blake2b_final(state: Blake2State) -> bytes:
         "State must be a Blake2State object",
         raising=exc.TypeError,
     )
+    _check_digest_size(state.digest_size)
 
     _digest = ffi.new("unsigned char[]", crypto_generichash_BYTES_MAX)
     rc = lib.crypto_generichash_blake2b_final(
