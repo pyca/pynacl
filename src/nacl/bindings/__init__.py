@@ -273,6 +273,14 @@ from nacl.bindings.crypto_sign import (
     crypto_sign_seed_keypair,
     crypto_sign_SEEDBYTES,
 )
+from nacl.bindings.crypto_stream import (
+    crypto_stream,
+    crypto_stream_KEYBYTES,
+    crypto_stream_keygen,
+    crypto_stream_MESSAGEBYTES_MAX,
+    crypto_stream_NONCEBYTES,
+    crypto_stream_xor,
+)
 from nacl.bindings.randombytes import (
     randombytes,
     randombytes_buf_deterministic,
@@ -503,6 +511,12 @@ __all__ = [
     "crypto_sign_keypair",
     "crypto_sign_open",
     "crypto_sign_seed_keypair",
+    "crypto_stream",
+    "crypto_stream_KEYBYTES",
+    "crypto_stream_MESSAGEBYTES_MAX",
+    "crypto_stream_NONCEBYTES",
+    "crypto_stream_keygen",
+    "crypto_stream_xor",
     "has_crypto_core_ed25519",
     "has_crypto_pwhash_scryptsalsa208sha256",
     "has_crypto_scalarmult_ed25519",
